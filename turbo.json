@@ -8,6 +8,9 @@
     "check:type": {
       "dependsOn": ["^build"]
     },
+    "check:exports": {
+      "dependsOn": ["build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

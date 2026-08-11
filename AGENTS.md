@@ -15,15 +15,16 @@
 pnpm biome ci .     # lint + format + import order
 pnpm check:type     # turbo run check:type
 pnpm build          # turbo run build
+pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 attw 로 해석해본다
 ```
 
-셋 다 통과해야 커밋한다. pre-commit 에서 biome, pre-push 에서 biome ci + check:type 이 돈다
+넷 다 통과해야 커밋한다. pre-commit 에서 biome, pre-push 에서 biome ci + check:type 이 돈다
 (`lefthook.yml`). `--no-verify` 금지.
 
 | 바꾼 것 | 추가로 볼 것 |
 | --- | --- |
 | `packages/*/src/**` | `pnpm changeset` 을 남겼는가 |
-| `package.json` 의 `exports` | 새 진입점이 `vite.config.ts` 의 `lib.entry` 에도 있는가 · `dist/` 에 실제로 떨어지는가 |
+| `package.json` 의 `exports` | 새 진입점이 `vite.config.ts` 의 `lib.entry` 에도 있는가 · `dist/` 에 실제로 떨어지는가 · `pnpm check:exports` 가 통과하는가 |
 | `.css.ts` | `@layer` 를 벗어나지 않았는가 — 컴포넌트 스타일은 `ds-components` |
 | peer/deps 이동 | 컴파일된 `dist/` 가 실제로 그걸 import 하는가 (VE 는 build-time 과 runtime 이 갈린다) |
 
