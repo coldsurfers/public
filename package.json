@@ -12,6 +12,7 @@
     "prepare": "lefthook install",
     "build": "turbo run build",
     "check": "biome check .",
+    "check:exports": "turbo run check:exports",
     "check:fix": "biome check --write .",
     "check:type": "turbo run check:type",
     "lint": "biome lint .",

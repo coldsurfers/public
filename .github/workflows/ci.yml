@@ -26,3 +26,5 @@ jobs:
         run: pnpm check:type
       - name: Build
         run: pnpm build
+      - name: Exports check (attw)
+        run: pnpm check:exports

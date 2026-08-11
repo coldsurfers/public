@@ -12,7 +12,8 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": [
-    "*.css"
+    "**/*.css",
+    "**/*.css.ts"
   ],
   "homepage": "https://github.com/coldsurfers/public/tree/main/packages/design-system",
   "bugs": "https://github.com/coldsurfers/public/issues",
@@ -34,12 +35,16 @@
       "default": "./dist/index.js"
     },
     "./tokens": {
-      "types": "./dist/tokens/index.d.ts",
+      "types": "./dist/tokens.d.ts",
       "default": "./dist/tokens.js"
     },
     "./primitives": {
-      "types": "./dist/primitives/index.d.ts",
+      "types": "./dist/primitives.d.ts",
       "default": "./dist/primitives.js"
+    },
+    "./sprinkles": {
+      "types": "./dist/sprinkles.d.ts",
+      "default": "./dist/sprinkles.js"
     },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
@@ -47,7 +52,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "check:exports": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.21.2",
@@ -59,6 +65,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/vite-plugin": "^5.1.1",

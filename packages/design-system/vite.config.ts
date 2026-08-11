@@ -16,15 +16,24 @@ import dts from 'vite-plugin-dts'
  *
  * ⚠️ 이 설정을 `@layer` 순서 때문이라고 적지 말 것. 순서는 `layers.css.ts` 가
  *    선언을 중복 발행해 이미 지킨다(`@layer a,b,c;` 는 이름이 있으면 no-op).
+ *
+ * `rollupTypes: true` — 엔트리당 d.ts 한 장으로 만다. 소스 트리를 그대로 내보내면
+ * `export { vars } from './css/contract.css'` 처럼 확장자 없는 상대 경로가 남는데,
+ * `moduleResolution: nodenext` 소비처는 그걸 못 연다(우리 빌드·타입체크는 통과한다).
+ * 게이트는 `check:exports`.
  */
 export default defineConfig({
-  plugins: [vanillaExtractPlugin(), dts({ include: ['src'], tsconfigPath: './tsconfig.json' })],
+  plugins: [
+    vanillaExtractPlugin(),
+    dts({ include: ['src'], tsconfigPath: './tsconfig.json', rollupTypes: true }),
+  ],
   build: {
     lib: {
       entry: {
         index: 'src/index.ts',
         tokens: 'src/tokens/index.ts',
         primitives: 'src/primitives/index.ts',
+        sprinkles: 'src/sprinkles.ts',
       },
       formats: ['es'],
     },
