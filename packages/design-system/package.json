@@ -12,7 +12,8 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": [
-    "*.css"
+    "**/*.css",
+    "**/*.css.ts"
   ],
   "homepage": "https://github.com/coldsurfers/public/tree/main/packages/design-system",
   "bugs": "https://github.com/coldsurfers/public/issues",
@@ -40,6 +41,10 @@
     "./primitives": {
       "types": "./dist/primitives/index.d.ts",
       "default": "./dist/primitives.js"
+    },
+    "./sprinkles": {
+      "types": "./dist/sprinkles.d.ts",
+      "default": "./dist/sprinkles.js"
     },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"

@@ -25,6 +25,7 @@ export default defineConfig({
         index: 'src/index.ts',
         tokens: 'src/tokens/index.ts',
         primitives: 'src/primitives/index.ts',
+        sprinkles: 'src/sprinkles.ts',
       },
       formats: ['es'],
     },
