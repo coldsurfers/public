@@ -34,6 +34,11 @@ pnpm build          # turbo run build
   `node_modules` 까지 처리하도록 열어야 한다. 그건 계약이 아니라 부탁이다.
 - **`cssCodeSplit: false` 는 편의 선택이지 불변식이 아니다.** 소비자가 import 한 줄로 끝나는 대신
   tree-shaking 을 포기한다. VE 는 라이브러리엔 반대쪽(`preserveModules`)을 권한다 — 재검토 #1.
+- **`sideEffects` 에서 `**/*.css.ts` 를 빼지 말 것.** 빼면 롤업이 `.css.ts` 모듈을 부수효과 없음으로
+  보고 통째로 지운다. 빌드는 성공하고 `styles.css` 만 조용히 비는데(실측: 35.9 kB → 0.15 kB),
+  타입도 감사도 이걸 못 잡는다. **`styles.css` 크기가 게이트다.**
+- **JS 가 무거운 모듈은 배럴이 아니라 자기 진입점으로 연다.** `sprinkles` 가 그 자리다 —
+  배럴에 넣으면 `vars` 한 줄 쓰는 소비처까지 38 kB 를 문다(`index.js` 3.2 → 41.2 kB 실측).
 - **버전은 changeset 으로만 올린다.** `package.json` 의 `version` 을 손으로 만지지 않는다.
 - **아직 `private: true` 다.** src 가 빈 지금 발행되면 빈 패키지가 npm 에 박힌다. 푸는 건 P4 —
   `NPM_TOKEN` 시크릿을 넣기 **전에** 이 플래그를 확인한다.
@@ -57,12 +62,14 @@ pnpm build          # turbo run build
 정본 로드맵: [coldsurfers/paul-rockstar#220](https://github.com/coldsurfers/paul-rockstar/issues/220)
 
 - [x] **P0 — 레포 뼈대.** 워크스페이스 · 빌드 · CI · 릴리스 레인
-- [ ] **P1 — 경계 확정.** 브랜드 테마 ↔ 범용 축 분리선. `live-surface.ts` 의 warm-paper 헬퍼 귀속
-- [ ] **P2 — 병합.** `tokens` + `design-system` 을 한 패키지로. 이름 규칙 소비처 2곳 → 1곳
+- [x] **P1 — 경계 확정.** 브랜드 테마 ↔ 범용 축 분리선. `live-surface.ts` 의 warm-paper 헬퍼 귀속
+      → [`docs/p1-boundary.md`](docs/p1-boundary.md)
+- [x] **P2 — 병합.** `tokens` + `design-system` 을 한 패키지로. 이름 규칙 소비처 2곳 → 1곳
 - [ ] **P3 — primitives 흡수.** 상한 규칙을 먼저 적고, 그다음 컨트롤 편입
 - [ ] **P4 — 공개 배포.** `private` 해제 · `NPM_TOKEN` · npm 발행 · paul-rockstar 소비 경로 전환
 
-P1 이 안 끝난 채 P2 를 하면 브랜드 값 오버라이드 여부(#220 열린 결정 1)가 코드로 임의 결정된다.
+P2 를 시작하기 전에 `docs/p1-boundary.md` 를 읽는다 — 어느 축이 열리고 무엇이 앱에 남는지가
+거기서 정해졌고, 안 읽으면 코드로 임의 결정된다.
 
 ## 커밋
 
