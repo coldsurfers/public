@@ -42,7 +42,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
   배럴에 넣으면 `vars` 한 줄 쓰는 소비처까지 38 kB 를 문다(`index.js` 3.2 → 41.2 kB 실측).
 - **버전은 changeset 으로만 올린다.** `package.json` 의 `version` 을 손으로 만지지 않는다.
 - **아직 `private: true` 다.** src 가 빈 지금 발행되면 빈 패키지가 npm 에 박힌다. 푸는 건 P4 —
-  `NPM_TOKEN` 시크릿을 넣기 **전에** 이 플래그를 확인한다.
+  발행 레인을 켜기 **전에** 이 플래그를 확인한다.
 
 ## 무엇을 여기로 옮기는가
 
@@ -67,7 +67,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
       → [`docs/p1-boundary.md`](docs/p1-boundary.md)
 - [x] **P2 — 병합.** `tokens` + `design-system` 을 한 패키지로. 이름 규칙 소비처 2곳 → 1곳
 - [ ] **P3 — primitives 흡수.** 상한 규칙을 먼저 적고, 그다음 컨트롤 편입
-- [ ] **P4 — 공개 배포.** `private` 해제 · `NPM_TOKEN` · npm 발행 · paul-rockstar 소비 경로 전환
+- [ ] **P4 — 공개 배포.** `private` 해제 · GitHub Packages 발행 · paul-rockstar 소비 경로 전환
 
 P2 를 시작하기 전에 `docs/p1-boundary.md` 를 읽는다 — 어느 축이 열리고 무엇이 앱에 남는지가
 거기서 정해졌고, 안 읽으면 코드로 임의 결정된다.
