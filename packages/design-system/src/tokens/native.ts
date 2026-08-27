@@ -34,6 +34,13 @@ export const toPx = (value: string): number => {
   throw new Error(`[design-system/native] 변환할 수 없는 길이: ${value}`)
 }
 
+/** 스케일 키 — RN 컴포넌트가 props 축으로 그대로 쓴다. */
+export type FontSizeKey = keyof typeof fontSize
+export type LineHeightKey = keyof typeof lineHeight
+export type FontWeightKey = keyof typeof fontWeight
+export type SpacingKey = keyof typeof spacing
+export type RadiusKey = keyof typeof radius
+
 type Numeric<T> = { [K in keyof T]: number }
 
 const toNumericScale = <T extends Record<string, string>>(scale: T): Numeric<T> =>
