@@ -34,6 +34,8 @@ export default defineConfig({
         tokens: 'src/tokens/index.ts',
         primitives: 'src/primitives/index.ts',
         sprinkles: 'src/sprinkles.ts',
+        'style-utils': 'src/css/style-utils.ts',
+        motion: 'src/css/motion.css.ts',
       },
       formats: ['es'],
     },

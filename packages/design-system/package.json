@@ -46,6 +46,14 @@
       "types": "./dist/sprinkles.d.ts",
       "default": "./dist/sprinkles.js"
     },
+    "./style-utils": {
+      "types": "./dist/style-utils.d.ts",
+      "default": "./dist/style-utils.js"
+    },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "default": "./dist/motion.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },
