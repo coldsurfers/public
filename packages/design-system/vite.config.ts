@@ -32,14 +32,25 @@ export default defineConfig({
       entry: {
         index: 'src/index.ts',
         tokens: 'src/tokens/index.ts',
+        'tokens-native': 'src/tokens/native.ts',
         primitives: 'src/primitives/index.ts',
+        native: 'src/native/index.ts',
         sprinkles: 'src/sprinkles.ts',
+        'style-utils': 'src/css/style-utils.ts',
+        motion: 'src/css/motion.css.ts',
       },
       formats: ['es'],
     },
     cssCodeSplit: false,
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react-native',
+        '@emotion/native',
+        '@emotion/react',
+      ],
       output: {
         assetFileNames: (asset) =>
           asset.names?.[0]?.endsWith('.css') ? 'styles.css' : '[name][extname]',

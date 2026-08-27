@@ -17,3 +17,6 @@ dist
 !.vscode/settings.json
 .idea
 .DS_Store
+
+# 로컬 에이전트 툴 상태 (커밋 대상 아님)
+.omc/

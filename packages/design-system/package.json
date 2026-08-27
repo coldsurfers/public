@@ -38,13 +38,29 @@
       "types": "./dist/tokens.d.ts",
       "default": "./dist/tokens.js"
     },
+    "./tokens/native": {
+      "types": "./dist/tokens-native.d.ts",
+      "default": "./dist/tokens-native.js"
+    },
     "./primitives": {
       "types": "./dist/primitives.d.ts",
       "default": "./dist/primitives.js"
     },
+    "./native": {
+      "types": "./dist/native.d.ts",
+      "default": "./dist/native.js"
+    },
     "./sprinkles": {
       "types": "./dist/sprinkles.d.ts",
       "default": "./dist/sprinkles.js"
+    },
+    "./style-utils": {
+      "types": "./dist/style-utils.d.ts",
+      "default": "./dist/style-utils.js"
+    },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "default": "./dist/motion.js"
     },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
@@ -61,16 +77,36 @@
     "@vanilla-extract/sprinkles": "^1.7.1"
   },
   "peerDependencies": {
+    "@emotion/native": "^11",
+    "@emotion/react": "^11",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "react-native": ">=0.81"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    },
+    "@emotion/native": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@emotion/native": "11.11.0",
+    "@emotion/react": "11.10.6",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-native": "0.87.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
     "vite-plugin-dts": "^4.5.4"
