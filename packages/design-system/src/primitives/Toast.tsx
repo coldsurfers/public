@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from 'react'
+import type { ToastTone } from '../contract'
 import { toastErrorDot, toastMessage, toast as toastStyle } from './Toast.css'
 
 /**
@@ -11,7 +12,7 @@ import { toastErrorDot, toastMessage, toast as toastStyle } from './Toast.css'
  *
  * provider 가 없으면 `show` 는 no-op — 컴포넌트를 격리 렌더해도 throw 하지 않는다.
  */
-export type ToastTone = 'neutral' | 'success' | 'error'
+export type { ToastTone }
 
 export interface ToastApi {
   /** 메시지를 띄우고 1.6s 뒤 자동으로 사라진다. 연속 호출 시 타이머 리셋. */

@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
+import type { ButtonSize, ButtonVariant } from '../contract'
 import { button, buttonIcon } from './Button.css'
 import { cx } from './cx'
 
@@ -20,8 +21,8 @@ import { cx } from './cx'
  * 라우팅 CTA 를 실제 <a> 로 내보낼 때. 자식은 단일 엘리먼트여야 하며 라벨은 그 children.
  */
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'ghost' | 'accent' | 'outline'
-  size?: 'sm' | 'md' | 'cta'
+  variant?: ButtonVariant
+  size?: ButtonSize
   trailingIcon?: ReactNode
   asChild?: boolean
 }

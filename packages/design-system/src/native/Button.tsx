@@ -1,6 +1,7 @@
 import styled from '@emotion/native'
-import type { ReactNode } from 'react'
-import type { TouchableOpacityProps, ViewStyle } from 'react-native'
+import type { ComponentPropsWithRef, ReactNode } from 'react'
+import type { TouchableOpacity, ViewStyle } from 'react-native'
+import type { ButtonSize, ButtonVariant } from '../contract'
 import {
   type ColorScheme,
   fontWeight,
@@ -18,14 +19,17 @@ import { useScheme } from './scheme'
  * 웹의 `:hover` 자리는 `TouchableOpacity` 의 누름 투명도가 대신한다 — RN 엔 hover 가 없고,
  * 누름 피드백은 플랫폼이 이미 갖고 있다.
  *
+ * ref 는 `ComponentPropsWithRef` 로 딸려 온다 — React 19 는 함수 컴포넌트에도 `ref` 를 그냥
+ * prop 으로 넘기므로 `forwardRef` 가 필요 없다. 웹 `primitives` 는 아직 `forwardRef` 인데,
+ * 그건 React 19 이전 코드라 그렇다(통일은 별건).
+ *
  * 높이는 `height` 로 박는다. 웹 `Button.css.ts` 의 §높이 규율과 같은 이유이자, RN 에서는
  * 더 강하다 — 세로 padding 으로 높이를 만들면 폰트 메트릭이 달라지는 iOS/Android 에서
  * 같은 버튼이 다른 높이로 선다.
  */
-export type ButtonVariant = 'primary' | 'ghost' | 'accent' | 'outline'
-export type ButtonSize = 'sm' | 'md' | 'cta'
+export type { ButtonSize, ButtonVariant }
 
-export interface ButtonProps extends TouchableOpacityProps {
+export interface ButtonProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
   variant?: ButtonVariant
   size?: ButtonSize
   /** 라벨 뒤 아이콘 슬롯. 웹 `Button` 과 같은 이름·같은 자리. */
