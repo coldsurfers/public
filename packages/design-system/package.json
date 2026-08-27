@@ -38,6 +38,10 @@
       "types": "./dist/tokens.d.ts",
       "default": "./dist/tokens.js"
     },
+    "./tokens/native": {
+      "types": "./dist/tokens-native.d.ts",
+      "default": "./dist/tokens-native.js"
+    },
     "./primitives": {
       "types": "./dist/primitives.d.ts",
       "default": "./dist/primitives.js"

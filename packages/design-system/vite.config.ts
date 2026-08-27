@@ -32,6 +32,7 @@ export default defineConfig({
       entry: {
         index: 'src/index.ts',
         tokens: 'src/tokens/index.ts',
+        'tokens-native': 'src/tokens/native.ts',
         primitives: 'src/primitives/index.ts',
         sprinkles: 'src/sprinkles.ts',
         'style-utils': 'src/css/style-utils.ts',
