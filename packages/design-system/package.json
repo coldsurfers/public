@@ -1,7 +1,7 @@
 {
   "name": "@coldsurfers/design-system",
   "version": "0.2.0",
-  "description": "COLDSURF design system — tokens, CSS contract, and React primitives.",
+  "description": "COLDSURF design system \u2014 tokens, CSS contract, and React primitives.",
   "keywords": [
     "design-system",
     "vanilla-extract",
@@ -44,6 +44,10 @@
     "./primitives": {
       "types": "./dist/primitives.d.ts",
       "default": "./dist/primitives.js"
+    },
+    "./cards": {
+      "types": "./dist/cards.d.ts",
+      "default": "./dist/cards.js"
     },
     "./native": {
       "types": "./dist/native.d.ts",

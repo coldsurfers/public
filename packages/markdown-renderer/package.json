@@ -1,0 +1,75 @@
+{
+  "name": "@coldsurfers/markdown-renderer",
+  "version": "0.0.0",
+  "description": "COLDSURF markdown renderer — syntax highlighting, media embeds, and prose styles on top of @coldsurfers/design-system.",
+  "keywords": [
+    "markdown",
+    "shiki",
+    "react",
+    "vanilla-extract",
+    "coldsurf"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.css.ts"
+  ],
+  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/markdown-renderer",
+  "bugs": "https://github.com/coldsurfers/public/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldsurfers/public.git",
+    "directory": "packages/markdown-renderer"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "check:type": "tsc --noEmit",
+    "check:exports": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
+  },
+  "dependencies": {
+    "@shikijs/rehype": "^4.0.2",
+    "@vanilla-extract/css": "^1.21.2",
+    "react-markdown": "^10.1.0",
+    "rehype-slug": "^6.0.0",
+    "remark-cjk-friendly": "^2.0.1",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^4.0.2"
+  },
+  "peerDependencies": {
+    "@coldsurfers/design-system": "^0.2.0",
+    "framer-motion": "^12",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@coldsurfers/design-system": "workspace:*",
+    "@types/hast": "^3.0.4",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vanilla-extract/vite-plugin": "^5.1.1",
+    "framer-motion": "^12.23.31",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.14",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}

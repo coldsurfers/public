@@ -2,8 +2,8 @@
 
 COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives 를 담은 **단일 정본 패키지**.
 
-> 🚧 **토큰과 CSS 계약까지 들어왔다**([#220](https://github.com/coldsurfers/paul-rockstar/issues/220) P2).
-> `./primitives` 는 아직 비어 있다 — P3.
+> 무거운 의존을 끌고 오는 것만 밖에 둔다 — 마크다운 렌더러는
+> [`@coldsurfers/markdown-renderer`](../markdown-renderer) 로 갈랐다(shiki).
 
 ## 왜 하나인가
 
@@ -21,6 +21,7 @@ COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives �
 | `./tokens` | 토큰 값(순수 데이터) · 이름 규칙 · `coverToneFor` | ✗ |
 | `./sprinkles` | 원자 유틸. JS 38 kB 라 배럴에서 갈랐다 | ✗ |
 | `./primitives` | Button · Chip · Badge · … | ✓ |
+| `./cards` | ConcertCard · ArticleCard · LeadFeature · … | ✓ |
 | `./styles.css` | 컴파일된 CSS. **소비 앱이 한 번 import 한다** | ✗ |
 
 ## 설치
