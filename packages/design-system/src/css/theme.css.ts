@@ -21,13 +21,12 @@ import { declareLayerOrder } from './layers.css'
  * TS 값 → 생성 CSS → `@import` → 앱 이던 것이 TS 값 → `styles.css` → 앱 이 된다.
  * 소비자는 `.css` 진입점에 `@import` 를 한 줄도 두지 않는다.
  *
- * `createGlobalTheme` 이 아니라 `assignVars` + `globalStyle` 인 이유: 전자는 계약 **전체**를
- * 요구해서 light 블록이 스킴 무관 스케일까지 재선언하게 된다. base/dark/light 분할
- * (스케일은 `:root` 한 번, 색만 스킴별)을 유지하려면 부분 할당이 필요하다.
+ * **스킴은 light 하나뿐이다.** ink(dark) 는 폐기했다(paul-rockstar #299) — 색을 뒤집는 축이
+ * 없으므로 `:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없다.
  *
- * 라이트가 이기는 근거는 소스 순서가 아니라 **상세도**다 — `:root`(0,1,0) < `:root[data-theme]`(0,2,0).
- * 번들러가 청크를 어디에 붙이든 뒤집히지 않는다. (`layers.css.ts` 가 세 번 틀렸던 그 함정이
- * 여기엔 없다.)
+ * `createGlobalTheme` 이 아니라 `assignVars` + `globalStyle` 인 이유: 전자는 계약 **전체**를
+ * 한 번에 요구하는데, 여기는 `cover`·`paper` 처럼 성격이 다른 축을 같은 블록에 섞어 넣는
+ * 자리라 부분 할당이 읽기 쉽다.
  *
  * ⚠️ 이 블록은 **`:root` 에 무조건 발행된다.** 소비자가 값을 바꾸고 싶으면 자기 CSS 에서 같은
  *    커스텀 프로퍼티를 다시 선언하면 된다 — 다만 그게 계약상 허용되는 축인지는 갈린다.
@@ -38,13 +37,13 @@ import { declareLayerOrder } from './layers.css'
 // 이 한 줄이 "가장 먼저 로드되는 CSS 의 맨 앞은 순서 선언"을 보장한다. 이유는 `layers.css.ts`.
 declareLayerOrder()
 
-/** 스킴 무관 스케일 + dark 색. 오늘의 `base.css` + `dark.css` 에 대응. */
+/** 스케일 + light 색. 소비 레포의 `base.css` + `light.css` 에 대응. */
 globalStyle(':root', {
   '@layer': {
     [tokensLayer]: {
-      colorScheme: 'dark',
+      colorScheme: 'light',
       vars: {
-        ...assignVars(vars.color, tokens.color.semantic.dark),
+        ...assignVars(vars.color, tokens.color.semantic.light),
         ...assignVars(vars.font, fontFamily),
         ...assignVars(vars.fontSize, fontSize),
         ...assignVars(vars.lineHeight, lineHeight),
@@ -54,16 +53,6 @@ globalStyle(':root', {
         ...assignVars(vars.cover, cover),
         ...assignVars(vars.paper, paper),
       },
-    },
-  },
-})
-
-/** light 스킴은 색만 뒤집는다. 스케일은 위 `:root` 것을 그대로 쓴다. */
-globalStyle(":root[data-theme='light']", {
-  '@layer': {
-    [tokensLayer]: {
-      colorScheme: 'light',
-      vars: assignVars(vars.color, tokens.color.semantic.light),
     },
   },
 })

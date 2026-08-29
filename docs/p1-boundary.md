@@ -28,7 +28,7 @@
 | | 축 | 근거 |
 | --- | --- | --- |
 | **열린다** | `spacing` · `radius` · `fontSize` · `lineHeight` · `fontWeight` · `fontFamily` · `breakpoints` | 값은 우리 것이지만 **축 자체는 범용**이다. 4px 격자·rem 타이포 스케일에 남의 제품을 묶을 이유가 없다 |
-| **고정** | `color.semantic`(dark·light) · `cover` 6톤 · `paper.warm` · `editorialType` | COLDSURF 고유값. 이걸 바꿀 수 있으면 남는 건 이름뿐이라 DS 가 아니라 빈 껍데기다 |
+| **고정** | `color.semantic`(light 단일) · `cover` 6톤 · `paper.warm` · `editorialType` | COLDSURF 고유값. 이걸 바꿀 수 있으면 남는 건 이름뿐이라 DS 가 아니라 빈 껍데기다 |
 
 `editorialType` 은 크기를 `fontSize` 에서 읽는다 — 열린 축의 오버라이드가 여기로 전파된다.
 자기 값을 갖는 `letterSpacing`·`textTransform` 만 고정이다.
