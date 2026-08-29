@@ -100,11 +100,27 @@ paul-rockstar → 위 둘을 읽어 자기 앱용 Tailwind @theme CSS 를 생성
 | 대상 | 근거 |
 | --- | --- |
 | `packages/tokens/src/generate.ts` | 결정 4 |
-| `packages/ui/src/cards` (`ConcertCard`) · `chat` · `markdown-renderer`(shiki) · `image-lightbox` · `theme` | 도메인 조립이거나 무거운 의존을 끌고 온다 |
 | `WARM_PAPER_SURFACE` | 결정 3 |
 
-`packages/ui` 는 사라지지 않는다. 잔여 배럴이 npm DS 를 re-export 하는 shim 이 되어
-배럴 소비 75곳이 무수정으로 살아남는다(Step 5).
+`packages/ui` 는 사라진다 — 아래 개정 참고.
+
+### 개정 (2026-08-29) — `packages/ui` 잔여도 전부 나간다
+
+P1 은 cards · chat · markdown-renderer · image-lightbox 를 "도메인 조립이거나 무거운
+의존을 끌고 온다"는 이유로 남겼다. **그 한 줄이 두 가지 서로 다른 문제를 같은 근거로 묶고
+있었다.** 갈라 보니 판정이 달라진다.
+
+| 대상 | 실측 | 개정 |
+| --- | --- | --- |
+| `cards` 4종 | 무거운 의존 0. 도메인은 이름에만 있고 props 는 `title`·`meta`·`tone` | **DS 로**(`./cards`). CSS +6.5 kB 가 유일한 대가 |
+| `markdown-renderer` · `image-lightbox` | shiki 가 **모듈 최상단 부수효과**(`createHighlighterCoreSync()`)라 번들러가 못 턴다. DS 는 CSS 한 장이라 산문 CSS 470 줄이 전원에게 실린다 | **별도 패키지** `@coldsurfers/markdown-renderer`. import 안 하면 0 바이트 |
+| `chat`(`ChatPanel`) · `cards/DemoCard` | 소비처 **0곳** — 코드 참조가 없고 주석 언급만 | **이관하지 않고 삭제** |
+
+즉 남긴 진짜 이유는 "도메인"이 아니라 **무게** 하나였고, 무게는 패키지 경계로 풀린다 —
+DS 안에서 진입점만 가르는 걸로는 안 된다(CSS 가 `cssCodeSplit: false` 라 한 장이므로).
+
+`packages/ui` 는 사라진다. shim 배럴을 유지하려던 Step 5 계획은 폐기됐다 — 소비 160곳을
+공개 두 패키지로 직접 치환한다.
 
 ---
 
