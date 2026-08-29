@@ -1,7 +1,7 @@
 {
   "name": "@coldsurfers/design-system",
-  "version": "0.2.0",
-  "description": "COLDSURF design system \u2014 tokens, CSS contract, and React primitives.",
+  "version": "0.3.0",
+  "description": "COLDSURF design system — tokens, CSS contract, and React primitives.",
   "keywords": [
     "design-system",
     "vanilla-extract",
