@@ -65,7 +65,8 @@ export const lineHeightFor = (
 
 /**
  * 색은 hex 라 변환이 없다 — 이름만 다시 연다. RN 도 `'#f2efe8'` 를 그대로 먹는다.
- * `cover`·`paper` 는 스킴 불변 scale 이라 웹과 같은 객체를 그대로 쓴다.
+ * 스킴은 `light` 하나뿐이고(`nativeColor.light`), `cover`·`paper` 는 스킴 불변 scale 이라
+ * 웹과 같은 객체를 그대로 쓴다.
  */
 export const nativeColor = tokens.color.semantic
 export { cover, paper }

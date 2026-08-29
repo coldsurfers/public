@@ -30,8 +30,8 @@ import './layers.css'
  * 때마다 양쪽을 같이 고쳐야 했고, 한쪽만 고치면 타입은 통과한 채 런타임에 `var(--없는이름)` 이 됐다.
  */
 const shape = {
-  /** 스킴별로 값이 갈리지만 **키는 같다**(`ColorScheme`). 계약엔 키만 필요해 어느 쪽을 넘겨도 된다. */
-  color: tokens.color.semantic.dark,
+  /** 계약엔 값이 아니라 키(`ColorScheme`)만 필요하다. 스킴은 `light` 하나뿐이다. */
+  color: tokens.color.semantic.light,
   font: fontFamily,
   fontSize,
   lineHeight,

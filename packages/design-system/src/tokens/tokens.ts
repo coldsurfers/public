@@ -59,7 +59,8 @@ export type ColorScheme = {
 }
 
 /**
- * COLDSURF brand palette
+ * COLDSURF brand palette — **스킴은 이 하나(paper)뿐이다.**
+ * ink(dark) 스킴은 폐기했다(paul-rockstar #299). 색을 뒤집는 축이 없으므로 `light` 가 곧 `:root` 다.
  *   paper   #f2efe8 · paper-2 #e9e5db · rule #d8d2c5
  *   ink     #111111 · ink-soft #1c1c1a
  *   muted   #6b6b66 · subtle #aea99e
@@ -75,42 +76,6 @@ export type ColorScheme = {
  * 둘은 다른 색이고 다른 표면이다 — 통일 대상이 아니라 *구별* 대상이다.
  * 새 off-white 를 들일 땐 값을 재사용하기 전에 여기에 이름부터 추가한다.
  */
-const dark: ColorScheme = {
-  bg: '#111111',
-  surface: '#1c1c1a',
-  surface2: '#161614',
-  surfaceHover: '#22221f',
-  surfaceGhost: 'rgba(242, 239, 232, 0.04)',
-  surfaceGhostHover: 'rgba(242, 239, 232, 0.08)',
-  surfaceActive: 'rgba(242, 239, 232, 0.12)',
-  border: '#2a2a26',
-  borderSoft: '#1f1f1c',
-
-  text: '#f2efe8',
-  strong: '#ffffff',
-  body: '#d8d2c5',
-  muted: '#aea99e',
-  subtle: '#7a766c',
-  faint: '#3a3a36',
-
-  heading: '#f2efe8',
-  accent: '#d6451f',
-  accentHover: '#f0592e',
-  link: '#f2efe8',
-  linkHover: '#d6451f',
-  blockquote: '#aea99e',
-
-  codeBg: '#1c1c1a',
-  codeFg: '#d6451f',
-
-  statusSuccess: '#5ad27a',
-  statusSuccessBg: 'rgba(90, 210, 122, 0.14)',
-  statusWarning: '#f3b14a',
-  statusWarningBg: 'rgba(243, 177, 74, 0.14)',
-  statusDanger: '#e5322b',
-  statusDangerBg: 'rgba(229, 50, 43, 0.16)',
-}
-
 const light: ColorScheme = {
   bg: '#f2efe8',
   surface: '#ffffff',
@@ -306,9 +271,9 @@ export const radius = {
 /**
  * 커버 팔레트 — 카드 커버 블록의 "지형(terrain)" 색.
  *
- * dark↔light 스왑이 없는 **불변 scale** 이다. 항상 어두운 필 위에 paper 텍스트/이니셜이
- * 올라가는 에디토리얼 커버(ConcertCard·ArticleCard·LeadFeature)의 바닥색이라, 스킴을 따라
- * 뒤집지 않는다. `--cover-*` 로 `:root` 에, `--color-cover-*` 로 `@theme` 에 fan-out 되어
+ * semantic color 와 달리 **스킴을 타지 않는 불변 scale** 이다. 항상 어두운 필 위에 paper
+ * 텍스트/이니셜이 올라가는 에디토리얼 커버(ConcertCard·ArticleCard·LeadFeature)의 바닥색이라,
+ * dark 스킴이 살아 있던 때에도 뒤집지 않았다. `--cover-*` 로 `:root` 에, `--color-cover-*` 로 `@theme` 에 fan-out 되어
  * `bg-cover-forest` · `text-cover-plum` 유틸이 생성된다.
  *
  * hex 는 Figma Page 7 커버 블록 무손실 샘플.
@@ -328,8 +293,8 @@ export type CoverTone = keyof typeof cover
  * warm paper — Figma 시안의 **라이트 고정 표면** 바닥색.
  *
  * `cover` 와 같은 성격의 **스킴 불변 scale** 이다. 이벤트 상세·`/live-events`·`/magazine`(b-side)·
- * pick 상세는 시안이 라이트 전용이라 전역 다크 토글과 무관하게 항상 이 색 위에 산다.
- * 그래서 dark↔light 가 스왑하는 semantic color(`bg`·`surface`)가 아니라 별도 이름을 갖는다.
+ * pick 상세는 시안이 라이트 전용이라 항상 이 색 위에 산다. 그래서 스킴을 타는 자리였던
+ * semantic color(`bg`·`surface`)가 아니라 별도 이름을 갖는다.
  *
  * 브랜드 정본 paper(`#f2efe8` = `light.bg`)와는 **다른 값·다른 이름**이다. 위 이름 사전 참조.
  * `--paper-warm` 으로 `:root` 에, `--color-paper-warm` 으로 `@theme` 에 fan-out 되어
@@ -396,7 +361,7 @@ export const breakpoints = {
 
 export const tokens = {
   color: {
-    semantic: { dark, light },
+    semantic: { light },
   },
   fontFamily,
   fontSize,

@@ -15,7 +15,7 @@ export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from '.
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { Modal, type ModalProps } from './Modal'
 export { Spinner, type SpinnerProps } from './Spinner'
-export { ColorSchemeProvider, type SchemeName, useScheme } from './scheme'
+export { useScheme } from './scheme'
 export { Text, type TextProps, type TextTone } from './Text'
 export { TextInput, type TextInputProps } from './TextInput'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'
