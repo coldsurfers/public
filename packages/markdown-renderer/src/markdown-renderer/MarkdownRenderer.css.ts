@@ -353,10 +353,16 @@ export const inlineCode = style(
   }),
 )
 
+/**
+ * 코드블록. 색은 Shiki 인라인 style 이 지지만 **배경만 여기가 진다** — `MarkdownRenderer` 의 `pre`
+ * 오버라이드가 인라인 `background-color` 를 걷어내고 넘긴다. 인라인 코드와 같은 `codeBg` 톤이라
+ * 한 글 안에서 코드가 두 가지 바탕으로 갈리지 않는다.
+ */
 export const pre = style(
   inComponentsLayer({
     marginBlock: 24,
     padding: 16,
+    background: vars.color.codeBg,
     fontSize: vars.fontSize.sm,
     fontFamily: vars.font.mono,
     lineHeight: vars.lineHeight.relaxed,
