@@ -1,7 +1,7 @@
 import { cx } from '@coldsurfers/design-system/primitives'
 import rehypeShikiFromHighlighter from '@shikijs/rehype/core'
 import type { ElementContent, Element as HastElement } from 'hast'
-import { memo } from 'react'
+import { createContext, memo, type ReactNode, useContext } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeSlug from 'rehype-slug'
 import remarkCjkFriendly from 'remark-cjk-friendly'
@@ -17,7 +17,6 @@ import md from 'shiki/langs/markdown.mjs'
 import sh from 'shiki/langs/shellscript.mjs'
 import tsx from 'shiki/langs/tsx.mjs'
 import ts from 'shiki/langs/typescript.mjs'
-import githubDark from 'shiki/themes/github-dark.mjs'
 import githubLight from 'shiki/themes/github-light.mjs'
 import { ImageLightbox } from '../image-lightbox'
 import * as styles from './MarkdownRenderer.css'
@@ -25,10 +24,26 @@ import * as styles from './MarkdownRenderer.css'
 // Shiki 하이라이터를 동기 싱글톤으로 만들어둔다. 매 렌더마다 만들면 비용이 크고,
 // async 버전은 react-markdown의 rehype 파이프라인에서 처리가 까다롭다.
 const shikiHighlighter = createHighlighterCoreSync({
-  themes: [githubLight, githubDark],
+  themes: [githubLight],
   langs: [ts, tsx, jsx, json, bash, sh, css, html, md],
   engine: createJavaScriptRegexEngine(),
 })
+
+/**
+ * `<code>` 가 `<pre>` 안인지 알리는 신호.
+ *
+ * Shiki 변환을 거치면 블록 `<code>` 는 `language-*` 클래스를 잃는다(테마 클래스가 `<pre>` 로
+ * 옮겨간다). 그래서 `className` 만 보면 인라인 코드와 구분이 안 되고, 인라인 코드 칩(배경·패딩)이
+ * 코드블록 한가운데 그려진다. 부모가 알려주는 것 말고는 신호가 없다.
+ */
+const InsidePre = createContext(false)
+
+/** 인라인 코드(`foo`)에만 사이트 룩의 칩을 입힌다. 블록 코드는 Shiki 가 이미 색을 박아둔 뒤다. */
+function Code({ className, children }: { className?: string; children?: ReactNode }) {
+  const insidePre = useContext(InsidePre)
+  if (insidePre) return <code className={className}>{children}</code>
+  return <code className={styles.inlineCode}>{children}</code>
+}
 
 export interface BandcampEmbedData {
   embedUrl: string
@@ -387,10 +402,10 @@ function MarkdownRendererImpl({
         [
           rehypeShikiFromHighlighter,
           shikiHighlighter,
-          {
-            themes: { light: 'github-light', dark: 'github-dark' },
-            defaultColor: 'dark',
-          },
+          // `themes` + `defaultColor` 의 dual 은 토큰마다 `--shiki-*` 변수를 하나씩 더 굽고,
+          // 그걸 실제로 켜려면 소비자가 `.shiki span { color: var(--shiki-dark) !important }` 를
+          // 따로 써야 한다. design-system 의 스킴은 light 하나뿐이라(ink 폐기) 살 자리가 없다.
+          { theme: 'github-light' },
         ],
       ]}
       components={{
@@ -486,17 +501,23 @@ function MarkdownRendererImpl({
         blockquote: ({ children }) => (
           <blockquote className={styles.blockquote}>{children}</blockquote>
         ),
-        code: ({ children, className }) => {
-          // 블록 코드는 Shiki rehype가 이미 <pre class="shiki"><code>span...</span></code>로
-          // 토큰 스타일을 인라인으로 박아두기 때문에 여기서 추가 스타일을 덧씌우지 않는다.
-          // 인라인 코드(`foo`)만 사이트 룩에 맞춘 박스 스타일을 입힌다.
-          const isBlock = className?.startsWith('language-')
-          if (isBlock) return <code className={className}>{children}</code>
-          return <code className={styles.inlineCode}>{children}</code>
-        },
-        // Shiki 가 넣어준 `shiki`·테마 클래스를 반드시 유지한다 — 코드 토큰 색이 거기 달려 있다.
-        pre: ({ children, className }) => (
-          <pre className={cx(className, styles.pre)}>{children}</pre>
+        // 인라인/블록 판정 근거는 `language-*` 가 아니라 부모다 — 이유는 `InsidePre` 주석.
+        code: ({ children, className }) => <Code className={className}>{children}</Code>,
+        // Shiki 가 넣어준 `shiki` 클래스와 인라인 style 을 **둘 다** 유지한다 — 클래스에 토큰 색이,
+        // style 에 코드 전체의 기본 전경색이 달려 있다(색 없는 토큰은 이걸 물려받는다).
+        // `background-color` 만 걷어낸다: 블록 톤은 테마의 흰색이 아니라 `--code-bg`(인라인 코드와
+        // 같은 톤)가 져야 하는데, 인라인 style 은 CSS 로 이길 수 없어 여기서 빼는 수밖에 없다.
+        // `tabIndex` 는 가로 스크롤을 키보드로 잡게 해주는 Shiki 의 a11y 장치라 그대로 넘긴다.
+        pre: ({ children, className, style, tabIndex }) => (
+          <InsidePre value={true}>
+            <pre
+              className={cx(className, styles.pre)}
+              style={{ ...style, backgroundColor: undefined }}
+              tabIndex={tabIndex}
+            >
+              {children}
+            </pre>
+          </InsidePre>
         ),
         hr: () => <hr className={styles.hr} />,
         ul: ({ children }) => <ul className={styles.ul}>{children}</ul>,
