@@ -31,16 +31,20 @@ import dts from 'vite-plugin-dts'
  * 없다. `renderChunk` 는 그 처리가 **끝난 뒤** 돌아서, 여기서 박은 import 는 살아남는다.
  * (source 단계에 박으면 같이 떼여 사라진다. 실측: coldsurfers/public#1)
  *
- * **왜 전부가 아닌가:** `native` 는 RN 이라 CSS 를 물면 Metro 가 깨진다. `tokens`·`tokens-native`·
- * `style-utils` 는 값·헬퍼뿐이라 번들러 없이 Node 에서 여는 길을 남겨둔다 — CSS 를 물리면
- * `Unknown file extension ".css"` 로 막힌다.
+ * **왜 목록이 아니라 판정인가:** 대상을 진입점 이름으로 적으면 이름을 바꿀 때 조용히 어긋난다.
+ * 대신 그 청크가 실제로 `.css.ts` 를 물었는지를 본다 — 진입점을 늘리든 이름을 바꾸든 따라온다.
+ * (실측 시점 기준 index·primitives·cards·motion·sprinkles 만 걸린다.)
+ *
+ * 이 판정이 곧 두 규칙의 집행이기도 하다. `native` 는 RN 이라 CSS 를 물면 Metro 가 깨지고,
+ * `tokens`·`tokens-native`·`style-utils` 는 번들러 없이 Node 에서 여는 길을 남겨둔다
+ * (CSS 를 물리면 `Unknown file extension ".css"` 로 막힌다) — 넷 다 `.css.ts` 가 없어서 걸리지
+ * 않는다. 거기에 `.css.ts` 가 들어오는 순간 이 규칙이 깨진 것이고, 주입은 그 신호를 따라간다.
  */
-const CSS_ENTRIES = new Set(['index', 'primitives', 'cards', 'motion', 'sprinkles'])
-
 const injectStylesImport = {
   name: 'inject-styles-import',
-  renderChunk(code: string, chunk: { isEntry: boolean; name: string }) {
-    if (!chunk.isEntry || !CSS_ENTRIES.has(chunk.name)) return null
+  renderChunk(code: string, chunk: { isEntry: boolean; moduleIds: string[] }) {
+    if (!chunk.isEntry) return null
+    if (!chunk.moduleIds.some((id) => id.includes('.css.ts'))) return null
     return { code: `import './styles.css';\n${code}`, map: null }
   },
 }
