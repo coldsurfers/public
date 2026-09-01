@@ -2,7 +2,8 @@ name: Alpha Release
 
 # 머지 전에 실제 레지스트리로 물려 보고 싶을 때 쓴다.
 #
-# changesets 의 **snapshot 릴리스**다 — 버전이 `0.0.0-<tag>-<타임스탬프>` 로 매겨지고
+# changesets 의 **snapshot 릴리스**다 — 버전이 `<다음 정식 버전>-<tag>-<타임스탬프>` 로 매겨지고
+# (`config.json` 의 `snapshot.useCalculatedVersion` — 끄면 `0.0.0-…` 이라 어느 계열인지 안 보인다),
 # dist-tag 도 `latest` 가 아닌 `alpha` 로 나간다. 그래서 이걸 아무리 돌려도 `latest` 를
 # 물고 있는 소비처(paul-rockstar 앱 셋)는 아무 영향을 받지 않는다.
 #
