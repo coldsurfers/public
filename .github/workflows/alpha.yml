@@ -1,0 +1,129 @@
+name: Alpha Release
+
+# 머지 전에 실제 레지스트리로 물려 보고 싶을 때 쓴다.
+#
+# changesets 의 **snapshot 릴리스**다 — 버전이 `<다음 정식 버전>-<tag>-<타임스탬프>` 로 매겨지고
+# (`config.json` 의 `snapshot.useCalculatedVersion` — 끄면 `0.0.0-…` 이라 어느 계열인지 안 보인다),
+# dist-tag 도 `latest` 가 아닌 `alpha` 로 나간다. 그래서 이걸 아무리 돌려도 `latest` 를
+# 물고 있는 소비처(paul-rockstar 앱 셋)는 아무 영향을 받지 않는다.
+#
+# 실행: Actions → Alpha Release → Run workflow → **브랜치를 골라서** 실행.
+# 고른 브랜치의 `.changeset/*.md` 가 대상이므로, changeset 이 없으면 아무것도 안 나간다(아래 가드).
+#
+# 정식 발행은 `release.yml`(main push → version PR → publish) 이고 이 워크플로는 그 축을
+# 건드리지 않는다. 버전 커밋은 남기지 않는다(config 의 `commit: false`).
+#
+# 태그와 GitHub Release 는 **남긴다** — 전부 `--prerelease` 라 "Latest" 배지를 가져가지 못하고
+# 목록에서 접힌다. 태그 규칙은 정식 릴리스와 같은 `<패키지>@<버전>` 이다(같은 패키지 이력을 두
+# 군데서 읽게 하지 않는다). 대가: 돌릴 때마다 태그+prerelease 가 하나씩 영구히 쌓이고, 지우려면
+# 수동이다.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'dist-tag (기본 alpha). latest 는 거부된다'
+        required: false
+        default: alpha
+
+permissions:
+  # `contents: write` 는 스냅샷마다 태그 + prerelease 를 남기기 위한 것이다(맨 아래 스텝).
+  contents: write
+  packages: write
+
+concurrency:
+  group: alpha-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  alpha:
+    if: github.repository == 'coldsurfers/public'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@coldsurfers'
+
+      # 입력을 셸에 직접 보간하지 않는다 — env 로 받아 인용부호 안에서만 쓴다.
+      - name: 가드 — dist-tag 와 changeset 존재 확인
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
+            echo "::error::dist-tag 가 '$TAG' 다. latest 로는 발행하지 않는다 — 정식 릴리스는 release.yml 의 몫이다."
+            exit 1
+          fi
+          count="$(find .changeset -maxdepth 1 -name '*.md' ! -name 'README.md' | wc -l | tr -d ' ')"
+          if [ "$count" -eq 0 ]; then
+            echo "::error::이 브랜치에 changeset 이 없다. snapshot 은 changeset 이 가리키는 패키지만 발행하므로 아무것도 나가지 않는다."
+            exit 1
+          fi
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: 스냅샷 버전 매기기
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          pnpm changeset version --snapshot "$TAG"
+          # 버전에 `-<tag>-` 가 박힌 패키지가 **곧 발행 대상 집합**이다. publish 출력을 파싱하지
+          # 않는 이유: 그 형식은 changesets 의 로그이지 계약이 아니라 판올림 때 조용히 깨진다.
+          for pkg in packages/*/package.json; do
+            node -p "const j = require('./$pkg'); (!j.private && j.version.includes('-' + process.env.TAG + '-')) ? j.name + '@' + j.version : ''" | grep . || true
+          done > "$RUNNER_TEMP/published.txt"
+          echo "발행 대상:"
+          cat "$RUNNER_TEMP/published.txt"
+
+      - name: 빌드 · 발행
+        env:
+          TAG: ${{ inputs.tag }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pnpm build
+          pnpm changeset publish --tag "$TAG" --no-git-tag
+
+      # publish 뒤에 둔다 — 발행이 실패했는데 릴리스만 남는 상태를 만들지 않는다.
+      - name: GitHub prerelease 남기기
+        env:
+          TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # 태그 규칙은 정식 릴리스(changesets)와 같은 `<패키지>@<버전>` 이다 — 축을 갈라 놓으면
+          # 같은 패키지의 이력을 두 군데서 읽어야 한다. 대신 전부 `--prerelease` 라 "Latest"
+          # 배지를 가져가지 못하고 목록에서 접힌다. 태그는 `gh release create` 가 같이 만든다.
+          while IFS= read -r ref; do
+            [ -n "$ref" ] || continue
+            gh release create "$ref" \
+              --prerelease \
+              --target "$GITHUB_SHA" \
+              --title "$ref" \
+              --notes "브랜치 \`$GITHUB_REF_NAME\` 스냅샷 · dist-tag \`$TAG\` · 설치: \`pnpm add $ref\`"
+          done < "$RUNNER_TEMP/published.txt"
+
+      - name: 요약
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Alpha 발행 (\`$TAG\`)"
+            echo ""
+            echo "| 패키지@버전 | 릴리스 |"
+            echo "| --- | --- |"
+            while IFS= read -r ref; do
+              [ -n "$ref" ] || continue
+              echo "| \`$ref\` | [prerelease]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$ref) |"
+            done < "$RUNNER_TEMP/published.txt"
+            echo ""
+            echo "설치: pnpm add @coldsurfers/design-system@$TAG"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -10,5 +10,6 @@
   "onlyUpdatePeerDependentsWhenOutOfRange": true,
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "ignore": [],
-  "privatePackages": { "version": false, "tag": false }
+  "privatePackages": { "version": false, "tag": false },
+  "snapshot": { "useCalculatedVersion": true }
 }
