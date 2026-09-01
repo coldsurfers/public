@@ -49,6 +49,10 @@
       "types": "./dist/cards.d.ts",
       "default": "./dist/cards.js"
     },
+    "./layout": {
+      "types": "./dist/layout.d.ts",
+      "default": "./dist/layout.js"
+    },
     "./native": {
       "types": "./dist/native.d.ts",
       "default": "./dist/native.js"
