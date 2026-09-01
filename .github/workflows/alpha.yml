@@ -71,6 +71,12 @@ jobs:
       - name: 스냅샷 버전 매기기
         env:
           TAG: ${{ inputs.tag }}
+          # `version` 단계에도 토큰이 필요하다 — config 의 changelog 가
+          # `@changesets/changelog-github` 라 체인지로그를 만들며 GitHub API 를 부른다.
+          # 없으면 "Please create a GitHub personal access token …" 으로 죽는다(발행 전에).
+          # `release.yml` 이 멀쩡한 건 `changesets/action` 이 이 env 를 스텝에 달아 주기 때문이고,
+          # 직접 `changeset version` 을 부르는 여기서는 우리가 달아야 한다.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           pnpm changeset version --snapshot "$TAG"
