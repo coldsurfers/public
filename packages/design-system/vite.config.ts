@@ -35,6 +35,7 @@ export default defineConfig({
         'tokens-native': 'src/tokens/native.ts',
         primitives: 'src/primitives/index.ts',
         cards: 'src/cards/index.ts',
+        layout: 'src/layout/index.ts',
         native: 'src/native/index.ts',
         sprinkles: 'src/sprinkles.ts',
         'style-utils': 'src/css/style-utils.ts',
