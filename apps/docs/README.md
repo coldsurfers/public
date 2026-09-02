@@ -52,6 +52,10 @@ UI 에 링크가 없는 평문 라우트다. 페이지 헤더의 복사 버튼�
 마지막 세그먼트에 확장자를 붙이는 게 조건이다 — 없으면 정적 내보내기가 디렉터리
 (`badge/index.html`)로 떨어뜨려서 `.txt` 한 방에 못 가져간다.
 
+셋 다 페이지 헤더의 `Open ▾` 에서 열린다. 그 드롭다운은 `components/page-actions.tsx` 가
+**우리 것**이다 — fumadocs 의 `ViewOptionsPopover` 는 목록이 컴포넌트 안에 박혀 있어 항목을
+더할 수 없다(업스트림도 가져다 쓰라고 안내한다). 팝오버·버튼 스타일만 빌려오고 목록은 여기서 정한다.
+
 ## 배포
 
 `.github/workflows/docs.yml` — **수동 트리거(`workflow_dispatch`)만** 있다. 시크릿 둘이 필요하다.
