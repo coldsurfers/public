@@ -3,6 +3,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
+import { skeletonToneValue } from '../primitives/Skeleton.css'
 
 /**
  * `ConcertCard` 의 로딩 스켈레톤 — 섀시·치수를 실카드와 맞춰 로드 전후가 튀지 않게 한다.
@@ -37,9 +38,10 @@ export const bareMeta = style(
   }),
 )
 
+/** 바탕색은 `Skeleton` 과 같은 소스를 읽는다 — 같은 것을 그리는데 값이 갈리면 안 된다. */
 const barBase = {
   borderRadius: vars.radius.md,
-  background: vars.color.surfaceHover,
+  background: skeletonToneValue.neutral,
 } as const
 
 /**

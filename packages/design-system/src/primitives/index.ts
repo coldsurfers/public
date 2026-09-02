@@ -19,6 +19,12 @@ export { Field, type FieldProps } from './Field'
 export { Modal, type ModalProps } from './Modal'
 export { POPOVER_MENU_CLS, Popover, type PopoverProps } from './Popover'
 export { Select, type SelectOption, type SelectProps } from './Select'
+export {
+  Skeleton,
+  type SkeletonProps,
+  type SkeletonRadius,
+  type SkeletonTone,
+} from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
 export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
 export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
