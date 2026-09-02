@@ -89,6 +89,14 @@ const staticProperties = defineProperties({
     fontFamily: vars.font,
     fontWeight: vars.fontWeight,
     lineHeight: vars.lineHeight,
+    /**
+     * 반응형이 아닌 이유는 실측이다 — web-next 에 반응형 `text-left/center` 는 0건이고,
+     * 대신 `style(inComponentsLayer({ textAlign: 'center' }))` 한 줄이 **7개 파일에 문자
+     * 그대로 복붙**돼 있었다. 조건 없는 축 하나면 그게 전부 사라진다.
+     *
+     * `justify`(양끝맞춤)는 뺀다 — 한글 본문에서 어절 사이가 벌어져 우리 지면에 쓸 자리가 없다.
+     */
+    textAlign: ['left', 'center', 'right'],
   },
 })
 
