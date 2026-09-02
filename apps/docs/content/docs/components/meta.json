@@ -1,0 +1,24 @@
+{
+  "title": "Components",
+  "pages": [
+    "button",
+    "chip",
+    "badge",
+    "eyebrow",
+    "callout",
+    "empty-state",
+    "field",
+    "checkbox",
+    "select",
+    "popover",
+    "modal",
+    "toast",
+    "underline-tabs",
+    "ticket",
+    "cover-block",
+    "skeleton",
+    "spinner",
+    "thinking-dots",
+    "typewriter-text"
+  ]
+}

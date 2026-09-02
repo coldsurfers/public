@@ -1,0 +1,51 @@
+# @coldsurfers/docs
+
+`@coldsurfers/design-system` 문서 사이트. Fumadocs(Next.js) + **정적 내보내기**.
+
+```bash
+pnpm --filter @coldsurfers/docs... build   # design-system dist 먼저, 그다음 out/
+pnpm --filter @coldsurfers/docs dev
+```
+
+## 왜 이 사이트가 계약 검증인가
+
+문서의 미리보기는 `@coldsurfers/design-system` 을 **실제로 import 해서** 그린다. 워크스페이스
+링크지만 `exports` 맵이 가리키는 곳은 `dist` 라, **exports 에 없는 경로는 여기서도 안 열린다.**
+사이트가 빌드된다는 것 자체가 발행 계약이 살아 있다는 증거다.
+
+`Preview` 는 `examples/*.tsx` 파일 하나를 렌더링과 코드 블록 양쪽에 쓴다 — 문서에 적힌 코드와
+화면이 어긋나려면 파일이 둘이어야 하는데, 하나다.
+
+props 표도 옮겨 적지 않는다. `Props` 가 DS 소스의 타입에서 뽑고, 토큰 표(`Swatches`)는
+`@coldsurfers/design-system/tokens` 에서 값을 읽는다.
+
+## 서버가 없다
+
+`output: 'export'` 다. 검색 인덱스까지 빌드 산출물(`/api/search`)이고 브라우저가 계산한다
+(`orama-static`). 그래서 `out/` 을 Cloudflare Workers 정적 자산으로 그대로 올린다 —
+OpenNext 도, 런타임 Node 도 없다.
+
+## CSS 순서
+
+`app/layout.tsx` 의 import 순서가 캐스케이드다.
+
+```
+global.css (tailwind + fumadocs preset) → design-system/styles.css → ds-bridge.css
+```
+
+DS 가 뒤에 오는 건 `LAYER_ORDER` 가 `base`(Tailwind preflight)를 `ds-components` 앞에 두기
+때문이고, `ds-bridge.css` 가 마지막인 건 `ds-reset` 이 잡은 `body` 를 문서 크롬으로 되돌려야
+해서다. 되돌리는 규칙은 **레이어 밖**이라 어떤 `@layer` 보다 강하다.
+
+미리보기 표면은 `.ds-surface` 안에서 다시 DS 값으로 돌아간다.
+
+## 배포
+
+`.github/workflows/docs.yml`. 시크릿 둘이 필요하다.
+
+| 이름 | 무엇 |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit 권한 |
+| `CLOUDFLARE_ACCOUNT_ID` | 계정 ID |
+
+없으면 배포 스텝을 건너뛴다. 로컬에서는 `pnpm --filter @coldsurfers/docs deploy`.

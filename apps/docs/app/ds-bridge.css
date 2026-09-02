@@ -1,0 +1,47 @@
+/*
+ * DS 를 문서 크롬에서 떼어내는 다리.
+ *
+ * `@coldsurfers/design-system/styles.css` 는 `ds-reset` 레이어에서 `body` 의 배경·글자색·글꼴을
+ * 잡는다. 그건 소비 앱에선 맞는 동작이지만 여기선 문서 크롬(다크 모드 포함)을 통째로 덮는다.
+ *
+ * 그래서 **레이어 밖 규칙**으로 되돌린다 — 레이어 없는 선언은 어떤 `@layer` 보다 강하므로
+ * `ds-reset` 을 확실히 이긴다. DS 의 layer 순서 계약(`LAYER_ORDER`)은 건드리지 않는다.
+ *
+ * 미리보기 표면은 `.ds-surface` 안에서 다시 DS 값으로 돌린다 — 거기가 소비 앱을 흉내 내는 자리다.
+ * DS 는 light 단일 스킴이므로(ink 폐기) 미리보기는 문서가 다크여도 항상 light 로 그린다.
+ */
+
+body {
+  background-color: var(--color-fd-background);
+  color: var(--color-fd-foreground);
+  font-family: inherit;
+}
+
+:root {
+  color-scheme: normal;
+}
+
+.ds-surface {
+  color-scheme: light;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-family-sans);
+}
+
+/*
+ * 미리보기 전용 — 문서가 예제에 빌려주는 치수뿐이다. DS 가 소유하지 않는 축(패널 폭·스텁 정렬)은
+ * 소비처의 몫이고, 이 문서 사이트도 그 소비처 중 하나다.
+ *
+ * `Modal` · `Popover` 는 `document.body` 로 portal 하므로 `.ds-surface` 밖에 선다 —
+ * 토큰은 `:root` 에 있어 그대로 풀리지만 글자색은 문서 크롬을 물려받으므로 여기서 되돌린다.
+ */
+.preview-modal-panel {
+  width: min(360px, calc(100vw - 32px));
+  color: var(--text);
+}
+
+.preview-ticket-stub {
+  display: grid;
+  place-items: center;
+  width: 96px;
+}

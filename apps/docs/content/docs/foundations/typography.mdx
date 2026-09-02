@@ -1,0 +1,45 @@
+---
+title: 타이포
+description: rem 단일 축의 타이포 스케일.
+---
+
+## font family
+
+| 키 | 자리 |
+| --- | --- |
+| `sans` | 본문 · UI. 한국어 권위 + Latin 보조(Pretendard) |
+| `serif` | 헤드라인 · 매거진 마스트헤드(Instrument Serif) |
+| `mono` | 메타 · 라벨 · 코드. 매거진 콜로폰 톤(JetBrains Mono) |
+
+## font size
+
+**rem 단일 축**이다. 값은 전부 16px root 기준 정수 px 등가다. px 로 직접 적지 않는 이유는
+사용자의 브라우저 기본 글자 크기 설정을 따라가야 해서다.
+
+<Swatches group="fontSize" />
+
+`3xs` · `2xs` 는 라벨 축이다. 실측에서 9~11px 사용의 uppercase 41~68% · tracking 69~88% ·
+mono 지배가 12px 위와 뚜렷하게 갈렸고, 파일당 1~2종만 쓰여 **역할이 실재**했다.
+
+반면 12.5~17px 은 한 파일이 3~5종을 섞어 쓰는 드리프트라 단계를 늘리지 않고 기존 네 단계
+(`xs` · `sm` · `base` · `lg`)로 접었다.
+
+<Callout>
+**이름에 값을 박지 않는다.** `13` · `15` 같은 숫자 키를 거부한 이유는 하나다 — 토큰의 값을
+바꿀 때 사용처를 전부 고쳐야 하면 간접화가 0 이라 그건 토큰이 아니다.
+</Callout>
+
+## line height
+
+<Swatches group="lineHeight" />
+
+## font weight
+
+<Swatches group="fontWeight" />
+
+## editorial type
+
+매거진 톤의 합성 타이포 슬롯이다. `eyebrow` · `display` · `caption` 세 그룹이 있고,
+`letterSpacing` 과 `lineHeight` 만 자기 값을 갖는다 — 크기는 위 `fontSize` 를 읽는다.
+
+그 슬롯을 컴포넌트로 쓰는 자리가 [Eyebrow](/docs/components/eyebrow) 다.

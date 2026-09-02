@@ -1,0 +1,40 @@
+---
+title: 색
+description: 브랜드 팔레트와 시맨틱 색 — COLDSURF 고정 축이다.
+---
+
+## 스킴은 하나다
+
+**light(paper) 하나뿐이다.** ink(dark) 스킴은 폐기했다 — 색을 뒤집는 축이 없으므로
+`:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없다.
+
+<Callout tone="warning">
+색은 **닫힌 축**이다. spacing · radius · fontSize · lineHeight · fontWeight · fontFamily ·
+breakpoints 는 소비자가 덮을 수 있지만, color · cover · paper 는 COLDSURF 고정값이다.
+덮으면 브랜드가 아닌 다른 것이 된다.
+</Callout>
+
+## 시맨틱 색
+
+<Swatches group="color" />
+
+## cover — 지형 색면
+
+카드 커버의 바닥색이다. semantic color 와 달리 **스킴을 타지 않는 불변 scale** 이다.
+
+<Swatches group="cover" />
+
+## paper — warm paper
+
+Figma 시안의 라이트 고정 표면 바닥색이다.
+
+<Callout>
+`paper.warm`(`#fafaf7`)은 브랜드 정본 paper(`#f2efe8` = `color.bg`)와 **다른 값 · 다른 이름**이다.
+통일 대상이 아니라 *구별* 대상이다. 새 off-white 를 들일 땐 값을 재사용하기 전에 이름부터 짓는다.
+</Callout>
+
+<Swatches group="paper" />
+
+## radius
+
+<Swatches group="radius" />

@@ -16,6 +16,9 @@ COLDSURF 이 밖으로 내보내는 패키지들이 사는 곳.
 | [`@coldsurfers/design-system`](packages/design-system) | 토큰 값 · CSS 계약(vanilla-extract) · React primitives · 카드 |
 | [`@coldsurfers/markdown-renderer`](packages/markdown-renderer) | 마크다운 → 산문 표면(shiki 하이라이팅 · 미디어 임베드) |
 
+문서 사이트는 [`apps/docs`](apps/docs) 다 — 발행되지 않는 워크스페이스고, 발행되는 `dist` 를
+물어서 그린다. 사이트가 빌드된다는 건 `exports` 계약이 살아 있다는 뜻이다.
+
 패키지를 가른 축은 **무게**다. shiki 는 모듈 최상단 부수효과라 번들러가 못 털고, DS 는
 CSS 가 한 장이라 안 쓰는 소비자도 지불한다. 그래서 진입점째 갈랐다 — import 안 하면 0 바이트.
 
@@ -40,9 +43,11 @@ import { Button } from '@coldsurfers/design-system/primitives'
 
 ```bash
 pnpm install
-pnpm build        # turbo run build
+pnpm build        # turbo run build (패키지 dist + 문서 out)
 pnpm check:type   # turbo run check:type
 pnpm check        # biome check .
+
+pnpm --filter @coldsurfers/docs dev   # 문서 사이트
 ```
 
 Node 22 · pnpm 10.
