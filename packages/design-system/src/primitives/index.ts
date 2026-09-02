@@ -10,6 +10,7 @@
  */
 export { Badge, type BadgeProps } from './Badge'
 export { Button, type ButtonProps } from './Button'
+export { Callout, type CalloutProps, type CalloutTone } from './Callout'
 export { Checkbox, type CheckboxProps } from './Checkbox'
 export { Chip, type ChipProps } from './Chip'
 export { CoverBlock, type CoverBlockProps, coverTone } from './CoverBlock'
