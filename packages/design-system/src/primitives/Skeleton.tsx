@@ -1,7 +1,7 @@
 import {
+  type ComponentPropsWithRef,
   type CSSProperties,
   cloneElement,
-  type HTMLAttributes,
   isValidElement,
   type ReactElement,
   type Ref,
@@ -34,8 +34,12 @@ export type { SkeletonRadius, SkeletonTone }
  *
  * `asChild` 면 자기 엘리먼트 대신 자식에 클래스·치수를 입힌다 — 이미 치수를 가진 스타일과
  * 합성하는 자리(`Button` 과 같은 관례). `ref` 는 따라가지만 나머지 props 는 넘기지 않는다.
+ *
+ * React 19 에선 `ref` 가 평범한 prop 이라 `forwardRef` 로 감싸지 않는다. 그 `ref` 를 타입에
+ * 실어 주는 건 `HTMLAttributes` 가 아니라 `ComponentPropsWithRef` 다 — `PropsWithRef` 는
+ * React 19 타입에서 항등 함수라 아무것도 안 붙인다.
  */
-export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
+export interface SkeletonProps extends ComponentPropsWithRef<'div'> {
   /** CSS `width`. `'80%'` · `'5rem'` · `48` 처럼 단일값만. */
   width?: string | number
   /** CSS `height`. */
@@ -48,19 +52,13 @@ export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
   tone?: SkeletonTone
   /** 자식 엘리먼트에 스타일만 입힌다. */
   asChild?: boolean
-  /**
-   * React 19 에선 `ref` 가 평범한 prop 이라 `forwardRef` 로 감싸지 않는다 —
-   * 다른 장식 primitive(`CoverBlock`·`Spinner`·`Ticket` …)와 같은 모양이다.
-   * `asChild` 일 때는 자식에게 그대로 넘어간다.
-   */
-  ref?: Ref<HTMLDivElement>
 }
 
 /** `asChild` 로 받은 자식에서 우리가 실제로 건드리는 props. */
 type SkeletonChild = {
   className?: string
   style?: CSSProperties
-  'aria-hidden'?: HTMLAttributes<HTMLElement>['aria-hidden']
+  'aria-hidden'?: ComponentPropsWithRef<'div'>['aria-hidden']
   ref?: Ref<HTMLDivElement>
 }
 
