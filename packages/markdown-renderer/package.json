@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/markdown-renderer",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "COLDSURF markdown renderer — syntax highlighting, media embeds, and prose styles on top of @coldsurfers/design-system.",
   "keywords": [
     "markdown",

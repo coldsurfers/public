@@ -1,5 +1,18 @@
 # @coldsurfers/markdown-renderer
 
+## 0.2.0
+
+### Minor Changes
+
+- [#18](https://github.com/coldsurfers/public/pull/18) [`3a9119b`](https://github.com/coldsurfers/public/commit/3a9119bb065a0b41fc546be5386fea5db1360532) Thanks [@yungblud](https://github.com/yungblud)! - `@coldsurfers/design-system` peer 를 `>=0.11.0` 으로 올린다. 그 아래 DS 는 진입점이 자기 CSS 를
+  물고 오지 않아, 소비자가 `styles.css` 를 손으로 물지 않으면 이 패키지의 산문 규칙이 참조할
+  변수가 없다. README 가 "이쪽 스타일시트만 물면 된다"고 말할 수 있는 근거가 이 범위다.
+
+### Patch Changes
+
+- Updated dependencies [[`e4420c7`](https://github.com/coldsurfers/public/commit/e4420c7db9a7c3cb4a5e1e606119d4dfdc73b143)]:
+  - @coldsurfers/design-system@0.11.0
+
 ## 0.1.2
 
 ### Patch Changes
