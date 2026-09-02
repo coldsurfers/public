@@ -33,7 +33,7 @@ import dts from 'vite-plugin-dts'
  *
  * **왜 목록이 아니라 판정인가:** 대상을 진입점 이름으로 적으면 이름을 바꿀 때 조용히 어긋난다.
  * 대신 그 청크가 실제로 `.css.ts` 를 물었는지를 본다 — 진입점을 늘리든 이름을 바꾸든 따라온다.
- * (실측 시점 기준 index·primitives·cards·motion·sprinkles 만 걸린다.)
+ * (실측 시점 기준 index·primitives·cards·layout·motion·sprinkles 만 걸린다.)
  *
  * 이 판정이 곧 두 규칙의 집행이기도 하다. `native` 는 RN 이라 CSS 를 물면 Metro 가 깨지고,
  * `tokens`·`tokens-native`·`style-utils` 는 번들러 없이 Node 에서 여는 길을 남겨둔다
