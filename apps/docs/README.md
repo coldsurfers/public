@@ -58,10 +58,14 @@ UI 에 링크가 없는 평문 라우트다. 페이지 헤더의 복사 버튼�
 `ViewOptionsPopover` 는 목록이 컴포넌트 안에 박혀 있어 항목을 더할 수 없다(업스트림도 가져다
 쓰라고 안내한다). 팝오버·버튼 스타일만 빌려오고 목록은 여기서 정한다.
 
-## sitemap
+## sitemap · robots
 
-`app/sitemap.ts` 가 `/sitemap.xml` 을 빌드 산출물로 떨어뜨린다. 목록은 `source` 에서 뽑으므로
-**경로를 옮겨 적지 않는다** — 페이지를 더하면 따라오고, 지우면 같이 사라진다.
+`app/sitemap.ts` → `/sitemap.xml`, `app/robots.ts` → `/robots.txt`. 둘 다 빌드 산출물이다.
+robots 가 sitemap 주소를 가리키므로 짝으로 움직인다.
+
+sitemap 목록은 `source` 에서 뽑으므로 **경로를 옮겨 적지 않는다** — 페이지를 더하면 따라오고,
+지우면 같이 사라진다. robots 는 막는 게 없다. 비공개 경로가 없고, `.txt` 사본도 같은 내용의
+다른 표현이라 숨길 이유가 없다.
 
 `<loc>` 에 절대 주소가 필요해서 `lib/shared.ts` 의 `siteUrl` 을 쓴다. 그 값은 `wrangler.jsonc`
 의 `routes` 와 **같은 주소여야 한다** — 한쪽만 바꾸면 배포는 성공하고 sitemap 만 조용히 다른
