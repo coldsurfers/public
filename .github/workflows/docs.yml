@@ -41,7 +41,11 @@ jobs:
 
       # `^build` 로 design-system 의 `dist` 가 먼저 선다 — 문서는 소스가 아니라 **발행되는
       # 산출물** 을 물기 때문이다. exports 맵에 없는 경로는 여기서 빌드가 깨진다.
+      # `NEXT_PUBLIC_SITE_URL` 은 sitemap 의 `<loc>` 이 된다 — 상대 경로로는 sitemap 을 못 쓴다.
+      # 안 넣으면 `lib/shared.ts` 의 기본값이 실린다.
       - name: 문서 빌드
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.DOCS_SITE_URL }}
         run: pnpm --filter @coldsurfers/docs... build
 
       - name: 가드 — Cloudflare 자격 확인

@@ -47,17 +47,24 @@ UI 에 링크가 없는 평문 라우트다. 페이지 헤더의 복사 버튼�
 | --- | --- |
 | `/llms/components/badge.txt` | 페이지 하나 — **컴포넌트 단위**가 파일 하나다 |
 | `/llms.txt` | 색인. 링크는 위 `.txt` 로 간다 (HTML 로 보내면 마크업을 준 셈이다) |
-| `/llms-full.txt` | 전 페이지 본문 한 덩어리 |
 
 마지막 세그먼트에 확장자를 붙이는 게 조건이다 — 없으면 정적 내보내기가 디렉터리
 (`badge/index.html`)로 떨어뜨려서 `.txt` 한 방에 못 가져간다.
 
 페이지 헤더의 `Open ▾` 는 **그 페이지의 `.txt` 하나**를 연다(`Open button.txt`). 사이트 전체인
-`/llms.txt` · `/llms-full.txt` 는 루트에서 줍는 것이라 이 메뉴에 넣지 않는다.
+`/llms.txt` 는 루트에서 줍는 것이라 이 메뉴에 넣지 않는다.
 
 그 드롭다운은 `components/page-actions.tsx` 가 **우리 것**이다 — fumadocs 의
 `ViewOptionsPopover` 는 목록이 컴포넌트 안에 박혀 있어 항목을 더할 수 없다(업스트림도 가져다
 쓰라고 안내한다). 팝오버·버튼 스타일만 빌려오고 목록은 여기서 정한다.
+
+## sitemap
+
+`app/sitemap.ts` 가 `/sitemap.xml` 을 빌드 산출물로 떨어뜨린다. 목록은 `source` 에서 뽑으므로
+**경로를 옮겨 적지 않는다** — 페이지를 더하면 따라오고, 지우면 같이 사라진다.
+
+`<loc>` 에 절대 주소가 필요해서 `lib/shared.ts` 의 `siteUrl` 을 쓴다. 배포 워크플로가 리포지터리
+변수 `DOCS_SITE_URL` 을 `NEXT_PUBLIC_SITE_URL` 로 넣어주고, 없으면 그 파일의 기본값이 실린다.
 
 ## 배포
 
