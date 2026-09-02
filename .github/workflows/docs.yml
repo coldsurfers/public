@@ -6,8 +6,12 @@ name: Docs
 # 런타임에 필요 없다. 검색 인덱스(`/api/search`)까지 빌드 산출물이라 그대로 실린다.
 #
 # 필요한 시크릿 둘:
-#   CLOUDFLARE_API_TOKEN   — Workers Scripts:Edit + Zone:DNS:Edit
-#                            (`wrangler.jsonc` 의 커스텀 도메인이 존을 건드린다)
+#   CLOUDFLARE_API_TOKEN   — Account:Workers Scripts:Edit
+#                            + Zone:Workers Routes:Edit   ← 커스텀 도메인이 이걸 친다
+#                            + Zone:DNS:Edit              ← 레코드 생성
+#                            Zone Resources 에 `coldsurf.io` 가 들어 있어야 한다.
+#                            Workers Routes 가 없으면 자산은 올라가고 도메인 붙이는
+#                            `/zones/<id>/workers/routes` 에서 code 10000 으로 죽는다.
 #   CLOUDFLARE_ACCOUNT_ID
 # 하나라도 없으면 **실패한다.** 트리거가 수동 하나뿐이라 이 워크플로가 도는 건 사람이
 # "지금 올린다" 고 누른 것뿐이고, 그때 조용히 건너뛰고 초록불을 주면 올라간 줄 알게 된다.
@@ -43,7 +47,7 @@ jobs:
           [ -n "$ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
           if [ -n "$missing" ]; then
             echo "::error::시크릿이 없다:$missing — Settings → Secrets → Actions 에 넣고 다시 돌린다."
-            echo "토큰 권한은 Workers Scripts:Edit + Zone:DNS:Edit 다(커스텀 도메인이 존을 건드린다)."
+            echo "토큰 권한: Workers Scripts:Edit + Zone:Workers Routes:Edit + Zone:DNS:Edit"
             exit 1
           fi
 

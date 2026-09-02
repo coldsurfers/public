@@ -81,8 +81,20 @@ sitemap 목록은 `source` 에서 뽑으므로 **경로를 옮겨 적지 않는�
 
 | 이름 | 무엇 |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit **+ Zone:DNS:Edit** (커스텀 도메인이 존을 건드린다) |
+| `CLOUDFLARE_API_TOKEN` | 아래 세 권한 |
 | `CLOUDFLARE_ACCOUNT_ID` | 계정 ID |
 
 하나라도 없으면 **빌드 전에 실패한다** — 수동 트리거뿐이라 건너뛰고 초록불을 주면 올라간 줄
 알게 된다. 로컬에서는 `pnpm --filter @coldsurfers/docs deploy`.
+
+토큰 권한 셋. Zone 쪽은 **Zone Resources 에 `coldsurf.io` 가 들어 있어야** 한다.
+
+| 권한 | 무엇에 쓰이나 |
+| --- | --- |
+| Account → Workers Scripts → Edit | 스크립트·자산 업로드 |
+| Zone → **Workers Routes** → Edit | 커스텀 도메인 등록 |
+| Zone → DNS → Edit | 도메인의 DNS 레코드 |
+
+Workers Routes 가 빠지면 **자산은 올라가고** 그 다음
+`/zones/<id>/workers/routes` 에서 `Authentication error [code: 10000]` 으로 죽는다. 업로드가
+성공한 뒤라 계정 ID 문제로 보이기 쉬운데 아니다.
