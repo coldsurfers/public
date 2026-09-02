@@ -41,7 +41,7 @@ DS 가 뒤에 오는 건 `LAYER_ORDER` 가 `base`(Tailwind preflight)를 `ds-com
 
 ## 배포
 
-`.github/workflows/docs.yml`. 시크릿 둘이 필요하다.
+`.github/workflows/docs.yml` — **수동 트리거(`workflow_dispatch`)만** 있다. 시크릿 둘이 필요하다.
 
 | 이름 | 무엇 |
 | --- | --- |

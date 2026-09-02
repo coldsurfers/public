@@ -8,25 +8,20 @@ name: Docs
 # 필요한 시크릿 둘:
 #   CLOUDFLARE_API_TOKEN   — Workers Scripts:Edit 권한
 #   CLOUDFLARE_ACCOUNT_ID
-# 없으면 배포 스텝을 건너뛴다(빌드는 그대로 돈다) — 포크와 시크릿 미설정 상태에서 CI 를
-# 빨갛게 만들지 않기 위해서다.
+# 없으면 배포 스텝을 건너뛴다(빌드는 그대로 돈다) — 시크릿 미설정 상태에서 CI 를 빨갛게
+# 만들지 않기 위해서다.
+#
+# 트리거는 수동 하나다. 문서는 릴리스와 붙는 산출물이 아니라 사람이 "지금 올린다" 고 정할 때
+# 올리는 것이라, main 푸시마다 자동으로 배포되지 않는다.
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apps/docs/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: docs-${{ github.ref }}
+  group: docs
   cancel-in-progress: true
 
 jobs:
