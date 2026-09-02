@@ -1,5 +1,5 @@
 /**
- * 표면 레이아웃 — `Page` · `Container`.
+ * 표면 레이아웃 — `Page` · `Container` · `PageBanner`.
  *
  * seed-design 의 `AppScreen`(stackflow) 이 모바일 스택 화면에 하는 일을 웹 문서 표면에 옮긴 것.
  * 근거·결정 로그: coldsurfers/public#19
@@ -13,9 +13,12 @@
  *   도로 지우는 className 을 달게 된다 — 추상화가 아니라 부채다. 세로 리듬은 호출자가
  *   유틸로 준다(#19 D-9)
  * - 헤더·푸터 **내용물** — 라우터·세션·i18n·계측을 문다. 앱의 것이다
+ * - `PageBanner` 의 `align` 축 — 소비처 둘의 정렬이 다르지만 각각 실사용 1곳이라 추출할
+ *   중복이 없다. 세 번째가 같은 정렬을 복붙하면 연다(#33 D-1)
  * - `Bar.Left/Main/Right` · 푸터 컬럼 그리드 — 소비처가 아직 하나뿐이라 보류. 두 번째가 생기면 연다
  * - 표면 팔레트(warm-paper 라이트 고정) — 표면 정책은 값이 아니다(`docs/p1-boundary.md` 결정 3).
  *   `Page` 의 `style` 로 앱이 주입한다
  */
 export { Container, type ContainerProps } from './Container'
 export { Page, type PageProps } from './Page'
+export { PageBanner } from './PageBanner'
