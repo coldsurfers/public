@@ -3,28 +3,28 @@ title: 여백
 description: 4px 격자.
 ---
 
-키는 `4px × N` 이다 — Tailwind 수치 스케일과 같은 좌표계.
+키는 `4px × N` 입니다 — Tailwind 수치 스케일과 같은 좌표계입니다.
 
 <Swatches group="spacing" />
 
 ## 반 눈금이 있는 이유
 
-`1.5` · `2.5` · `3.5` · `7` · `14` · `20` · `24` 는 **뚫린 구멍을 메운 것**이다. 실측에서
-spacing 유틸 2,045건 중 388건(19%)이 스케일 밖이었고, 그중 336건이 이 일곱 단계에 몰려 있었다.
+`1.5` · `2.5` · `3.5` · `7` · `14` · `20` · `24` 는 **빈 눈금을 메운 것**입니다. 실측에서
+spacing 유틸 2,045건 중 388건(19%)이 스케일 밖이었고, 그중 336건이 이 일곱 단계에 몰려 있었습니다.
 
 <Callout>
-**이건 "이름에 값이 박히는" 문제가 아니다.** [fontSize](/docs/foundations/typography) 는
-`13` · `15` 같은 숫자 키를 거부하고 `sm` · `base` 로 접었다 — 거기선 이름이 *역할*이고 숫자가
-드리프트였다. 반면 spacing 은 **처음부터 수치 좌표계**였고, 빠진 눈금을 채우는 건 새 명명
-철학이 아니라 같은 격자의 완성이다.
+**이건 "이름에 값을 적어 넣는" 문제가 아닙니다.** [fontSize](/docs/foundations/typography) 는
+`13` · `15` 같은 숫자 키를 거부하고 `sm` · `base` 로 접었습니다 — 거기선 이름이 *역할*이고 숫자가
+드리프트였습니다. 반면 spacing 은 **처음부터 수치 좌표계**였고, 빠진 눈금을 채우는 건 새 명명
+철학이 아니라 같은 격자의 완성입니다.
 </Callout>
 
-잔여 52건(`0.5` · `9` · `11` · `18` · `28` · `32` · `60`)은 승격하지 않는다 —
-`style()` 리터럴로 남는다.
+잔여 52건(`0.5` · `9` · `11` · `18` · `28` · `32` · `60`)은 승격하지 않습니다 —
+`style()` 리터럴로 남습니다.
 
 ## sprinkles
 
-여백을 유틸로 쓰는 자리는 `sprinkles` 진입점이다.
+여백을 유틸로 쓸 땐 `sprinkles` 진입점입니다.
 
 ```ts
 import { sprinkles } from '@coldsurfers/design-system/sprinkles'
@@ -33,11 +33,11 @@ sprinkles({ paddingY: '20', gap: '4' })
 ```
 
 <Callout tone="warning">
-`sprinkles` 는 **배럴에 없다.** 런타임 맵이 JS 38 kB(gzip 5.7 kB)라, 배럴에서 재수출하면
-`vars` 한 줄 쓰려고 `.` 을 연 소비처까지 그걸 문다(실측: `index.js` 3.2 → 41.2 kB).
+`sprinkles` 는 **배럴에 없습니다.** 런타임 맵이 JS 38 kB(gzip 5.7 kB)라, 배럴에서 재수출하면
+`vars` 한 줄 쓰려고 `.` 을 연 소비처까지 그걸 뭅니다(실측: `index.js` 3.2 → 41.2 kB).
 </Callout>
 
-반응형 축은 `mobile` · `tablet` · `desktop` 세 조건을 갖는다.
+반응형 축은 `mobile` · `tablet` · `desktop` 세 조건을 갖습니다.
 
 ```ts
 sprinkles({ paddingX: { mobile: '4', desktop: '10' } })

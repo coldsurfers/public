@@ -5,17 +5,17 @@ description: 한 글자씩 찍히는 텍스트.
 
 <Preview name="typewriter-basic" />
 
-"지금 막 쓰이는 중" 이라는 감각만 만들고 의미는 안 바꾼다.
+"지금 막 쓰이는 중" 이라는 감각만 만들고 의미는 안 바꿉니다.
 
 ## 접근성
 
-보이는 쪽은 `aria-hidden` 이고, 스크린리더에는 **처음부터 전문**을 준다 — 한 글자씩 바뀌는
-DOM 을 읽히면 낭독이 엉킨다.
+보이는 쪽은 `aria-hidden` 이고, 스크린리더에는 **처음부터 전문**을 줍니다 — 한 글자씩 바뀌는
+DOM 을 읽히면 낭독이 엉킵니다.
 
-`prefers-reduced-motion: reduce` 면 연출 없이 즉시 전량 표시하고 `onDone` 도 바로 부른다.
+`prefers-reduced-motion: reduce` 면 연출 없이 즉시 전량 표시하고 `onDone` 도 바로 부릅니다.
 
 <Callout tone="warning">
-`onDone` 을 매 렌더 새로 만들면 처음부터 다시 찍힌다. `useCallback` 으로 넘긴다.
+`onDone` 을 매 렌더 새로 만들면 처음부터 다시 찍힙니다. `useCallback` 으로 넘깁니다.
 </Callout>
 
 ## Props

@@ -1,16 +1,18 @@
 ---
 title: 시작하기
-description: COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives.
+description: COLDSURF 의 색 · 타이포 · 컴포넌트를 import 두 줄로 쓰는 디자인 시스템.
 ---
 
-`@coldsurfers/design-system` 은 **범용 라이브러리가 아니다.** 오픈소스로 공개하되 COLDSURF
-서비스에 정합된 디자인 시스템이고, 브랜드 값(accent · paper · cover 톤)이 기본값으로 딸려온다.
+`@coldsurfers/design-system` 은 토큰 값 · 컴파일된 CSS · React 컴포넌트를 한 패키지에 담습니다.
+설치하고 import 두 줄이면 COLDSURF 의 색 · 타이포 · 컴포넌트가 그대로 붙습니다.
 
-목표는 "누구나 쓸 수 있게 범용화" 가 아니라 **"재활용 가능한 것을 잘 옮기는 것"** 이다.
+**범용 UI 킷은 아닙니다.** 오픈소스로 공개하지만 COLDSURF 서비스에 맞춘 기본값(accent · paper ·
+cover 톤)이 처음부터 들어 있습니다 — 그 결이 맞으면 그대로 쓰고, 아니면 토큰만 갈아끼웁니다.
+목표가 "누구나 쓸 수 있게 범용화" 가 아니라 **"재활용 가능한 것을 잘 옮기는 것"** 이라서입니다.
 
 ## 설치
 
-`@coldsurfers` 스코프는 GitHub Packages 에 있다. `.npmrc` 에 레지스트리를 적는다.
+`@coldsurfers` 스코프는 GitHub Packages 에 있습니다. `.npmrc` 에 레지스트리를 적습니다.
 
 ```ini title=".npmrc"
 @coldsurfers:registry=https://npm.pkg.github.com
@@ -22,8 +24,8 @@ pnpm add @coldsurfers/design-system
 
 ## 쓰기
 
-CSS 는 **한 줄**이다. `.css.ts` 는 이 레포에서 컴파일해 내보내므로 소비자 쪽에
-vanilla-extract 번들러 플러그인은 필요 없다.
+CSS 는 **한 줄**입니다. `.css.ts` 는 이 레포에서 컴파일해 내보내므로 소비자 쪽에
+vanilla-extract 번들러 플러그인은 필요 없습니다.
 
 ```ts title="app/entry.tsx"
 import '@coldsurfers/design-system/styles.css'
@@ -34,13 +36,13 @@ import { Button } from '@coldsurfers/design-system/primitives'
 ```
 
 <Callout type="warn">
-`styles.css` 는 한 장이다(`cssCodeSplit: false`). `Button` 하나를 쓰는 소비자도 DS CSS 전량을
-문다 — import 한 줄로 끝나는 대신 치르는 값이다.
+`styles.css` 는 한 장입니다(`cssCodeSplit: false`). `Button` 하나를 쓰는 소비자도 DS CSS 전량을
+뭅니다 — import 한 줄로 끝나는 대신 치르는 값입니다.
 </Callout>
 
 ## 진입점
 
-`exports` 맵에 있는 경로가 곧 API 다. 여기 없는 경로는 열리지 않는다.
+`exports` 맵에 있는 경로가 곧 API 입니다. 여기 없는 경로는 열리지 않습니다.
 
 | 진입점 | 무엇 |
 | --- | --- |
@@ -55,8 +57,8 @@ import { Button } from '@coldsurfers/design-system/primitives'
 | `.../native` · `.../tokens/native` | React Native 표면 |
 | `.../styles.css` | 컴파일된 CSS 한 장 |
 
-## 이 사이트에 대해
+## 미리보기는 실물이다
 
-문서의 미리보기는 **실제로 발행되는 패키지를 import 해서** 그린다. 그림도, 복사한 코드도
-아니다. `exports` 맵에 없는 경로는 이 사이트도 열지 못하므로, 사이트가 빌드된다는 것 자체가
-계약이 살아 있다는 증거다.
+문서의 미리보기는 **실제로 발행되는 패키지를 import 해서** 그립니다. 그림도, 복사한 코드도
+아닙니다. `exports` 맵에 없는 경로는 이 사이트도 열지 못하므로, 사이트가 빌드된다는 것 자체가
+계약이 살아 있다는 증거입니다.

@@ -1,26 +1,27 @@
 ---
 title: Modal
-description: 백드롭 + 패널 꼴의 다이얼로그.
+description: body 로 portal 하는 백드롭 + 패널.
 ---
 
 <Preview name="modal-basic" />
 
-행동은 `useDialogBehavior` 가, 마크업만 Modal 이 든다. 오버레이가 `role="dialog"` 를 들고,
-오버레이 클릭은 `dismissible` 일 때만 닫는다.
+행동은 `useDialogBehavior` 가, 마크업만 Modal 이 듭니다. 오버레이가 `role="dialog"` 를 들고,
+오버레이 클릭은 `dismissible` 일 때만 닫습니다.
 
 ## `document.body` 로 portal 한다
 
 <Callout tone="warning">
-`fixed inset-0` 은 overflow 클리핑만 면해줄 뿐이다. `position: sticky` · `transform` ·
+`fixed inset-0` 은 overflow 클리핑만 면해줄 뿐입니다. `position: sticky` · `transform` ·
 `filter` 를 가진 조상이 있으면 그 조상이 stacking context 를 만들어, 오버레이의 `z-index` 가
-페이지가 아니라 **그 조상 안에서만** 유효해진다. 실제로 sticky 레일 위에서 티켓이 모달 위로
-올라온 사고가 있었다.
+페이지가 아니라 **그 조상 안에서만** 유효해집니다. 실제로 sticky 레일 위에서 티켓이 모달 위로
+올라온 사고가 있었습니다.
 </Callout>
 
-대신 표면 오버라이드를 인라인으로 주입하는 서브트리 안에서는 그 값을 못 받는다. 팔레트는
-문제없다 — 스킴이 하나뿐이라 `:root` 가 곧 light 다. 바닥색이 필요하면 소비처가 직접 준다.
+대신 표면 오버라이드를 인라인으로 주입하는 서브트리 안에서는 그 값을 못 받습니다. 팔레트는
+문제없습니다 — 스킴이 하나뿐이라 `:root` 가 곧 light 입니다. 바닥색이 필요하면 소비처가 직접
+줍니다.
 
-전면 시트처럼 백드롭/패널 구조가 아닌 표면은 이 컴포넌트 대신 훅만 쓴다.
+전면 시트처럼 백드롭/패널 구조가 아닌 표면은 이 컴포넌트 대신 훅만 씁니다.
 
 ## Props
 

@@ -3,8 +3,8 @@ title: 계약과 레이어
 description: 무엇을 쓸 수 있고, 겹쳤을 때 누가 이기는가.
 ---
 
-배럴(`@coldsurfers/design-system`)이 갖는 건 **계약과 순서** 둘이다. 값 자체는
-`./tokens` 서브패스에 있다.
+배럴(`@coldsurfers/design-system`)이 갖는 건 **계약과 순서** 둘입니다. 값 자체는
+`./tokens` 서브패스에 있습니다.
 
 ## `vars` — 이름을 타입으로 승격한다
 
@@ -14,11 +14,11 @@ import { vars } from '@coldsurfers/design-system'
 style({ color: vars.color.accent, padding: vars.space['4'] })
 ```
 
-토큰 밖의 색을 쓰면 **타입 에러**다. 규율의 강제 주체가 문서나 감사 스크립트가 아니라
-`tsc` 로 옮겨간다.
+토큰 밖의 색을 쓰면 **타입 에러**입니다. 규율의 강제 주체가 문서나 감사 스크립트가 아니라
+`tsc` 로 옮겨갑니다.
 
-이름을 손으로 적지 않는다 — 변수 이름은 `tokenVarName` 이 계산하고, 그 규칙의 정본은
-`cssVarPrefix` 표 하나뿐이다.
+이름을 손으로 적지 않습니다 — 변수 이름은 `tokenVarName` 이 계산하고, 그 규칙의 정본은
+`cssVarPrefix` 표 하나뿐입니다.
 
 ## 캐스케이드 순서
 
@@ -27,7 +27,7 @@ properties · theme · base · ds-reset · ds-tokens · ds-components · compone
 ```
 
 `properties` · `theme` · `base` · `components` · `utilities` 는 **Tailwind 가 발행하는
-레이어 이름**이다. Tailwind 와 함께 쓰는 소비자를 위해 자리를 잡아준다.
+레이어 이름**입니다. Tailwind 와 함께 쓰는 소비자를 위해 순서에 미리 끼워 둡니다.
 
 | 레이어 | 무엇 |
 | --- | --- |
@@ -37,20 +37,20 @@ properties · theme · base · ds-reset · ds-tokens · ds-components · compone
 | `ds-utilities` | 원자 유틸. 컴포넌트를 이겨야 override 로 쓸 수 있다 |
 
 <Callout tone="warning">
-`base`(Tailwind preflight)가 `ds-components` 보다 **앞**이어야 한다. 뒤로 밀리면 컴포넌트의
-padding · border 가 전부 지워진다. Tailwind 를 안 쓰면 그 넷은 빈 레이어라 무해하다.
+`base`(Tailwind preflight)가 `ds-components` 보다 **앞**이어야 합니다. 뒤로 밀리면 컴포넌트의
+padding · border 가 전부 지워집니다. Tailwind 를 안 쓰면 그 넷은 빈 레이어라 무해합니다.
 </Callout>
 
 ## 순서 선언은 CSS 가 아니라 vanilla-extract 가 발행한다
 
 `@layer …;` 한 줄을 `styles.css` 에 직접 넣었더니 **lightningcss 가 minify 하면서 Tailwind
-이름 넷을 지워버렸다.** 그러면 `base` 가 `ds-components` 뒤로 밀려 컴포넌트가 깨진다.
-minifier 를 신뢰할 수 없으니 선언을 VE 로 옮겼고, 여러 청크가 각자 중복 선언한다
-(`@layer a,b,c;` 는 이름이 있으면 no-op 이라 안전하다).
+이름 넷을 지워버렸습니다.** 그러면 `base` 가 `ds-components` 뒤로 밀려 컴포넌트가 깨집니다.
+minifier 를 신뢰할 수 없으니 선언을 VE 로 옮겼고, 여러 청크가 각자 중복 선언합니다
+(`@layer a,b,c;` 는 이름이 있으면 no-op 이라 안전합니다).
 
 ## 컴포넌트 스타일을 쓸 때
 
-`.css.ts` 를 직접 쓰는 소비자는 `inComponentsLayer` 로 감싼다.
+`.css.ts` 를 직접 쓰는 소비자는 `inComponentsLayer` 로 감쌉니다.
 
 ```ts
 import { inComponentsLayer } from '@coldsurfers/design-system'
