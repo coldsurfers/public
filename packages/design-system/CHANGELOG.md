@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.5.1
+
+### Patch Changes
+
+- [#28](https://github.com/coldsurfers/public/pull/28) [`6aaf5da`](https://github.com/coldsurfers/public/commit/6aaf5da90e6fdbbfab4f1e838502eeba2d555cb1) Thanks [@yungblud](https://github.com/yungblud)! - `pulse` 가 `prefers-reduced-motion: reduce` 를 존중한다 — 맥동을 끄고 불투명도 0.6 의 정지 상태로 둔다(`ThinkingDots` 와 같은 처리). `Skeleton` 이 `pulse` 를 품고 있어 소비처는 아무것도 안 바꿔도 된다.
+
 ## 0.5.0
 
 ### Minor Changes
