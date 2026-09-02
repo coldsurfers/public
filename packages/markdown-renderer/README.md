@@ -26,11 +26,11 @@ peer 는 넷 — `@coldsurfers/design-system`(색·간격 계약) · `react` · 
 
 ## 쓰기
 
-스타일시트는 **둘 다** 물어야 한다. DS 가 CSS 변수와 `@layer` 순서를 발행하고, 이쪽은
-그 변수를 참조하는 산문 규칙만 갖는다.
+스타일시트는 **이쪽 것만** 물면 된다. DS CSS 는 이 패키지가 DS 진입점을 물면서 같이 딸려
+온다 — 이쪽은 그 변수를 참조하는 산문 규칙만 갖는다. peer 를 `>=0.11.0` 으로 잡은 게
+그 보장이다: 그 아래 DS 는 CSS 를 스스로 물고 오지 않는다.
 
 ```ts
-import '@coldsurfers/design-system/styles.css'
 import '@coldsurfers/markdown-renderer/styles.css'
 
 import { MarkdownRenderer } from '@coldsurfers/markdown-renderer'

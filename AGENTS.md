@@ -34,7 +34,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 - **`exports` 맵이 API 다.** 여기 없는 경로는 소비자가 못 연다 — 반대로 여기 있으면 뺄 때 major 다.
 - **`.css.ts` 는 이 레포에서 컴파일한다.** 소스를 발행하면 소비자마다 VE 플러그인을 달고
   `node_modules` 까지 처리하도록 열어야 한다. 그건 계약이 아니라 부탁이다.
-- **`cssCodeSplit: false` 는 편의 선택이지 불변식이 아니다.** 소비자가 import 한 줄로 끝나는 대신
+- **`cssCodeSplit: false` 는 편의 선택이지 불변식이 아니다.** 소비자가 CSS 배선을 안 지는 대신
   tree-shaking 을 포기한다. VE 는 라이브러리엔 반대쪽(`preserveModules`)을 권한다 — 재검토 #1.
 - **`sideEffects` 에서 `**/*.css.ts` 를 빼지 말 것.** 빼면 롤업이 `.css.ts` 모듈을 부수효과 없음으로
   보고 통째로 지운다. 빌드는 성공하고 `styles.css` 만 조용히 비는데(실측: 35.9 kB → 0.15 kB),
@@ -58,8 +58,9 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
   적지 않는다** — 옮겨 적으면 토큰이 바뀔 때 문서가 조용히 거짓말을 시작한다
 - 정적 내보내기다(`output: 'export'`). 검색 인덱스까지 빌드 산출물이라 서버 런타임이 없고,
   `out/` 을 Cloudflare Workers 정적 자산으로 올린다. OpenNext 를 들이지 않는다
-- CSS 순서는 `app/layout.tsx` 의 import 순서다: tailwind → `styles.css` → `ds-bridge.css`.
-  마지막 파일이 `ds-reset` 의 `body` 를 **레이어 밖 규칙**으로 되돌린다
+- CSS 캐스케이드는 파일 순서가 아니라 `@layer` 가 진다. DS CSS 는 진입점이 물고 오므로
+  실리는 자리를 앱이 정하지 못한다 — preflight 는 `LAYER_ORDER` 가, `body` 되돌리기는
+  `ds-bridge.css` 의 **레이어 밖 규칙**이 막는다. 둘 다 순서와 무관하다
 
 ⚠️ **`primitives` 배럴에는 `'use client'` 가 없다.** 그래서 RSC 소비자는 서버 컴포넌트에서
 직접 import 할 수 없고, 경계를 자기가 그어야 한다(문서의 `examples/*` 가 전부 `'use client'` 인

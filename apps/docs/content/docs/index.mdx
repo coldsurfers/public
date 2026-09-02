@@ -24,12 +24,10 @@ pnpm add @coldsurfers/design-system
 
 ## 쓰기
 
-CSS 는 **한 줄**입니다. `.css.ts` 는 이 레포에서 컴파일해 내보내므로 소비자 쪽에
-vanilla-extract 번들러 플러그인은 필요 없습니다.
+CSS 배선은 **없습니다**. 진입점이 `styles.css` 를 직접 물고 오고, `.css.ts` 는 이 레포에서
+컴파일해 내보내므로 소비자 쪽에 vanilla-extract 번들러 플러그인도 필요 없습니다.
 
 ```ts title="app/entry.tsx"
-import '@coldsurfers/design-system/styles.css'
-
 import { vars } from '@coldsurfers/design-system'
 import { spacing } from '@coldsurfers/design-system/tokens'
 import { Button } from '@coldsurfers/design-system/primitives'
@@ -37,7 +35,7 @@ import { Button } from '@coldsurfers/design-system/primitives'
 
 <Callout type="warn">
 `styles.css` 는 한 장입니다(`cssCodeSplit: false`). `Button` 하나를 쓰는 소비자도 DS CSS 전량을
-뭅니다 — import 한 줄로 끝나는 대신 치르는 값입니다.
+뭅니다 — 배선 없이 끝나는 대신 치르는 값입니다.
 </Callout>
 
 ## 진입점

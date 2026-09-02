@@ -29,15 +29,13 @@ pnpm add @coldsurfers/design-system
 ```
 
 ```ts
-import '@coldsurfers/design-system/styles.css'
-
 import { vars } from '@coldsurfers/design-system'
 import { spacing } from '@coldsurfers/design-system/tokens'
 import { Button } from '@coldsurfers/design-system/primitives'
 ```
 
 `.css.ts` 는 이 레포에서 컴파일해 내보낸다. 소비자 쪽에 vanilla-extract 번들러 플러그인은
-**필요 없다** — `styles.css` 한 줄만 물면 된다.
+**필요 없고, CSS 배선도 없다** — 진입점이 `styles.css` 를 직접 물고 온다.
 
 ## 개발
 

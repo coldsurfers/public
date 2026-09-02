@@ -27,15 +27,13 @@ OpenNext 도, 런타임 Node 도 없다.
 
 ## CSS 순서
 
-`app/layout.tsx` 의 import 순서가 캐스케이드다.
+**파일 순서가 아니라 `@layer` 가 캐스케이드다.** DS CSS 는 `app/layout.tsx` 가 아니라 DS
+진입점이 물고 오므로, 실리는 자리를 이 앱이 정하지 않는다(실측: tailwind·`ds-bridge.css` 가
+한 청크로 묶여 DS 보다 **먼저** 온다).
 
-```
-global.css (tailwind + fumadocs preset) → design-system/styles.css → ds-bridge.css
-```
-
-DS 가 뒤에 오는 건 `LAYER_ORDER` 가 `base`(Tailwind preflight)를 `ds-components` 앞에 두기
-때문이고, `ds-bridge.css` 가 마지막인 건 `ds-reset` 이 잡은 `body` 를 문서 크롬으로 되돌려야
-해서다. 되돌리는 규칙은 **레이어 밖**이라 어떤 `@layer` 보다 강하다.
+그래도 결과는 같다. Tailwind preflight 가 컴포넌트를 안 지우는 건 `LAYER_ORDER` 가
+`base` 를 `ds-components` 앞에 두기 때문이고, `ds-bridge.css` 가 `ds-reset` 의 `body` 를
+되돌리는 건 그 규칙이 **레이어 밖**이라 어떤 `@layer` 보다 강해서다 — 둘 다 순서와 무관하다.
 
 미리보기 표면은 `.ds-surface` 안에서 다시 DS 값으로 돌아간다.
 
