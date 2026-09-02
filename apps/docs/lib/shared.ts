@@ -1,6 +1,7 @@
 export const appName = 'COLDSURF Design System'
 export const docsRoute = '/docs'
-export const docsContentRoute = '/llms.mdx/docs'
+/** 페이지별 평문 사본이 사는 접두. `/llms/components/badge.txt` 꼴. */
+export const docsContentRoute = '/llms'
 
 export const gitConfig = {
   user: 'coldsurfers',

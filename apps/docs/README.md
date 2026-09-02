@@ -39,6 +39,19 @@ DS 가 뒤에 오는 건 `LAYER_ORDER` 가 `base`(Tailwind preflight)를 `ds-com
 
 미리보기 표면은 `.ds-surface` 안에서 다시 DS 값으로 돌아간다.
 
+## LLM 이 읽는 사본
+
+UI 에 링크가 없는 평문 라우트다. 페이지 헤더의 복사 버튼과 "Open in ChatGPT/Claude" 가 이걸 가리킨다.
+
+| URL | 무엇 |
+| --- | --- |
+| `/llms/components/badge.txt` | 페이지 하나 — **컴포넌트 단위**가 파일 하나다 |
+| `/llms.txt` | 색인. 링크는 위 `.txt` 로 간다 (HTML 로 보내면 마크업을 준 셈이다) |
+| `/llms-full.txt` | 전 페이지 본문 한 덩어리 |
+
+마지막 세그먼트에 확장자를 붙이는 게 조건이다 — 없으면 정적 내보내기가 디렉터리
+(`badge/index.html`)로 떨어뜨려서 `.txt` 한 방에 못 가져간다.
+
 ## 배포
 
 `.github/workflows/docs.yml` — **수동 트리거(`workflow_dispatch`)만** 있다. 시크릿 둘이 필요하다.

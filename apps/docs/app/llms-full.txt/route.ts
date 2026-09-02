@@ -5,5 +5,7 @@ export const revalidate = false
 export async function GET() {
   const scanned = await Promise.all(source.getPages().map(getLLMText))
 
-  return new Response(scanned.join('\n\n'))
+  return new Response(scanned.join('\n\n'), {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  })
 }
