@@ -1,10 +1,10 @@
 import {
   type CSSProperties,
   cloneElement,
-  forwardRef,
   type HTMLAttributes,
   isValidElement,
   type ReactElement,
+  type Ref,
 } from 'react'
 import { cx } from './cx'
 import {
@@ -33,7 +33,7 @@ export type { SkeletonRadius, SkeletonTone }
  * 이 컴포넌트가 아니라 `role="status"` 를 가진 바깥 컨테이너의 몫이다.
  *
  * `asChild` 면 자기 엘리먼트 대신 자식에 클래스·치수를 입힌다 — 이미 치수를 가진 스타일과
- * 합성하는 자리(`Button` 과 같은 관례). 이때 나머지 props 는 자식에게 넘기지 않는다.
+ * 합성하는 자리(`Button` 과 같은 관례). `ref` 는 따라가지만 나머지 props 는 넘기지 않는다.
  */
 export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
   /** CSS `width`. `'80%'` · `'5rem'` · `48` 처럼 단일값만. */
@@ -48,6 +48,12 @@ export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
   tone?: SkeletonTone
   /** 자식 엘리먼트에 스타일만 입힌다. */
   asChild?: boolean
+  /**
+   * React 19 에선 `ref` 가 평범한 prop 이라 `forwardRef` 로 감싸지 않는다 —
+   * 다른 장식 primitive(`CoverBlock`·`Spinner`·`Ticket` …)와 같은 모양이다.
+   * `asChild` 일 때는 자식에게 그대로 넘어간다.
+   */
+  ref?: Ref<HTMLDivElement>
 }
 
 /** `asChild` 로 받은 자식에서 우리가 실제로 건드리는 props. */
@@ -55,23 +61,22 @@ type SkeletonChild = {
   className?: string
   style?: CSSProperties
   'aria-hidden'?: HTMLAttributes<HTMLElement>['aria-hidden']
+  ref?: Ref<HTMLDivElement>
 }
 
-export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skeleton(
-  {
-    width,
-    height,
-    aspectRatio,
-    radius = 'none',
-    tone = 'neutral',
-    asChild,
-    className,
-    style,
-    children,
-    ...rest
-  },
+export function Skeleton({
+  width,
+  height,
+  aspectRatio,
+  radius = 'none',
+  tone = 'neutral',
+  asChild,
+  className,
+  style,
+  children,
   ref,
-) {
+  ...rest
+}: SkeletonProps) {
   const cls = cx(skeletonRoot, skeletonTone[tone], skeletonRadius[radius], className)
   // 소비처가 준 `style` 이 이긴다 — props 는 흔한 축의 지름길이지 잠금이 아니다.
   const box: CSSProperties = { width, height, aspectRatio, ...style }
@@ -82,6 +87,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skele
       className: cx(cls, child.props.className),
       style: { ...box, ...child.props.style },
       'aria-hidden': child.props['aria-hidden'] ?? true,
+      ref: ref ?? child.props.ref,
     })
   }
 
@@ -90,4 +96,4 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skele
       {children}
     </div>
   )
-})
+}
