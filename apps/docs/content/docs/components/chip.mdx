@@ -5,21 +5,21 @@ description: 네 맥락을 한 어휘로 덮는 pill.
 
 <Preview name="chip-basic" />
 
-quick chip · section chip · filter · genre 태그가 전부 이 하나다.
-상호작용이면 기본 `button`, 라벨이면 `as="span"`, 라우팅 링크면 `asChild`.
+quick chip · section chip · filter · genre 태그가 전부 이 하나입니다.
+상호작용이면 기본 `button`, 라벨이면 `as="span"`, 라우팅 링크면 `asChild` 입니다.
 
 ## `active` 의 시각 언어는 여기가 정본이다
 
-같은 "선택된 칩" 이 소비 레포에 **네 가지 언어**로 흩어져 있었다 — `accent` 바탕 /
-`accent` 10% 틴트 / 테두리만 진해짐 / 반전. 반전을 정본으로 굳혔다.
+같은 "선택된 칩" 이 소비 레포에 **네 가지 언어**로 흩어져 있었습니다 — `accent` 바탕 /
+`accent` 10% 틴트 / 테두리만 진해짐 / 반전. 반전을 정본으로 굳혔습니다.
 
-`accent` 계열 둘은 **다중선택에서 진다.** 필터 칩이 여러 개 켜지면 `accent` 바탕이 화면을
-지배하고, 10% 틴트는 `Callout tone="accent"` 와 헷갈린다.
+`accent` 계열 둘은 **다중선택에서 집니다.** 필터 칩이 여러 개 켜지면 `accent` 바탕이 화면을
+지배하고, 10% 틴트는 `Callout tone="accent"` 와 헷갈립니다.
 
 ## 필터 칩은 링크여야 한다
 
-필터된 면이 색인되려면 크롤 가능한 `<a href>` 여야 한다. 그래서 필터 맥락의 기본 사용법은
-`asChild` 다.
+필터된 면이 색인되려면 크롤 가능한 `<a href>` 여야 합니다. 그래서 필터 맥락의 기본 사용법은
+`asChild` 입니다.
 
 ```tsx
 <Chip asChild active={picked === '오늘'}>

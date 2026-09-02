@@ -8,8 +8,12 @@ export default function HomePage() {
       </p>
       <h1 className="text-4xl font-semibold tracking-tight">COLDSURF Design System</h1>
       <p className="text-fd-muted-foreground">
-        토큰 값 · CSS 계약(vanilla-extract) · React primitives. 범용 라이브러리가 아니라 COLDSURF
-        서비스에 정합된 디자인 시스템이다 — 브랜드 값이 기본값으로 딸려온다.
+        import 두 줄이면 COLDSURF 의 색 · 타이포 · 컴포넌트가 그대로 붙습니다. 토큰부터 React
+        컴포넌트까지 한 패키지에 있고, 번들러 설정은 따로 없습니다.
+      </p>
+      <p className="text-fd-muted-foreground">
+        범용 UI 킷은 아닙니다 — COLDSURF 서비스에 맞춘 기본값(accent · paper · cover 톤)이 처음부터
+        들어 있습니다. 그 결이 맞으면 그대로 쓰고, 아니면 토큰만 갈아끼웁니다.
       </p>
       <div className="flex flex-wrap gap-3">
         <Link

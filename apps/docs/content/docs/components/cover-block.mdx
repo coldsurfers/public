@@ -5,12 +5,13 @@ description: 카드 커버의 지형(terrain) 색면.
 
 <Preview name="cover-block-tones" padded={false} />
 
-높이는 소비처가 정한다(ConcertCard 190/160 · ArticleCard 200/150). 여기가 책임지는 건 색면뿐이다.
+높이는 소비처가 정합니다(ConcertCard 190/160 · ArticleCard 200/150). 여기가 책임지는 건
+색면뿐입니다.
 
-커버 팔레트는 **스킴을 타지 않는 불변 scale** 이다. 항상 어두운 필 위에 paper 텍스트가
-올라가는 에디토리얼 커버의 바닥색이라, 다크 스킴이 살아 있던 때에도 뒤집지 않았다.
+커버 팔레트는 **스킴을 타지 않는 불변 scale** 입니다. 항상 어두운 필 위에 paper 텍스트가
+올라가는 에디토리얼 커버의 바닥색이라, 다크 스킴이 살아 있던 때에도 뒤집지 않았습니다.
 
-색면이 아닌 다른 표면(아바타 원 등)도 같은 팔레트를 쓰므로 `coverTone` 을 재수출한다.
+색면이 아닌 다른 표면(아바타 원 등)도 같은 팔레트를 쓰므로 `coverTone` 을 재수출합니다.
 
 ```ts
 import { coverToneFor } from '@coldsurfers/design-system/tokens'
