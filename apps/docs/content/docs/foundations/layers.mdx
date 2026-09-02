@@ -1,0 +1,68 @@
+---
+title: 계약과 레이어
+description: 무엇을 쓸 수 있고, 겹쳤을 때 누가 이기는가.
+---
+
+배럴(`@coldsurfers/design-system`)이 갖는 건 **계약과 순서** 둘이다. 값 자체는
+`./tokens` 서브패스에 있다.
+
+## `vars` — 이름을 타입으로 승격한다
+
+```ts
+import { vars } from '@coldsurfers/design-system'
+
+style({ color: vars.color.accent, padding: vars.space['4'] })
+```
+
+토큰 밖의 색을 쓰면 **타입 에러**다. 규율의 강제 주체가 문서나 감사 스크립트가 아니라
+`tsc` 로 옮겨간다.
+
+이름을 손으로 적지 않는다 — 변수 이름은 `tokenVarName` 이 계산하고, 그 규칙의 정본은
+`cssVarPrefix` 표 하나뿐이다.
+
+## 캐스케이드 순서
+
+```
+properties · theme · base · ds-reset · ds-tokens · ds-components · components · ds-utilities · utilities
+```
+
+`properties` · `theme` · `base` · `components` · `utilities` 는 **Tailwind 가 발행하는
+레이어 이름**이다. Tailwind 와 함께 쓰는 소비자를 위해 자리를 잡아준다.
+
+| 레이어 | 무엇 |
+| --- | --- |
+| `ds-reset` | 엘리먼트 기본값. 무엇에든 져야 하므로 가장 약하다 |
+| `ds-tokens` | 토큰 · 테마 수준 전역 선언 |
+| `ds-components` | 컴포넌트 스타일 — `.css.ts` 의 `style()` 대부분 |
+| `ds-utilities` | 원자 유틸. 컴포넌트를 이겨야 override 로 쓸 수 있다 |
+
+<Callout tone="warning">
+`base`(Tailwind preflight)가 `ds-components` 보다 **앞**이어야 한다. 뒤로 밀리면 컴포넌트의
+padding · border 가 전부 지워진다. Tailwind 를 안 쓰면 그 넷은 빈 레이어라 무해하다.
+</Callout>
+
+## 순서 선언은 CSS 가 아니라 vanilla-extract 가 발행한다
+
+`@layer …;` 한 줄을 `styles.css` 에 직접 넣었더니 **lightningcss 가 minify 하면서 Tailwind
+이름 넷을 지워버렸다.** 그러면 `base` 가 `ds-components` 뒤로 밀려 컴포넌트가 깨진다.
+minifier 를 신뢰할 수 없으니 선언을 VE 로 옮겼고, 여러 청크가 각자 중복 선언한다
+(`@layer a,b,c;` 는 이름이 있으면 no-op 이라 안전하다).
+
+## 컴포넌트 스타일을 쓸 때
+
+`.css.ts` 를 직접 쓰는 소비자는 `inComponentsLayer` 로 감싼다.
+
+```ts
+import { inComponentsLayer } from '@coldsurfers/design-system'
+import { style } from '@vanilla-extract/css'
+
+export const card = style(inComponentsLayer({ padding: '1rem' }))
+```
+
+## 반응형
+
+```ts
+import { media } from '@coldsurfers/design-system'
+
+style({ '@media': { [media.tablet]: { padding: '2rem' } } })
+```

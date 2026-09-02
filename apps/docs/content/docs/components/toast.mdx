@@ -1,0 +1,29 @@
+---
+title: Toast
+description: 액션 결과를 1.6초 알리고 사라지는 하단 pill.
+---
+
+<Preview name="toast-basic" />
+
+`ToastProvider` 를 앱 루트에 한 번 세우고, 어디서든 `useToast().show(...)` 로 부른다.
+
+## 색이 한 쌍인 이유
+
+`bg-text` / `text-bg` 한 쌍이다. 스킴이 뒤집히면 pill 도 같이 뒤집혀서 **어느 표면에 얹혀도
+바닥과 반대색**이 된다. warm-paper 표면에선 ink pill + paper 글씨, 다크 표면에선 그 반대.
+표면마다 색을 따로 주지 않는 이유다.
+
+## provider 가 없으면 no-op
+
+`show` 는 조용히 아무것도 하지 않는다 — 컴포넌트를 격리 렌더해도 throw 하지 않는다.
+
+## API
+
+<Props of="Toast" name="ToastApi" />
+
+```tsx
+const toast = useToast()
+toast.show('저장했습니다', 'success')
+```
+
+연속 호출하면 타이머가 리셋된다.

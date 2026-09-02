@@ -27,6 +27,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 | `package.json` 의 `exports` | 새 진입점이 `vite.config.ts` 의 `lib.entry` 에도 있는가 · `dist/` 에 실제로 떨어지는가 · `pnpm check:exports` 가 통과하는가 |
 | `.css.ts` | `@layer` 를 벗어나지 않았는가 — 컴포넌트 스타일은 `ds-components` |
 | peer/deps 이동 | 컴파일된 `dist/` 가 실제로 그걸 import 하는가 (VE 는 build-time 과 runtime 이 갈린다) |
+| primitives 추가·변경 | `apps/docs` 에 페이지가 있는가 · 미리보기가 실제로 그려지는가 |
 
 ## 공개 패키지라서 다른 것
 
@@ -44,6 +45,25 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 - **이미 발행 중이다.** `design-system` · `markdown-renderer` 둘 다 GitHub Packages 에 올라가 있고
   (`publishConfig.registry`), paul-rockstar 의 앱 셋이 레지스트리에서 물어간다. `private: true` 는
   루트에만 남아 있다. **`exports` 를 빼거나 경로를 바꾸면 그 순간 major 다.**
+
+## 문서 사이트가 계약 검증이다
+
+[`apps/docs`](apps/docs) 는 발행되지 않는(`private`) 워크스페이스지만, 소스가 아니라 **발행되는
+`dist`** 를 문다(`workspace:*` + exports 맵). 그래서 **사이트가 빌드된다는 것 자체가 계약이
+살아 있다는 증거**다 — `exports` 에서 경로를 빼면 그 순간 문서 빌드가 깨진다.
+
+- 미리보기는 `examples/*.tsx` **파일 하나**가 렌더링과 코드 블록 양쪽의 정본이다. 둘이 어긋나려면
+  파일이 둘이어야 하는데 하나다
+- props 표는 DS 소스 타입에서 뽑고, 토큰 표는 `/tokens` 에서 값을 읽는다. **문서에 값을 옮겨
+  적지 않는다** — 옮겨 적으면 토큰이 바뀔 때 문서가 조용히 거짓말을 시작한다
+- 정적 내보내기다(`output: 'export'`). 검색 인덱스까지 빌드 산출물이라 서버 런타임이 없고,
+  `out/` 을 Cloudflare Workers 정적 자산으로 올린다. OpenNext 를 들이지 않는다
+- CSS 순서는 `app/layout.tsx` 의 import 순서다: tailwind → `styles.css` → `ds-bridge.css`.
+  마지막 파일이 `ds-reset` 의 `body` 를 **레이어 밖 규칙**으로 되돌린다
+
+⚠️ **`primitives` 배럴에는 `'use client'` 가 없다.** 그래서 RSC 소비자는 서버 컴포넌트에서
+직접 import 할 수 없고, 경계를 자기가 그어야 한다(문서의 `examples/*` 가 전부 `'use client'` 인
+이유). Vite 소비처(paul-rockstar)에선 안 드러나던 축이다 — 열지 말지는 아직 안 정했다.
 
 ## 무엇을 여기로 옮기는가
 
@@ -69,6 +89,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 - [x] **P2 — 병합.** `tokens` + `design-system` 을 한 패키지로. 이름 규칙 소비처 2곳 → 1곳
 - [ ] **P3 — primitives 흡수.** 상한 규칙을 먼저 적고, 그다음 컨트롤 편입
 - [x] **P4 — 공개 배포.** `private` 해제 · GitHub Packages 발행 · paul-rockstar 소비 경로 전환
+- [x] **P5 — 문서 사이트.** `apps/docs` (Fumadocs 정적 · Cloudflare). Foundations 4 + primitives 19
 
 P3 의 컨트롤을 편입할지 판정하기 전에 `docs/p1-boundary.md` 를 읽는다 — 어느 축이 열리고
 무엇이 앱에 남는지가 거기서 정해졌고, 안 읽으면 코드로 임의 결정된다.

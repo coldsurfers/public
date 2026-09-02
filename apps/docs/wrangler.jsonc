@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "coldsurfers-design-system-docs",
+  "compatibility_date": "2026-09-01",
+
+  // 정적 자산만 올린다 — `main`(Worker 스크립트)이 없다.
+  //
+  // OpenNext(`@opennextjs/cloudflare`)를 쓰지 않는 이유는 하나다: 이 사이트에 서버가 할 일이
+  // 없다. 검색 인덱스도 빌드 산출물(`/api/search`)이고 브라우저가 계산한다. 런타임을 하나
+  // 더 지면 그만큼 더 깨진다.
+  //
+  // `html_handling` 기본값(auto-trailing-slash)이 `next.config.mjs` 의
+  // `trailingSlash: true` 와 짝이다 — `/docs/components/button/index.html` 이 그대로 열린다.
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  },
+
+  // 커스텀 도메인. `custom_domain: true` 면 배포할 때 wrangler 가 DNS 레코드와 인증서까지
+  // 만든다 — 대시보드에서 따로 붙이지 않는다.
+  //
+  // 전제 둘: `coldsurf.io` 존이 같은 계정에 있어야 하고, 배포 토큰이 Workers Scripts:Edit
+  // 만으로는 부족하다(존의 DNS 를 건드린다). `sitemap.xml` 의 `<loc>` 도 이 주소다 —
+  // 바꾸려면 `lib/shared.ts` 의 `siteUrl` 과 같이 움직인다.
+  "routes": [{ "pattern": "design.coldsurf.io", "custom_domain": true }]
+}

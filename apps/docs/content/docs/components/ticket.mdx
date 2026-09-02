@@ -1,0 +1,25 @@
+---
+title: Ticket
+description: 실물 티켓 형태의 종이 — 본체 + 뜯어내는 스텁.
+---
+
+<Preview name="ticket-basic" padded={false} />
+
+치수 · 타이포 · 내용은 전부 소비처의 몫이고, 여기가 책임지는 건 **형태**(종이 · 천공선 · 노치)뿐이다.
+
+천공선과 노치는 Ticket 이 그린다 — 소비처가 빠뜨릴 수 없게. `stub` 이 없으면 티켓은 그냥
+종이 한 장이 된다.
+
+## `responsive` 가 기본인 이유
+
+좁은 화면에서 세로 천공선을 유지하면 본문이 눌린다. `responsive` 는 tablet 을 경계로
+`row` 와 `stacked` 를 오간다.
+
+## 지면색
+
+노치가 파여 드러나는 색은 기본이 warm-paper 캔버스다. 다른 바닥에 앉힐 때만 `ticketGround` 를
+`style` 로 덮는다.
+
+## Props
+
+<Props of="Ticket" />

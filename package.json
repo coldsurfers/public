@@ -33,8 +33,11 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
       "esbuild",
-      "lefthook"
+      "lefthook",
+      "sharp",
+      "workerd"
     ]
   }
 }

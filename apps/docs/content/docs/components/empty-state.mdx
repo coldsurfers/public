@@ -1,0 +1,33 @@
+---
+title: EmptyState
+description: 「아직 아무것도 없습니다」 자리의 세로 스택.
+---
+
+<Preview name="empty-state-basic" />
+
+## 조판을 props 로 받지 않는다
+
+`title` / `description` / `action` 이 없는 건 축약이 아니라 실측 결과다. 제목 조판이 이미
+셋으로 갈려 있어서, props 로 접으면 정본 하나를 골라야 하고 다섯 중 넷이 시각적으로 바뀐다.
+
+조판은 지면이 알고, 이 컴포넌트는 **세우는 방식**만 안다.
+
+## `ContentPlaceholder` 가 아니다
+
+seed 의 같은 이름은 *이미지가 안 뜬 자리* 의 아이콘 박스고, 그 축은 우리 [CoverBlock](/docs/components/cover-block)
+이 이미 든다. 이름이 겹치면 자리가 겹친다.
+
+## 셸을 소유하지 않는다
+
+바깥 여백 · gutter · maxWidth 는 지면 몫이다. 지면이 이미 `Container` 로 그 셸을 세우고
+있으면 `asChild` 로 합친다 — 래퍼를 한 겹 더 만들지 않는다.
+
+```tsx
+<EmptyState asChild>
+  <Container as="section" className={sprinkles({ paddingY: '20' })}>…</Container>
+</EmptyState>
+```
+
+## Props
+
+<Props of="EmptyState" />

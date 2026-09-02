@@ -20,3 +20,10 @@ dist
 
 # 로컬 에이전트 툴 상태 (커밋 대상 아님)
 .omc/
+
+# Next.js / docs 사이트
+.next/
+out/
+.source/
+next-env.d.ts
+.wrangler/

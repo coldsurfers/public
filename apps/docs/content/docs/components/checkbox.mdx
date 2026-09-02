@@ -1,0 +1,18 @@
+---
+title: Checkbox
+description: 네이티브 입력을 감추고 시각만 토큰화한 체크박스.
+---
+
+<Preview name="checkbox-basic" />
+
+네이티브 `<input type="checkbox">` 를 시각적으로만 감춘다. 접근성·키보드·폼 제출·
+react-hook-form 은 전부 네이티브에 그대로 위임하고, 칠하는 것만 가져온다.
+
+`ref` 는 내부 실제 `<input>` 을 노출한다 — `{ focus, blur }` 만 노출하면 RHF 의
+`defaultValues` 가 깨진다.
+
+라벨 텍스트 색은 강제하지 않고 **부모에서 상속**한다. 라이트 폼이든 다크 밴드든 감싼 문맥을 따른다.
+
+## Props
+
+<Props of="Checkbox" />

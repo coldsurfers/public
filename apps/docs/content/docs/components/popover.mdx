@@ -1,0 +1,31 @@
+---
+title: Popover
+description: 트리거 + 팝오버 뼈대.
+---
+
+<Preview name="popover-basic" />
+
+`Select` 와 그룹 칩이 공유하던 open 상태 · 바깥클릭/Escape 닫기 · 위치잡기 · 뷰포트
+maxHeight 를 한 어휘로 수렴한다.
+
+위치잡기는 `createPortal(document.body)` + `position: fixed` 한 전략으로 통일했다 —
+어떤 `overflow` · `transform` 조상 안에서도 클립되지 않는다.
+
+트리거는 `inline-flex` 앵커로 감싸 측정하므로, 트리거 컴포넌트에 `forwardRef` 를 강제하지 않는다.
+
+## 닫히는 조건
+
+바깥 mousedown · Escape · 바깥 스크롤(capture) · resize 시 재측정. `fixed` 좌표가 스크롤에
+어긋나므로 바깥 스크롤에선 닫되, **메뉴 내부 스크롤(긴 옵션 목록)은 무시**한다.
+
+## 표면은 소비처가 든다
+
+메뉴 박스 장식 전체가 `menuClassName` 이다. 기본 표면을 원하면 `POPOVER_MENU_CLS` 를 섞는다.
+
+```tsx
+<Popover menuClassName={cx(POPOVER_MENU_CLS, myMenu)} …>
+```
+
+## Props
+
+<Props of="Popover" />
