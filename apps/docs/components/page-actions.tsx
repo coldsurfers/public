@@ -2,7 +2,7 @@
 import { cn } from 'cnfast'
 import { buttonVariants } from 'fumadocs-ui/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/ui/popover'
-import { BookTextIcon, ChevronDown, ExternalLinkIcon, FileTextIcon, ListIcon } from 'lucide-react'
+import { ChevronDown, ExternalLinkIcon, FileTextIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 /**
@@ -12,8 +12,10 @@ import type { ReactNode } from 'react'
  * 안에 박혀 있고 슬롯이 없다(업스트림도 "커스터마이즈하려면 가져다 쓰라"고 안내한다).
  * 그래서 팝오버·버튼 스타일만 라이브러리에서 빌려오고 **목록은 여기서 정한다**.
  *
- * 목록의 핵심은 위 셋이다 — 이 페이지 평문 · 색인 · 전문. LLM 에게 넘길 때 셋 중 무엇을
- * 주느냐가 다르다.
+ * 목록은 **이 페이지 하나**를 가리킨다. 맨 위가 이 페이지의 평문 사본이고 라벨이 파일 이름
+ * 그대로다(`button.txt`). 사이트 전체인 `/llms.txt` · `/llms-full.txt` 는 여기 넣지 않는다 —
+ * 루트에 있는 게 정본 진입점이고(색인은 원래 사이트 루트에서 줍는다), 페이지 맥락의 메뉴에
+ * 섞으면 어느 게 이 페이지 것인지 흐려진다.
  */
 export interface ViewOptionsProps {
   /** 이 페이지의 평문 사본 — `/llms/components/badge.txt` */
@@ -23,9 +25,7 @@ export interface ViewOptionsProps {
 
 export function ViewOptions({ markdownUrl, githubUrl }: ViewOptionsProps) {
   const items: { title: string; href: string; icon: ReactNode }[] = [
-    { title: 'View as plain text', href: markdownUrl, icon: <FileTextIcon /> },
-    { title: 'Open llms.txt', href: '/llms.txt', icon: <ListIcon /> },
-    { title: 'Open llms-full.txt', href: '/llms-full.txt', icon: <BookTextIcon /> },
+    { title: `Open ${fileName(markdownUrl)}`, href: markdownUrl, icon: <FileTextIcon /> },
     { title: 'Open in GitHub', href: githubUrl, icon: <GitHubIcon /> },
     {
       title: 'Open in ChatGPT',
@@ -62,6 +62,11 @@ export function ViewOptions({ markdownUrl, githubUrl }: ViewOptionsProps) {
       </PopoverContent>
     </Popover>
   )
+}
+
+/** `/llms/components/button.txt` → `button.txt` */
+function fileName(url: string) {
+  return url.slice(url.lastIndexOf('/') + 1)
 }
 
 /**
