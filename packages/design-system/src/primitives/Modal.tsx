@@ -2,8 +2,16 @@ import type { ReactNode, RefObject } from 'react'
 import { useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { cx } from './cx'
-import { modalBody, modalOverlay, modalPanel } from './Modal.css'
+import {
+  type ModalPlacement,
+  modalBody,
+  modalOverlay,
+  modalPanel,
+  modalPlacement,
+} from './Modal.css'
 import { useDialogBehavior } from './useDialogBehavior'
+
+export type { ModalPlacement }
 
 /**
  * 백드롭 + 패널 꼴의 다이얼로그. 행동은 `useDialogBehavior` 가, 마크업만 여기가 든다.
@@ -32,7 +40,17 @@ export interface ModalProps {
   dismissible?: boolean
   /** 닫힌 뒤 포커스를 되돌릴 트리거. */
   triggerRef?: RefObject<HTMLElement | null>
-  /** 오버레이 추가 클래스 — 정렬(`items-center`)·배경(`bg-black/50`). */
+  /**
+   * 패널이 서는 자리. 기본 `center`.
+   *
+   *   center   가운데 (기본) — 확인 다이얼로그
+   *   top      위쪽 — 커맨드팔레트. 오프셋(`margin-top`)은 소비처가 준다
+   *   bottom   아래 붙는 시트 — 오버레이 여백이 0이라 화면 모서리까지 닿는다
+   *
+   * `overlayClassName` 보다 **앞에** 붙으므로 소비처가 여전히 덮을 수 있다.
+   */
+  placement?: ModalPlacement
+  /** 오버레이 추가 클래스 — 배경(`bg-black/50`). 정렬은 `placement` 가 든다. */
   overlayClassName?: string
   /** 패널 추가 클래스 — 폭(`max-w-sm`)·여백. */
   panelClassName?: string
@@ -45,6 +63,7 @@ export function Modal({
   label,
   dismissible = true,
   triggerRef,
+  placement = 'center',
   overlayClassName,
   panelClassName,
   children,
@@ -61,7 +80,7 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={label}
-      className={cx(modalOverlay, overlayClassName)}
+      className={cx(modalOverlay, modalPlacement[placement], overlayClassName)}
       onClick={() => {
         if (dismissible) onClose()
       }}

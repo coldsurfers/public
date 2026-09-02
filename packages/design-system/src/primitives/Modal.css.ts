@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { style, styleVariants } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 
@@ -12,9 +12,33 @@ export const modalOverlay = style(
     inset: 0,
     zIndex: 50,
     display: 'flex',
-    padding: 16,
   }),
 )
+
+/**
+ * 패널이 서는 자리. **정렬 축은 여기 하나뿐**이다 — 소비처 실측 5곳 중 4곳이
+ * `sprinkles({ alignItems: 'center', justifyContent: 'center' })` 를 문자 그대로 복붙하고
+ * 있었고, 나머지 하나(검색 오버레이)만 위쪽 정렬이었다. 축이 없던 게 아니라 기본값이 없었다.
+ *
+ * ⚠️ `padding` 이 base 가 아니라 여기 있는 이유 — `bottom` 은 시트가 화면 아래 모서리에
+ * 붙어야 해서 여백이 0이다. base 에 남기고 여기서 덮으면 같은 레이어 안에서 **소스 순서**로
+ * 갈리는 규칙이 되고, 그건 파일을 재배열하는 순간 조용히 깨진다(한 속성은 한 레이어).
+ *
+ * `bottom` 이 드는 건 정렬·여백까지다. 시트의 상단 radius 와 `env(safe-area-inset-bottom)`
+ * 는 **소비처가 `panelClassName` 으로 준다** — `modalPanel` 은 애초에 radius·padding 을
+ * 소유하지 않고, sprinkles(`ds-utilities`)가 `ds-components` 를 이기므로 여기서 padding 을
+ * 얹으면 `sprinkles({ padding: ... })` 를 쓰는 소비처에서 조용히 사라진다.
+ */
+export const modalPlacement = styleVariants(
+  {
+    center: { alignItems: 'center', justifyContent: 'center', padding: 16 },
+    top: { alignItems: 'flex-start', justifyContent: 'center', padding: 16 },
+    bottom: { alignItems: 'flex-end', justifyContent: 'center', padding: 0 },
+  },
+  inComponentsLayer,
+)
+
+export type ModalPlacement = keyof typeof modalPlacement
 
 /**
  * 패널은 **절대 화면을 넘지 않는다** — `maxHeight: 100%` 는 오버레이의 content box(=뷰포트 − 여백 32)다.
