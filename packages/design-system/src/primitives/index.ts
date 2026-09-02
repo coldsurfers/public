@@ -31,4 +31,9 @@ export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
 export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'
 export { TypewriterText, type TypewriterTextProps } from './TypewriterText'
+export {
+  UnderlineTab,
+  type UnderlineTabProps,
+  UnderlineTabs,
+} from './UnderlineTabs'
 export { type UseDialogBehaviorOptions, useDialogBehavior } from './useDialogBehavior'
