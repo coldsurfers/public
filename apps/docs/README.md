@@ -84,4 +84,5 @@ sitemap 목록은 `source` 에서 뽑으므로 **경로를 옮겨 적지 않는�
 | `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit **+ Zone:DNS:Edit** (커스텀 도메인이 존을 건드린다) |
 | `CLOUDFLARE_ACCOUNT_ID` | 계정 ID |
 
-없으면 배포 스텝을 건너뛴다. 로컬에서는 `pnpm --filter @coldsurfers/docs deploy`.
+하나라도 없으면 **빌드 전에 실패한다** — 수동 트리거뿐이라 건너뛰고 초록불을 주면 올라간 줄
+알게 된다. 로컬에서는 `pnpm --filter @coldsurfers/docs deploy`.

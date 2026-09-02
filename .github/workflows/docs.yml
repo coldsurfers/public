@@ -9,11 +9,11 @@ name: Docs
 #   CLOUDFLARE_API_TOKEN   — Workers Scripts:Edit + Zone:DNS:Edit
 #                            (`wrangler.jsonc` 의 커스텀 도메인이 존을 건드린다)
 #   CLOUDFLARE_ACCOUNT_ID
-# 없으면 배포 스텝을 건너뛴다(빌드는 그대로 돈다) — 시크릿 미설정 상태에서 CI 를 빨갛게
-# 만들지 않기 위해서다.
+# 하나라도 없으면 **실패한다.** 트리거가 수동 하나뿐이라 이 워크플로가 도는 건 사람이
+# "지금 올린다" 고 누른 것뿐이고, 그때 조용히 건너뛰고 초록불을 주면 올라간 줄 알게 된다.
 #
-# 트리거는 수동 하나다. 문서는 릴리스와 붙는 산출물이 아니라 사람이 "지금 올린다" 고 정할 때
-# 올리는 것이라, main 푸시마다 자동으로 배포되지 않는다.
+# 트리거는 수동 하나다. 문서는 릴리스와 붙는 산출물이 아니라 사람이 정할 때 올리는 것이라,
+# main 푸시마다 자동으로 배포되지 않는다.
 
 on:
   workflow_dispatch:
@@ -31,6 +31,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 빌드보다 먼저 본다. 자격이 없으면 1분 굽고 나서 죽을 이유가 없다.
+      - name: 가드 — Cloudflare 자격 확인
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          missing=""
+          [ -n "$TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$ACCOUNT" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::시크릿이 없다:$missing — Settings → Secrets → Actions 에 넣고 다시 돌린다."
+            echo "토큰 권한은 Workers Scripts:Edit + Zone:DNS:Edit 다(커스텀 도메인이 존을 건드린다)."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
@@ -49,22 +65,9 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ vars.DOCS_SITE_URL }}
         run: pnpm --filter @coldsurfers/docs... build
 
-      - name: 가드 — Cloudflare 자격 확인
-        id: guard
-        env:
-          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -euo pipefail
-          if [ -z "$TOKEN" ] || [ -z "$ACCOUNT" ]; then
-            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID 가 없다 — 배포를 건너뛴다."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
+      # `wranglerVersion` 을 주지 않는다 — 액션은 이미 설치된 wrangler 를 그대로 쓴다.
+      # 위 `pnpm install --frozen-lockfile` 이 락파일의 버전을 깔았으므로 로컬과 같은 것이 돈다.
       - name: Cloudflare 배포
-        if: steps.guard.outputs.ready == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
