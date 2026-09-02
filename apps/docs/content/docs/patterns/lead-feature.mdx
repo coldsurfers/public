@@ -1,0 +1,23 @@
+---
+title: LeadFeature
+description: 매거진 리드 피처 — 커버 + 텍스트 2단.
+---
+
+```ts
+import { LeadFeature } from '@coldsurfers/design-system/cards'
+```
+
+<Preview name="lead-feature" />
+
+시안의 `THIS WEEK'S PICK` 자리입니다. tablet 이상에서 커버와 텍스트가 2단으로 갈리고,
+모바일에서는 세로로 쌓입니다.
+
+`ArticleCard` 와 무엇이 다른가 — **지면에서의 자리**입니다. 아티클 카드는 목록의 한 칸이라
+제목이 `<h3>` 이지만, 리드 피처는 그 목록 위에 한 장으로 서므로 `<h2>` 입니다. 같은 재료로
+같은 크기의 카드를 두 개 만든 게 아닙니다.
+
+`eyebrow` · `cta` 는 선택입니다. 없으면 그 줄 자체가 사라집니다 — 빈 자리를 남기지 않습니다.
+
+## Props
+
+<Props of="LeadFeature" dir="cards" />

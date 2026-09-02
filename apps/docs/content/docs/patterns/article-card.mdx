@@ -1,0 +1,31 @@
+---
+title: ArticleCard
+description: 매거진 아티클 카드 — 썸네일 + 카테고리 · 제목 · 발췌 · 메타.
+---
+
+```ts
+import { ArticleCard } from '@coldsurfers/design-system/cards'
+```
+
+<Preview name="article-card" />
+
+`CoverBlock` 과 `Eyebrow` 를 안에서 조립합니다 — 소비처가 그 둘을 따로 import 하지 않습니다.
+
+`thumbnailUrl` 이 없으면 tone 색면만 노출합니다. 없는 이미지를 회색 박스로 흉내 내지 않는 건
+**데이터 정직성** 쪽 결정입니다 — 색면은 그 자체로 카드의 표지입니다.
+
+폭은 소비처가 정합니다. 카드는 `width: 100%` 라 그리드 칸을 그대로 채웁니다.
+
+## 클릭은 소비처가 감싼다
+
+라우터를 물지 않습니다. `next/link` 든 `react-router` 든 카드 바깥에서 감쌉니다.
+
+```tsx
+<Link href={`/magazine/${post.slug}`}>
+  <ArticleCard {...post} />
+</Link>
+```
+
+## Props
+
+<Props of="ArticleCard" dir="cards" />

@@ -1,4 +1,12 @@
 {
   "title": "Design System",
-  "pages": ["index", "---Foundations---", "foundations", "---Components---", "components"]
+  "pages": [
+    "index",
+    "---Foundations---",
+    "foundations",
+    "---Components---",
+    "components",
+    "---Patterns---",
+    "patterns"
+  ]
 }
