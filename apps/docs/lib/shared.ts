@@ -3,8 +3,11 @@ export const appName = 'COLDSURF Design System'
 /**
  * 사이트의 절대 주소 — sitemap 이 `<loc>` 에 쓴다. 상대 경로로는 sitemap 을 쓸 수 없다.
  *
- * 배포 워크플로가 `NEXT_PUBLIC_SITE_URL` 로 넣어준다(리포지터리 변수 `DOCS_SITE_URL`).
- * 안 넣으면 아래 기본값이고, 도메인이 정해지면 **이 한 줄만** 고치면 된다.
+ * `wrangler.jsonc` 의 `routes` 와 **같은 주소여야 한다.** 한쪽만 바꾸면 배포는 성공하고
+ * sitemap 만 조용히 다른 도메인을 가리킨다 — 타입도 빌드도 이걸 못 잡는다.
+ *
+ * 리포지터리 변수 `DOCS_SITE_URL` 로 덮을 수 있다(워크플로가 `NEXT_PUBLIC_SITE_URL` 로 넘긴다).
+ * 미리보기 배포처럼 도메인이 다를 때 쓰는 자리고, 평시엔 아래 기본값이다.
  */
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://design.coldsurf.io').replace(
   /\/$/,

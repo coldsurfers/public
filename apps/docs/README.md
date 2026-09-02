@@ -63,16 +63,21 @@ UI 에 링크가 없는 평문 라우트다. 페이지 헤더의 복사 버튼�
 `app/sitemap.ts` 가 `/sitemap.xml` 을 빌드 산출물로 떨어뜨린다. 목록은 `source` 에서 뽑으므로
 **경로를 옮겨 적지 않는다** — 페이지를 더하면 따라오고, 지우면 같이 사라진다.
 
-`<loc>` 에 절대 주소가 필요해서 `lib/shared.ts` 의 `siteUrl` 을 쓴다. 배포 워크플로가 리포지터리
-변수 `DOCS_SITE_URL` 을 `NEXT_PUBLIC_SITE_URL` 로 넣어주고, 없으면 그 파일의 기본값이 실린다.
+`<loc>` 에 절대 주소가 필요해서 `lib/shared.ts` 의 `siteUrl` 을 쓴다. 그 값은 `wrangler.jsonc`
+의 `routes` 와 **같은 주소여야 한다** — 한쪽만 바꾸면 배포는 성공하고 sitemap 만 조용히 다른
+도메인을 가리킨다. 리포지터리 변수 `DOCS_SITE_URL` 로 덮을 수 있다(미리보기 배포용).
 
 ## 배포
+
+`https://design.coldsurf.io` — `wrangler.jsonc` 의 `routes` 가 커스텀 도메인을 잡는다.
+`custom_domain: true` 라 첫 배포 때 wrangler 가 DNS 레코드와 인증서까지 만든다. 전제는
+`coldsurf.io` 존이 같은 계정에 있는 것.
 
 `.github/workflows/docs.yml` — **수동 트리거(`workflow_dispatch`)만** 있다. 시크릿 둘이 필요하다.
 
 | 이름 | 무엇 |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit 권한 |
+| `CLOUDFLARE_API_TOKEN` | Workers Scripts:Edit **+ Zone:DNS:Edit** (커스텀 도메인이 존을 건드린다) |
 | `CLOUDFLARE_ACCOUNT_ID` | 계정 ID |
 
 없으면 배포 스텝을 건너뛴다. 로컬에서는 `pnpm --filter @coldsurfers/docs deploy`.

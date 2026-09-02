@@ -14,5 +14,13 @@
   "assets": {
     "directory": "./out",
     "not_found_handling": "404-page"
-  }
+  },
+
+  // 커스텀 도메인. `custom_domain: true` 면 배포할 때 wrangler 가 DNS 레코드와 인증서까지
+  // 만든다 — 대시보드에서 따로 붙이지 않는다.
+  //
+  // 전제 둘: `coldsurf.io` 존이 같은 계정에 있어야 하고, 배포 토큰이 Workers Scripts:Edit
+  // 만으로는 부족하다(존의 DNS 를 건드린다). `sitemap.xml` 의 `<loc>` 도 이 주소다 —
+  // 바꾸려면 `lib/shared.ts` 의 `siteUrl` 과 같이 움직인다.
+  "routes": [{ "pattern": "design.coldsurf.io", "custom_domain": true }]
 }
