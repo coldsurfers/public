@@ -27,10 +27,8 @@ peer 는 넷 — `@coldsurfers/design-system`(색·간격 계약) · `react` · 
 ## 쓰기
 
 스타일시트는 **이쪽 것만** 물면 된다. DS CSS 는 이 패키지가 DS 진입점을 물면서 같이 딸려
-온다 — 이쪽은 그 변수를 참조하는 산문 규칙만 갖는다.
-
-단 그 주입은 `@coldsurfers/design-system` **0.11 이상**에서만 돈다. peer 범위(`>=0.3.0`)는
-그 아래도 허용하므로, 낮은 DS 를 쓰면 `@coldsurfers/design-system/styles.css` 도 같이 문다.
+온다 — 이쪽은 그 변수를 참조하는 산문 규칙만 갖는다. peer 를 `>=0.11.0` 으로 잡은 게
+그 보장이다: 그 아래 DS 는 CSS 를 스스로 물고 오지 않는다.
 
 ```ts
 import '@coldsurfers/markdown-renderer/styles.css'
