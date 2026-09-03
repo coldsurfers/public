@@ -1,0 +1,42 @@
+{
+  "name": "@coldsurfers/tailwind4-theme",
+  "version": "0.0.0",
+  "description": "COLDSURF design tokens as a Tailwind CSS v4 @theme layer.",
+  "keywords": [
+    "tailwindcss",
+    "tailwind-v4",
+    "design-tokens",
+    "coldsurf"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/tailwind4-theme",
+  "bugs": "https://github.com/coldsurfers/public/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldsurfers/public.git",
+    "directory": "packages/tailwind4-theme"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs"
+  },
+  "peerDependencies": {
+    "@coldsurfers/design-system": ">=0.12.0 <1.0.0",
+    "tailwindcss": "^4"
+  },
+  "devDependencies": {
+    "@coldsurfers/design-system": "workspace:*"
+  }
+}
