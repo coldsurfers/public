@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Provider } from '@/components/provider'
+import { RouteTransition } from '@/components/route-transition'
 import './global.css'
 // DS CSS 는 여기서 물지 않는다 — DS 진입점이 `styles.css` 를 직접 물고 온다. 그래서 실리는
 // 자리는 이 파일이 아니라 컴포넌트를 처음 import 하는 청크고, tailwind 와의 앞뒤도 그때 정해진다.
@@ -13,6 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <html lang="ko" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <Provider>{children}</Provider>
+        <RouteTransition />
       </body>
     </html>
   )

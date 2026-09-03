@@ -10,3 +10,27 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/*
+ * 라우트 전환 연출. `components/route-transition.tsx` 가 `startViewTransition` 을 열고,
+ * 어떻게 움직일지는 여기서 정한다.
+ *
+ * DS 의 `@layer` 밖이다 — `::view-transition-*` 은 문서 루트에 붙는 UA 의사 요소라
+ * 캐스케이드에서 DS 컴포넌트 스타일과 만나지 않는다. `ds-bridge.css` 가 아니라 이 파일인 이유.
+ *
+ * `.vt-brand` 는 **한 문서에 하나만** 있어야 한다. 둘이면 브라우저가 전환을 통째로 건너뛴다 —
+ * 홈은 `<h1>`, 문서는 nav 타이틀이 쥔다(`lib/layout.shared.tsx` 의 `brandMorph`).
+ */
+.vt-brand {
+  view-transition-name: vt-brand;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+::view-transition-group(vt-brand) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}

@@ -6,7 +6,7 @@ export default function HomePage() {
       <p className="font-mono text-xs uppercase tracking-[0.26em] text-fd-muted-foreground">
         coldsurfers/public
       </p>
-      <h1 className="text-4xl font-semibold tracking-tight">COLDSURF Design System</h1>
+      <h1 className="vt-brand text-4xl font-semibold tracking-tight">COLDSURF Design System</h1>
       <p className="text-fd-muted-foreground">
         import 두 줄이면 COLDSURF 의 색 · 타이포 · 컴포넌트가 그대로 붙습니다. 토큰부터 React
         컴포넌트까지 한 패키지에 있고, 번들러 설정은 따로 없습니다.
