@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/tailwind4-theme",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "COLDSURF design tokens as a Tailwind CSS v4 @theme layer.",
   "keywords": [
     "tailwindcss",
