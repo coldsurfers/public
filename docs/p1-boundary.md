@@ -16,7 +16,7 @@
 | 1 | 브랜드 값 오버라이드 | **축별로 가른다** — 범용 축은 열고 브랜드 색은 고정 |
 | 2 | `Button` `size.cta` 의 `15px` | **리터럴 유지** + 근거 주석 |
 | 3 | warm-paper 헬퍼 귀속 | **쪼갠다** — `coverToneFor` 는 DS, `WARM_PAPER_SURFACE` 는 앱 |
-| 4 | `generate.ts` codegen | **paul-rockstar 에 남긴다** |
+| 4 | `generate.ts` codegen | **paul-rockstar 에 남긴다** → 개정(2026-09-03): 별도 패키지로 public 이 낸다 |
 | 5 | 이관 목록 | 아래 표로 확정 |
 
 ---
@@ -82,6 +82,45 @@ paul-rockstar → 위 둘을 읽어 자기 앱용 Tailwind @theme CSS 를 생성
 **이름 규칙 표는 public 이 export 한다.** 두 소비처(발행·계약)가 한 표를 공유해야 한다는 것이
 이 이슈의 1절 근거였고, 소비처 하나가 레포 밖으로 나가도 그 요구는 그대로다.
 
+### 개정 (2026-09-03) — `@theme` 는 **별도 패키지**로 public 이 낸다
+
+위 결정은 선택지를 둘로만 봤다: DS 의 `exports` 에 올리거나, 소비 레포에 남기거나.
+**세 번째가 있다 — 패키지를 가르는 것.** 그러면 위에서 든 반대 이유 둘이 다 사라진다.
+
+| 반대 이유 | 별도 패키지에서 |
+| --- | --- |
+| Tailwind 안 쓰는 소비자에게 의미가 없다 | 설치를 안 하면 **0 바이트**다. 의미가 없는 쪽엔 존재하지 않는다 |
+| `exports` 에 오르면 빼는 게 major 다 | DS 의 `exports` 는 그대로다. 브릿지의 수명은 브릿지 자기 버전이 진다 |
+
+선례가 있다 — Seed(당근)는 `@seed-design/tailwind4-theme` 를 **파일 하나짜리 별도 패키지**로
+낸다(`exports: { ".": "./index.css" }` · `dependencies` 없음 · peer 는 `tailwindcss@4` 와 자기
+CSS 패키지). 이름에 major 를 박아 v5 용을 나란히 낼 자리를 남겨 둔 것까지 그대로 가져왔다.
+
+이건 개정(2026-08-29)이 `markdown-renderer` 에 이미 쓴 수와 같은 수다 — **무게든 소비자 축이든,
+갈라야 할 것은 패키지 경계로 가른다.** 진입점만 나누는 걸로는 안 된다.
+
+그래서 경계는 이렇게 다시 긋는다:
+
+```
+public  →  @coldsurfers/design-system/tokens       TS 값 + 이름 규칙
+           @coldsurfers/design-system/tokens.css   :root 변수 한 장 (컴포넌트 CSS 없이)
+           @coldsurfers/design-system/styles.css   VE 가 구운 변수·리셋·레이어·컴포넌트
+           @coldsurfers/tailwind4-theme            @theme 한 장 (별도 패키지)
+
+paul-rockstar → 위를 직접 문다. codegen 을 갖지 않는다
+```
+
+`packages/tokens` 는 **사라진다** — 값은 이미 DS 안에 있었고(주석 뺀 코드 라인 diff 0), 남은
+일이 CSS 발행 하나뿐인데 그걸 위 둘이 대신한다. 소비 앱 6곳의 `predev`/`prebuild` 에 붙어 있던
+tokens build 배선 9줄도 같이 없어진다.
+
+**`tokens.css` 를 `@layer` 로 감싸지 않는 이유**는 소비처가 정하는 축이기 때문이다. 앱이 레이어
+순서를 선언하지 않으면 레이어 규칙은 무레이어 규칙에 항상 진다 — 어느 레이어에 넣든 앱마다
+우선순위가 달라진다. 변수 선언은 캐스케이드 다툼의 대상이 아니라 값의 바닥이다.
+(`styles.css` 쪽은 반대다. 거기선 리셋·컴포넌트와 한 장에 실리므로 레이어가 있어야 한다.)
+
+집행 정본: [coldsurfers/paul-rockstar#368](https://github.com/coldsurfers/paul-rockstar/issues/368)
+
 ## 5. 이관 목록
 
 ### 간다
@@ -99,7 +138,7 @@ paul-rockstar → 위 둘을 읽어 자기 앱용 Tailwind @theme CSS 를 생성
 
 | 대상 | 근거 |
 | --- | --- |
-| `packages/tokens/src/generate.ts` | 결정 4 |
+| ~~`packages/tokens/src/generate.ts`~~ | 결정 4 → **개정(2026-09-03)으로 뒤집혔다.** public 이 두 산출물로 나눠 낸다 |
 | `WARM_PAPER_SURFACE` | 결정 3 |
 
 `packages/ui` 는 사라진다 — 아래 개정 참고.

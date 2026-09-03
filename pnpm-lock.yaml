@@ -216,6 +216,16 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@22.20.1)(rollup@4.62.4)(typescript@5.9.3)(vite@7.3.6(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(yaml@2.9.0))
 
+  packages/tailwind4-theme:
+    dependencies:
+      tailwindcss:
+        specifier: ^4
+        version: 4.3.3
+    devDependencies:
+      '@coldsurfers/design-system':
+        specifier: workspace:*
+        version: link:../design-system
+
 packages:
 
   '@alloc/quick-lru@5.3.0':
