@@ -22,6 +22,7 @@ COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives �
 | `./sprinkles` | 원자 유틸. JS 38 kB 라 배럴에서 갈랐다 | ✗ |
 | `./primitives` | Button · Chip · Badge · … | ✓ |
 | `./cards` | ConcertCard · ArticleCard · LeadFeature · … | ✓ |
+| `./tokens.css` | 변수만 담은 `:root` 한 장. Tailwind·비-VE 앱이 문다 | ✗ |
 | `./styles.css` | 컴파일된 CSS. **소비 앱이 한 번 import 한다** | ✗ |
 
 ## 설치

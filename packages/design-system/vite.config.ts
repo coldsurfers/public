@@ -1,6 +1,7 @@
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import dts from 'vite-plugin-dts'
+import { buildTokensCss } from './scripts/tokens-css'
 
 /**
  * 라이브러리 빌드 — **`.css.ts` 를 여기서 컴파일해 내보낸다.**
@@ -49,10 +50,26 @@ const injectStylesImport = {
   },
 }
 
+/**
+ * `dist/tokens.css` — 변수만 담은 두 번째 CSS 진입점. 내용과 무레이어 근거는 `scripts/tokens-css.ts`.
+ *
+ * VE 산출물이 아니라 토큰 값에서 직접 굽는다. `styles.css` 에서 변수 블록만 도려내려면 VE 가
+ * 어느 청크에 무엇을 실었는지에 의존해야 하는데, 그건 빌드 내부 사정이라 계약으로 삼을 수 없다.
+ *
+ * `fileName` 을 못박으므로 아래 `assetFileNames`(모든 `.css` → `styles.css`)를 타지 않는다.
+ */
+const emitTokensCss: Plugin = {
+  name: 'emit-tokens-css',
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'tokens.css', source: buildTokensCss() })
+  },
+}
+
 export default defineConfig({
   plugins: [
     vanillaExtractPlugin(),
     dts({ include: ['src'], tsconfigPath: './tsconfig.json', rollupTypes: true }),
+    emitTokensCss,
   ],
   build: {
     lib: {
