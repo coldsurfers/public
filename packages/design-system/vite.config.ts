@@ -37,7 +37,7 @@ import { buildTokensCss } from './scripts/tokens-css'
  * (실측 시점 기준 index·primitives·cards·layout·motion·sprinkles 만 걸린다.)
  *
  * 이 판정이 곧 두 규칙의 집행이기도 하다. `native` 는 RN 이라 CSS 를 물면 Metro 가 깨지고,
- * `tokens`·`tokens-native`·`style-utils` 는 번들러 없이 Node 에서 여는 길을 남겨둔다
+ * `tokens`·`tokens-native`·`style-utils`·`layers` 는 번들러 없이 Node 에서 여는 길을 남겨둔다
  * (CSS 를 물리면 `Unknown file extension ".css"` 로 막힌다) — 넷 다 `.css.ts` 가 없어서 걸리지
  * 않는다. 거기에 `.css.ts` 가 들어오는 순간 이 규칙이 깨진 것이고, 주입은 그 신호를 따라간다.
  */
@@ -83,6 +83,7 @@ export default defineConfig({
         native: 'src/native/index.ts',
         sprinkles: 'src/sprinkles.ts',
         'style-utils': 'src/css/style-utils.ts',
+        layers: 'src/css/layers.ts',
         motion: 'src/css/motion.css.ts',
       },
       formats: ['es'],

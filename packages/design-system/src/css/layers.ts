@@ -2,6 +2,11 @@
  * 레이어 **이름과 순서**의 TS 측 SSOT.
  *
  * 이 순서를 실제 CSS 로 발행하는 건 `layers.css.ts` 다.
+ *
+ * **`./layers` 서브패스로도 나간다.** 배럴(`.`)은 `styles.css` 를 물어서 번들러 없는 Node 에서
+ * 열리지 않는데(`Unknown file extension ".css"`), 순서를 검사하는 쪽은 대개 그런 자리다 —
+ * 소비 레포의 pre-push 게이트가 `LAYER_ORDER` 를 읽어 상대 순서를 본다. 값만 필요한 소비자가
+ * CSS 를 지불하지 않게 갈라 둔다.
  * 한 줄로 줄이면: Tailwind preflight(`@layer base`)가 컴포넌트 스타일을 이기면 padding·border 가
  * 전부 지워지므로 `base` 는 `ds-components` 보다 **앞**이어야 하고, 호출자가 넘긴 유틸이
  * 컴포넌트를 덮어야 하므로 `utilities` 는 **뒤**여야 한다.

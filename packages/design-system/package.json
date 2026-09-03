@@ -65,6 +65,10 @@
       "types": "./dist/style-utils.d.ts",
       "default": "./dist/style-utils.js"
     },
+    "./layers": {
+      "types": "./dist/layers.d.ts",
+      "default": "./dist/layers.js"
+    },
     "./motion": {
       "types": "./dist/motion.d.ts",
       "default": "./dist/motion.js"
