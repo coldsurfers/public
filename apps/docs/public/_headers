@@ -1,0 +1,10 @@
+# Cloudflare Workers 정적 자산의 응답 헤더. `public/` 은 정적 내보내기가 `out/` 로 그대로 옮긴다.
+#
+# `.txt` 를 charset 없이 `text/plain` 으로 내려주면 브라우저가 windows-1252 로 읽어 한글이
+# 깨진다. 바이트는 처음부터 UTF-8 이었다 — 라우트 핸들러가 붙인 charset 이 정적 내보내기에서
+# 사라지는 게 원인이라, 파일이 실제로 서빙되는 자리에서 다시 붙인다.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+
+/llms/*
+  Content-Type: text/plain; charset=utf-8
