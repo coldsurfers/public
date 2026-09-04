@@ -57,6 +57,42 @@
       "types": "./dist/native.d.ts",
       "default": "./dist/native.js"
     },
+    "./native/Button": {
+      "types": "./dist/native-Button.d.ts",
+      "default": "./dist/native-Button.js"
+    },
+    "./native/ConcertCard": {
+      "types": "./dist/native-ConcertCard.d.ts",
+      "default": "./dist/native-ConcertCard.js"
+    },
+    "./native/IconButton": {
+      "types": "./dist/native-IconButton.d.ts",
+      "default": "./dist/native-IconButton.js"
+    },
+    "./native/Modal": {
+      "types": "./dist/native-Modal.d.ts",
+      "default": "./dist/native-Modal.js"
+    },
+    "./native/Spinner": {
+      "types": "./dist/native-Spinner.d.ts",
+      "default": "./dist/native-Spinner.js"
+    },
+    "./native/Text": {
+      "types": "./dist/native-Text.d.ts",
+      "default": "./dist/native-Text.js"
+    },
+    "./native/TextInput": {
+      "types": "./dist/native-TextInput.d.ts",
+      "default": "./dist/native-TextInput.js"
+    },
+    "./native/Toast": {
+      "types": "./dist/native-Toast.d.ts",
+      "default": "./dist/native-Toast.js"
+    },
+    "./native/scheme": {
+      "types": "./dist/native-scheme.d.ts",
+      "default": "./dist/native-scheme.js"
+    },
     "./sprinkles": {
       "types": "./dist/sprinkles.d.ts",
       "default": "./dist/sprinkles.js"

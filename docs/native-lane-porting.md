@@ -21,7 +21,9 @@
    같은 시안을 다른 문법으로 쓰는 것이라, 값이 갈리면 버그다
 4. **계약을 `src/contract/` 에 올린다** — 아래 「계약」. **이 단계를 건너뛰면 포팅이 끝난 게
    아니다.** 값이 같은 건 방금 옮겼기 때문일 뿐, 다음 사람이 한쪽만 고치면 조용히 갈린다
-5. **`native/index.ts` 배럴에 추가**하고 `pnpm changeset` 을 남긴다
+5. **배럴과 진입점 둘 다 등록한다** — `native/index.ts` 에 export, `vite.config.ts` 의
+   `lib.entry` 에 `'native-X'`, `package.json` 의 `exports` 에 `./native/X`.
+   왜 셋인지는 아래 「소비」. 그리고 `pnpm changeset` 을 남긴다
 6. **`apps/docs/app/playground` 에서 눈으로 본다** (아래 「배선」)
 
 ## 무엇이 기계적이고 무엇이 판단인가
@@ -157,6 +159,46 @@ export interface ConcertCardProps extends ConcertCardBareProps {
   import 한 줄이고, RNW 에선 web 판이 그대로 그려져 시안 판정엔 지장이 없다
 
 ⚠️ 별칭은 `apps/docs`(private) 의 번들에만 걸린다. **발행물엔 영향이 없다.**
+
+## 소비 — 배럴이냐 서브패스냐
+
+**Metro 는 tree-shaking 을 하지 않는다.** 그래서 `./native` 배럴을 열면 아홉 개가 전부 딸려온다.
+아끼려면 소비처가 **`@coldsurfers/design-system/native/Button` 을 직접** 열어야 한다.
+
+근거(metro@0.87 실측):
+
+| 확인 | 결과 |
+| --- | --- |
+| `grep -rln "treeShak" metro*/src/` | **0건** |
+| `experimentalImportSupport` 기본값 | `false` |
+| `import()` 로 런타임 분리 | **프로덕션엔 없다** — `asyncRequire` 가 `global.__loadBundleAsync` 를 찾는데, RN 이 그걸 정의하는 자리는 `setUpDeveloperTools.js` 의 `if (__DEV__)` 블록 안이다 |
+
+Babel 이 `export const Button` 을 `exports.Button = ...` 대입으로 바꾸는 순간 런타임 접근이
+가능해지므로 죽은 export 를 지울 근거가 사라진다. **배럴은 스플리팅과 원리적으로 양립하지 않는다** —
+`export { X } from './X'` 아홉 줄은 최상단 `require()` 아홉 개가 된다.
+
+실측(전이 폐포):
+
+```
+native (배럴)     12파일  18,044 B
+native/Button      4파일   6,917 B   -62%
+native/scheme      3파일   4,890 B   -73%
+native/ConcertCard 5파일   9,499 B   -47%
+```
+
+**대가도 있다.** 청크가 갈리면서 배럴 폐포가 15,456 → 18,044 B (**+17%**) 로 늘었다.
+서브패스로 옮기는 쪽은 -62%, 안 옮기는 쪽은 +2.6 kB — 그게 이 선택의 값이다.
+
+배럴을 남기는 이유는 **빼면 major** 이기 때문이다(`exports` 맵이 API). 둘 다 열어 두고 고르게 한다.
+
+⚠️ **파일 이름은 평평하고(`dist/native-Button.js`) 공개 경로만 중첩이다(`./native/Button`).**
+`dist/native/Button` 으로 내보내면 `rollupTypes` 가 그 엔트리에 안 먹어서 `.d.ts` 에
+`from '../contract'` 같은 소스 트리 경로가 남고, 그건 `dist/` 에 없다 —
+`check:exports` 가 9개 전부 Internal resolution error 로 잡는다. `tokens-native` 가
+`./tokens/native` 로 열리는 것과 같은 처리다.
+
+**웹 레인엔 이 진입점들이 없다.** rollup 이 tree-shaking 을 하므로 배럴로 충분하다.
+이건 RN 번들러의 한계를 메우는 배선이지 API 취향이 아니다.
 
 ## 순서 규율
 

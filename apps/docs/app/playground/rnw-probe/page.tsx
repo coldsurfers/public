@@ -1,6 +1,7 @@
 'use client'
 
-import { Button, Text } from '@coldsurfers/design-system/native'
+import { Button } from '@coldsurfers/design-system/native/Button'
+import { Text } from '@coldsurfers/design-system/native/Text'
 import { View } from 'react-native'
 
 /**
@@ -12,6 +13,10 @@ import { View } from 'react-native'
  *
  * 이게 그려지면 native 레인을 포팅해도 **보면서** 할 수 있다는 뜻이고,
  * 안 그려지면 포팅해도 시안에선 확인이 안 된다.
+ *
+ * import 를 배럴이 아니라 **서브패스**(`/native/Button`)로 쓰는 것도 일부러다 — RN 소비처가
+ * 번들을 아끼려면 저렇게 열어야 하고(Metro 는 tree-shaking 이 없다), 여기서 쓰면 그 경로가
+ * 실제로 열린다는 게 **문서 빌드로 보증**된다. 배럴 쪽은 `/playground/coldsurf-mobile` 이 문다.
  */
 export default function RnwProbePage() {
   return (

@@ -58,6 +58,29 @@ const injectStylesImport = {
  *
  * `fileName` 을 못박으므로 아래 `assetFileNames`(모든 `.css` → `styles.css`)를 타지 않는다.
  */
+/**
+ * 「native 서브패스」 — RN 소비처가 배럴 대신 컴포넌트 하나만 물 수 있게 하는 자리.
+ *
+ * **Metro 는 tree-shaking 을 하지 않는다.** 번들러가 `export` 를 `exports.X = ...` 대입으로
+ * 바꿔 놓으면 런타임에 접근 가능해지므로 죽은 export 를 지울 근거가 사라진다
+ * (metro@0.87 기준: 소스에 treeShake 관련 코드 자체가 없고 `experimentalImportSupport` 기본값이 false).
+ *
+ * 그래서 **배럴은 스플리팅과 원리적으로 양립하지 않는다** — `export { Button } from './Button'`
+ * 아홉 줄은 최상단 `require()` 아홉 개가 되고, 그래프가 아홉을 전부 문다.
+ * 아끼는 유일한 길은 소비처가 `@coldsurfers/design-system/native/Button` 을 직접 여는 것이다.
+ *
+ * 웹 레인엔 이 진입점들이 필요 없다 — rollup 이 tree-shaking 을 하므로 배럴로 충분하다.
+ * **RN 번들러의 한계를 메우는 배선이지 API 취향이 아니다.**
+ *
+ * 배럴을 남기는 이유: 빼면 major 다(`exports` 맵이 API). 둘 다 열어 두고 소비처가 고른다.
+ *
+ * ⚠️ **파일 이름은 평평하다(`native-Button`), 공개 경로만 중첩이다(`./native/Button`).**
+ *    `dist/native/Button` 처럼 중첩해 내보내면 `rollupTypes` 가 그 엔트리에 안 먹어서
+ *    `.d.ts` 에 `from '../contract'` 같은 소스 트리 경로가 남고, 그건 `dist/` 에 없다
+ *    (실측: `check:exports` 가 9개 전부 Internal resolution error). `tokens-native` 가
+ *    `./tokens/native` 로 열리는 것과 같은 처리다 — 둘을 갈라 주는 게 `exports` 맵의 일이다.
+ */
+
 const emitTokensCss: Plugin = {
   name: 'emit-tokens-css',
   generateBundle() {
@@ -81,6 +104,17 @@ export default defineConfig({
         cards: 'src/cards/index.ts',
         layout: 'src/layout/index.ts',
         native: 'src/native/index.ts',
+        // 컴포넌트별 진입점 — 위 「native 서브패스」 주석 참조. 배럴(`native`)은 그대로 남는다.
+        // 파일 이름이 평평한 이유도 거기 적혀 있다(`tokens-native` 와 같은 이유).
+        'native-Button': 'src/native/Button.tsx',
+        'native-ConcertCard': 'src/native/ConcertCard.tsx',
+        'native-IconButton': 'src/native/IconButton.tsx',
+        'native-Modal': 'src/native/Modal.tsx',
+        'native-Spinner': 'src/native/Spinner.tsx',
+        'native-Text': 'src/native/Text.tsx',
+        'native-TextInput': 'src/native/TextInput.tsx',
+        'native-Toast': 'src/native/Toast.tsx',
+        'native-scheme': 'src/native/scheme.tsx',
         sprinkles: 'src/sprinkles.ts',
         'style-utils': 'src/css/style-utils.ts',
         layers: 'src/css/layers.ts',
