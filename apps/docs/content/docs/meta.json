@@ -3,6 +3,7 @@
   "pages": [
     "index",
     "tailwind",
+    "mcp",
     "---Foundations---",
     "foundations",
     "---Components---",
