@@ -1,0 +1,63 @@
+---
+title: MCP
+description: 에이전트가 이 문서를 직접 읽습니다 — 예제 코드 · props · 토큰 값까지.
+---
+
+`@coldsurfers/docs-mcp` 는 이 사이트를 에이전트에 물리는 [MCP](https://modelcontextprotocol.io)
+서버입니다. 붙이고 나면 Claude Code · Cursor 가 "Button 의 size 가 뭐뭐 있지" 를 추측하지 않고
+**여기서 읽습니다.**
+
+## 설치
+
+`@coldsurfers` 스코프는 GitHub Packages 에 있습니다. 레지스트리 설정은 [시작하기](/docs) 와 같습니다.
+
+<Tabs items={['Claude Code', 'Claude Desktop · Cursor']}>
+<Tab value="Claude Code">
+
+```bash
+claude mcp add coldsurf-docs -- npx -y @coldsurfers/docs-mcp
+```
+
+</Tab>
+<Tab value="Claude Desktop · Cursor">
+
+```json title="mcp.json"
+{
+  "mcpServers": {
+    "coldsurf-docs": {
+      "command": "npx",
+      "args": ["-y", "@coldsurfers/docs-mcp"]
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## 툴
+
+| 툴 | 하는 일 |
+| --- | --- |
+| `discover_docs` | 카테고리 구조와 문서 수. 먼저 부릅니다 |
+| `list_docs` | 제목 · 경로 · 한 줄 설명. `category` 로 좁힙니다 |
+| `get_doc` | 본문 하나 — 예제 코드 · props 표 · 토큰 값이 들어 있습니다 |
+
+`get_doc` 이 돌려주는 것은 **이 페이지들이 그리는 것과 같은 데이터**입니다. 예제는
+`examples/*.tsx` 원본, props 표는 DS 소스 타입, 토큰 값은 발행된 토큰에서 나옵니다 —
+사람이 옮겨 적은 값이 하나도 없어서, 문서가 조용히 거짓말을 할 자리가 없습니다.
+
+## 문서를 들고 있지 않습니다
+
+패키지에 문서 사본이 없습니다. 이 사이트가 굽는 [`/llms.txt`](/llms.txt)(색인)와
+`/llms/<경로>.txt`(본문)를 읽어올 뿐입니다.
+
+번들했다면 발행 시점에 얼어붙어, 문서를 고칠 때마다 패키지를 다시 내야 합니다. 그러지 않으면
+소비자가 옛 문서를 최신인 줄 알고 읽습니다 — **틀린 문서보다 나쁜 건 틀린 줄 모르는 문서입니다.**
+카테고리 목록조차 색인에서 세는 이유도 같습니다.
+
+<Callout>
+MCP 없이도 됩니다. [`/llms.txt`](/llms.txt) 를 직접 물리면 색인이 열리고, 링크가
+`/llms/components/button.txt` 같은 평문 사본을 가리킵니다. MCP 는 그 위에 얹은 **목록 · 검색 ·
+경로 검증**이지 다른 데이터가 아닙니다.
+</Callout>

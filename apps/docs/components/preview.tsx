@@ -1,7 +1,6 @@
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock'
 import type { ComponentType } from 'react'
+import { readExampleSource } from '@/lib/example-source'
 
 /**
  * 라이브 미리보기 — **`examples/*.tsx` 파일 하나가 화면과 코드 양쪽의 정본**이다.
@@ -16,7 +15,7 @@ import type { ComponentType } from 'react'
 export async function Preview({ name, padded = true }: { name: string; padded?: boolean }) {
   const [mod, source] = await Promise.all([
     import(`../examples/${name}.tsx`) as Promise<{ default: ComponentType }>,
-    fs.readFile(path.join(process.cwd(), 'examples', `${name}.tsx`), 'utf8'),
+    readExampleSource(name),
   ])
 
   const Demo = mod.default
@@ -31,14 +30,9 @@ export async function Preview({ name, padded = true }: { name: string; padded?: 
       </div>
       <DynamicCodeBlock
         lang="tsx"
-        code={stripDirectives(source)}
+        code={source}
         codeblock={{ className: 'rounded-none border-0 border-t border-fd-border' }}
       />
     </div>
   )
-}
-
-/** `'use client'` 지시문은 예제의 본질이 아니라 Next 사정이다 — 코드 블록에서 지운다. */
-function stripDirectives(source: string): string {
-  return source.replace(/^'use client'\n+/, '').trimEnd()
 }

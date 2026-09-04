@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getLLMText, llmSegments, pageSlugsFromLLMSegments, source } from '@/lib/source'
+import { getLLMText } from '@/lib/llm-text'
+import { llmSegments, pageSlugsFromLLMSegments, source } from '@/lib/source'
 
 export const revalidate = false
 
