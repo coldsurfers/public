@@ -1,6 +1,5 @@
-import type { ReactNode } from 'react'
+import type { ConcertCardBareProps, ConcertCardVariant } from '../contract'
 import { CoverBlock, cx } from '../primitives'
-import type { CoverTone } from '../tokens'
 import * as s from './ConcertCard.css'
 
 /**
@@ -14,46 +13,26 @@ import * as s from './ConcertCard.css'
  *
  * 섀시는 세 벌이다 — `variant` 참고.
  */
-export interface ConcertCardProps {
-  tone: CoverTone
-  /** 커버 대형 이니셜(자모). `posterUrl` 없을 때만 노출. `cover` 는 제목이 이미 커버 위라 안 쓴다. */
-  initial: string
-  /** 실제 포스터 URL. 있으면 tone·이니셜 대신 포스터가 커버를 채운다. */
-  posterUrl?: string | null
+/**
+ * 공통분(`tone`·`initial`·`posterUrl`·`title`·`meta`·`footer`·`coverAction`·
+ * `reserveTitleLines`)은 **계약에서 온다** — native 구현이 같은 인터페이스를 쓴다.
+ * 여기 적는 건 **웹에만 있는 것**뿐이다.
+ */
+export interface ConcertCardProps extends ConcertCardBareProps {
   /** 취향 매치 라벨 — `96% 취향`. 없으면 미노출. **`framed` 전용** (시안의 `bare` 엔 자리가 없다). */
   matchLabel?: string
   /** 커버 좌상단 mono 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
   eyebrow?: string
-  title: string
-  /** `롤링홀 · 서울 · 7.24 금`. */
-  meta: string
-  /** meta 아래 슬롯(시안 MatchWhy) — 매칭 근거 줄 등. 없으면 미노출. `cover` 엔 자리가 없다. */
-  footer?: ReactNode
-  /**
-   * 커버 액션 슬롯 — 시안 `btn/save`. `framed`·`bare` 는 **우하단**, `cover` 는 시안대로 **우상단**.
-   * 자리·정렬만 카드가 정하고 내용물(버튼)은 소비처가 준다.
-   * 카드 전체가 `Link` 안이면 소비처 버튼이 `preventDefault` 로 내비를 막아야 한다.
-   */
-  coverAction?: ReactNode
   /**
    * `framed`(기본) — 테두리·배경 있는 액자 카드(`/live-events`·`/nearby`·`/gig-guide`).
    * `bare` — 시안 dice.fm 리스킨(Figma `931:32`·`931:259`): 섀시 없이 4:3 포스터 블록 + 그 아래 3줄
    * 텍스트. `/`(트렌딩 레일)·`/@<handle>`(담은 공연 그리드)이 쓴다.
    * `cover` — 시안 날짜 피드 리스킨(Figma `1093:171`·`1093:576`): 세로 커버 한 장에 eyebrow·담기·
    * 제목을 **얹고** 커버 아래엔 메타 1줄. `/live-events/new` 와 그 날짜 상세가 쓴다.
-   */
-  variant?: 'framed' | 'bare' | 'cover'
-  /**
-   * 제목 **2줄 높이를 예약**한다 (`bare` 전용, 기본 off).
    *
-   * 켜는 자리 = **그리드** — 카드가 가로로 줄지어 서므로, 제목 줄 수가 다른 이웃끼리 날짜·공연장
-   * 줄이 어긋난다. 예약하면 그 줄들이 행 단위로 정렬된다.
-   * 끄는 자리 = **레일** — 시안(`931:84`)이 1줄 제목 기준이라, 예약하면 제목 아래 빈 줄이 생겨
-   * 시안과 어긋난다. 가로 스크롤이라 정렬 이득도 그리드만 못하다.
-   *
-   * `framed` 는 자체 `minHeight` 로 항상 예약하므로 이 prop 을 보지 않는다.
+   * ⚠️ native 는 `bare` 만 구현한다 — 그래서 그쪽엔 이 prop 이 아예 없다.
    */
-  reserveTitleLines?: boolean
+  variant?: ConcertCardVariant
   className?: string
 }
 

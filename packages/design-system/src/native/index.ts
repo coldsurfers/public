@@ -12,6 +12,7 @@
  * 축을 늘려야 하면 **웹부터 늘린다.** 여기서 먼저 늘리면 계약이 갈라진다.
  */
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
+export { ConcertCard, type ConcertCardProps } from './ConcertCard'
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { Modal, type ModalProps } from './Modal'
 export { Spinner, type SpinnerProps } from './Spinner'
