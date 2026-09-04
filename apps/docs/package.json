@@ -22,12 +22,16 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@emotion/native": "11.11.0",
+    "@emotion/react": "11.10.6",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/mdx": "^2.0.14",
     "@types/node": "^22.10.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "postcss": "^8.5.26",
+    "react-native": "0.87.0",
+    "react-native-web": "^0.21.2",
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
     "wrangler": "^4.48.0"

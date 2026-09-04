@@ -1,0 +1,28 @@
+/*
+ * 폰 프레임만 남았다 — **화면 안쪽은 CSS 를 쓰지 않는다.**
+ *
+ * `page.tsx` 가 `react-native` 로만 짜여 있어(스타일은 `@emotion/native`) 여기 올 것이 없다.
+ * 프레임은 화면의 일부가 아니라 화면을 **넣어 두는 상자**라 웹에 남는다 —
+ * 실제 앱에서 이 자리는 기기다.
+ */
+
+/* iPhone 15 논리 해상도(393×852). 원본이 모바일 앱이라 그 폭에서 봐야 판정이 된다. */
+.bh-frame {
+  width: 393px;
+  height: 852px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 44px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+/* RNW 는 루트를 감싸는 자리에 높이를 안 주면 0 으로 접힌다. */
+.bh-frame > * {
+  flex: 1;
+  min-height: 0;
+}
