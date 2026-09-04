@@ -1,0 +1,123 @@
+---
+title: Tailwind CSS
+description: 토큰을 `@theme` 로 이어 붙여 `bg-bg` · `p-4` 가 우리 값을 쓰게 만듭니다.
+---
+
+`@coldsurfers/tailwind4-theme` 는 토큰을 Tailwind v4 의 `@theme` 로 옮긴 **CSS 한 장**입니다.
+JS 는 없고, Tailwind 를 안 쓰는 소비자는 설치를 안 해 0 바이트입니다 — DS 의 `exports` 에
+올리지 않고 패키지를 가른 이유입니다.
+
+## 설치
+
+`@coldsurfers` 스코프는 GitHub Packages 에 있습니다. 레지스트리 설정은 [시작하기](/docs) 와 같습니다.
+
+```bash
+pnpm add -D @coldsurfers/tailwind4-theme
+```
+
+`tailwindcss@4` 와 `@coldsurfers/design-system` 이 peer 입니다. **값의 정본은 DS 쪽**이고 이
+패키지는 그 값을 `var()` 로 참조만 하므로, 변수 시트를 반드시 같이 물어야 합니다.
+
+## 배선
+
+<Tabs items={['토큰만', 'DS 컴포넌트까지']}>
+<Tab value="토큰만">
+
+Tailwind 로 화면을 짜면서 색 · 간격만 우리 값으로 맞출 때입니다.
+
+```css title="app/global.css"
+@import "tailwindcss";
+@import "@coldsurfers/design-system/tokens.css";
+@import "@coldsurfers/tailwind4-theme";
+```
+
+`tokens.css` 는 무레이어 `:root` 한 장입니다 — 리셋도 컴포넌트 CSS 도 들어 있지 않습니다.
+레이어 밖이라 캐스케이드 다툼도 없고, 그래서 이 조합은 **import 순서를 타지 않습니다**.
+
+</Tab>
+<Tab value="DS 컴포넌트까지">
+
+`Button` · `ConcertCard` 같은 primitives 를 같이 쓸 때입니다.
+
+```css title="app/global.css"
+@import "@coldsurfers/design-system/styles.css";
+@import "tailwindcss";
+@import "@coldsurfers/tailwind4-theme";
+```
+
+`styles.css` 가 `tokens.css` 의 이름과 값을 전부 품고 있으므로 둘을 같이 물 필요는 없습니다.
+
+<Callout type="warn">
+**`styles.css` 가 `tailwindcss` 보다 먼저여야 합니다.** 레이어 순서는 이름이 *처음 등장한*
+순서로 굳고, 나중 선언이 그걸 되돌리지 못합니다. 실측(v4.3.3):
+
+```
+tailwind 먼저 → base · components · utilities · ds-reset · ds-tokens · ds-components · ds-utilities
+DS 먼저      → base · ds-reset · ds-tokens · ds-components · components · ds-utilities · utilities
+```
+
+앞쪽에서는 `ds-components` 가 Tailwind `utilities` 를 이깁니다 — `p-4` 로 컴포넌트 여백을
+덮으려 해도 먹지 않습니다.
+</Callout>
+
+</Tab>
+</Tabs>
+
+<Callout>
+`@layer …;` 선언을 손으로 적지 않습니다. `styles.css` 의 첫 줄이 [순서 계약](/docs/foundations/layers)을
+직접 발행합니다 — 적어야 할 건 import 순서 하나뿐입니다.
+</Callout>
+
+## 무엇이 열리는가
+
+`@theme` 는 Tailwind 네임스페이스에 이름을 얹을 뿐입니다. **값은 여기 없습니다** — 아래 표의
+"정본" 이 값을 갖습니다.
+
+| 네임스페이스 | 유틸 | 정본 |
+| --- | --- | --- |
+| `--color-*` | `bg-bg` · `text-heading` · `border-border` | [색](/docs/foundations/colors) |
+| `--color-cover-*` | `bg-cover-forest` · `text-cover-plum` | [색](/docs/foundations/colors) |
+| `--color-paper-*` | `bg-paper-warm` | [색](/docs/foundations/colors) |
+| `--radius-*` | `rounded-lg` · `rounded-full` | [색](/docs/foundations/colors) |
+| `--spacing-*` | `p-4` · `gap-2.5` · `mt-14` | [여백](/docs/foundations/spacing) |
+| `--text-*` | `text-sm` · `text-3xs` | [타이포](/docs/foundations/typography) |
+| `--text-{그룹}-{크기}` | `text-display-md` · `text-eyebrow-sm` | [타이포](/docs/foundations/typography) |
+| `--leading-*` · `--font-weight-*` | `leading-relaxed` · `font-regular` | [타이포](/docs/foundations/typography) |
+| `--font-*` | `font-sans` · `font-serif` · `font-mono` | [타이포](/docs/foundations/typography) |
+| `--breakpoint-*` | `tablet:p-8` · `desktop:p-10` | [계약과 레이어](/docs/foundations/layers) |
+
+```tsx
+<article className="rounded-xl border border-border bg-surface p-6">
+  <p className="text-eyebrow-md font-mono uppercase text-muted">now playing</p>
+  <h2 className="text-display-md font-serif text-heading">Slowdive</h2>
+  <p className="text-sm leading-relaxed text-body">Souvlaki, 1993</p>
+</article>
+```
+
+`uppercase` 를 직접 적은 게 실수가 아닙니다 — 아래 "안 넘어오는 것" 을 보세요.
+
+## 좌표계가 둘이 됩니다
+
+Tailwind 기본 스케일은 지워지지 않습니다. 우리 이름이 **덮어쓴 자리만** 바뀌고 나머지는 그대로
+살아 있어서, 같은 뜻의 이름이 둘씩 생깁니다.
+
+<Callout type="warn">
+- `sm:` · `md:` · `lg:` 가 그대로입니다. `tablet:`(768px)과 `md:`(48rem)은 값이 같지만 이름이
+  둘입니다 — 팀에서 하나로 정해 씁니다
+- 스케일 밖 값도 조용히 컴파일됩니다. `p-9` 는 `calc(var(--spacing) * 9)` 로 떨어집니다 —
+  4px 격자를 벗어난 걸 Tailwind 가 막아주지 않습니다
+- `font-bold`(700)는 Tailwind 기본값입니다. 토큰의 무게는 `light` · `regular` · `medium` ·
+  `semibold` 넷뿐입니다
+</Callout>
+
+## 안 넘어오는 것
+
+- **`textTransform`.** eyebrow 는 대문자 변환이 스타일의 일부지만 `--text-*` 네임스페이스로는
+  크기 · 행간 · 자간까지만 표현됩니다. `uppercase` 는 직접 적습니다
+- **`sprinkles` · `vars` · 컴포넌트 recipe.** JS 쪽 계약이라 CSS 한 장에 담기지 않습니다.
+  `.css.ts` 를 직접 쓰는 소비자는 [계약과 레이어](/docs/foundations/layers)로 갑니다
+
+## 이름에 `4` 가 붙은 이유
+
+Tailwind major 마다 `@theme` 규약이 갈립니다. 이름에 major 를 박아 두면 v5 용을 **나란히** 낼 수
+있습니다 — 기존 소비자를 깨지 않고. (선례: `@seed-design/tailwind4-theme`)

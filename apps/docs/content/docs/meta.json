@@ -2,6 +2,7 @@
   "title": "Design System",
   "pages": [
     "index",
+    "tailwind",
     "---Foundations---",
     "foundations",
     "---Components---",
