@@ -1,4 +1,4 @@
-# @coldsurfers/docs-mcp
+# @coldsurfers/design-system-mcp
 
 [COLDSURF 디자인 시스템 문서](https://design.coldsurf.io)를 에이전트가 직접 읽는 MCP 서버.
 
@@ -17,7 +17,7 @@
 ### Claude Code
 
 ```bash
-claude mcp add coldsurf-docs -- npx -y @coldsurfers/docs-mcp
+claude mcp add coldsurf-ds -- npx -y @coldsurfers/design-system-mcp
 ```
 
 ### Claude Desktop · Cursor
@@ -25,9 +25,9 @@ claude mcp add coldsurf-docs -- npx -y @coldsurfers/docs-mcp
 ```json
 {
   "mcpServers": {
-    "coldsurf-docs": {
+    "coldsurf-ds": {
       "command": "npx",
-      "args": ["-y", "@coldsurfers/docs-mcp"]
+      "args": ["-y", "@coldsurfers/design-system-mcp"]
     }
   }
 }
