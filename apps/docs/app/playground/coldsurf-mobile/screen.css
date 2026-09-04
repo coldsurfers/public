@@ -1,0 +1,81 @@
+/*
+ * 폰 프레임만 남았다 — **화면 안쪽은 CSS 를 쓰지 않는다.**
+ *
+ * `page.tsx` 가 `react-native` 로만 짜여 있어(스타일은 `@emotion/native`) 여기 올 것이 없다.
+ * 프레임은 화면의 일부가 아니라 화면을 **넣어 두는 상자**라 웹에 남는다 —
+ * 실제 앱에서 이 자리는 기기다.
+ */
+
+/* iPhone 15 논리 해상도(393×852). 원본이 모바일 앱이라 그 폭에서 봐야 판정이 된다. */
+.cm-frame {
+  width: 393px;
+  height: 852px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  /*
+   * 모서리를 둥글리지 않는다 — Figma 시안 프레임(`2468:1264`)이 390×844 **직사각형**이다.
+   * 기기 라운딩을 흉내 내면 시안과 겹쳐 볼 때 가장자리가 어긋나 판정이 흐려진다.
+   */
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * ── 기기 크롬 ──
+ *
+ * status bar 와 home indicator 는 **화면이 아니라 기기**다 — 실제 앱에서 이 자리는 OS 가
+ * 그리고, 앱은 안전 영역만 피해 간다. 그래서 RN 트리가 아니라 프레임 층에 남는다.
+ * `page.tsx` 를 billets-app 에 그대로 붙일 수 있다는 전제가 여기서 지켜진다.
+ *
+ * 색은 CSS 가 아니라 `page.tsx` 가 인라인으로 넣는다 — native 스킴은 `light` 하나뿐이라
+ * `var(--bg)`(문서 사이트 테마)를 쓰면 다크에서 어긋난다.
+ */
+.cm-statusbar {
+  flex: none;
+  height: 54px;
+  padding: 17px 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.cm-statusbar-signals {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 앱이 사는 자리 — 여기부터 아래가 `page.tsx` 의 RN 트리다. 탭바의 `absolute` 기준점이기도 하다. */
+.cm-screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* RNW 는 루트를 감싸는 자리에 높이를 안 주면 0 으로 접힌다. */
+.cm-screen > * {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 탭바가 `paddingBottom` 으로 이미 비워 둔 자리에 얹힌다. */
+.cm-home-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  width: 140px;
+  height: 5px;
+  margin-left: -70px;
+  border-radius: 3px;
+  opacity: 0.3;
+  pointer-events: none;
+}

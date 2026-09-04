@@ -28,6 +28,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 | `.css.ts` | `@layer` 를 벗어나지 않았는가 — 컴포넌트 스타일은 `ds-components` |
 | peer/deps 이동 | 컴파일된 `dist/` 가 실제로 그걸 import 하는가 (VE 는 build-time 과 runtime 이 갈린다) |
 | primitives 추가·변경 | `apps/docs` 에 페이지가 있는가 · 미리보기가 실제로 그려지는가 |
+| `src/native/**` | 웹에 이미 있는 것을 옮기는가 · 절차는 [`docs/native-lane-porting.md`](docs/native-lane-porting.md) |
 
 ## 공개 패키지라서 다른 것
 

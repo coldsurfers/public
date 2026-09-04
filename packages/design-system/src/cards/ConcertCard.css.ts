@@ -1,5 +1,6 @@
 import { style } from '@vanilla-extract/css'
 import { recipe } from '@vanilla-extract/recipes'
+import { CONCERT_CARD_BARE_SPEC as bare } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
@@ -13,13 +14,20 @@ import { alpha, lineClamp } from '../css/style-utils'
  * 선언하게 되는데, 그건 recipe 가 아니라 두 스타일을 한 이름에 욱여넣은 것이다.
  */
 
-/* ── bare — 시안 dice.fm 리스킨(931:32·931:259). 섀시 없이 4:3 포스터 + 3줄 텍스트 ── */
+/* ── bare — 시안 dice.fm 리스킨(931:32·931:259). 섀시 없이 4:3 포스터 + 3줄 텍스트 ──
+ *
+ * 치수는 `contract/concert-card.ts` 의 `CONCERT_CARD_BARE_SPEC` 이 정본이다 — native 구현이
+ * 같은 표를 읽으므로 여기 숫자를 손으로 고치면 두 레인이 갈린다.
+ *
+ * `@media(tablet)` 값만 리터럴로 남는다. RN 엔 미디어 쿼리가 없어 **갈라질 짝이 없고**,
+ * 짝이 없으면 계약이 아니다(`contract/index.ts` 불변식).
+ */
 
 export const bareRoot = style(
   inComponentsLayer({
     display: 'flex',
     flexDirection: 'column',
-    gap: 11,
+    gap: bare.gap,
     '@media': { [media.tablet]: { gap: 13 } },
   }),
 )
@@ -27,9 +35,9 @@ export const bareRoot = style(
 export const bareCover = style(
   inComponentsLayer({
     position: 'relative',
-    aspectRatio: '4 / 3',
+    aspectRatio: bare.coverAspectRatio,
     width: '100%',
-    borderRadius: 8,
+    borderRadius: bare.coverRadius,
   }),
 )
 
@@ -41,10 +49,10 @@ export const bareInitial = style(
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: 700,
-    fontSize: 62,
+    fontWeight: bare.titleFontWeight,
+    fontSize: bare.initialFontSize,
     lineHeight: 1,
-    color: alpha(vars.paper.warm, 20),
+    color: alpha(vars.paper.warm, bare.initialOpacity * 100),
     '@media': { [media.tablet]: { fontSize: 76 } },
   }),
 )
@@ -52,8 +60,8 @@ export const bareInitial = style(
 export const bareCoverAction = style(
   inComponentsLayer({
     position: 'absolute',
-    right: 10,
-    bottom: 10,
+    right: bare.coverActionInset,
+    bottom: bare.coverActionInset,
     '@media': { [media.tablet]: { right: 12, bottom: 12 } },
   }),
 )
@@ -62,7 +70,7 @@ export const bareMeta = style(
   inComponentsLayer({
     display: 'flex',
     flexDirection: 'column',
-    gap: 2,
+    gap: bare.metaGap,
     '@media': { [media.tablet]: { gap: 3 } },
   }),
 )
@@ -73,10 +81,10 @@ export const bareMeta = style(
  */
 export const bareTitle = recipe({
   base: inComponentsLayer({
-    ...lineClamp(2),
-    fontWeight: 700,
-    fontSize: 15,
-    lineHeight: '21px',
+    ...lineClamp(bare.titleLines),
+    fontWeight: bare.titleFontWeight,
+    fontSize: bare.titleFontSize,
+    lineHeight: `${bare.titleLineHeight}px`,
     color: vars.color.strong,
     '@media': { [media.tablet]: { fontSize: 16, lineHeight: '23px' } },
   }),
@@ -84,7 +92,7 @@ export const bareTitle = recipe({
   variants: {
     reserve: {
       true: inComponentsLayer({
-        minHeight: 42,
+        minHeight: bare.titleReservedHeight,
         '@media': { [media.tablet]: { minHeight: 46 } },
       }),
       false: {},
@@ -97,8 +105,8 @@ export const bareTitle = recipe({
 export const bareLine = style(
   inComponentsLayer({
     ...lineClamp(1),
-    fontSize: 13.5,
-    lineHeight: '21px',
+    fontSize: bare.metaFontSize,
+    lineHeight: `${bare.metaLineHeight}px`,
     color: vars.color.text,
     '@media': { [media.tablet]: { fontSize: 15, lineHeight: '23px' } },
   }),

@@ -7,7 +7,7 @@
  * | 층 | 무엇 | 여기 |
  * | --- | --- | --- |
  * | 타입 | `ButtonVariant` 같은 유니온 축 | ✅ 지금 |
- * | 값 | 축 → 치수·토큰키 표 (`BUTTON_SPEC`) | ✅ 들어올 자리 |
+ * | 값 | 축 → 치수·토큰키 표 | ✅ `CONCERT_CARD_BARE_SPEC` · `BUTTON_SPEC` 은 아직 자리만 |
  * | 스타일 | VE recipe · emotion 객체 | ❌ 각 구현 |
  *
  * 스타일이 못 넘어오는 이유는 `native/index.ts` 에 적혀 있다 — VE 의 산출물은 CSS 문자열이고
@@ -30,12 +30,21 @@
  * - **진입점으로 열지 않는다.** `exports` 맵에 오른 이름은 빼는 게 major 다. 두 배럴이 필요한
  *   이름을 재수출하고 `rollupTypes` 가 엔트리별 d.ts 로 말아 넣는다.
  * - **한쪽에만 있는 컴포넌트의 축은 올라오지 않는다.** 갈라질 상대가 없으면 계약이 아니다.
- * - **prop 인터페이스 전체를 올리지 않는다.** 웹은 `ButtonHTMLAttributes` 를, native 는
- *   `TouchableOpacityProps` 를 extends 한다 — 공통 조상이 없다. 억지로 만든 `BaseProps` 는
- *   웹의 `asChild` 와 native 의 `label` 이 갈 곳을 잃게 만든다.
+ * - **플랫폼 타입을 extends 하는 컴포넌트의 prop 인터페이스는 올리지 않는다.** 웹 `Button` 은
+ *   `ButtonHTMLAttributes` 를, native 는 `TouchableOpacityProps` 를 extends 한다 — 공통 조상이
+ *   없어서, 억지로 만든 `BaseProps` 는 웹의 `asChild` 와 native 의 `label` 이 갈 곳을 잃게 만든다.
+ *
+ *   **양쪽 다 아무것도 extends 하지 않으면 이 근거가 성립하지 않으므로 올린다** —
+ *   `ConcertCardBareProps` 가 그 경우다. 각 구현은 자기만 있는 prop(웹의 `className`·`variant`)
+ *   을 얹어 확장한다. 판정 기준은 *prop 이라서* 가 아니라 **갈 곳 없는 prop 이 생기는가** 다.
  * - **토큰 타입·값을 올리지 않는다.** `tokens/` 가 정본이다.
  *
  * 축을 늘리는 순서는 그대로다 — 웹 구현부터 늘리고, 그다음 여기에 이름을 올린다.
  */
 export type { ButtonSize, ButtonVariant } from './button'
+export {
+  CONCERT_CARD_BARE_SPEC,
+  type ConcertCardBareProps,
+  type ConcertCardVariant,
+} from './concert-card'
 export type { ToastTone } from './toast'

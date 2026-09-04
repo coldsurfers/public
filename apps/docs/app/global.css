@@ -2,7 +2,24 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
+/*
+ * 문서 크롬까지 Pretendard 로 통일한다 — **`ds-bridge.css` 를 건드리지 않고.**
+ *
+ * 캐스케이드가 이렇게 서 있다:
+ *   1. `@layer base`  tailwind preflight  `html { font-family: var(--default-font-family, …) }`
+ *   2. `@layer ds-reset`  DS  `body { font-family: var(--font-family-sans) }`
+ *   3. 레이어 밖  `ds-bridge.css`  `body { font-family: inherit }`   ← 2를 이긴다
+ *
+ * 3번은 사고가 아니라 장치다. DS 가 문서 크롬 타이포까지 가져가지 않도록 body 를 되돌린다
+ * (`AGENTS.md` 「CSS 캐스케이드」). 그래서 body 를 다시 덮는 대신 **1번이 읽는 변수를 바꾼다** —
+ * body 는 계속 `inherit` 이고, 상속의 출처인 html 이 Pretendard 가 되면 전부 따라온다.
+ * 되돌리기 장치는 그대로 살아 있고, 통일은 그 위에서 이뤄진다.
+ *
+ * 이 규칙이 레이어 밖이라 tailwind 의 `@layer theme` 기본값(`var(--font-sans)`)을 이긴다.
+ * `--font-family-sans` 는 모든 페이지에 실리는 청크가 정의한다(DS 토큰 `:root` 블록).
+ */
 html {
+  --default-font-family: var(--font-family-sans);
   scrollbar-gutter: stable;
 }
 
