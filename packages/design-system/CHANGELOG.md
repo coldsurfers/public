@@ -1,5 +1,17 @@
 # @coldsurfers/design-system
 
+## 0.14.0
+
+### Minor Changes
+
+- [#62](https://github.com/coldsurfers/public/pull/62) [`c5803cf`](https://github.com/coldsurfers/public/commit/c5803cfcf118fd510e4c9df53ebc40b5801b3183) Thanks [@yungblud](https://github.com/yungblud)! - `./native` 에 `ConcertCard` 를 낸다 — 웹 `cards/ConcertCard` 의 `bare` 섀시를 RN 으로 옮긴 것. 두 레인이 `contract/concert-card.ts` 하나를 읽는다(props · 치수 표 · variant 축)라 값이나 이름이 갈릴 수 없다. native 는 `bare` 만 구현하므로 그쪽엔 `variant` prop 이 없다.
+
+- [#62](https://github.com/coldsurfers/public/pull/62) [`7fc0023`](https://github.com/coldsurfers/public/commit/7fc0023d6eb71391c8b69bbd1b7d0b0875b5859c) Thanks [@yungblud](https://github.com/yungblud)! - native 레인에 컴포넌트별 진입점을 연다 — `./native/Button` 처럼.
+
+  Metro 는 tree-shaking 을 하지 않아 `./native` 배럴을 열면 9개가 전부 번들된다.
+  서브패스로 열면 `Button` 기준 전이 폐포가 18,044 → 6,917 B (-62%) 다.
+  배럴은 그대로 남으므로 기존 소비처는 바꿀 것이 없다.
+
 ## 0.13.0
 
 ### Minor Changes
