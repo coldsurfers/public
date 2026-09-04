@@ -2,10 +2,20 @@
 
 import { Button, ConcertCard, Text, useScheme } from '@coldsurfers/design-system/native'
 import type { CoverTone } from '@coldsurfers/design-system/tokens'
-import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
-import { Bookmark, House, MapPin, Search, Tickets, UserRound } from 'lucide-react'
+import { nativeSpacing, paper } from '@coldsurfers/design-system/tokens/native'
+import {
+  BatteryFull,
+  Bookmark,
+  House,
+  MapPin,
+  Search,
+  Signal,
+  Tickets,
+  UserRound,
+  Wifi,
+} from 'lucide-react'
 import { useState } from 'react'
-import { Image, Pressable, ScrollView, View } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
 import './screen.css'
 
 /**
@@ -31,7 +41,8 @@ import './screen.css'
  * **이식 가능성**이 되는 지점이다.
  *
  * 두 곳만 웹이다:
- *   - 폰 프레임(`screen.css`) — 화면이 아니라 화면을 담는 상자다
+ *   - 폰 프레임과 기기 크롬(`screen.css`) — status bar·home indicator 는 화면이 아니라
+ *     **기기**다. 실제 앱에서 OS 가 그리는 자리라 RN 트리에 넣으면 옮길 때 지워야 한다
  *   - 아이콘(`lucide-react`) — 실제 RN 은 `lucide-react-native` 로 바꾼다. 이름·props 가 같아
  *     import 한 줄이고, RNW 에선 web 판이 그대로 그려져 시안 판정엔 지장이 없다
  *
@@ -41,14 +52,27 @@ import './screen.css'
  * | --- | --- |
  * | `ConcertListItem size="small"` (레일 카드) | `native/ConcertCard` |
  * | `ConcertSubscribeButton` (커버 오버레이) | `ConcertCard` 의 `coverAction` 슬롯 |
- * | `LocationSelector` · `GenreSelector` | `native/Button variant="outline" size="sm"` |
- * | `NavigationHeader.Brand` 브랜드 줄 | **없음** — 로고 + 워드마크로 조립 |
+ * | `LocationSelector` | `native/Button variant="accent" size="sm"` (고른 상태) |
+ * | `GenreSelector` | **없음** — 언더라인 탭 스트립으로 조립 |
+ * | `NavigationHeader.Brand` 브랜드 줄 | **없음** — 페이지 제목으로 대체(아래 「Figma 이식」) |
  * | `FeedHorizontalEvents` 제목 블록 · 레일 | **없음** — 여기서 조립 |
  * | `TabBar` | **없음** — 여기서 조립 |
  *
- * 워딩은 원본 문자열 그대로다 — `COLDSURF` · 도시명 · `모든 장르` · 섹션 제목 5벌.
- * 셀렉터 둘은 원본이 흰 배경 + shadow 의 rounded-8 버튼인데, DS 에 그 그림자 어휘가 없어
- * `outline`(흰 배경 + 테두리)로 옮겼다. 리스킨은 값을 베끼는 게 아니라 어휘를 갈아끼우는 것이다.
+ * 워딩은 원본 문자열이 정본이다 — 도시명 · `모든 장르` · 섹션 제목 5벌. **장르 4개
+ * (`인디`·`록`·`재즈`·`일렉트로닉`)만 목업**이다: 원본 `GenreSelector` 는 모달이라 스트립에
+ * 걸 라벨 목록이 없다. 리스킨은 값을 베끼는 게 아니라 어휘를 갈아끼우는 것이다.
+ *
+ * ## Figma 이식 (`Axp7xi5pl6K4Rvq9cPGSuQ` · `2467:1095`)
+ *
+ * 같은 앱의 **커뮤니티** 화면 시안에서 *시각 언어만* 가져왔다 — 화면 내용은 피드 그대로다.
+ * 넘어온 것 넷: 기기 크롬 · `3xl` 페이지 제목 · 언더라인 탭 스트립 · accent 로 표시하는
+ * active 상태. 이 넷은 전부 DS 어휘 안에서 서므로 새 컴포넌트가 필요 없었다.
+ *
+ * ⚠️ **넘어오지 못한 것 하나 — 풀폭 가로 리스트 카드.** 시안의 주력 카드는 커버가 왼쪽,
+ * 텍스트 5줄이 오른쪽인데 `ConcertCard` 는 **웹·native 양쪽 다 `flexDirection: 'column'`
+ * 전용**이고, 치수 표(`CONCERT_CARD_BARE_SPEC`)는 공개 export 가 아니다. 여기서 조립하면
+ * 커버 치수를 두 번 적게 되어 계약이 갈린다 — `contract/concert-card.ts` 가 막으려던 바로 그
+ * 일이다. 그래서 레일 카드를 그대로 뒀다. **가로 축은 웹에 먼저 열어야 한다**(순서 규율).
  *
  * `reserveTitleLines` 는 **끈다** — `ConcertCard` 주석이 정한 규율 그대로다. 예약은 그리드의
  * 것이고, 가로 레일은 1줄 제목 기준이라 예약하면 제목 아래 빈 줄이 생긴다.
@@ -58,6 +82,9 @@ import './screen.css'
  * - **`FeedHorizontalEvents`(제목 + 레일) → 흡수 후보 1순위.** 셋을 전부 밀어낼 수 있고
  *   (title · subTitle · onPressMore · children), web-next 의 트렌딩 레일이 이미 같은 모양이다 —
  *   **두 번째 소비처가 이미 있다.** 규칙상 옮길 조건을 만족한다.
+ * - **`ConcertCard` 가로 축 → P3 본편.** 위 ⚠️ 가 근거다. 시안이 요구하는데 어휘가 없어
+ *   못 그린 유일한 자리고, 순서상 웹 `ConcertCard.css.ts` 부터 연다.
+ * - **탭 스트립 → 보류.** `TabBar` 와 같은 이유 — 소비처가 이 시안 하나다.
  * - **`TabBar` → 보류.** 밀어낼 수는 있으나 소비처가 이 시안 하나다.
  * - **`NavigationHeader.Brand` → 앱에 남는다.** 스크롤 collapse 가 measure 훅과 navigation
  *   상태에 얽혀 있다. 그건 도메인 조립이다.
@@ -151,6 +178,12 @@ const SECTIONS: Section[] = [
 const CITY_LABEL = '서울'
 const GENRE_LABEL = '모든 장르'
 
+/**
+ * 탭 스트립에 걸리는 장르 — **첫 항목만 원본 문자열이고 나머지 넷은 목업**이다.
+ * 원본 `GenreSelector` 는 모달이라 화면에 목록이 노출되지 않아 베낄 원본이 없다.
+ */
+const GENRES = [GENRE_LABEL, '인디', '록', '재즈', '일렉트로닉'] as const
+
 const TABS = [
   { key: 'feed', label: '피드', Icon: House },
   { key: 'events', label: '이벤트', Icon: Tickets },
@@ -165,7 +198,7 @@ const RAIL_CARD_WIDTH = 132
 
 export default function BilletsFeedPage() {
   const [city] = useState<string>(CITY_LABEL)
-  const [genreLabel] = useState<string>(GENRE_LABEL)
+  const [genre, setGenre] = useState<string>(GENRE_LABEL)
   const [tab, setTab] = useState<string>('feed')
   const [saved, setSaved] = useState<Set<string>>(new Set(['t2']))
   const scheme = useScheme()
@@ -180,187 +213,274 @@ export default function BilletsFeedPage() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
       <div className="cm-frame">
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* 원본 `NavigationHeader` — 브랜드 줄 + `navigationComponent` 슬롯 두 줄. */}
-          <View
-            style={{
-              backgroundColor: scheme.bg,
-              borderBottomWidth: 1,
-              borderBottomColor: scheme.border,
-              paddingHorizontal: nativeSpacing[4],
-              paddingTop: nativeSpacing[4],
-              paddingBottom: nativeSpacing[3],
-              gap: nativeSpacing[3],
-            }}
+        {/*
+         * 기기 크롬 — 화면이 아니라 기기다(`screen.css` 「기기 크롬」). 색만 여기서 넣는다:
+         * native 스킴이 `light` 하나뿐이라 CSS 변수로 두면 문서 사이트 다크에서 어긋난다.
+         */}
+        <div className="cm-statusbar" style={{ background: paper.warm, color: scheme.strong }}>
+          <span>9:41</span>
+          <span className="cm-statusbar-signals">
+            <Signal size={16} aria-hidden />
+            <Wifi size={16} aria-hidden />
+            <BatteryFull size={22} aria-hidden />
+          </span>
+        </div>
+
+        {/* 여기부터 아래가 앱이다 — 탭바의 `absolute` 기준점이기도 하다. */}
+        <div className="cm-screen">
+          {/*
+           * 바닥을 **여기서** 칠한다 — 프레임(`screen.css`)이 아니라. `.cm-frame` 의 `var(--bg)`
+           * 는 문서 사이트의 테마를 따르는데 native 스킴은 `light` 하나뿐이라, 사이트가 다크면
+           * 어두운 글자가 어두운 바닥에 얹혀 제목이 통째로 사라진다. RN 앱은 자기 루트를
+           * 자기가 칠하므로 원래 자리이기도 하다.
+           *
+           * ⚠️ 색이 `scheme.bg` 가 **아니다.** 둘은 다른 토큰이고 `tokens.ts` 가 이름을 갈라
+           * 놓았다 — `scheme.bg`(`#f2efe8`)는 브랜드 정본 paper 고, `paper.warm`(`#fafaf7`)이
+           * **시안의 라이트 고정 표면**이다. 시안(`2468:1264`) 픽셀을 세면 `#ffffff` 48.0% ·
+           * `#fafaf7` 38.9% 이고 `#f2efe8` 은 등장하지 않는다. 브랜드색을 깔면 바닥이
+           * 카드(`scheme.surface` = 흰색)와 붙어 **카드가 카드로 안 읽힌다** — 시안이 만드는
+           * 대비가 정확히 그 두 값의 차이다.
+           */}
+          <ScrollView
+            style={{ flex: 1, backgroundColor: paper.warm }}
+            contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
+            showsVerticalScrollIndicator={false}
           >
-            {/* 원본 `NavigationHeader.Brand` — 로고 40 원형 + `COLDSURF`. */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <Image
-                source={{ uri: 'https://coldsurf.io/logo.png' }}
-                style={{ width: 40, height: 40, borderRadius: 20 }}
-              />
-              {/*
-               * 원본은 bold 22. DS 의 fontWeight 축은 300·400·500·600 넷이라 bold 가 없고
-               * 22px 도 스케일에 없어(xl=20 · 2xl=24) 가장 가까운 `xl` + `semibold` 로 앉힌다.
-               * 리스킨은 원본 값을 베끼는 게 아니라 **DS 어휘로 다시 말하는 것**이다.
-               */}
-              <Text size="xl" weight="semibold" tone="strong">
-                COLDSURF
-              </Text>
-            </View>
-
-            {/* 아랫줄 — 셀렉터 둘이 왼쪽 정렬로 나란히 선다. */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: nativeSpacing[2] }}>
-              {/* LocationSelector — 누르면 `LocationSelectorModal`. 위치를 못 잡으면 `현재 위치`. */}
-              <Button variant="outline" size="sm">
-                {/*
-                 * 웹 `Button` 은 `<MapPin/>{city}` 를 그냥 받는데 **여기선 못 받는다** —
-                 * RN 은 텍스트 스타일이 상속되지 않아 라벨을 `Text` 로 감싸야 한다.
-                 * Root 가 이미 row + gap 이라 조각 둘을 그대로 넘기면 된다.
-                 */}
-                <MapPin size={16} color={scheme.strong} aria-hidden />
-                <Text size="sm" tone="strong">
-                  {city}
-                </Text>
-              </Button>
-              {/* GenreSelector — 누르면 `GenreSelectionScreen`. 고른 게 없으면 `모든 장르`. */}
-              <Button variant="outline" size="sm">
-                {genreLabel}
-              </Button>
-            </View>
-          </View>
-
-          {SECTIONS.map((section) => (
-            <View key={section.key} style={{ paddingTop: nativeSpacing[6] }}>
-              {/* 제목 블록 — 원본은 전체가 Pressable 이고 누르면 「더보기」로 간다. */}
+            {/*
+             * 헤더 — Figma 이식분이다. 원본은 브랜드 줄(로고 + `COLDSURF`) + 셀렉터 두 개인데,
+             * 시안은 **페이지 제목**이 화면의 앵커라 그 자리를 제목이 가져간다. 브랜드는 앱
+             * 아이콘과 스플래시가 이미 말하고 있어 화면마다 반복할 이유가 없다는 게 시안의 판단.
+             */}
+            <View
+              style={{
+                backgroundColor: paper.warm,
+                paddingHorizontal: nativeSpacing[4],
+                paddingTop: nativeSpacing[2],
+                paddingBottom: nativeSpacing[3],
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'flex-end',
+                  alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: nativeSpacing[3],
-                  paddingHorizontal: nativeSpacing[4],
                 }}
               >
-                <View>
-                  {/* subTitle 이 title 위에 온다 — 원본 순서 그대로(작은 회색 줄이 먼저). */}
-                  {section.subTitle ? (
-                    <Text size="xs" tone="muted">
-                      {section.subTitle}
+                {/*
+                 * 화면의 유일한 최상위 제목이라 `3xl`(30) 로 세운다. 섹션 제목이 `lg`(18) 라
+                 * 네 눈금이 벌어지고, 그 간격이 곧 위계다 — 앞선 판은 최상위가 `xl` 이라
+                 * 섹션과 한 눈금 차였고 시선이 걸릴 자리가 없었다.
+                 */}
+                <Text size="3xl" weight="semibold" tone="strong">
+                  피드
+                </Text>
+
+                {/*
+                 * LocationSelector — 누르면 `LocationSelectorModal`. 위치를 못 잡으면 `현재 위치`.
+                 *
+                 * **고른 상태라 `accent` 다.** 시안이 accent 를 쓰는 자리도 정확히 여기 —
+                 * *지금 걸려 있는 조건* 이다.
+                 */}
+                <Button variant="accent" size="sm">
+                  {/*
+                   * 웹 `Button` 은 `<MapPin/>{city}` 를 그냥 받는데 **여기선 못 받는다** —
+                   * RN 은 텍스트 스타일이 상속되지 않아 라벨을 `Text` 로 감싸야 한다.
+                   * Root 가 이미 row + gap 이라 조각 둘을 그대로 넘기면 된다.
+                   *
+                   * ⚠️ 그 대가로 **라벨 색을 소비처가 다시 계산한다.** `Button` 의 `labelColorFor`
+                   * 는 children 이 문자열일 때만 걸려서, 아이콘이 하나 붙는 순간 variant 가 정한
+                   * 색이 끊긴다. 아래 `'white'` 는 그 함수의 `accent` 분기를 손으로 옮겨 적은
+                   * 것이고, variant 가 늘면 이 자리가 조용히 어긋난다 — DS 가 leading 슬롯을
+                   * 열거나 라벨 색을 context 로 내려야 닫히는 구멍이다.
+                   */}
+                  <MapPin size={16} color="white" aria-hidden />
+                  <Text size="sm" style={{ color: 'white' }}>
+                    {city}
+                  </Text>
+                </Button>
+              </View>
+            </View>
+
+            {/*
+             * 장르 스트립 — 원본 `GenreSelector`(모달)를 시안의 **언더라인 탭**으로 이식한 것.
+             * 고른 값이 화면에 남아 있는 게 모달보다 낫다는 게 시안의 선택이고, 그 값이
+             * 스트립이 되면 라벨 목록이 필요해진다(`GENRES` 주석 참조).
+             *
+             * 밑줄이 컨테이너 hairline 위에 얹히도록 `marginBottom: -1` 로 1px 겹친다 —
+             * 안 겹치면 accent 바 아래에 회색 선이 한 줄 더 생긴다.
+             */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{
+                flexGrow: 0,
+                backgroundColor: paper.warm,
+                borderBottomWidth: 1,
+                borderBottomColor: scheme.border,
+              }}
+              contentContainerStyle={{ gap: nativeSpacing[5], paddingHorizontal: nativeSpacing[4] }}
+            >
+              {GENRES.map((label) => {
+                const active = label === genre
+                return (
+                  <Pressable
+                    key={label}
+                    onPress={() => setGenre(label)}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected: active }}
+                    style={{
+                      paddingBottom: nativeSpacing[3],
+                      marginBottom: -1,
+                      borderBottomWidth: 2,
+                      borderBottomColor: active ? scheme.accent : 'transparent',
+                    }}
+                  >
+                    <Text
+                      size="sm"
+                      weight={active ? 'semibold' : 'regular'}
+                      tone={active ? 'strong' : 'subtle'}
+                    >
+                      {label}
+                    </Text>
+                  </Pressable>
+                )
+              })}
+            </ScrollView>
+
+            {SECTIONS.map((section) => (
+              <View key={section.key} style={{ paddingTop: nativeSpacing[6] }}>
+                {/* 제목 블록 — 원본은 전체가 Pressable 이고 누르면 「더보기」로 간다. */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'flex-end',
+                    justifyContent: 'space-between',
+                    gap: nativeSpacing[3],
+                    paddingHorizontal: nativeSpacing[4],
+                  }}
+                >
+                  <View>
+                    {/* subTitle 이 title 위에 온다 — 원본 순서 그대로(작은 회색 줄이 먼저). */}
+                    {section.subTitle ? (
+                      <Text size="xs" tone="muted">
+                        {section.subTitle}
+                      </Text>
+                    ) : null}
+                    <Text size="lg" weight="semibold" tone="strong" style={{ marginTop: 2 }}>
+                      {section.title}
+                    </Text>
+                  </View>
+                  {section.more ? (
+                    <Text size="xs" tone="subtle">
+                      더보기 ›
                     </Text>
                   ) : null}
-                  <Text size="lg" weight="semibold" tone="strong" style={{ marginTop: 2 }}>
-                    {section.title}
-                  </Text>
                 </View>
-                {section.more ? (
-                  <Text size="xs" tone="subtle">
-                    더보기 ›
-                  </Text>
-                ) : null}
+
+                {/* 가로 레일 — 원본은 horizontal FlatList. */}
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    gap: nativeSpacing[3],
+                    paddingHorizontal: nativeSpacing[4],
+                    paddingTop: nativeSpacing[3],
+                  }}
+                >
+                  {section.events.map((event) => (
+                    <View key={event.id} style={{ width: RAIL_CARD_WIDTH }}>
+                      <ConcertCard
+                        tone={event.tone}
+                        initial={event.initial}
+                        title={event.title}
+                        meta={event.date}
+                        footer={
+                          <Text size="2xs" tone="muted" numberOfLines={1}>
+                            {event.venue}
+                          </Text>
+                        }
+                        coverAction={
+                          <Pressable
+                            onPress={() => toggleSave(event.id)}
+                            accessibilityRole="button"
+                            accessibilityLabel={saved.has(event.id) ? '담기 취소' : '담기'}
+                            style={{
+                              width: 30,
+                              height: 30,
+                              borderRadius: 15,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              backgroundColor: saved.has(event.id)
+                                ? scheme.accent
+                                : 'rgba(0, 0, 0, 0.45)',
+                            }}
+                          >
+                            <Bookmark
+                              size={13}
+                              color="#fff"
+                              fill={saved.has(event.id) ? '#fff' : 'none'}
+                              aria-hidden
+                            />
+                          </Pressable>
+                        }
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
               </View>
+            ))}
+          </ScrollView>
 
-              {/* 가로 레일 — 원본은 horizontal FlatList. */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  gap: nativeSpacing[3],
-                  paddingHorizontal: nativeSpacing[4],
-                  paddingTop: nativeSpacing[3],
-                }}
-              >
-                {section.events.map((event) => (
-                  <View key={event.id} style={{ width: RAIL_CARD_WIDTH }}>
-                    <ConcertCard
-                      tone={event.tone}
-                      initial={event.initial}
-                      title={event.title}
-                      meta={event.date}
-                      footer={
-                        <Text size="2xs" tone="muted" numberOfLines={1}>
-                          {event.venue}
-                        </Text>
-                      }
-                      coverAction={
-                        <Pressable
-                          onPress={() => toggleSave(event.id)}
-                          accessibilityRole="button"
-                          accessibilityLabel={saved.has(event.id) ? '담기 취소' : '담기'}
-                          style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 15,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: saved.has(event.id)
-                              ? scheme.accent
-                              : 'rgba(0, 0, 0, 0.45)',
-                          }}
-                        >
-                          <Bookmark
-                            size={13}
-                            color="#fff"
-                            fill={saved.has(event.id) ? '#fff' : 'none'}
-                            aria-hidden
-                          />
-                        </Pressable>
-                      }
-                    />
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          ))}
-        </ScrollView>
+          {/* 탭바 — DS 에 primitive 가 없어 여기서 조립한다. 흡수 판정 근거는 위 주석에. */}
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              flexDirection: 'row',
+              backgroundColor: scheme.surface,
+              borderTopWidth: 1,
+              borderTopColor: scheme.border,
+              paddingTop: nativeSpacing[2],
+              paddingBottom: nativeSpacing[6],
+            }}
+          >
+            {TABS.map(({ key, label, Icon }) => {
+              const active = tab === key
+              return (
+                <Pressable
+                  key={key}
+                  onPress={() => setTab(key)}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected: active }}
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    gap: nativeSpacing[1],
+                    paddingVertical: nativeSpacing[1],
+                  }}
+                >
+                  {/*
+                   * active 를 **색으로** 말한다 — 앞선 판은 굵기(1.6→2.4)만 달라서 지금 어느
+                   * 탭에 있는지가 화면에서 읽히지 않았다. 시안이 accent 를 쓰는 세 자리 중 하나.
+                   */}
+                  <Icon
+                    size={22}
+                    strokeWidth={active ? 2.4 : 1.6}
+                    color={active ? scheme.accent : scheme.subtle}
+                    aria-hidden
+                  />
+                  <Text size="3xs" weight="medium" tone={active ? 'accent' : 'subtle'}>
+                    {label}
+                  </Text>
+                </Pressable>
+              )
+            })}
+          </View>
+        </div>
 
-        {/* 탭바 — DS 에 primitive 가 없어 여기서 조립한다. 흡수 판정 근거는 위 주석에. */}
-        <View
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            flexDirection: 'row',
-            backgroundColor: scheme.surface,
-            borderTopWidth: 1,
-            borderTopColor: scheme.border,
-            paddingTop: nativeSpacing[2],
-            paddingBottom: nativeSpacing[6],
-          }}
-        >
-          {TABS.map(({ key, label, Icon }) => {
-            const active = tab === key
-            return (
-              <Pressable
-                key={key}
-                onPress={() => setTab(key)}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: active }}
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  gap: nativeSpacing[1],
-                  paddingVertical: nativeSpacing[1],
-                }}
-              >
-                <Icon
-                  size={22}
-                  strokeWidth={active ? 2.4 : 1.6}
-                  color={active ? scheme.strong : scheme.subtle}
-                  aria-hidden
-                />
-                <Text size="3xs" weight="medium" tone={active ? 'strong' : 'subtle'}>
-                  {label}
-                </Text>
-              </Pressable>
-            )
-          })}
-        </View>
+        <div className="cm-home-indicator" style={{ background: scheme.strong }} />
       </div>
     </View>
   )
