@@ -3,7 +3,7 @@ title: MCP
 description: 에이전트가 이 문서를 직접 읽습니다 — 예제 코드 · props · 토큰 값까지.
 ---
 
-`@coldsurfers/docs-mcp` 는 이 사이트를 에이전트에 물리는 [MCP](https://modelcontextprotocol.io)
+`@coldsurfers/design-system-mcp` 는 이 사이트를 에이전트에 물리는 [MCP](https://modelcontextprotocol.io)
 서버입니다. 붙이고 나면 Claude Code · Cursor 가 "Button 의 size 가 뭐뭐 있지" 를 추측하지 않고
 **여기서 읽습니다.**
 
@@ -15,7 +15,7 @@ description: 에이전트가 이 문서를 직접 읽습니다 — 예제 코드
 <Tab value="Claude Code">
 
 ```bash
-claude mcp add coldsurf-docs -- npx -y @coldsurfers/docs-mcp
+claude mcp add coldsurf-ds -- npx -y @coldsurfers/design-system-mcp
 ```
 
 </Tab>
@@ -24,9 +24,9 @@ claude mcp add coldsurf-docs -- npx -y @coldsurfers/docs-mcp
 ```json title="mcp.json"
 {
   "mcpServers": {
-    "coldsurf-docs": {
+    "coldsurf-ds": {
       "command": "npx",
-      "args": ["-y", "@coldsurfers/docs-mcp"]
+      "args": ["-y", "@coldsurfers/design-system-mcp"]
     }
   }
 }

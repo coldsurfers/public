@@ -155,7 +155,7 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@22.20.1)(rollup@4.62.4)(typescript@5.9.3)(vite@7.3.6(@types/node@22.20.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(yaml@2.9.0))
 
-  packages/docs-mcp:
+  packages/design-system-mcp:
     dependencies:
       '@modelcontextprotocol/server':
         specifier: ^2.0.0
