@@ -7,7 +7,7 @@
  */
 
 /* iPhone 15 논리 해상도(393×852). 원본이 모바일 앱이라 그 폭에서 봐야 판정이 된다. */
-.bh-frame {
+.cm-frame {
   width: 393px;
   height: 852px;
   margin: 0 auto;
@@ -22,7 +22,7 @@
 }
 
 /* RNW 는 루트를 감싸는 자리에 높이를 안 주면 0 으로 접힌다. */
-.bh-frame > * {
+.cm-frame > * {
   flex: 1;
   min-height: 0;
 }

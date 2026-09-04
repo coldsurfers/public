@@ -8,7 +8,7 @@ import Link from 'next/link'
  */
 const SCREENS = [
   {
-    href: '/playground/billets-home',
+    href: '/playground/coldsurf-mobile',
     title: 'billets 피드 화면',
     description:
       'billets-app 이 처음 여는 4탭 피드를 리스킨. 컬렉션 5개가 가로 레일로 서고, 카드는 진짜 ConcertCard 다.',

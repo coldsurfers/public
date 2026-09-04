@@ -150,7 +150,7 @@ export interface ConcertCardProps extends ConcertCardBareProps {
 쓴 컴포넌트를 **한 줄도 고치지 않고** 문서 사이트에서 그려볼 수 있다.
 
 - 배선 자체를 의심할 때 볼 판: [`/playground/rnw-probe`](../apps/docs/app/playground/rnw-probe)
-- 실제 화면 예: [`/playground/billets-home`](../apps/docs/app/playground/billets-home) —
+- 실제 화면 예: [`/playground/coldsurf-mobile`](../apps/docs/app/playground/coldsurf-mobile) —
   폰 프레임(웹 `div`)만 빼면 전부 `react-native` 다. **billets-app 에 그대로 붙는 코드**이므로,
   "RN 에서도 되겠지" 가 추측으로 남지 않는다
 - 아이콘만 `lucide-react`(웹 판)를 쓴다. 실제 RN 은 `lucide-react-native` — 이름·props 가 같아

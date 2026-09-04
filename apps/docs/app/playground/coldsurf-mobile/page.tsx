@@ -179,7 +179,7 @@ export default function BilletsFeedPage() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
-      <div className="bh-frame">
+      <div className="cm-frame">
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
