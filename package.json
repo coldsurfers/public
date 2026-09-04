@@ -10,6 +10,7 @@
   },
   "scripts": {
     "prepare": "lefthook install",
+    "postinstall": "turbo run build --filter=./packages/*",
     "build": "turbo run build",
     "check": "biome check .",
     "check:exports": "turbo run check:exports",
