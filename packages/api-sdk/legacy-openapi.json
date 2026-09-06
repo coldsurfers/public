@@ -1,0 +1,1025 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "billets-server (legacy · Fastify on Lambda)",
+    "description": "Hono 이관이 안 끝난 잔여 계약. 소비처가 옮겨가면 이 파일은 줄다가 사라진다.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v2/auth/email/verification-codes": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendAuthCodeResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/auth/email/verification-codes/verify": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  },
+                  "authCode": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 6
+                  }
+                },
+                "required": ["email", "authCode"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmAuthCodeResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/auth/users": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["google"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["apple"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["email"]
+                      }
+                    ]
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["android"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["ios"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["web"]
+                      }
+                    ]
+                  },
+                  "termsVersionIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "marketingConsent": {
+                    "type": "boolean"
+                  },
+                  "nightMarketingConsent": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["provider", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithAuthTokenDTOSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/auth/sessions": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["google"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["apple"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["email"]
+                      }
+                    ]
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["android"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["ios"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["web"]
+                      }
+                    ]
+                  }
+                },
+                "required": ["provider", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithAuthTokenDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/auth/tokens/refresh": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReissueTokenBodyDTOSchemaInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserWithAuthTokenDTOSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/auth/check": {
+      "post": {
+        "tags": ["v2", "auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["google"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["apple"]
+                      }
+                    ]
+                  },
+                  "token": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": ["ios"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["android"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["web"]
+                      }
+                    ]
+                  }
+                },
+                "required": ["provider", "token"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "exists": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": ["exists"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ticket/": {
+      "get": {
+        "tags": ["v1", "ticket"],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "eventId",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TicketDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/events/upload-tokens": {
+      "post": {
+        "tags": ["v2", "events"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignPostBodyDTOSchemaInput"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignedPostDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConfirmAuthCodeResponseDTOSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          }
+        },
+        "required": ["email"],
+        "additionalProperties": false
+      },
+      "ErrorResponseDTOSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "INVALID_ANONYMOUS_USER"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_PASSWORD"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_ACCESS_TOKEN"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_QUERY_STRING"
+              },
+              {
+                "type": "string",
+                "const": "USER_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "CONCERT_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "SUBSCRIBED_CONCERT_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "ARTIST_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "VENUE_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "SUBSCRIBED_ARTIST_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "SUBSCRIBED_VENUE_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_USER"
+              },
+              {
+                "type": "string",
+                "const": "PASSWORD_NOT_MATCH"
+              },
+              {
+                "type": "string",
+                "const": "ACCESS_TOKEN_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "USER_DEACTIVATED"
+              },
+              {
+                "type": "string",
+                "const": "USER_ALREADY_EXISTING"
+              },
+              {
+                "type": "string",
+                "const": "EMAIL_AUTH_REQUEST_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_EMAIL_AUTH_REQUEST"
+              },
+              {
+                "type": "string",
+                "const": "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED"
+              },
+              {
+                "type": "string",
+                "const": "EMAIL_AUTH_REQUEST_TIMEOUT"
+              },
+              {
+                "type": "string",
+                "const": "UNKNOWN"
+              },
+              {
+                "type": "string",
+                "const": "EVENT_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "POSTER_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "ARTIST_PROFILE_IMAGE_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "IMAGE_KEY_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "IMAGE_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "REFRESH_TOKEN_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "TICKET_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_ACTION_TOKEN"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_GEO_DATA"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_FEED_ENTITY_TYPE"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_FEED"
+              },
+              {
+                "type": "string",
+                "const": "FEED_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_IMAGE_META"
+              },
+              {
+                "type": "string",
+                "const": "CONSENT_REQUIRED"
+              },
+              {
+                "type": "string",
+                "const": "PARTNER_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "PARTNER_NOT_VERIFIED"
+              },
+              {
+                "type": "string",
+                "const": "PARTNER_ALREADY_EXISTS"
+              },
+              {
+                "type": "string",
+                "const": "NOT_CONNECTED_CONCERT"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKETS_ALREADY_ISSUED"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKET_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKET_ALREADY_USED"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKET_NOT_CLAIMED"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKET_ALREADY_CLAIMED"
+              },
+              {
+                "type": "string",
+                "const": "ENTRY_TICKET_SOLD_OUT"
+              },
+              {
+                "type": "string",
+                "const": "NEWSLETTER_SUBSCRIBER_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "INVALID_TERMS_VERSION"
+              },
+              {
+                "type": "string",
+                "const": "TERMS_VERSION_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "NOTIFICATION_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "REVIEW_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "REVIEW_ALREADY_EXISTS"
+              },
+              {
+                "type": "string",
+                "const": "REVIEW_FORBIDDEN"
+              },
+              {
+                "type": "string",
+                "const": "EVENT_NOT_ENDED"
+              },
+              {
+                "type": "string",
+                "const": "COMMENT_NOT_FOUND"
+              },
+              {
+                "type": "string",
+                "const": "COMMENT_FORBIDDEN"
+              }
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "message"],
+        "additionalProperties": false
+      },
+      "PresignPostBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "concertId": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["poster", "detail-image"]
+          }
+        },
+        "required": ["concertId", "resolution", "type"],
+        "additionalProperties": false
+      },
+      "PresignPostBodyDTOSchemaInput": {
+        "type": "object",
+        "properties": {
+          "concertId": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["poster", "detail-image"]
+          }
+        },
+        "required": ["concertId", "resolution", "type"]
+      },
+      "PresignedPostDTOSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["url", "fields"],
+        "additionalProperties": false
+      },
+      "PriceDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "price", "currency"],
+        "additionalProperties": false
+      },
+      "ReissueTokenBodyDTOSchemaInput": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": ["refreshToken"]
+      },
+      "SendAuthCodeResponseDTOSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          }
+        },
+        "required": ["email"],
+        "additionalProperties": false
+      },
+      "TicketDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sellerName": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "openDate": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceDTOSchema"
+            }
+          }
+        },
+        "required": ["id", "sellerName", "url", "openDate", "prices"],
+        "additionalProperties": false
+      },
+      "UserDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "handle": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserHandleDTOSchema"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "deactivatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "consentRequired": {
+                "type": "boolean"
+              }
+            },
+            "required": ["consentRequired"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["id", "email", "provider", "handle", "deactivatedAt"],
+        "additionalProperties": false
+      },
+      "UserHandleDTOSchema": {
+        "type": "string",
+        "pattern": "^@[a-zA-Z0-9._-]{3,30}$"
+      },
+      "UserWithAuthTokenDTOSchema": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserDTOSchema"
+          },
+          "authToken": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string"
+              },
+              "refreshToken": {
+                "type": "string"
+              }
+            },
+            "required": ["accessToken", "refreshToken"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["user", "authToken"],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "AccessTokenAuth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}
