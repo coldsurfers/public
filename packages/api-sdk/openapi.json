@@ -18,7 +18,10 @@
         "properties": {
           "direction": {
             "type": "string",
-            "enum": ["next", "prev"]
+            "enum": [
+              "next",
+              "prev"
+            ]
           },
           "cursor": {
             "type": "string"
@@ -30,7 +33,9 @@
             "maximum": 100
           }
         },
-        "required": ["direction"]
+        "required": [
+          "direction"
+        ]
       },
       "SearchListQueryStringDTOSchema": {
         "type": "object",
@@ -40,10 +45,16 @@
           },
           "type": {
             "type": "string",
-            "enum": ["artist", "venue", "concert"]
+            "enum": [
+              "artist",
+              "venue",
+              "concert"
+            ]
           }
         },
-        "required": ["keyword"]
+        "required": [
+          "keyword"
+        ]
       },
       "TicketDTOSchema": {
         "type": "object",
@@ -79,11 +90,22 @@
                   "type": "string"
                 }
               },
-              "required": ["id", "name", "price", "currency"]
+              "required": [
+                "id",
+                "name",
+                "price",
+                "currency"
+              ]
             }
           }
         },
-        "required": ["id", "sellerName", "url", "openDate", "prices"]
+        "required": [
+          "id",
+          "sellerName",
+          "url",
+          "openDate",
+          "prices"
+        ]
       },
       "ErrorResponseDTOSchema": {
         "type": "object",
@@ -92,231 +114,345 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["INVALID_ANONYMOUS_USER"]
+                "enum": [
+                  "INVALID_ANONYMOUS_USER"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_PASSWORD"]
+                "enum": [
+                  "INVALID_PASSWORD"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_ACCESS_TOKEN"]
+                "enum": [
+                  "INVALID_ACCESS_TOKEN"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_QUERY_STRING"]
+                "enum": [
+                  "INVALID_QUERY_STRING"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["USER_NOT_FOUND"]
+                "enum": [
+                  "USER_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["CONCERT_NOT_FOUND"]
+                "enum": [
+                  "CONCERT_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["SUBSCRIBED_CONCERT_NOT_FOUND"]
+                "enum": [
+                  "SUBSCRIBED_CONCERT_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ARTIST_NOT_FOUND"]
+                "enum": [
+                  "ARTIST_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["VENUE_NOT_FOUND"]
+                "enum": [
+                  "VENUE_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["SUBSCRIBED_ARTIST_NOT_FOUND"]
+                "enum": [
+                  "SUBSCRIBED_ARTIST_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["SUBSCRIBED_VENUE_NOT_FOUND"]
+                "enum": [
+                  "SUBSCRIBED_VENUE_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_USER"]
+                "enum": [
+                  "INVALID_USER"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PASSWORD_NOT_MATCH"]
+                "enum": [
+                  "PASSWORD_NOT_MATCH"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ACCESS_TOKEN_NOT_FOUND"]
+                "enum": [
+                  "ACCESS_TOKEN_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["USER_DEACTIVATED"]
+                "enum": [
+                  "USER_DEACTIVATED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["USER_ALREADY_EXISTING"]
+                "enum": [
+                  "USER_ALREADY_EXISTING"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["HANDLE_RESERVED"]
+                "enum": [
+                  "HANDLE_RESERVED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["EMAIL_AUTH_REQUEST_NOT_FOUND"]
+                "enum": [
+                  "EMAIL_AUTH_REQUEST_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_EMAIL_AUTH_REQUEST"]
+                "enum": [
+                  "INVALID_EMAIL_AUTH_REQUEST"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED"]
+                "enum": [
+                  "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["EMAIL_AUTH_REQUEST_TIMEOUT"]
+                "enum": [
+                  "EMAIL_AUTH_REQUEST_TIMEOUT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["UNKNOWN"]
+                "enum": [
+                  "UNKNOWN"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["EVENT_NOT_FOUND"]
+                "enum": [
+                  "EVENT_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["POSTER_NOT_FOUND"]
+                "enum": [
+                  "POSTER_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ARTIST_PROFILE_IMAGE_NOT_FOUND"]
+                "enum": [
+                  "ARTIST_PROFILE_IMAGE_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["IMAGE_KEY_NOT_FOUND"]
+                "enum": [
+                  "IMAGE_KEY_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["IMAGE_NOT_FOUND"]
+                "enum": [
+                  "IMAGE_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["REFRESH_TOKEN_NOT_FOUND"]
+                "enum": [
+                  "REFRESH_TOKEN_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["TICKET_NOT_FOUND"]
+                "enum": [
+                  "TICKET_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_ACTION_TOKEN"]
+                "enum": [
+                  "INVALID_ACTION_TOKEN"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_GEO_DATA"]
+                "enum": [
+                  "INVALID_GEO_DATA"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_FEED_ENTITY_TYPE"]
+                "enum": [
+                  "INVALID_FEED_ENTITY_TYPE"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_FEED"]
+                "enum": [
+                  "INVALID_FEED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["FEED_NOT_FOUND"]
+                "enum": [
+                  "FEED_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_IMAGE_META"]
+                "enum": [
+                  "INVALID_IMAGE_META"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["CONSENT_REQUIRED"]
+                "enum": [
+                  "CONSENT_REQUIRED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PARTNER_NOT_FOUND"]
+                "enum": [
+                  "PARTNER_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PARTNER_NOT_VERIFIED"]
+                "enum": [
+                  "PARTNER_NOT_VERIFIED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PARTNER_ALREADY_EXISTS"]
+                "enum": [
+                  "PARTNER_ALREADY_EXISTS"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["NOT_CONNECTED_CONCERT"]
+                "enum": [
+                  "NOT_CONNECTED_CONCERT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKETS_ALREADY_ISSUED"]
+                "enum": [
+                  "ENTRY_TICKETS_ALREADY_ISSUED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKET_NOT_FOUND"]
+                "enum": [
+                  "ENTRY_TICKET_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKET_ALREADY_USED"]
+                "enum": [
+                  "ENTRY_TICKET_ALREADY_USED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKET_NOT_CLAIMED"]
+                "enum": [
+                  "ENTRY_TICKET_NOT_CLAIMED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKET_ALREADY_CLAIMED"]
+                "enum": [
+                  "ENTRY_TICKET_ALREADY_CLAIMED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["ENTRY_TICKET_SOLD_OUT"]
+                "enum": [
+                  "ENTRY_TICKET_SOLD_OUT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["NEWSLETTER_SUBSCRIBER_NOT_FOUND"]
+                "enum": [
+                  "NEWSLETTER_SUBSCRIBER_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["INVALID_TERMS_VERSION"]
+                "enum": [
+                  "INVALID_TERMS_VERSION"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["TERMS_VERSION_NOT_FOUND"]
+                "enum": [
+                  "TERMS_VERSION_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["NOTIFICATION_NOT_FOUND"]
+                "enum": [
+                  "NOTIFICATION_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["REVIEW_NOT_FOUND"]
+                "enum": [
+                  "REVIEW_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["REVIEW_ALREADY_EXISTS"]
+                "enum": [
+                  "REVIEW_ALREADY_EXISTS"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["REVIEW_FORBIDDEN"]
+                "enum": [
+                  "REVIEW_FORBIDDEN"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["EVENT_NOT_ENDED"]
+                "enum": [
+                  "EVENT_NOT_ENDED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["COMMENT_NOT_FOUND"]
+                "enum": [
+                  "COMMENT_NOT_FOUND"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["COMMENT_FORBIDDEN"]
+                "enum": [
+                  "COMMENT_FORBIDDEN"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["RATE_LIMITED"]
+                "enum": [
+                  "RATE_LIMITED"
+                ]
               }
             ]
           },
@@ -324,7 +460,10 @@
             "type": "string"
           }
         },
-        "required": ["code", "message"]
+        "required": [
+          "code",
+          "message"
+        ]
       },
       "PosterDTOSchema": {
         "type": "object",
@@ -338,7 +477,10 @@
             "format": "uri"
           }
         },
-        "required": ["id", "url"]
+        "required": [
+          "id",
+          "url"
+        ]
       },
       "EventCollectionDTOSchema": {
         "type": "object",
@@ -358,7 +500,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -403,10 +547,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -416,7 +568,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -430,11 +584,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -457,7 +615,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -476,7 +637,10 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
@@ -485,7 +649,12 @@
             "type": "number"
           }
         },
-        "required": ["key", "title", "events", "serialNumber"]
+        "required": [
+          "key",
+          "title",
+          "events",
+          "serialNumber"
+        ]
       },
       "ConcertDTOSchema": {
         "type": "object",
@@ -530,10 +699,18 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "owner", "license", "licenseURL"]
+                "required": [
+                  "id",
+                  "owner",
+                  "license",
+                  "licenseURL"
+                ]
               }
             },
-            "required": ["url", "copyright"]
+            "required": [
+              "url",
+              "copyright"
+            ]
           },
           "mainVenue": {
             "type": "object",
@@ -543,7 +720,9 @@
                 "type": "string"
               }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           },
           "slug": {
             "type": "string",
@@ -557,11 +736,15 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["DRAFT"]
+                "enum": [
+                  "DRAFT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PUBLISHED"]
+                "enum": [
+                  "PUBLISHED"
+                ]
               },
               {
                 "nullable": true
@@ -584,7 +767,10 @@
                 "type": "string"
               }
             },
-            "required": ["id", "name"]
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "entryTicketCapacity": {
             "type": "integer",
@@ -609,7 +795,9 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["concert"]
+                "enum": [
+                  "concert"
+                ]
               },
               "data": {
                 "type": "object",
@@ -654,10 +842,18 @@
                             "type": "string"
                           }
                         },
-                        "required": ["id", "owner", "license", "licenseURL"]
+                        "required": [
+                          "id",
+                          "owner",
+                          "license",
+                          "licenseURL"
+                        ]
                       }
                     },
-                    "required": ["url", "copyright"]
+                    "required": [
+                      "url",
+                      "copyright"
+                    ]
                   },
                   "mainVenue": {
                     "type": "object",
@@ -667,7 +863,9 @@
                         "type": "string"
                       }
                     },
-                    "required": ["name"]
+                    "required": [
+                      "name"
+                    ]
                   },
                   "slug": {
                     "type": "string",
@@ -681,11 +879,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["DRAFT"]
+                        "enum": [
+                          "DRAFT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PUBLISHED"]
+                        "enum": [
+                          "PUBLISHED"
+                        ]
                       },
                       {
                         "nullable": true
@@ -708,7 +910,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["id", "name"]
+                    "required": [
+                      "id",
+                      "name"
+                    ]
                   },
                   "entryTicketCapacity": {
                     "type": "integer",
@@ -727,7 +932,10 @@
                 ]
               }
             },
-            "required": ["type", "data"]
+            "required": [
+              "type",
+              "data"
+            ]
           }
         ]
       },
@@ -741,7 +949,9 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["concert"]
+                  "enum": [
+                    "concert"
+                  ]
                 },
                 "data": {
                   "type": "object",
@@ -786,10 +996,18 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "owner", "license", "licenseURL"]
+                          "required": [
+                            "id",
+                            "owner",
+                            "license",
+                            "licenseURL"
+                          ]
                         }
                       },
-                      "required": ["url", "copyright"]
+                      "required": [
+                        "url",
+                        "copyright"
+                      ]
                     },
                     "mainVenue": {
                       "type": "object",
@@ -799,7 +1017,9 @@
                           "type": "string"
                         }
                       },
-                      "required": ["name"]
+                      "required": [
+                        "name"
+                      ]
                     },
                     "slug": {
                       "type": "string",
@@ -813,11 +1033,15 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": ["DRAFT"]
+                          "enum": [
+                            "DRAFT"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PUBLISHED"]
+                          "enum": [
+                            "PUBLISHED"
+                          ]
                         },
                         {
                           "nullable": true
@@ -840,7 +1064,10 @@
                           "type": "string"
                         }
                       },
-                      "required": ["id", "name"]
+                      "required": [
+                        "id",
+                        "name"
+                      ]
                     },
                     "entryTicketCapacity": {
                       "type": "integer",
@@ -886,11 +1113,21 @@
                         }
                       }
                     },
-                    "required": ["slug", "name", "genres"]
+                    "required": [
+                      "slug",
+                      "name",
+                      "genres"
+                    ]
                   }
                 }
               },
-              "required": ["type", "data", "genres", "format", "artists"]
+              "required": [
+                "type",
+                "data",
+                "genres",
+                "format",
+                "artists"
+              ]
             }
           },
           "meta": {
@@ -909,10 +1146,17 @@
                 }
               }
             },
-            "required": ["totalInWindow", "labeledInWindow", "chipCounts"]
+            "required": [
+              "totalInWindow",
+              "labeledInWindow",
+              "chipCounts"
+            ]
           }
         },
-        "required": ["data", "meta"]
+        "required": [
+          "data",
+          "meta"
+        ]
       },
       "EventDetailDTOSchema": {
         "oneOf": [
@@ -921,7 +1165,9 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["concert"]
+                "enum": [
+                  "concert"
+                ]
               },
               "data": {
                 "type": "object",
@@ -951,7 +1197,10 @@
                           "format": "uri"
                         }
                       },
-                      "required": ["id", "url"]
+                      "required": [
+                        "id",
+                        "url"
+                      ]
                     }
                   },
                   "venues": {
@@ -1031,10 +1280,20 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "owner", "license", "licenseURL"]
+                          "required": [
+                            "id",
+                            "owner",
+                            "license",
+                            "licenseURL"
+                          ]
                         }
                       },
-                      "required": ["id", "name", "thumbUrl", "thumbCopyright"]
+                      "required": [
+                        "id",
+                        "name",
+                        "thumbUrl",
+                        "thumbCopyright"
+                      ]
                     }
                   },
                   "tickets": {
@@ -1073,11 +1332,22 @@
                                 "type": "string"
                               }
                             },
-                            "required": ["id", "name", "price", "currency"]
+                            "required": [
+                              "id",
+                              "name",
+                              "price",
+                              "currency"
+                            ]
                           }
                         }
                       },
-                      "required": ["id", "sellerName", "url", "openDate", "prices"]
+                      "required": [
+                        "id",
+                        "sellerName",
+                        "url",
+                        "openDate",
+                        "prices"
+                      ]
                     }
                   },
                   "isKOPIS": {
@@ -1103,7 +1373,11 @@
                           "nullable": true
                         }
                       },
-                      "required": ["id", "url", "serialNumber"]
+                      "required": [
+                        "id",
+                        "url",
+                        "serialNumber"
+                      ]
                     }
                   },
                   "noticeText": {
@@ -1122,7 +1396,9 @@
                         "type": "string"
                       }
                     },
-                    "required": ["id"]
+                    "required": [
+                      "id"
+                    ]
                   },
                   "category": {
                     "type": "object",
@@ -1135,7 +1411,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["id", "name"]
+                    "required": [
+                      "id",
+                      "name"
+                    ]
                   },
                   "locationCity": {
                     "type": "object",
@@ -1161,7 +1440,14 @@
                         "nullable": true
                       }
                     },
-                    "required": ["id", "name", "uiName", "lat", "lng", "geohash"]
+                    "required": [
+                      "id",
+                      "name",
+                      "uiName",
+                      "lat",
+                      "lng",
+                      "geohash"
+                    ]
                   },
                   "isSubscribed": {
                     "type": "boolean"
@@ -1170,11 +1456,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["DRAFT"]
+                        "enum": [
+                          "DRAFT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PUBLISHED"]
+                        "enum": [
+                          "PUBLISHED"
+                        ]
                       },
                       {
                         "nullable": true
@@ -1215,10 +1505,21 @@
                             "type": "string"
                           }
                         },
-                        "required": ["id", "name", "price", "currency"]
+                        "required": [
+                          "id",
+                          "name",
+                          "price",
+                          "currency"
+                        ]
                       }
                     },
-                    "required": ["id", "sellerName", "url", "openDate", "price"]
+                    "required": [
+                      "id",
+                      "sellerName",
+                      "url",
+                      "openDate",
+                      "price"
+                    ]
                   }
                 },
                 "required": [
@@ -1242,7 +1543,10 @@
                 ]
               }
             },
-            "required": ["type", "data"]
+            "required": [
+              "type",
+              "data"
+            ]
           }
         ]
       },
@@ -1289,10 +1593,18 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "owner", "license", "licenseURL"]
+                "required": [
+                  "id",
+                  "owner",
+                  "license",
+                  "licenseURL"
+                ]
               }
             },
-            "required": ["url", "copyright"]
+            "required": [
+              "url",
+              "copyright"
+            ]
           },
           "mainVenue": {
             "type": "object",
@@ -1302,7 +1614,9 @@
                 "type": "string"
               }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           },
           "slug": {
             "type": "string",
@@ -1316,11 +1630,15 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["DRAFT"]
+                "enum": [
+                  "DRAFT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PUBLISHED"]
+                "enum": [
+                  "PUBLISHED"
+                ]
               },
               {
                 "nullable": true
@@ -1343,7 +1661,10 @@
                 "type": "string"
               }
             },
-            "required": ["id", "name"]
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "entryTicketCapacity": {
             "type": "integer",
@@ -1379,7 +1700,11 @@
             "type": "number"
           }
         },
-        "required": ["upcoming", "thisWeek", "venues"]
+        "required": [
+          "upcoming",
+          "thisWeek",
+          "venues"
+        ]
       },
       "EventRsvpCountsWithMeDTOSchema": {
         "type": "object",
@@ -1394,7 +1719,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "CONFETTI": {
             "type": "object",
@@ -1406,7 +1734,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "HEART": {
             "type": "object",
@@ -1418,7 +1749,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "PARTY": {
             "type": "object",
@@ -1430,7 +1764,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "PRAY": {
             "type": "object",
@@ -1442,7 +1779,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "ROCKET": {
             "type": "object",
@@ -1454,7 +1794,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "SAD": {
             "type": "object",
@@ -1466,7 +1809,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "BROKEN_HEART": {
             "type": "object",
@@ -1478,7 +1824,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "SMILE": {
             "type": "object",
@@ -1490,7 +1839,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "GOING": {
             "type": "object",
@@ -1502,7 +1854,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "MAYBE": {
             "type": "object",
@@ -1514,7 +1869,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           },
           "NOT_GOING": {
             "type": "object",
@@ -1526,7 +1884,10 @@
                 "type": "boolean"
               }
             },
-            "required": ["count", "me"]
+            "required": [
+              "count",
+              "me"
+            ]
           }
         }
       },
@@ -1553,7 +1914,12 @@
             "nullable": true
           }
         },
-        "required": ["userId", "eventId", "subscribedAt", "eventSlug"]
+        "required": [
+          "userId",
+          "eventId",
+          "subscribedAt",
+          "eventSlug"
+        ]
       },
       "DeleteEventParamsDTOSchema": {
         "type": "object",
@@ -1562,7 +1928,9 @@
             "type": "string"
           }
         },
-        "required": ["eventId"]
+        "required": [
+          "eventId"
+        ]
       },
       "VenueDTOSchema": {
         "type": "object",
@@ -1595,7 +1963,16 @@
             "nullable": true
           }
         },
-        "required": ["id", "name", "address", "lat", "lng", "slug", "memo", "thumbnailUrl"]
+        "required": [
+          "id",
+          "name",
+          "address",
+          "lat",
+          "lng",
+          "slug",
+          "memo",
+          "thumbnailUrl"
+        ]
       },
       "VenueDetailDTOSchema": {
         "type": "object",
@@ -1636,7 +2013,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -1681,10 +2060,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -1694,7 +2081,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -1708,11 +2097,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -1735,7 +2128,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -1754,7 +2150,10 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
@@ -1768,7 +2167,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -1813,10 +2214,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -1826,7 +2235,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -1840,11 +2251,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -1867,7 +2282,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -1886,7 +2304,10 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
@@ -1924,7 +2345,11 @@
             "type": "string"
           }
         },
-        "required": ["userId", "venueId", "subscribedAt"]
+        "required": [
+          "userId",
+          "venueId",
+          "subscribedAt"
+        ]
       },
       "ArtistDetailDTOSchema": {
         "type": "object",
@@ -1956,7 +2381,12 @@
                 "type": "string"
               }
             },
-            "required": ["id", "owner", "license", "licenseURL"]
+            "required": [
+              "id",
+              "owner",
+              "license",
+              "licenseURL"
+            ]
           },
           "upcomingEvents": {
             "type": "array",
@@ -1967,7 +2397,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -2012,10 +2444,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -2025,7 +2465,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -2039,11 +2481,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -2066,7 +2512,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -2085,13 +2534,22 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
           }
         },
-        "required": ["id", "name", "thumbUrl", "thumbCopyright", "upcomingEvents"]
+        "required": [
+          "id",
+          "name",
+          "thumbUrl",
+          "thumbCopyright",
+          "upcomingEvents"
+        ]
       },
       "ArtistProfileImageDTOSchema": {
         "type": "object",
@@ -2105,7 +2563,10 @@
             "format": "uri"
           }
         },
-        "required": ["id", "url"]
+        "required": [
+          "id",
+          "url"
+        ]
       },
       "ArtistProfileImageDetailDTOSchema": {
         "type": "object",
@@ -2135,10 +2596,19 @@
                 "type": "string"
               }
             },
-            "required": ["id", "owner", "license", "licenseURL"]
+            "required": [
+              "id",
+              "owner",
+              "license",
+              "licenseURL"
+            ]
           }
         },
-        "required": ["id", "url", "copyright"]
+        "required": [
+          "id",
+          "url",
+          "copyright"
+        ]
       },
       "ArtistSubscribeDTOSchema": {
         "type": "object",
@@ -2159,7 +2629,11 @@
             "type": "string"
           }
         },
-        "required": ["userId", "artistId", "subscribedAt"]
+        "required": [
+          "userId",
+          "artistId",
+          "subscribedAt"
+        ]
       },
       "FeedDTOSchema": {
         "type": "object",
@@ -2175,11 +2649,15 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["CONCERT_LIST"]
+                    "enum": [
+                      "CONCERT_LIST"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["KOPIS_EVENTS_RELEASE"]
+                    "enum": [
+                      "KOPIS_EVENTS_RELEASE"
+                    ]
                   },
                   "payload": {
                     "type": "object",
@@ -2235,10 +2713,18 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["id", "owner", "license", "licenseURL"]
+                                  "required": [
+                                    "id",
+                                    "owner",
+                                    "license",
+                                    "licenseURL"
+                                  ]
                                 }
                               },
-                              "required": ["url", "copyright"]
+                              "required": [
+                                "url",
+                                "copyright"
+                              ]
                             },
                             "mainVenue": {
                               "type": "object",
@@ -2248,7 +2734,9 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["name"]
+                              "required": [
+                                "name"
+                              ]
                             },
                             "slug": {
                               "type": "string",
@@ -2262,11 +2750,15 @@
                               "anyOf": [
                                 {
                                   "type": "string",
-                                  "enum": ["DRAFT"]
+                                  "enum": [
+                                    "DRAFT"
+                                  ]
                                 },
                                 {
                                   "type": "string",
-                                  "enum": ["PUBLISHED"]
+                                  "enum": [
+                                    "PUBLISHED"
+                                  ]
                                 },
                                 {
                                   "nullable": true
@@ -2289,7 +2781,10 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "name"]
+                              "required": [
+                                "id",
+                                "name"
+                              ]
                             },
                             "entryTicketCapacity": {
                               "type": "integer",
@@ -2313,21 +2808,34 @@
                         "format": "date-time"
                       }
                     },
-                    "required": ["title", "description", "data", "createdAt"]
+                    "required": [
+                      "title",
+                      "description",
+                      "data",
+                      "createdAt"
+                    ]
                   }
                 },
-                "required": ["type", "definition", "payload"]
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               },
               {
                 "type": "object",
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["APP_FEATURE"]
+                    "enum": [
+                      "APP_FEATURE"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["NEW_FEATURE_RELEASE"]
+                    "enum": [
+                      "NEW_FEATURE_RELEASE"
+                    ]
                   },
                   "payload": {
                     "type": "object",
@@ -2347,21 +2855,34 @@
                         "format": "uri"
                       }
                     },
-                    "required": ["title", "description", "createdAt", "link"]
+                    "required": [
+                      "title",
+                      "description",
+                      "createdAt",
+                      "link"
+                    ]
                   }
                 },
-                "required": ["type", "definition", "payload"]
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               },
               {
                 "type": "object",
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["EDITORIAL"]
+                    "enum": [
+                      "EDITORIAL"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["NEW_EDITORIAL_RELEASE"]
+                    "enum": [
+                      "NEW_EDITORIAL_RELEASE"
+                    ]
                   },
                   "payload": {
                     "type": "object",
@@ -2386,28 +2907,45 @@
                             "format": "uri"
                           }
                         },
-                        "required": ["slug", "category", "thumbnail"]
+                        "required": [
+                          "slug",
+                          "category",
+                          "thumbnail"
+                        ]
                       },
                       "createdAt": {
                         "type": "string",
                         "format": "date-time"
                       }
                     },
-                    "required": ["title", "description", "data", "createdAt"]
+                    "required": [
+                      "title",
+                      "description",
+                      "data",
+                      "createdAt"
+                    ]
                   }
                 },
-                "required": ["type", "definition", "payload"]
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               },
               {
                 "type": "object",
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["USER"]
+                    "enum": [
+                      "USER"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["NEW_USER"]
+                    "enum": [
+                      "NEW_USER"
+                    ]
                   },
                   "payload": {
                     "type": "object",
@@ -2438,38 +2976,61 @@
                             "type": "boolean"
                           }
                         },
-                        "required": ["consentRequired"]
+                        "required": [
+                          "consentRequired"
+                        ]
                       }
                     },
-                    "required": ["id", "email", "provider", "handle", "deactivatedAt"]
+                    "required": [
+                      "id",
+                      "email",
+                      "provider",
+                      "handle",
+                      "deactivatedAt"
+                    ]
                   }
                 },
-                "required": ["type", "definition", "payload"]
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               },
               {
                 "type": "object",
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["USER_POST"]
+                    "enum": [
+                      "USER_POST"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["NEW_USER_POST"]
+                    "enum": [
+                      "NEW_USER_POST"
+                    ]
                   }
                 },
-                "required": ["type", "definition"]
+                "required": [
+                  "type",
+                  "definition"
+                ]
               },
               {
                 "type": "object",
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["CONCERT_LIST"]
+                    "enum": [
+                      "CONCERT_LIST"
+                    ]
                   },
                   "definition": {
                     "type": "string",
-                    "enum": ["WEEKEND_EVENTS_NOTIFICATION"]
+                    "enum": [
+                      "WEEKEND_EVENTS_NOTIFICATION"
+                    ]
                   },
                   "payload": {
                     "type": "object",
@@ -2525,10 +3086,18 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["id", "owner", "license", "licenseURL"]
+                                  "required": [
+                                    "id",
+                                    "owner",
+                                    "license",
+                                    "licenseURL"
+                                  ]
                                 }
                               },
-                              "required": ["url", "copyright"]
+                              "required": [
+                                "url",
+                                "copyright"
+                              ]
                             },
                             "mainVenue": {
                               "type": "object",
@@ -2538,7 +3107,9 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["name"]
+                              "required": [
+                                "name"
+                              ]
                             },
                             "slug": {
                               "type": "string",
@@ -2552,11 +3123,15 @@
                               "anyOf": [
                                 {
                                   "type": "string",
-                                  "enum": ["DRAFT"]
+                                  "enum": [
+                                    "DRAFT"
+                                  ]
                                 },
                                 {
                                   "type": "string",
-                                  "enum": ["PUBLISHED"]
+                                  "enum": [
+                                    "PUBLISHED"
+                                  ]
                                 },
                                 {
                                   "nullable": true
@@ -2579,7 +3154,10 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "name"]
+                              "required": [
+                                "id",
+                                "name"
+                              ]
                             },
                             "entryTicketCapacity": {
                               "type": "integer",
@@ -2603,10 +3181,19 @@
                         "format": "date-time"
                       }
                     },
-                    "required": ["title", "description", "data", "createdAt"]
+                    "required": [
+                      "title",
+                      "description",
+                      "data",
+                      "createdAt"
+                    ]
                   }
                 },
-                "required": ["type", "definition", "payload"]
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               }
             ]
           },
@@ -2615,7 +3202,11 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "content", "createdAt"]
+        "required": [
+          "id",
+          "content",
+          "createdAt"
+        ]
       },
       "FeedDefinitionDTOSchema": {
         "type": "object",
@@ -2639,7 +3230,11 @@
             "type": "string"
           }
         },
-        "required": ["id", "key", "name"]
+        "required": [
+          "id",
+          "key",
+          "name"
+        ]
       },
       "PriceDTOSchema": {
         "type": "object",
@@ -2657,7 +3252,12 @@
             "type": "string"
           }
         },
-        "required": ["id", "name", "price", "currency"]
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency"
+        ]
       },
       "UserDTOSchema": {
         "type": "object",
@@ -2688,10 +3288,18 @@
                 "type": "boolean"
               }
             },
-            "required": ["consentRequired"]
+            "required": [
+              "consentRequired"
+            ]
           }
         },
-        "required": ["id", "email", "provider", "handle", "deactivatedAt"]
+        "required": [
+          "id",
+          "email",
+          "provider",
+          "handle",
+          "deactivatedAt"
+        ]
       },
       "CheckHandleResponseDTOSchema": {
         "type": "object",
@@ -2704,7 +3312,10 @@
             "nullable": true
           }
         },
-        "required": ["available", "reason"]
+        "required": [
+          "available",
+          "reason"
+        ]
       },
       "UserSocialLinkDTOSchema": {
         "type": "object",
@@ -2716,15 +3327,21 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["instagram"]
+                "enum": [
+                  "instagram"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["x"]
+                "enum": [
+                  "x"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["youtube"]
+                "enum": [
+                  "youtube"
+                ]
               }
             ]
           },
@@ -2736,7 +3353,12 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "platform", "platformUniqueId", "createdAt"]
+        "required": [
+          "id",
+          "platform",
+          "platformUniqueId",
+          "createdAt"
+        ]
       },
       "UserPreferenceDTOSchema": {
         "type": "object",
@@ -2762,10 +3384,19 @@
           "source": {
             "type": "string",
             "nullable": true,
-            "enum": ["SIGN_UP", "SETTINGS", null]
+            "enum": [
+              "SIGN_UP",
+              "SETTINGS",
+              null
+            ]
           }
         },
-        "required": ["preference", "enabled", "agreedAt", "source"]
+        "required": [
+          "preference",
+          "enabled",
+          "agreedAt",
+          "source"
+        ]
       },
       "SubscribeInfoMeDTOSchema": {
         "type": "object",
@@ -2781,7 +3412,10 @@
                 "nullable": true
               }
             },
-            "required": ["count", "thumbUrl"]
+            "required": [
+              "count",
+              "thumbUrl"
+            ]
           },
           "artists": {
             "type": "object",
@@ -2794,7 +3428,10 @@
                 "nullable": true
               }
             },
-            "required": ["count", "thumbUrl"]
+            "required": [
+              "count",
+              "thumbUrl"
+            ]
           },
           "events": {
             "type": "object",
@@ -2807,10 +3444,17 @@
                 "nullable": true
               }
             },
-            "required": ["count", "thumbUrl"]
+            "required": [
+              "count",
+              "thumbUrl"
+            ]
           }
         },
-        "required": ["venues", "artists", "events"]
+        "required": [
+          "venues",
+          "artists",
+          "events"
+        ]
       },
       "UserConsentsRequiredDTOSchema": {
         "type": "object",
@@ -2825,7 +3469,10 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": ["SERVICE", "PRIVACY"]
+                  "enum": [
+                    "SERVICE",
+                    "PRIVACY"
+                  ]
                 },
                 "version": {
                   "type": "string"
@@ -2838,7 +3485,13 @@
                   "type": "boolean"
                 }
               },
-              "required": ["id", "type", "version", "effectiveDate", "isActive"]
+              "required": [
+                "id",
+                "type",
+                "version",
+                "effectiveDate",
+                "isActive"
+              ]
             }
           },
           "marketingConsent": {
@@ -2859,7 +3512,12 @@
                 "format": "date-time"
               }
             },
-            "required": ["id", "userId", "optedIn", "createdAt"]
+            "required": [
+              "id",
+              "userId",
+              "optedIn",
+              "createdAt"
+            ]
           },
           "nightMarketingConsent": {
             "type": "object",
@@ -2879,10 +3537,19 @@
                 "format": "date-time"
               }
             },
-            "required": ["id", "userId", "optedIn", "createdAt"]
+            "required": [
+              "id",
+              "userId",
+              "optedIn",
+              "createdAt"
+            ]
           }
         },
-        "required": ["pendingTerms", "marketingConsent", "nightMarketingConsent"]
+        "required": [
+          "pendingTerms",
+          "marketingConsent",
+          "nightMarketingConsent"
+        ]
       },
       "UserProfileDTOSchema": {
         "type": "object",
@@ -2900,7 +3567,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -2945,10 +3614,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -2958,7 +3635,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -2972,11 +3651,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -2999,7 +3682,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -3018,7 +3704,10 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
@@ -3032,7 +3721,9 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "enum": ["concert"]
+                      "enum": [
+                        "concert"
+                      ]
                     },
                     "data": {
                       "type": "object",
@@ -3077,10 +3768,18 @@
                                   "type": "string"
                                 }
                               },
-                              "required": ["id", "owner", "license", "licenseURL"]
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
                             }
                           },
-                          "required": ["url", "copyright"]
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
                         },
                         "mainVenue": {
                           "type": "object",
@@ -3090,7 +3789,9 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         },
                         "slug": {
                           "type": "string",
@@ -3104,11 +3805,15 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "enum": ["DRAFT"]
+                              "enum": [
+                                "DRAFT"
+                              ]
                             },
                             {
                               "type": "string",
-                              "enum": ["PUBLISHED"]
+                              "enum": [
+                                "PUBLISHED"
+                              ]
                             },
                             {
                               "nullable": true
@@ -3131,7 +3836,10 @@
                               "type": "string"
                             }
                           },
-                          "required": ["id", "name"]
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "entryTicketCapacity": {
                           "type": "integer",
@@ -3150,20 +3858,29 @@
                       ]
                     }
                   },
-                  "required": ["type", "data"]
+                  "required": [
+                    "type",
+                    "data"
+                  ]
                 }
               ]
             }
           }
         },
-        "required": ["handle", "subscribedEvents", "selfCreatedEvents"]
+        "required": [
+          "handle",
+          "subscribedEvents",
+          "selfCreatedEvents"
+        ]
       },
       "ActivateUserBodyDTOSchema": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["activate"]
+            "enum": [
+              "activate"
+            ]
           },
           "authCode": {
             "type": "string"
@@ -3173,17 +3890,25 @@
             "format": "email"
           }
         },
-        "required": ["type", "authCode", "email"]
+        "required": [
+          "type",
+          "authCode",
+          "email"
+        ]
       },
       "DeactivateUserBodyDTOSchema": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["deactivate"]
+            "enum": [
+              "deactivate"
+            ]
           }
         },
-        "required": ["type"]
+        "required": [
+          "type"
+        ]
       },
       "UpdateUserSocialLinksBodyDTOSchema": {
         "type": "array",
@@ -3194,15 +3919,21 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["instagram"]
+                  "enum": [
+                    "instagram"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["x"]
+                  "enum": [
+                    "x"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["youtube"]
+                  "enum": [
+                    "youtube"
+                  ]
                 }
               ]
             },
@@ -3210,7 +3941,10 @@
               "type": "string"
             }
           },
-          "required": ["platform", "platformUniqueId"]
+          "required": [
+            "platform",
+            "platformUniqueId"
+          ]
         }
       },
       "UpdateUserPreferencesBodyDTOSchema": {
@@ -3225,10 +3959,17 @@
               "source": {
                 "type": "string",
                 "nullable": true,
-                "enum": ["SIGN_UP", "SETTINGS", null]
+                "enum": [
+                  "SIGN_UP",
+                  "SETTINGS",
+                  null
+                ]
               }
             },
-            "required": ["enabled", "source"]
+            "required": [
+              "enabled",
+              "source"
+            ]
           },
           "NEW_SHOWS_NOTIFICATION_EMAIL": {
             "type": "object",
@@ -3239,10 +3980,17 @@
               "source": {
                 "type": "string",
                 "nullable": true,
-                "enum": ["SIGN_UP", "SETTINGS", null]
+                "enum": [
+                  "SIGN_UP",
+                  "SETTINGS",
+                  null
+                ]
               }
             },
-            "required": ["enabled", "source"]
+            "required": [
+              "enabled",
+              "source"
+            ]
           },
           "IN_APP_NEW_SHOWS_NOTIFICATION": {
             "type": "object",
@@ -3253,10 +4001,17 @@
               "source": {
                 "type": "string",
                 "nullable": true,
-                "enum": ["SIGN_UP", "SETTINGS", null]
+                "enum": [
+                  "SIGN_UP",
+                  "SETTINGS",
+                  null
+                ]
               }
             },
-            "required": ["enabled", "source"]
+            "required": [
+              "enabled",
+              "source"
+            ]
           },
           "APP_FEATURE_NOTIFICATION_EMAIL": {
             "type": "object",
@@ -3267,10 +4022,17 @@
               "source": {
                 "type": "string",
                 "nullable": true,
-                "enum": ["SIGN_UP", "SETTINGS", null]
+                "enum": [
+                  "SIGN_UP",
+                  "SETTINGS",
+                  null
+                ]
               }
             },
-            "required": ["enabled", "source"]
+            "required": [
+              "enabled",
+              "source"
+            ]
           },
           "IN_APP_APP_FEATURE_NOTIFICATION": {
             "type": "object",
@@ -3281,10 +4043,17 @@
               "source": {
                 "type": "string",
                 "nullable": true,
-                "enum": ["SIGN_UP", "SETTINGS", null]
+                "enum": [
+                  "SIGN_UP",
+                  "SETTINGS",
+                  null
+                ]
               }
             },
-            "required": ["enabled", "source"]
+            "required": [
+              "enabled",
+              "source"
+            ]
           }
         }
       },
@@ -3305,7 +4074,12 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "userId", "termsVersionId", "agreedAt"]
+        "required": [
+          "id",
+          "userId",
+          "termsVersionId",
+          "agreedAt"
+        ]
       },
       "CreateTermsAgreementBodyDTOSchema": {
         "type": "object",
@@ -3314,7 +4088,9 @@
             "type": "string"
           }
         },
-        "required": ["termsVersionId"]
+        "required": [
+          "termsVersionId"
+        ]
       },
       "MarketingConsentDTOSchema": {
         "type": "object",
@@ -3333,7 +4109,12 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "userId", "optedIn", "createdAt"]
+        "required": [
+          "id",
+          "userId",
+          "optedIn",
+          "createdAt"
+        ]
       },
       "UpdateMarketingConsentBodyDTOSchema": {
         "type": "object",
@@ -3342,7 +4123,9 @@
             "type": "boolean"
           }
         },
-        "required": ["optedIn"]
+        "required": [
+          "optedIn"
+        ]
       },
       "NightMarketingConsentDTOSchema": {
         "type": "object",
@@ -3361,7 +4144,12 @@
             "format": "date-time"
           }
         },
-        "required": ["id", "userId", "optedIn", "createdAt"]
+        "required": [
+          "id",
+          "userId",
+          "optedIn",
+          "createdAt"
+        ]
       },
       "UpdateNightMarketingConsentBodyDTOSchema": {
         "type": "object",
@@ -3370,7 +4158,9 @@
             "type": "boolean"
           }
         },
-        "required": ["optedIn"]
+        "required": [
+          "optedIn"
+        ]
       },
       "UpdateUserProfileByHandleBodyDTOSchema": {
         "type": "object",
@@ -3389,7 +4179,9 @@
             "pattern": "^@[a-zA-Z0-9._-]{3,30}$"
           }
         },
-        "required": ["handle"]
+        "required": [
+          "handle"
+        ]
       },
       "SubscribeEventBodyDTOSchema": {
         "type": "object",
@@ -3398,7 +4190,9 @@
             "type": "string"
           }
         },
-        "required": ["eventId"]
+        "required": [
+          "eventId"
+        ]
       },
       "SubscribeArtistBodyDTOSchema": {
         "type": "object",
@@ -3408,7 +4202,9 @@
             "format": "uuid"
           }
         },
-        "required": ["artistId"]
+        "required": [
+          "artistId"
+        ]
       },
       "UnsubscribeArtistBodyDTOSchema": {
         "type": "object",
@@ -3418,7 +4214,9 @@
             "format": "uuid"
           }
         },
-        "required": ["artistId"]
+        "required": [
+          "artistId"
+        ]
       },
       "SubscribeVenueBodyDTOSchema": {
         "type": "object",
@@ -3428,7 +4226,9 @@
             "format": "uuid"
           }
         },
-        "required": ["venueId"]
+        "required": [
+          "venueId"
+        ]
       },
       "UnsubscribeVenueBodyDTOSchema": {
         "type": "object",
@@ -3438,7 +4238,9 @@
             "format": "uuid"
           }
         },
-        "required": ["venueId"]
+        "required": [
+          "venueId"
+        ]
       },
       "SubscriptionDTOSchema": {
         "type": "object",
@@ -3453,7 +4255,11 @@
           },
           "targetType": {
             "type": "string",
-            "enum": ["venue", "event", "daily"]
+            "enum": [
+              "venue",
+              "event",
+              "daily"
+            ]
           },
           "targetId": {
             "type": "string"
@@ -3465,7 +4271,14 @@
             "type": "string"
           }
         },
-        "required": ["id", "email", "targetType", "targetId", "consent", "createdAt"]
+        "required": [
+          "id",
+          "email",
+          "targetType",
+          "targetId",
+          "consent",
+          "createdAt"
+        ]
       },
       "CreateSubscriptionBodyDTOSchema": {
         "type": "object",
@@ -3476,7 +4289,11 @@
           },
           "targetType": {
             "type": "string",
-            "enum": ["venue", "event", "daily"]
+            "enum": [
+              "venue",
+              "event",
+              "daily"
+            ]
           },
           "targetId": {
             "type": "string",
@@ -3486,31 +4303,47 @@
             "type": "boolean"
           }
         },
-        "required": ["email", "targetType", "targetId", "consent"]
+        "required": [
+          "email",
+          "targetType",
+          "targetId",
+          "consent"
+        ]
       },
       "DeleteSubscriptionResultDTOSchema": {
         "type": "object",
         "properties": {
           "ok": {
             "type": "boolean",
-            "enum": [true]
+            "enum": [
+              true
+            ]
           }
         },
-        "required": ["ok"]
+        "required": [
+          "ok"
+        ]
       },
       "DeleteSubscriptionBodyDTOSchema": {
         "type": "object",
         "properties": {
           "targetType": {
             "type": "string",
-            "enum": ["venue", "event", "daily"]
+            "enum": [
+              "venue",
+              "event",
+              "daily"
+            ]
           },
           "targetId": {
             "type": "string",
             "minLength": 1
           }
         },
-        "required": ["targetType", "targetId"]
+        "required": [
+          "targetType",
+          "targetId"
+        ]
       },
       "CommentListDTOSchema": {
         "type": "object",
@@ -3549,10 +4382,20 @@
                       "nullable": true
                     }
                   },
-                  "required": ["id", "handle"]
+                  "required": [
+                    "id",
+                    "handle"
+                  ]
                 }
               },
-              "required": ["id", "threadKey", "body", "createdAt", "updatedAt", "author"]
+              "required": [
+                "id",
+                "threadKey",
+                "body",
+                "createdAt",
+                "updatedAt",
+                "author"
+              ]
             }
           },
           "nextCursor": {
@@ -3560,7 +4403,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "CommentDTOSchema": {
         "type": "object",
@@ -3594,10 +4440,20 @@
                 "nullable": true
               }
             },
-            "required": ["id", "handle"]
+            "required": [
+              "id",
+              "handle"
+            ]
           }
         },
-        "required": ["id", "threadKey", "body", "createdAt", "updatedAt", "author"]
+        "required": [
+          "id",
+          "threadKey",
+          "body",
+          "createdAt",
+          "updatedAt",
+          "author"
+        ]
       },
       "CreateCommentBodyDTOSchema": {
         "type": "object",
@@ -3613,7 +4469,10 @@
             "maxLength": 800
           }
         },
-        "required": ["threadKey", "body"]
+        "required": [
+          "threadKey",
+          "body"
+        ]
       },
       "ReviewListDTOSchema": {
         "type": "object",
@@ -3656,10 +4515,21 @@
                       "nullable": true
                     }
                   },
-                  "required": ["id", "handle"]
+                  "required": [
+                    "id",
+                    "handle"
+                  ]
                 }
               },
-              "required": ["id", "concertId", "rating", "body", "createdAt", "updatedAt", "author"]
+              "required": [
+                "id",
+                "concertId",
+                "rating",
+                "body",
+                "createdAt",
+                "updatedAt",
+                "author"
+              ]
             }
           },
           "nextCursor": {
@@ -3667,7 +4537,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "ReviewSummaryDTOSchema": {
         "type": "object",
@@ -3697,10 +4570,20 @@
                 "type": "integer"
               }
             },
-            "required": ["1", "2", "3", "4", "5"]
+            "required": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ]
           }
         },
-        "required": ["averageRating", "totalCount", "ratingDistribution"]
+        "required": [
+          "averageRating",
+          "totalCount",
+          "ratingDistribution"
+        ]
       },
       "MyReviewDTOSchema": {
         "type": "object",
@@ -3742,13 +4625,26 @@
                     "nullable": true
                   }
                 },
-                "required": ["id", "handle"]
+                "required": [
+                  "id",
+                  "handle"
+                ]
               }
             },
-            "required": ["id", "concertId", "rating", "body", "createdAt", "updatedAt", "author"]
+            "required": [
+              "id",
+              "concertId",
+              "rating",
+              "body",
+              "createdAt",
+              "updatedAt",
+              "author"
+            ]
           }
         },
-        "required": ["review"]
+        "required": [
+          "review"
+        ]
       },
       "ReviewDTOSchema": {
         "type": "object",
@@ -3786,10 +4682,21 @@
                 "nullable": true
               }
             },
-            "required": ["id", "handle"]
+            "required": [
+              "id",
+              "handle"
+            ]
           }
         },
-        "required": ["id", "concertId", "rating", "body", "createdAt", "updatedAt", "author"]
+        "required": [
+          "id",
+          "concertId",
+          "rating",
+          "body",
+          "createdAt",
+          "updatedAt",
+          "author"
+        ]
       },
       "CreateReviewBodyDTOSchema": {
         "type": "object",
@@ -3805,7 +4712,10 @@
             "maxLength": 1000
           }
         },
-        "required": ["rating", "body"]
+        "required": [
+          "rating",
+          "body"
+        ]
       },
       "UpdateReviewBodyDTOSchema": {
         "type": "object",
@@ -3821,7 +4731,10 @@
             "maxLength": 1000
           }
         },
-        "required": ["rating", "body"]
+        "required": [
+          "rating",
+          "body"
+        ]
       },
       "EntryTicketPoolDTOSchema": {
         "type": "object",
@@ -3843,7 +4756,13 @@
             "type": "number"
           }
         },
-        "required": ["capacity", "available", "claimed", "used", "cancelled"]
+        "required": [
+          "capacity",
+          "available",
+          "claimed",
+          "used",
+          "cancelled"
+        ]
       },
       "EntryTicketDTOSchema": {
         "type": "object",
@@ -3858,19 +4777,27 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["AVAILABLE"]
+                "enum": [
+                  "AVAILABLE"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["CLAIMED"]
+                "enum": [
+                  "CLAIMED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["USED"]
+                "enum": [
+                  "USED"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["CANCELLED"]
+                "enum": [
+                  "CANCELLED"
+                ]
               }
             ]
           },
@@ -3906,17 +4833,32 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "name"]
+                "required": [
+                  "id",
+                  "name"
+                ]
               },
               "slug": {
                 "type": "string",
                 "nullable": true
               }
             },
-            "required": ["id", "title", "date", "slug"]
+            "required": [
+              "id",
+              "title",
+              "date",
+              "slug"
+            ]
           }
         },
-        "required": ["id", "code", "status", "claimedAt", "scannedAt", "concert"]
+        "required": [
+          "id",
+          "code",
+          "status",
+          "claimedAt",
+          "scannedAt",
+          "concert"
+        ]
       },
       "EntryTicketListDTOSchema": {
         "type": "array",
@@ -3933,19 +4875,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["AVAILABLE"]
+                  "enum": [
+                    "AVAILABLE"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CLAIMED"]
+                  "enum": [
+                    "CLAIMED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["USED"]
+                  "enum": [
+                    "USED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CANCELLED"]
+                  "enum": [
+                    "CANCELLED"
+                  ]
                 }
               ]
             },
@@ -3981,17 +4931,32 @@
                       "type": "string"
                     }
                   },
-                  "required": ["id", "name"]
+                  "required": [
+                    "id",
+                    "name"
+                  ]
                 },
                 "slug": {
                   "type": "string",
                   "nullable": true
                 }
               },
-              "required": ["id", "title", "date", "slug"]
+              "required": [
+                "id",
+                "title",
+                "date",
+                "slug"
+              ]
             }
           },
-          "required": ["id", "code", "status", "claimedAt", "scannedAt", "concert"]
+          "required": [
+            "id",
+            "code",
+            "status",
+            "claimedAt",
+            "scannedAt",
+            "concert"
+          ]
         }
       },
       "DraftEventDataDTOSchema": {
@@ -4062,7 +5027,10 @@
                 },
                 "channel": {
                   "type": "string",
-                  "enum": ["IN_APP", "EMAIL"]
+                  "enum": [
+                    "IN_APP",
+                    "EMAIL"
+                  ]
                 },
                 "isRead": {
                   "type": "boolean"
@@ -4090,11 +5058,15 @@
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["CONCERT_LIST"]
+                              "enum": [
+                                "CONCERT_LIST"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["KOPIS_EVENTS_RELEASE"]
+                              "enum": [
+                                "KOPIS_EVENTS_RELEASE"
+                              ]
                             },
                             "payload": {
                               "type": "object",
@@ -4150,10 +5122,18 @@
                                                 "type": "string"
                                               }
                                             },
-                                            "required": ["id", "owner", "license", "licenseURL"]
+                                            "required": [
+                                              "id",
+                                              "owner",
+                                              "license",
+                                              "licenseURL"
+                                            ]
                                           }
                                         },
-                                        "required": ["url", "copyright"]
+                                        "required": [
+                                          "url",
+                                          "copyright"
+                                        ]
                                       },
                                       "mainVenue": {
                                         "type": "object",
@@ -4163,7 +5143,9 @@
                                             "type": "string"
                                           }
                                         },
-                                        "required": ["name"]
+                                        "required": [
+                                          "name"
+                                        ]
                                       },
                                       "slug": {
                                         "type": "string",
@@ -4177,11 +5159,15 @@
                                         "anyOf": [
                                           {
                                             "type": "string",
-                                            "enum": ["DRAFT"]
+                                            "enum": [
+                                              "DRAFT"
+                                            ]
                                           },
                                           {
                                             "type": "string",
-                                            "enum": ["PUBLISHED"]
+                                            "enum": [
+                                              "PUBLISHED"
+                                            ]
                                           },
                                           {
                                             "nullable": true
@@ -4204,7 +5190,10 @@
                                             "type": "string"
                                           }
                                         },
-                                        "required": ["id", "name"]
+                                        "required": [
+                                          "id",
+                                          "name"
+                                        ]
                                       },
                                       "entryTicketCapacity": {
                                         "type": "integer",
@@ -4228,21 +5217,34 @@
                                   "format": "date-time"
                                 }
                               },
-                              "required": ["title", "description", "data", "createdAt"]
+                              "required": [
+                                "title",
+                                "description",
+                                "data",
+                                "createdAt"
+                              ]
                             }
                           },
-                          "required": ["type", "definition", "payload"]
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         },
                         {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["APP_FEATURE"]
+                              "enum": [
+                                "APP_FEATURE"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["NEW_FEATURE_RELEASE"]
+                              "enum": [
+                                "NEW_FEATURE_RELEASE"
+                              ]
                             },
                             "payload": {
                               "type": "object",
@@ -4262,21 +5264,34 @@
                                   "format": "uri"
                                 }
                               },
-                              "required": ["title", "description", "createdAt", "link"]
+                              "required": [
+                                "title",
+                                "description",
+                                "createdAt",
+                                "link"
+                              ]
                             }
                           },
-                          "required": ["type", "definition", "payload"]
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         },
                         {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["EDITORIAL"]
+                              "enum": [
+                                "EDITORIAL"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["NEW_EDITORIAL_RELEASE"]
+                              "enum": [
+                                "NEW_EDITORIAL_RELEASE"
+                              ]
                             },
                             "payload": {
                               "type": "object",
@@ -4301,28 +5316,45 @@
                                       "format": "uri"
                                     }
                                   },
-                                  "required": ["slug", "category", "thumbnail"]
+                                  "required": [
+                                    "slug",
+                                    "category",
+                                    "thumbnail"
+                                  ]
                                 },
                                 "createdAt": {
                                   "type": "string",
                                   "format": "date-time"
                                 }
                               },
-                              "required": ["title", "description", "data", "createdAt"]
+                              "required": [
+                                "title",
+                                "description",
+                                "data",
+                                "createdAt"
+                              ]
                             }
                           },
-                          "required": ["type", "definition", "payload"]
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         },
                         {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["USER"]
+                              "enum": [
+                                "USER"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["NEW_USER"]
+                              "enum": [
+                                "NEW_USER"
+                              ]
                             },
                             "payload": {
                               "type": "object",
@@ -4353,38 +5385,61 @@
                                       "type": "boolean"
                                     }
                                   },
-                                  "required": ["consentRequired"]
+                                  "required": [
+                                    "consentRequired"
+                                  ]
                                 }
                               },
-                              "required": ["id", "email", "provider", "handle", "deactivatedAt"]
+                              "required": [
+                                "id",
+                                "email",
+                                "provider",
+                                "handle",
+                                "deactivatedAt"
+                              ]
                             }
                           },
-                          "required": ["type", "definition", "payload"]
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         },
                         {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["USER_POST"]
+                              "enum": [
+                                "USER_POST"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["NEW_USER_POST"]
+                              "enum": [
+                                "NEW_USER_POST"
+                              ]
                             }
                           },
-                          "required": ["type", "definition"]
+                          "required": [
+                            "type",
+                            "definition"
+                          ]
                         },
                         {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["CONCERT_LIST"]
+                              "enum": [
+                                "CONCERT_LIST"
+                              ]
                             },
                             "definition": {
                               "type": "string",
-                              "enum": ["WEEKEND_EVENTS_NOTIFICATION"]
+                              "enum": [
+                                "WEEKEND_EVENTS_NOTIFICATION"
+                              ]
                             },
                             "payload": {
                               "type": "object",
@@ -4440,10 +5495,18 @@
                                                 "type": "string"
                                               }
                                             },
-                                            "required": ["id", "owner", "license", "licenseURL"]
+                                            "required": [
+                                              "id",
+                                              "owner",
+                                              "license",
+                                              "licenseURL"
+                                            ]
                                           }
                                         },
-                                        "required": ["url", "copyright"]
+                                        "required": [
+                                          "url",
+                                          "copyright"
+                                        ]
                                       },
                                       "mainVenue": {
                                         "type": "object",
@@ -4453,7 +5516,9 @@
                                             "type": "string"
                                           }
                                         },
-                                        "required": ["name"]
+                                        "required": [
+                                          "name"
+                                        ]
                                       },
                                       "slug": {
                                         "type": "string",
@@ -4467,11 +5532,15 @@
                                         "anyOf": [
                                           {
                                             "type": "string",
-                                            "enum": ["DRAFT"]
+                                            "enum": [
+                                              "DRAFT"
+                                            ]
                                           },
                                           {
                                             "type": "string",
-                                            "enum": ["PUBLISHED"]
+                                            "enum": [
+                                              "PUBLISHED"
+                                            ]
                                           },
                                           {
                                             "nullable": true
@@ -4494,7 +5563,10 @@
                                             "type": "string"
                                           }
                                         },
-                                        "required": ["id", "name"]
+                                        "required": [
+                                          "id",
+                                          "name"
+                                        ]
                                       },
                                       "entryTicketCapacity": {
                                         "type": "integer",
@@ -4518,10 +5590,19 @@
                                   "format": "date-time"
                                 }
                               },
-                              "required": ["title", "description", "data", "createdAt"]
+                              "required": [
+                                "title",
+                                "description",
+                                "data",
+                                "createdAt"
+                              ]
                             }
                           },
-                          "required": ["type", "definition", "payload"]
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         }
                       ]
                     },
@@ -4530,10 +5611,22 @@
                       "format": "date-time"
                     }
                   },
-                  "required": ["id", "content", "createdAt"]
+                  "required": [
+                    "id",
+                    "content",
+                    "createdAt"
+                  ]
                 }
               },
-              "required": ["id", "feedId", "channel", "isRead", "readAt", "createdAt", "feed"]
+              "required": [
+                "id",
+                "feedId",
+                "channel",
+                "isRead",
+                "readAt",
+                "createdAt",
+                "feed"
+              ]
             }
           },
           "nextCursor": {
@@ -4541,7 +5634,10 @@
             "nullable": true
           }
         },
-        "required": ["items", "nextCursor"]
+        "required": [
+          "items",
+          "nextCursor"
+        ]
       },
       "UserNotificationUnreadCountDTOSchema": {
         "type": "object",
@@ -4551,7 +5647,9 @@
             "minimum": 0
           }
         },
-        "required": ["count"]
+        "required": [
+          "count"
+        ]
       },
       "UserNotificationCountsDTOSchema": {
         "type": "object",
@@ -4584,10 +5682,19 @@
                 "minimum": 0
               }
             },
-            "required": ["CONCERT_LIST", "APP_FEATURE", "EDITORIAL", "USER", "USER_POST"]
+            "required": [
+              "CONCERT_LIST",
+              "APP_FEATURE",
+              "EDITORIAL",
+              "USER",
+              "USER_POST"
+            ]
           }
         },
-        "required": ["total", "byType"]
+        "required": [
+          "total",
+          "byType"
+        ]
       },
       "UserNotificationDTOSchema": {
         "type": "object",
@@ -4602,7 +5709,10 @@
           },
           "channel": {
             "type": "string",
-            "enum": ["IN_APP", "EMAIL"]
+            "enum": [
+              "IN_APP",
+              "EMAIL"
+            ]
           },
           "isRead": {
             "type": "boolean"
@@ -4630,11 +5740,15 @@
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["CONCERT_LIST"]
+                        "enum": [
+                          "CONCERT_LIST"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["KOPIS_EVENTS_RELEASE"]
+                        "enum": [
+                          "KOPIS_EVENTS_RELEASE"
+                        ]
                       },
                       "payload": {
                         "type": "object",
@@ -4690,10 +5804,18 @@
                                           "type": "string"
                                         }
                                       },
-                                      "required": ["id", "owner", "license", "licenseURL"]
+                                      "required": [
+                                        "id",
+                                        "owner",
+                                        "license",
+                                        "licenseURL"
+                                      ]
                                     }
                                   },
-                                  "required": ["url", "copyright"]
+                                  "required": [
+                                    "url",
+                                    "copyright"
+                                  ]
                                 },
                                 "mainVenue": {
                                   "type": "object",
@@ -4703,7 +5825,9 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["name"]
+                                  "required": [
+                                    "name"
+                                  ]
                                 },
                                 "slug": {
                                   "type": "string",
@@ -4717,11 +5841,15 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": ["DRAFT"]
+                                      "enum": [
+                                        "DRAFT"
+                                      ]
                                     },
                                     {
                                       "type": "string",
-                                      "enum": ["PUBLISHED"]
+                                      "enum": [
+                                        "PUBLISHED"
+                                      ]
                                     },
                                     {
                                       "nullable": true
@@ -4744,7 +5872,10 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["id", "name"]
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ]
                                 },
                                 "entryTicketCapacity": {
                                   "type": "integer",
@@ -4768,21 +5899,34 @@
                             "format": "date-time"
                           }
                         },
-                        "required": ["title", "description", "data", "createdAt"]
+                        "required": [
+                          "title",
+                          "description",
+                          "data",
+                          "createdAt"
+                        ]
                       }
                     },
-                    "required": ["type", "definition", "payload"]
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
                   },
                   {
                     "type": "object",
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["APP_FEATURE"]
+                        "enum": [
+                          "APP_FEATURE"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["NEW_FEATURE_RELEASE"]
+                        "enum": [
+                          "NEW_FEATURE_RELEASE"
+                        ]
                       },
                       "payload": {
                         "type": "object",
@@ -4802,21 +5946,34 @@
                             "format": "uri"
                           }
                         },
-                        "required": ["title", "description", "createdAt", "link"]
+                        "required": [
+                          "title",
+                          "description",
+                          "createdAt",
+                          "link"
+                        ]
                       }
                     },
-                    "required": ["type", "definition", "payload"]
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
                   },
                   {
                     "type": "object",
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["EDITORIAL"]
+                        "enum": [
+                          "EDITORIAL"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["NEW_EDITORIAL_RELEASE"]
+                        "enum": [
+                          "NEW_EDITORIAL_RELEASE"
+                        ]
                       },
                       "payload": {
                         "type": "object",
@@ -4841,28 +5998,45 @@
                                 "format": "uri"
                               }
                             },
-                            "required": ["slug", "category", "thumbnail"]
+                            "required": [
+                              "slug",
+                              "category",
+                              "thumbnail"
+                            ]
                           },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
                           }
                         },
-                        "required": ["title", "description", "data", "createdAt"]
+                        "required": [
+                          "title",
+                          "description",
+                          "data",
+                          "createdAt"
+                        ]
                       }
                     },
-                    "required": ["type", "definition", "payload"]
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
                   },
                   {
                     "type": "object",
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["USER"]
+                        "enum": [
+                          "USER"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["NEW_USER"]
+                        "enum": [
+                          "NEW_USER"
+                        ]
                       },
                       "payload": {
                         "type": "object",
@@ -4893,38 +6067,61 @@
                                 "type": "boolean"
                               }
                             },
-                            "required": ["consentRequired"]
+                            "required": [
+                              "consentRequired"
+                            ]
                           }
                         },
-                        "required": ["id", "email", "provider", "handle", "deactivatedAt"]
+                        "required": [
+                          "id",
+                          "email",
+                          "provider",
+                          "handle",
+                          "deactivatedAt"
+                        ]
                       }
                     },
-                    "required": ["type", "definition", "payload"]
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
                   },
                   {
                     "type": "object",
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["USER_POST"]
+                        "enum": [
+                          "USER_POST"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["NEW_USER_POST"]
+                        "enum": [
+                          "NEW_USER_POST"
+                        ]
                       }
                     },
-                    "required": ["type", "definition"]
+                    "required": [
+                      "type",
+                      "definition"
+                    ]
                   },
                   {
                     "type": "object",
                     "properties": {
                       "type": {
                         "type": "string",
-                        "enum": ["CONCERT_LIST"]
+                        "enum": [
+                          "CONCERT_LIST"
+                        ]
                       },
                       "definition": {
                         "type": "string",
-                        "enum": ["WEEKEND_EVENTS_NOTIFICATION"]
+                        "enum": [
+                          "WEEKEND_EVENTS_NOTIFICATION"
+                        ]
                       },
                       "payload": {
                         "type": "object",
@@ -4980,10 +6177,18 @@
                                           "type": "string"
                                         }
                                       },
-                                      "required": ["id", "owner", "license", "licenseURL"]
+                                      "required": [
+                                        "id",
+                                        "owner",
+                                        "license",
+                                        "licenseURL"
+                                      ]
                                     }
                                   },
-                                  "required": ["url", "copyright"]
+                                  "required": [
+                                    "url",
+                                    "copyright"
+                                  ]
                                 },
                                 "mainVenue": {
                                   "type": "object",
@@ -4993,7 +6198,9 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["name"]
+                                  "required": [
+                                    "name"
+                                  ]
                                 },
                                 "slug": {
                                   "type": "string",
@@ -5007,11 +6214,15 @@
                                   "anyOf": [
                                     {
                                       "type": "string",
-                                      "enum": ["DRAFT"]
+                                      "enum": [
+                                        "DRAFT"
+                                      ]
                                     },
                                     {
                                       "type": "string",
-                                      "enum": ["PUBLISHED"]
+                                      "enum": [
+                                        "PUBLISHED"
+                                      ]
                                     },
                                     {
                                       "nullable": true
@@ -5034,7 +6245,10 @@
                                       "type": "string"
                                     }
                                   },
-                                  "required": ["id", "name"]
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ]
                                 },
                                 "entryTicketCapacity": {
                                   "type": "integer",
@@ -5058,10 +6272,19 @@
                             "format": "date-time"
                           }
                         },
-                        "required": ["title", "description", "data", "createdAt"]
+                        "required": [
+                          "title",
+                          "description",
+                          "data",
+                          "createdAt"
+                        ]
                       }
                     },
-                    "required": ["type", "definition", "payload"]
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
                   }
                 ]
               },
@@ -5070,10 +6293,22 @@
                 "format": "date-time"
               }
             },
-            "required": ["id", "content", "createdAt"]
+            "required": [
+              "id",
+              "content",
+              "createdAt"
+            ]
           }
         },
-        "required": ["id", "feedId", "channel", "isRead", "readAt", "createdAt", "feed"]
+        "required": [
+          "id",
+          "feedId",
+          "channel",
+          "isRead",
+          "readAt",
+          "createdAt",
+          "feed"
+        ]
       },
       "EventRsvpDTOSchema": {
         "type": "object",
@@ -5118,10 +6353,18 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "owner", "license", "licenseURL"]
+                "required": [
+                  "id",
+                  "owner",
+                  "license",
+                  "licenseURL"
+                ]
               }
             },
-            "required": ["url", "copyright"]
+            "required": [
+              "url",
+              "copyright"
+            ]
           },
           "mainVenue": {
             "type": "object",
@@ -5131,7 +6374,9 @@
                 "type": "string"
               }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           },
           "slug": {
             "type": "string",
@@ -5145,11 +6390,15 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["DRAFT"]
+                "enum": [
+                  "DRAFT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PUBLISHED"]
+                "enum": [
+                  "PUBLISHED"
+                ]
               },
               {
                 "nullable": true
@@ -5172,7 +6421,10 @@
                 "type": "string"
               }
             },
-            "required": ["id", "name"]
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "entryTicketCapacity": {
             "type": "integer",
@@ -5216,10 +6468,15 @@
           },
           "action": {
             "type": "string",
-            "enum": ["TOGGLE"]
+            "enum": [
+              "TOGGLE"
+            ]
           }
         },
-        "required": ["emoji", "action"]
+        "required": [
+          "emoji",
+          "action"
+        ]
       },
       "SurveyDTOSchema": {
         "oneOf": [
@@ -5228,7 +6485,9 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["COLDSURF_TICKET"]
+                "enum": [
+                  "COLDSURF_TICKET"
+                ]
               },
               "counters": {
                 "type": "object",
@@ -5245,7 +6504,10 @@
                 }
               }
             },
-            "required": ["type", "counters"]
+            "required": [
+              "type",
+              "counters"
+            ]
           }
         ]
       },
@@ -5254,14 +6516,23 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["COLDSURF_TICKET"]
+            "enum": [
+              "COLDSURF_TICKET"
+            ]
           },
           "action": {
             "type": "string",
-            "enum": ["GOOD", "MAYBE", "BAD"]
+            "enum": [
+              "GOOD",
+              "MAYBE",
+              "BAD"
+            ]
           }
         },
-        "required": ["type", "action"]
+        "required": [
+          "type",
+          "action"
+        ]
       },
       "NewsletterSubscribeBodyDTOSchema": {
         "type": "object",
@@ -5276,10 +6547,16 @@
           },
           "list": {
             "type": "string",
-            "enum": ["COLDSURF", "PAUL_ROCKSTAR"]
+            "enum": [
+              "COLDSURF",
+              "PAUL_ROCKSTAR"
+            ]
           }
         },
-        "required": ["email", "termsVersionId"]
+        "required": [
+          "email",
+          "termsVersionId"
+        ]
       },
       "FCMTokenDTOSchema": {
         "type": "object",
@@ -5291,7 +6568,10 @@
             "type": "string"
           }
         },
-        "required": ["id", "token"]
+        "required": [
+          "id",
+          "token"
+        ]
       },
       "PostFCMTokenBodyDTOSchema": {
         "type": "object",
@@ -5300,7 +6580,9 @@
             "type": "string"
           }
         },
-        "required": ["fcmToken"]
+        "required": [
+          "fcmToken"
+        ]
       },
       "RequiredConsentsDTOSchema": {
         "type": "object",
@@ -5315,7 +6597,10 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": ["SERVICE", "PRIVACY"]
+                  "enum": [
+                    "SERVICE",
+                    "PRIVACY"
+                  ]
                 },
                 "version": {
                   "type": "string"
@@ -5328,11 +6613,19 @@
                   "type": "boolean"
                 }
               },
-              "required": ["id", "type", "version", "effectiveDate", "isActive"]
+              "required": [
+                "id",
+                "type",
+                "version",
+                "effectiveDate",
+                "isActive"
+              ]
             }
           }
         },
-        "required": ["terms"]
+        "required": [
+          "terms"
+        ]
       },
       "TermsVersionDTOSchema": {
         "type": "object",
@@ -5342,7 +6635,10 @@
           },
           "type": {
             "type": "string",
-            "enum": ["SERVICE", "PRIVACY"]
+            "enum": [
+              "SERVICE",
+              "PRIVACY"
+            ]
           },
           "version": {
             "type": "string"
@@ -5355,7 +6651,13 @@
             "type": "boolean"
           }
         },
-        "required": ["id", "type", "version", "effectiveDate", "isActive"]
+        "required": [
+          "id",
+          "type",
+          "version",
+          "effectiveDate",
+          "isActive"
+        ]
       },
       "LocationConcertDTOSchema": {
         "type": "object",
@@ -5400,10 +6702,18 @@
                     "type": "string"
                   }
                 },
-                "required": ["id", "owner", "license", "licenseURL"]
+                "required": [
+                  "id",
+                  "owner",
+                  "license",
+                  "licenseURL"
+                ]
               }
             },
-            "required": ["url", "copyright"]
+            "required": [
+              "url",
+              "copyright"
+            ]
           },
           "mainVenue": {
             "type": "object",
@@ -5413,7 +6723,9 @@
                 "type": "string"
               }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           },
           "slug": {
             "type": "string",
@@ -5427,11 +6739,15 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["DRAFT"]
+                "enum": [
+                  "DRAFT"
+                ]
               },
               {
                 "type": "string",
-                "enum": ["PUBLISHED"]
+                "enum": [
+                  "PUBLISHED"
+                ]
               },
               {
                 "nullable": true
@@ -5454,7 +6770,10 @@
                 "type": "string"
               }
             },
-            "required": ["id", "name"]
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "entryTicketCapacity": {
             "type": "integer",
@@ -5503,7 +6822,14 @@
             "nullable": true
           }
         },
-        "required": ["id", "name", "uiName", "lat", "lng", "geohash"]
+        "required": [
+          "id",
+          "name",
+          "uiName",
+          "lat",
+          "lng",
+          "geohash"
+        ]
       },
       "LocationCountryDTOSchema": {
         "type": "object",
@@ -5538,11 +6864,22 @@
                   "type": "number"
                 }
               },
-              "required": ["id", "name", "uiName", "lat", "lng"]
+              "required": [
+                "id",
+                "name",
+                "uiName",
+                "lat",
+                "lng"
+              ]
             }
           }
         },
-        "required": ["id", "name", "uiName", "cities"]
+        "required": [
+          "id",
+          "name",
+          "uiName",
+          "cities"
+        ]
       },
       "SearchDTOSchema": {
         "oneOf": [
@@ -5551,7 +6888,9 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["artist"]
+                "enum": [
+                  "artist"
+                ]
               },
               "name": {
                 "type": "string"
@@ -5563,14 +6902,21 @@
                 "type": "string"
               }
             },
-            "required": ["type", "name", "profileImgUrl", "id"]
+            "required": [
+              "type",
+              "name",
+              "profileImgUrl",
+              "id"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["venue"]
+                "enum": [
+                  "venue"
+                ]
               },
               "name": {
                 "type": "string"
@@ -5586,14 +6932,21 @@
                 "type": "string"
               }
             },
-            "required": ["type", "name", "id", "slug"]
+            "required": [
+              "type",
+              "name",
+              "id",
+              "slug"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["concert"]
+                "enum": [
+                  "concert"
+                ]
               },
               "title": {
                 "type": "string"
@@ -5661,10 +7014,19 @@
                 "type": "string"
               }
             },
-            "required": ["id", "owner", "license", "licenseURL"]
+            "required": [
+              "id",
+              "owner",
+              "license",
+              "licenseURL"
+            ]
           }
         },
-        "required": ["id", "url", "copyright"]
+        "required": [
+          "id",
+          "url",
+          "copyright"
+        ]
       },
       "AppUpdateInfoDTOSchema": {
         "type": "object",
@@ -5680,10 +7042,17 @@
               },
               "updateType": {
                 "type": "string",
-                "enum": ["native", "ota"]
+                "enum": [
+                  "native",
+                  "ota"
+                ]
               }
             },
-            "required": ["latestVersion", "forceUpdate", "updateType"]
+            "required": [
+              "latestVersion",
+              "forceUpdate",
+              "updateType"
+            ]
           },
           "android": {
             "type": "object",
@@ -5696,13 +7065,23 @@
               },
               "updateType": {
                 "type": "string",
-                "enum": ["native", "ota"]
+                "enum": [
+                  "native",
+                  "ota"
+                ]
               }
             },
-            "required": ["latestVersion", "forceUpdate", "updateType"]
+            "required": [
+              "latestVersion",
+              "forceUpdate",
+              "updateType"
+            ]
           }
         },
-        "required": ["ios", "android"]
+        "required": [
+          "ios",
+          "android"
+        ]
       },
       "RemoteAppManifestDTOSchema": {
         "type": "object",
@@ -5714,10 +7093,14 @@
                 "type": "string"
               }
             },
-            "required": ["latestVersion"]
+            "required": [
+              "latestVersion"
+            ]
           }
         },
-        "required": ["settings"]
+        "required": [
+          "settings"
+        ]
       },
       "EventCategoryDTOSchema": {
         "type": "object",
@@ -5729,7 +7112,10 @@
             "type": "string"
           }
         },
-        "required": ["id", "name"]
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "GenreListDTOSchema": {
         "type": "array",
@@ -5749,7 +7135,11 @@
               "type": "number"
             }
           },
-          "required": ["genre", "categories", "count"]
+          "required": [
+            "genre",
+            "categories",
+            "count"
+          ]
         }
       },
       "LocationCountListDTOSchema": {
@@ -5764,7 +7154,10 @@
               "type": "number"
             }
           },
-          "required": ["city", "count"]
+          "required": [
+            "city",
+            "count"
+          ]
         }
       },
       "CreateDataCorrectionRequestBodyDTOSchema": {
@@ -5778,7 +7171,12 @@
           },
           "field": {
             "type": "string",
-            "enum": ["venueName", "date", "price", "other"]
+            "enum": [
+              "venueName",
+              "date",
+              "price",
+              "other"
+            ]
           },
           "currentValue": {
             "type": "string",
@@ -5798,7 +7196,10 @@
             "format": "email"
           }
         },
-        "required": ["field", "message"]
+        "required": [
+          "field",
+          "message"
+        ]
       }
     },
     "parameters": {}
@@ -5806,7 +7207,10 @@
   "paths": {
     "/v2/events/{eventId}/tickets": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 하위자원 — 티켓 목록",
         "parameters": [
           {
@@ -5848,7 +7252,10 @@
     },
     "/v2/events/{eventId}/posters": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 하위자원 — 포스터 목록",
         "parameters": [
           {
@@ -5890,7 +7297,10 @@
     },
     "/v2/events/collections": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 컬렉션 — 장르별 최근 등록 공연 묶음",
         "responses": {
           "200": {
@@ -5921,13 +7331,19 @@
     },
     "/v2/events/kopis": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "KOPIS 등록 이벤트 목록 — 커서 페이지네이션",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -5992,7 +7408,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -6012,13 +7432,19 @@
     },
     "/v2/events/weekend": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "주말 이벤트 목록 — 커서 페이지네이션",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -6091,7 +7517,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -6111,14 +7541,20 @@
     },
     "/v2/events/new": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "신규(최근 7일) 이벤트 목록 — 커서 페이지네이션",
         "description": "Deprecated: use GET /v2/events?sort=created_at&order=desc instead",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -6183,7 +7619,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -6203,14 +7643,20 @@
     },
     "/v2/events/tonight": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "오늘 밤(오늘 16:00~23:59 KST) 이벤트 목록 — 커서 페이지네이션",
         "description": "Deprecated: use GET /v2/events?date=today instead",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -6275,7 +7721,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -6295,7 +7745,10 @@
     },
     "/v2/events": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 목록 — 오프셋 페이지네이션(미래·PUBLISHED, 지역/장르 필터, 로그인 시 isSubscribed)",
         "parameters": [
           {
@@ -6394,7 +7847,10 @@
     },
     "/v2/events/by-genre": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "장르 칩 공연 피드 — 12칩 필터 + 매칭 근거(아티스트) + 커버리지 meta",
         "parameters": [
           {
@@ -6408,7 +7864,13 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["Gigs", "Classic", "Theatre", "Korean-Traditional", "Dance"],
+              "enum": [
+                "Gigs",
+                "Classic",
+                "Theatre",
+                "Korean-Traditional",
+                "Dance"
+              ],
               "default": "Gigs"
             },
             "required": false,
@@ -6500,7 +7962,10 @@
     },
     "/v2/events/slug/{slug}": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 상세(slug) — 로그인 시 isSubscribed",
         "parameters": [
           {
@@ -6556,7 +8021,10 @@
     },
     "/v2/events/recommended": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "추천 이벤트 — 랜덤 오프셋(미래·PUBLISHED, 지역/장르 필터)",
         "parameters": [
           {
@@ -6607,7 +8075,10 @@
     },
     "/v2/events/recent": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "최근 본 이벤트 — user/anonymousUser 의 lastViewedAt desc 25건(없으면 빈 배열)",
         "responses": {
           "200": {
@@ -6638,7 +8109,10 @@
     },
     "/v2/events/recently-viewed": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "최근 조회된 이벤트(글로벌) — ConcertViewStat.lastViewedAt desc 25건 + 그 시각",
         "responses": {
           "200": {
@@ -6669,7 +8143,10 @@
     },
     "/v2/events/stats": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "재고 규모 수치 — upcoming 공연 수 · 7일 내 · 공연장 수",
         "responses": {
           "200": {
@@ -6697,13 +8174,19 @@
     },
     "/v2/events/trending": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "트렌딩 이벤트 — viewStat.count desc 커서. locationCityName > geo(X-Lat-Lng) > 전국 순 분기",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -6760,7 +8243,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -6780,7 +8267,10 @@
     },
     "/v2/events/{eventId}": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 상세(id)",
         "parameters": [
           {
@@ -6826,7 +8316,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 삭제(인증 필수·본인 소유) — soft-delete",
         "security": [
           {
@@ -6891,7 +8384,10 @@
     },
     "/v2/events/{eventId}/rsvp": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "RSVP 카운트 — 12개 이모지별 count + me(anonymousUser 투표 여부)",
         "parameters": [
           {
@@ -6950,7 +8446,10 @@
     },
     "/v2/events/{eventId}/subscriptions/me": {
       "get": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "내 이벤트 구독 단건(인증 필수)",
         "security": [
           {
@@ -7012,7 +8511,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -7069,7 +8571,10 @@
     },
     "/v2/events/{eventId}/views": {
       "post": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 조회 기록(공개·anon/user 비필수) — 최근 본 공연 + trending 집계",
         "parameters": [
           {
@@ -7115,7 +8620,10 @@
     },
     "/v2/events/{eventId}/subscriptions": {
       "post": {
-        "tags": ["v2", "events"],
+        "tags": [
+          "v2",
+          "events"
+        ],
         "summary": "이벤트 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -7189,7 +8697,10 @@
     },
     "/v1/event/track-view": {
       "post": {
-        "tags": ["v1", "event"],
+        "tags": [
+          "v1",
+          "event"
+        ],
         "summary": "이벤트 조회 기록(공개·legacy) — concertId 는 body",
         "requestBody": {
           "content": {
@@ -7205,7 +8716,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["concertId"]
+                "required": [
+                  "concertId"
+                ]
               }
             }
           }
@@ -7229,7 +8742,10 @@
     },
     "/v2/venues": {
       "get": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 목록 — 향후 공연이 있는 공연장(오프셋 페이지네이션)",
         "parameters": [
           {
@@ -7293,7 +8809,10 @@
     },
     "/v2/venues/slug/{slug}": {
       "get": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 상세 — slug 조회(예정·지난 공연 포함)",
         "parameters": [
           {
@@ -7341,7 +8860,10 @@
     },
     "/v2/venues/{id}": {
       "get": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 상세 — id 조회(예정·지난 공연 포함)",
         "parameters": [
           {
@@ -7389,7 +8911,10 @@
     },
     "/v2/venues/{venueId}/subscriptions/me": {
       "get": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 구독 여부(인증 필수) — 대상/구독 미존재 시 404",
         "security": [
           {
@@ -7451,7 +8976,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -7508,7 +9036,10 @@
     },
     "/v2/venues/{venueId}/subscriptions": {
       "post": {
-        "tags": ["v2", "venues"],
+        "tags": [
+          "v2",
+          "venues"
+        ],
         "summary": "공연장 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -7582,7 +9113,10 @@
     },
     "/v2/artists/{id}": {
       "get": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 상세 — 예정 공연 포함",
         "parameters": [
           {
@@ -7630,7 +9164,10 @@
     },
     "/v2/artists/{artistId}/profile-images": {
       "get": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 하위자원 — 프로필 이미지 목록",
         "parameters": [
           {
@@ -7672,7 +9209,10 @@
     },
     "/v2/artists/{artistId}/profile-images/{artistProfileImageId}": {
       "get": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 하위자원 — 프로필 이미지 상세(copyright 포함)",
         "parameters": [
           {
@@ -7729,7 +9269,10 @@
     },
     "/v2/artists/{artistId}/subscriptions/me": {
       "get": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 구독 여부(인증 필수) — 대상/구독 미존재 시 404",
         "security": [
           {
@@ -7791,7 +9334,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -7848,7 +9394,10 @@
     },
     "/v2/artists/{artistId}/subscriptions": {
       "post": {
-        "tags": ["v2", "artists"],
+        "tags": [
+          "v2",
+          "artists"
+        ],
         "summary": "아티스트 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -7922,13 +9471,19 @@
     },
     "/v2/feeds": {
       "get": {
-        "tags": ["v2", "feeds"],
+        "tags": [
+          "v2",
+          "feeds"
+        ],
         "summary": "피드 목록 — base64 커서(createdAt+id) 페이지네이션",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -7986,7 +9541,11 @@
                       "nullable": true
                     }
                   },
-                  "required": ["data", "nextCursor", "prevCursor"]
+                  "required": [
+                    "data",
+                    "nextCursor",
+                    "prevCursor"
+                  ]
                 }
               }
             }
@@ -8016,7 +9575,10 @@
     },
     "/v2/feeds/definitions": {
       "get": {
-        "tags": ["v2", "feeds"],
+        "tags": [
+          "v2",
+          "feeds"
+        ],
         "summary": "피드 정의 목록 — 활성 정의만",
         "responses": {
           "200": {
@@ -8047,7 +9609,10 @@
     },
     "/v2/feeds/{feedId}": {
       "get": {
-        "tags": ["v2", "feeds"],
+        "tags": [
+          "v2",
+          "feeds"
+        ],
         "summary": "피드 상세",
         "parameters": [
           {
@@ -8106,7 +9671,10 @@
     },
     "/v2/tickets/{ticketId}/prices": {
       "get": {
-        "tags": ["v2", "tickets"],
+        "tags": [
+          "v2",
+          "tickets"
+        ],
         "summary": "티켓 하위자원 — 가격 목록",
         "parameters": [
           {
@@ -8148,7 +9716,10 @@
     },
     "/v2/users/me": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 정보(인증 필수) — meta.consentRequired 동반",
         "security": [
           {
@@ -8199,7 +9770,10 @@
         }
       },
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "계정 활성화(인증 필수) — emailAuthRequest 검증 후 soft-delete 복구",
         "security": [
           {
@@ -8269,7 +9843,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "계정 비활성화(인증 필수) — soft-delete(deactivatedAt 기록)",
         "security": [
           {
@@ -8321,7 +9898,10 @@
     },
     "/v2/users/handle-availability": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "핸들 사용 가능 여부(인증 필수) — 검증 실패도 200 {available:false, reason}",
         "security": [
           {
@@ -8384,7 +9964,10 @@
     },
     "/v2/users/me/social-links": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 소셜 링크 목록(인증 필수)",
         "security": [
           {
@@ -8428,7 +10011,10 @@
         }
       },
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 소셜 링크 갱신(인증 필수) — 멱등 upsert($transaction)",
         "security": [
           {
@@ -8483,7 +10069,10 @@
     },
     "/v2/users/me/preferences": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 알림 환경설정(인증 필수) — 첫 조회 시 enum 전체 lazy upsert",
         "security": [
           {
@@ -8527,7 +10116,10 @@
         }
       },
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 알림 환경설정 갱신(인증 필수) — 멱등 upsert($transaction)",
         "security": [
           {
@@ -8582,7 +10174,10 @@
     },
     "/v2/users/me/subscriptions": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 구독 요약(인증 필수) — venues/artists/events 카운트+최신 thumbUrl",
         "security": [
           {
@@ -8625,7 +10220,10 @@
     },
     "/v2/users/me/subscriptions/events": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 구독 이벤트 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -8696,7 +10294,10 @@
     },
     "/v2/users/me/subscriptions/artists": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 구독 아티스트 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -8767,7 +10368,10 @@
     },
     "/v2/users/me/subscriptions/venues": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 구독 공연장 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -8838,7 +10442,10 @@
     },
     "/v2/users/me/consents/required": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 미동의 약관·마케팅 동의 현황(인증 필수)",
         "security": [
           {
@@ -8881,7 +10488,10 @@
     },
     "/v2/users/{handle}": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "공개 프로필(공개) — 헤더 토큰이 있으면 검증(실패 401), 없으면 비로그인 통과",
         "parameters": [
           {
@@ -8938,7 +10548,10 @@
         }
       },
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "내 프로필 handle 변경(인증 필수) — ownership 위반 시 404",
         "security": [
           {
@@ -9021,7 +10634,10 @@
     },
     "/v2/users/{handle}/social-links": {
       "get": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "공개 프로필 소셜 링크(공개)",
         "parameters": [
           {
@@ -9063,7 +10679,10 @@
     },
     "/v2/users/me/terms-agreements": {
       "post": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "약관 동의 생성(인증 필수) — 201",
         "security": [
           {
@@ -9115,7 +10734,10 @@
     },
     "/v2/users/me/marketing-consent": {
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "마케팅 동의 갱신(인증 필수) — append-only create",
         "security": [
           {
@@ -9167,7 +10789,10 @@
     },
     "/v2/users/me/night-marketing-consent": {
       "patch": {
-        "tags": ["v2", "users"],
+        "tags": [
+          "v2",
+          "users"
+        ],
         "summary": "야간 마케팅 동의 갱신(인증 필수) — append-only create",
         "security": [
           {
@@ -9219,7 +10844,10 @@
     },
     "/v1/user/me": {
       "get": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 정보(인증 필수) — meta.consentRequired 동반",
         "security": [
           {
@@ -9272,7 +10900,10 @@
     },
     "/v1/user/social-links": {
       "get": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 소셜 링크 목록(인증 필수)",
         "security": [
           {
@@ -9316,7 +10947,10 @@
         }
       },
       "patch": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 소셜 링크 갱신(인증 필수) — 멱등 upsert($transaction)",
         "security": [
           {
@@ -9371,7 +11005,10 @@
     },
     "/v1/user/preferences": {
       "get": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 알림 환경설정(인증 필수) — 첫 조회 시 enum 전체 lazy upsert",
         "security": [
           {
@@ -9415,7 +11052,10 @@
         }
       },
       "patch": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 알림 환경설정 갱신(인증 필수) — 멱등 upsert($transaction)",
         "security": [
           {
@@ -9470,7 +11110,10 @@
     },
     "/v1/user/{handle}": {
       "get": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "공개 프로필(공개) — 헤더 토큰이 있으면 검증(실패 401), 없으면 비로그인 통과",
         "parameters": [
           {
@@ -9527,7 +11170,10 @@
         }
       },
       "patch": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "내 프로필 handle 변경(인증 필수) — ownership 위반 시 404",
         "security": [
           {
@@ -9610,7 +11256,10 @@
     },
     "/v1/user/{handle}/social-links": {
       "get": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "공개 프로필 소셜 링크(공개)",
         "parameters": [
           {
@@ -9652,7 +11301,10 @@
     },
     "/v1/user/activate": {
       "patch": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "계정 활성화(무가드 — body email+authCode 로 검증)",
         "requestBody": {
           "content": {
@@ -9719,7 +11371,10 @@
     },
     "/v1/user/deactivate": {
       "delete": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "계정 비활성화(인증 필수) — soft-delete",
         "security": [
           {
@@ -9771,7 +11426,10 @@
     },
     "/v1/user/check-handle": {
       "post": {
-        "tags": ["v1", "user"],
+        "tags": [
+          "v1",
+          "user"
+        ],
         "summary": "핸들 사용 가능 여부(인증 필수) — 검증 실패도 200 {available:false, reason}",
         "security": [
           {
@@ -9833,7 +11491,10 @@
     },
     "/v1/subscribe/me": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "내 구독 요약(인증 필수) — venues/artists/events 카운트+최신 thumbUrl",
         "security": [
           {
@@ -9876,7 +11537,10 @@
     },
     "/v1/subscribe/event": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "내 구독 이벤트 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -9945,7 +11609,10 @@
         }
       },
       "post": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "이벤트 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -10015,7 +11682,10 @@
         }
       },
       "delete": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "이벤트 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -10070,7 +11740,10 @@
     },
     "/v1/subscribe/artist": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "내 구독 아티스트 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -10139,7 +11812,10 @@
         }
       },
       "post": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "아티스트 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -10209,7 +11885,10 @@
         }
       },
       "delete": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "아티스트 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -10264,7 +11943,10 @@
     },
     "/v1/subscribe/venue": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "내 구독 공연장 목록(인증 필수) — offset 페이지·createdAt desc",
         "security": [
           {
@@ -10333,7 +12015,10 @@
         }
       },
       "post": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "공연장 구독(인증 필수) — 멱등(기존 200·신규 201)",
         "security": [
           {
@@ -10403,7 +12088,10 @@
         }
       },
       "delete": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "공연장 구독 해지(인증 필수) — 2단 404 분기",
         "security": [
           {
@@ -10458,7 +12146,10 @@
     },
     "/v1/subscribe/event/{eventId}": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "특정 이벤트 구독 여부(인증 필수) — 미구독 시 404",
         "security": [
           {
@@ -10522,7 +12213,10 @@
     },
     "/v1/subscribe/artist/{artistId}": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "특정 아티스트 구독 여부(인증 필수) — 대상/구독 미존재 시 404",
         "security": [
           {
@@ -10586,7 +12280,10 @@
     },
     "/v1/subscribe/venue/{venueId}": {
       "get": {
-        "tags": ["v1", "subscribe"],
+        "tags": [
+          "v1",
+          "subscribe"
+        ],
         "summary": "특정 공연장 구독 여부(인증 필수) — 대상/구독 미존재 시 404",
         "security": [
           {
@@ -10650,7 +12347,10 @@
     },
     "/v2/subscriptions": {
       "post": {
-        "tags": ["v2", "subscriptions"],
+        "tags": [
+          "v2",
+          "subscriptions"
+        ],
         "summary": "익명 캡처 구독 생성 — 로그인 없이 email 로 venue/event 팔로우. email+target upsert, 익명 uuid 부착",
         "requestBody": {
           "content": {
@@ -10685,7 +12385,10 @@
         }
       },
       "delete": {
-        "tags": ["v2", "subscriptions"],
+        "tags": [
+          "v2",
+          "subscriptions"
+        ],
         "summary": "익명 캡처 구독 해제(토글오프) — 익명 uuid 로만 삭제. 헤더 없으면 401",
         "requestBody": {
           "content": {
@@ -10732,7 +12435,10 @@
     },
     "/v2/comments": {
       "get": {
-        "tags": ["v2", "comments"],
+        "tags": [
+          "v2",
+          "comments"
+        ],
         "summary": "댓글 목록(공개) — threadKey 스레드·createdAt desc 커서",
         "parameters": [
           {
@@ -10798,7 +12504,10 @@
         }
       },
       "post": {
-        "tags": ["v2", "comments"],
+        "tags": [
+          "v2",
+          "comments"
+        ],
         "summary": "댓글 작성(인증 필수) — 201",
         "security": [
           {
@@ -10870,7 +12579,10 @@
     },
     "/v2/comments/{commentId}": {
       "delete": {
-        "tags": ["v2", "comments"],
+        "tags": [
+          "v2",
+          "comments"
+        ],
         "summary": "댓글 삭제(인증 필수·본인만 soft-delete) — 204",
         "security": [
           {
@@ -10937,7 +12649,10 @@
     },
     "/v1/review/events/{concertId}": {
       "get": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "공연 리뷰 목록(공개) — sort(latest/highest/lowest)·커서",
         "parameters": [
           {
@@ -10970,7 +12685,11 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["latest", "highest", "lowest"]
+              "enum": [
+                "latest",
+                "highest",
+                "lowest"
+              ]
             },
             "required": false,
             "name": "sort",
@@ -11021,7 +12740,10 @@
         }
       },
       "post": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "리뷰 작성(인증 필수) — 201. 공연 종료 후·1인 1리뷰",
         "security": [
           {
@@ -11124,7 +12846,10 @@
     },
     "/v1/review/events/{concertId}/summary": {
       "get": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "공연 리뷰 요약(공개) — 평균·총개수·평점 분포. 리뷰 0건+공연 미존재 시 404",
         "parameters": [
           {
@@ -11173,7 +12898,10 @@
     },
     "/v1/review/events/{concertId}/me": {
       "get": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "내 리뷰(인증 필수) — 없으면 { review: null }",
         "security": [
           {
@@ -11237,7 +12965,10 @@
     },
     "/v1/review/{reviewId}": {
       "patch": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "리뷰 수정(인증 필수·본인만) — 200",
         "security": [
           {
@@ -11328,7 +13059,10 @@
         }
       },
       "delete": {
-        "tags": ["v1", "review"],
+        "tags": [
+          "v1",
+          "review"
+        ],
         "summary": "리뷰 삭제(인증 필수·본인만 soft-delete) — 204",
         "security": [
           {
@@ -11395,7 +13129,10 @@
     },
     "/v2/entry-tickets/events/{eventId}": {
       "get": {
-        "tags": ["v2", "entry-tickets"],
+        "tags": [
+          "v2",
+          "entry-tickets"
+        ],
         "summary": "이벤트 입장권 풀 통계(공개) — 미발급 공연이면 null, 공연 미존재 404",
         "parameters": [
           {
@@ -11443,7 +13180,10 @@
     },
     "/v2/entry-tickets/events/{eventId}/claim": {
       "post": {
-        "tags": ["v2", "entry-tickets"],
+        "tags": [
+          "v2",
+          "entry-tickets"
+        ],
         "summary": "입장권 claim(인증 필수) — 사전발행 pool 중 AVAILABLE 1건 점유. 1인 1매",
         "security": [
           {
@@ -11526,7 +13266,10 @@
     },
     "/v2/entry-tickets/me": {
       "get": {
-        "tags": ["v2", "entry-tickets"],
+        "tags": [
+          "v2",
+          "entry-tickets"
+        ],
         "summary": "내 입장권 목록(인증 필수) — PUBLISHED 공연·claimedAt desc",
         "security": [
           {
@@ -11569,7 +13312,10 @@
     },
     "/v2/entry-tickets/id/{id}": {
       "get": {
-        "tags": ["v2", "entry-tickets"],
+        "tags": [
+          "v2",
+          "entry-tickets"
+        ],
         "summary": "입장권 상세(인증 필수) — 본인 claim·PUBLISHED. 미존재 404",
         "security": [
           {
@@ -11632,7 +13378,10 @@
     },
     "/v2/entry-tickets/slug/{slug}": {
       "get": {
-        "tags": ["v2", "entry-tickets"],
+        "tags": [
+          "v2",
+          "entry-tickets"
+        ],
         "summary": "입장권 상세 by slug(인증 필수) — 본인 claim·PUBLISHED. 미존재 404",
         "security": [
           {
@@ -11695,7 +13444,10 @@
     },
     "/v2/event-drafts/{draftId}": {
       "get": {
-        "tags": ["v2", "event-drafts"],
+        "tags": [
+          "v2",
+          "event-drafts"
+        ],
         "summary": "이벤트 초안 상세(인증 필수) — 본인 소유·DRAFT/PUBLISHED. 미존재 404",
         "security": [
           {
@@ -11756,7 +13508,10 @@
         }
       },
       "put": {
-        "tags": ["v2", "event-drafts"],
+        "tags": [
+          "v2",
+          "event-drafts"
+        ],
         "summary": "이벤트 초안 저장(인증 필수·본인 소유) — upsert. 타 소유 draft 면 404",
         "security": [
           {
@@ -11828,7 +13583,10 @@
     },
     "/v1/notifications": {
       "get": {
-        "tags": ["v1", "notification"],
+        "tags": [
+          "v1",
+          "notification"
+        ],
         "summary": "내 알림 목록(인증 필수) — base64 커서(createdAt+id)·unread·type 필터",
         "security": [
           {
@@ -11839,7 +13597,10 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["next", "prev"]
+              "enum": [
+                "next",
+                "prev"
+              ]
             },
             "required": true,
             "name": "direction",
@@ -11869,11 +13630,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["true"]
+                  "enum": [
+                    "true"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["false"]
+                  "enum": [
+                    "false"
+                  ]
                 }
               ]
             },
@@ -11884,7 +13649,13 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["CONCERT_LIST", "APP_FEATURE", "EDITORIAL", "USER", "USER_POST"]
+              "enum": [
+                "CONCERT_LIST",
+                "APP_FEATURE",
+                "EDITORIAL",
+                "USER",
+                "USER_POST"
+              ]
             },
             "required": false,
             "name": "type",
@@ -11927,7 +13698,10 @@
     },
     "/v1/notifications/unread-count": {
       "get": {
-        "tags": ["v1", "notification"],
+        "tags": [
+          "v1",
+          "notification"
+        ],
         "summary": "내 안 읽은 알림 수(인증 필수)",
         "security": [
           {
@@ -11970,7 +13744,10 @@
     },
     "/v1/notifications/counts": {
       "get": {
-        "tags": ["v1", "notification"],
+        "tags": [
+          "v1",
+          "notification"
+        ],
         "summary": "내 알림의 종류별 개수(인증 필수) — 카테고리 레일용",
         "security": [
           {
@@ -12013,7 +13790,10 @@
     },
     "/v1/notifications/{id}/read": {
       "patch": {
-        "tags": ["v1", "notification"],
+        "tags": [
+          "v1",
+          "notification"
+        ],
         "summary": "알림 읽음 처리(인증 필수) — owner scope·멱등(원 readAt 보존)",
         "security": [
           {
@@ -12077,7 +13857,10 @@
     },
     "/v1/notifications/read-all": {
       "patch": {
-        "tags": ["v1", "notification"],
+        "tags": [
+          "v1",
+          "notification"
+        ],
         "summary": "모든 알림 읽음 처리(인증 필수) — 갱신 row 수 반환·멱등",
         "security": [
           {
@@ -12120,7 +13903,10 @@
     },
     "/v1/event-rsvp": {
       "get": {
-        "tags": ["v1", "event-rsvp"],
+        "tags": [
+          "v1",
+          "event-rsvp"
+        ],
         "summary": "RSVP 인기 이벤트 목록(공개) — PUBLISHED·rsvpCounts desc 25건",
         "responses": {
           "200": {
@@ -12151,7 +13937,10 @@
     },
     "/v1/event-rsvp/{eventId}/counts": {
       "get": {
-        "tags": ["v1", "event-rsvp"],
+        "tags": [
+          "v1",
+          "event-rsvp"
+        ],
         "summary": "RSVP 카운트(익명) — 12개 이모지별 count + me(anonymousUser 투표 여부). 이벤트 미존재 404",
         "parameters": [
           {
@@ -12208,7 +13997,10 @@
         }
       },
       "post": {
-        "tags": ["v1", "event-rsvp"],
+        "tags": [
+          "v1",
+          "event-rsvp"
+        ],
         "summary": "RSVP 카운트 갱신(익명) — emoji 토글. 반응 emoji 가산, 참여 emoji(GOING/MAYBE/NOT_GOING) 상호배타. 응답은 갱신 후 카운트",
         "parameters": [
           {
@@ -12276,7 +14068,10 @@
     },
     "/v1/survey/count": {
       "post": {
-        "tags": ["v1", "survey"],
+        "tags": [
+          "v1",
+          "survey"
+        ],
         "summary": "콜드서프 티켓 설문 카운트 증가 — 무인증 공개 · 201",
         "requestBody": {
           "content": {
@@ -12313,7 +14108,10 @@
     },
     "/v1/newsletter/unsubscribe": {
       "get": {
-        "tags": ["v1", "newsletter"],
+        "tags": [
+          "v1",
+          "newsletter"
+        ],
         "summary": "뉴스레터 구독 해지(action-token) — GET 이지만 mutating · 멱등 · 204 content-less",
         "parameters": [
           {
@@ -12374,7 +14172,10 @@
     },
     "/v1/newsletter/subscribe": {
       "post": {
-        "tags": ["v1", "newsletter"],
+        "tags": [
+          "v1",
+          "newsletter"
+        ],
         "summary": "뉴스레터 구독 — 무가드 · 멱등(이미 구독이면 메일 없이 204) · 204 content-less",
         "requestBody": {
           "content": {
@@ -12414,7 +14215,10 @@
     },
     "/v1/public-action/user-preferences": {
       "get": {
-        "tags": ["v1", "public-action"],
+        "tags": [
+          "v1",
+          "public-action"
+        ],
         "summary": "공개 액션 토큰으로 사용자 환경설정 조회",
         "parameters": [
           {
@@ -12473,7 +14277,10 @@
         }
       },
       "patch": {
-        "tags": ["v1", "public-action"],
+        "tags": [
+          "v1",
+          "public-action"
+        ],
         "summary": "공개 액션 토큰으로 사용자 환경설정 변경",
         "parameters": [
           {
@@ -12543,7 +14350,10 @@
     },
     "/v1/public-action/consents-required": {
       "get": {
-        "tags": ["v1", "public-action"],
+        "tags": [
+          "v1",
+          "public-action"
+        ],
         "summary": "공개 액션 토큰으로 필요 동의 조회",
         "parameters": [
           {
@@ -12601,7 +14411,10 @@
     },
     "/v1/public-action/marketing-consent": {
       "patch": {
-        "tags": ["v1", "public-action"],
+        "tags": [
+          "v1",
+          "public-action"
+        ],
         "summary": "공개 액션 토큰으로 마케팅 수신 동의 변경",
         "parameters": [
           {
@@ -12668,7 +14481,10 @@
     },
     "/v1/public-action/night-marketing-consent": {
       "patch": {
-        "tags": ["v1", "public-action"],
+        "tags": [
+          "v1",
+          "public-action"
+        ],
         "summary": "공개 액션 토큰으로 야간 마케팅 수신 동의 변경",
         "parameters": [
           {
@@ -12735,7 +14551,10 @@
     },
     "/v1/fcm/token": {
       "post": {
-        "tags": ["v1", "fcm"],
+        "tags": [
+          "v1",
+          "fcm"
+        ],
         "summary": "FCM 토큰 저장 — Authorization 있으면 사용자 연결, 없으면 익명 저장",
         "requestBody": {
           "content": {
@@ -12782,7 +14601,10 @@
     },
     "/v2/consents/required": {
       "get": {
-        "tags": ["v2", "consents"],
+        "tags": [
+          "v2",
+          "consents"
+        ],
         "summary": "가입 시 필수 동의 — 활성 약관 목록",
         "responses": {
           "200": {
@@ -12810,13 +14632,19 @@
     },
     "/v1/terms-version": {
       "get": {
-        "tags": ["v1", "terms-version"],
+        "tags": [
+          "v1",
+          "terms-version"
+        ],
         "summary": "유저 노출용 약관 버전 목록 — isVisible",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["SERVICE", "PRIVACY"]
+              "enum": [
+                "SERVICE",
+                "PRIVACY"
+              ]
             },
             "required": false,
             "name": "type",
@@ -12852,13 +14680,19 @@
     },
     "/v1/terms-version/active": {
       "get": {
-        "tags": ["v1", "terms-version"],
+        "tags": [
+          "v1",
+          "terms-version"
+        ],
         "summary": "활성 약관 버전 목록 — type 지정 시 해당 타입 최신 1건",
         "parameters": [
           {
             "schema": {
               "type": "string",
-              "enum": ["SERVICE", "PRIVACY"]
+              "enum": [
+                "SERVICE",
+                "PRIVACY"
+              ]
             },
             "required": false,
             "name": "type",
@@ -12904,7 +14738,10 @@
     },
     "/v1/location/concert": {
       "get": {
-        "tags": ["v1", "location"],
+        "tags": [
+          "v1",
+          "location"
+        ],
         "summary": "지도 영역 내 공연 — 가시 영역 검색(기본 geohash·date asc / sort=distance 는 거리순)",
         "parameters": [
           {
@@ -12955,7 +14792,10 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["date", "distance"],
+              "enum": [
+                "date",
+                "distance"
+              ],
               "default": "date"
             },
             "required": false,
@@ -13013,7 +14853,10 @@
     },
     "/v1/location/city": {
       "get": {
-        "tags": ["v1", "location"],
+        "tags": [
+          "v1",
+          "location"
+        ],
         "summary": "도시 목록 — 비활성 제외",
         "responses": {
           "200": {
@@ -13044,7 +14887,10 @@
     },
     "/v1/location/country": {
       "get": {
-        "tags": ["v1", "location"],
+        "tags": [
+          "v1",
+          "location"
+        ],
         "summary": "국가 목록 — 각 국가의 활성 도시 포함",
         "responses": {
           "200": {
@@ -13075,7 +14921,10 @@
     },
     "/v1/search": {
       "get": {
-        "tags": ["v1", "search"],
+        "tags": [
+          "v1",
+          "search"
+        ],
         "summary": "통합 검색 — type=venue 면 공연장만, 그 외/미지정은 공연·공연장·아티스트",
         "parameters": [
           {
@@ -13089,7 +14938,11 @@
           {
             "schema": {
               "type": "string",
-              "enum": ["artist", "venue", "concert"]
+              "enum": [
+                "artist",
+                "venue",
+                "concert"
+              ]
             },
             "required": false,
             "name": "type",
@@ -13125,7 +14978,10 @@
     },
     "/v1/poster": {
       "get": {
-        "tags": ["v1", "poster"],
+        "tags": [
+          "v1",
+          "poster"
+        ],
         "summary": "이벤트 포스터 목록 — ?eventId",
         "parameters": [
           {
@@ -13166,7 +15022,10 @@
     },
     "/v1/poster/{posterId}": {
       "get": {
-        "tags": ["v1", "poster"],
+        "tags": [
+          "v1",
+          "poster"
+        ],
         "summary": "포스터 상세 — copyright 포함",
         "parameters": [
           {
@@ -13214,7 +15073,10 @@
     },
     "/v1/artist-profile-image": {
       "get": {
-        "tags": ["v1", "artist-profile-image"],
+        "tags": [
+          "v1",
+          "artist-profile-image"
+        ],
         "summary": "아티스트 프로필 이미지 목록 — ?artistId",
         "parameters": [
           {
@@ -13255,7 +15117,10 @@
     },
     "/v1/artist-profile-image/{artistProfileImageId}": {
       "get": {
-        "tags": ["v1", "artist-profile-image"],
+        "tags": [
+          "v1",
+          "artist-profile-image"
+        ],
         "summary": "아티스트 프로필 이미지 상세 — copyright 포함",
         "parameters": [
           {
@@ -13303,7 +15168,10 @@
     },
     "/v1/app/update-info": {
       "get": {
-        "tags": ["v1", "app"],
+        "tags": [
+          "v1",
+          "app"
+        ],
         "summary": "앱 업데이트 정보 — 하드코딩",
         "responses": {
           "200": {
@@ -13331,7 +15199,10 @@
     },
     "/v1/app/remote-app-manifest": {
       "get": {
-        "tags": ["v1", "app"],
+        "tags": [
+          "v1",
+          "app"
+        ],
         "summary": "원격 앱 매니페스트 — 하드코딩",
         "responses": {
           "200": {
@@ -13359,7 +15230,10 @@
     },
     "/v1/event-category": {
       "get": {
-        "tags": ["v1", "event-category"],
+        "tags": [
+          "v1",
+          "event-category"
+        ],
         "summary": "이벤트 카테고리 목록 — 미삭제·serialNumber 순",
         "responses": {
           "200": {
@@ -13390,7 +15264,10 @@
     },
     "/v2/genres": {
       "get": {
-        "tags": ["v2", "genres"],
+        "tags": [
+          "v2",
+          "genres"
+        ],
         "summary": "장르 칩 목록 — upcoming 재고에서 파생 · 건수 desc",
         "responses": {
           "200": {
@@ -13418,7 +15295,10 @@
     },
     "/v2/locations": {
       "get": {
-        "tags": ["v2", "locations"],
+        "tags": [
+          "v2",
+          "locations"
+        ],
         "summary": "지역 칩 목록 — upcoming 재고에서 파생 · 건수 desc",
         "responses": {
           "200": {
@@ -13446,7 +15326,10 @@
     },
     "/v2/cache/purge": {
       "post": {
-        "tags": ["v2", "cache"],
+        "tags": [
+          "v2",
+          "cache"
+        ],
         "summary": "목록 API 캐시 무효화 — epoch bump (운영 훅, 시크릿 헤더 필요)",
         "parameters": [
           {
@@ -13470,7 +15353,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["epoch"]
+                  "required": [
+                    "epoch"
+                  ]
                 }
               }
             }
@@ -13500,7 +15385,10 @@
     },
     "/v2/data-correction-requests": {
       "post": {
-        "tags": ["v2", "data-correction"],
+        "tags": [
+          "v2",
+          "data-correction"
+        ],
         "summary": "데이터 정정 요청 — 익명 · IP 레이트 리밋(5회/분) · 204 content-less",
         "requestBody": {
           "content": {

@@ -13,7 +13,8 @@
       "!**/dist",
       "!**/.turbo",
       "!**/pnpm-lock.yaml",
-      "!**/*.gen.ts"
+      "!**/*.gen.ts",
+      "!packages/api-sdk/openapi.json"
     ]
   },
   "formatter": {
