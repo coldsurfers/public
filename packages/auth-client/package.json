@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/auth-client",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cross-environment TypeScript SDK for coldsurf-auth-server. Mirrors the v1/v2/user-identity surface and pluggable token storage (cookie · localStorage · expo-secure-store · memory).",
   "keywords": [
     "auth",
