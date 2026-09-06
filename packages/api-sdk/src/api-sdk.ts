@@ -689,7 +689,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
       createComment: async ({
         payload,
       }: {
-        payload: paths['/v2/comments']['post']['requestBody']['content']['application/json']
+        payload: NonNullable<
+          paths['/v2/comments']['post']['requestBody']
+        >['content']['application/json']
       }) => {
         const response = await baseFetchClient.POST('/v2/comments', {
           body: payload,
@@ -765,7 +767,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
       getEventRsvpList: async () => {
-        const response = await baseFetchClient.GET('/v1/event-rsvp/')
+        const response = await baseFetchClient.GET('/v1/event-rsvp')
         if (response.error) {
           throw new OpenApiError(response.error)
         }
@@ -1245,7 +1247,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       activate: async (
-        body: paths['/v2/users/me']['patch']['requestBody']['content']['application/json'],
+        body: NonNullable<
+          paths['/v2/users/me']['patch']['requestBody']
+        >['content']['application/json'],
       ) => {
         const data = await baseFetchClient.PATCH('/v2/users/me', {
           body: body,
