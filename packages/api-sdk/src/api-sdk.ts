@@ -1,13 +1,19 @@
 import createFetchClient, { type Client, type Middleware } from 'openapi-fetch'
 import { OpenApiError } from './error'
 import type { components, paths } from './types/api.gen'
+import type { components as legacyComponents, paths as legacyPaths } from './types/legacy.gen'
+
+// Hono(`api.coldsurf.io`) 계약이 정본이고, 아직 안 옮겨진 잔여 계약
+// (Fastify on Lambda · `api.billets.coldsurf.io`)을 겹쳐 둔다.
+// 소비처가 옮겨가면 `legacy.gen.ts` 가 줄다가 사라지고 이 교집합도 없어진다.
+type AllPaths = paths & legacyPaths
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
 }
 
-type FetchClient = Client<paths, `${string}/${string}`>
+type FetchClient = Client<AllPaths, `${string}/${string}`>
 
 // Next.js fetch 확장 타입 — Next.js 없는 환경에서도 타입 에러 없이 사용 가능
 type NextFetchRequestConfig = {
@@ -22,7 +28,7 @@ export type FetchOptions = {
 
 /** 알림 목록의 종류 필터 축 — `Feed.entityType`. 알림 지면 카테고리 레일이 이걸로 거른다. */
 export type NotificationFeedEntityType = NonNullable<
-  paths['/v1/notifications/']['get']['parameters']['query']['type']
+  paths['/v1/notifications']['get']['parameters']['query']['type']
 >
 
 export const getApiClient = (baseFetchClient: FetchClient) => {
@@ -51,7 +57,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         cursor: components['schemas']['CursorPaginationQueryStringDTOSchema'],
         { definitionId }: { definitionId?: string },
       ) => {
-        const response = await baseFetchClient.GET('/v2/feeds/', {
+        const response = await baseFetchClient.GET('/v2/feeds', {
           params: {
             query: {
               ...cursor,
@@ -247,7 +253,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         eventCategoryName?: string
         locationCityName?: string
       }) => {
-        const response = await baseFetchClient.GET('/v2/events/', {
+        const response = await baseFetchClient.GET('/v2/events', {
           params: {
             query: {
               offset,
@@ -676,7 +682,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         cursor?: string
         limit?: number
       }) => {
-        const response = await baseFetchClient.GET('/v2/comments/', {
+        const response = await baseFetchClient.GET('/v2/comments', {
           params: {
             query: { threadKey, cursor, limit },
           },
@@ -689,9 +695,11 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
       createComment: async ({
         payload,
       }: {
-        payload: paths['/v2/comments/']['post']['requestBody']['content']['application/json']
+        payload: NonNullable<
+          paths['/v2/comments']['post']['requestBody']
+        >['content']['application/json']
       }) => {
-        const response = await baseFetchClient.POST('/v2/comments/', {
+        const response = await baseFetchClient.POST('/v2/comments', {
           body: payload,
         })
         if (response.error) {
@@ -765,7 +773,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
       getEventRsvpList: async () => {
-        const response = await baseFetchClient.GET('/v1/event-rsvp/')
+        const response = await baseFetchClient.GET('/v1/event-rsvp')
         if (response.error) {
           throw new OpenApiError(response.error)
         }
@@ -778,7 +786,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         list: ['event-category', 'list'],
       },
       getEventCategories: async (fetchOptions?: FetchOptions) => {
-        const response = await baseFetchClient.GET('/v1/event-category/', {
+        const response = await baseFetchClient.GET('/v1/event-category', {
           ...fetchOptions,
         })
         if (response.error) {
@@ -853,17 +861,6 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
     },
-    mailer: {
-      sendUserVoice: async (body: components['schemas']['SendUserVoiceBodyDTOSchema']) => {
-        const response = await baseFetchClient.POST('/v1/mailer/user-voice', {
-          body,
-        })
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-    },
     ticket: {
       queryKeys: {
         all: ['ticket'],
@@ -931,7 +928,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         offset?: number
         size?: number
       }) => {
-        const response = await baseFetchClient.GET('/v2/venues/', {
+        const response = await baseFetchClient.GET('/v2/venues', {
           params: {
             query: params,
           },
@@ -1245,7 +1242,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       activate: async (
-        body: paths['/v2/users/me']['patch']['requestBody']['content']['application/json'],
+        body: NonNullable<
+          paths['/v2/users/me']['patch']['requestBody']
+        >['content']['application/json'],
       ) => {
         const data = await baseFetchClient.PATCH('/v2/users/me', {
           body: body,
@@ -1399,28 +1398,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
     },
-    price: {
-      queryKeys: {
-        all: ['v1', 'price'],
-        list: ({ ticketId }: { ticketId: string }) => ['v1', 'price', 'list', { ticketId }],
-      },
-      getList: async ({ ticketId }: { ticketId: string }) => {
-        const data = await baseFetchClient.GET('/v1/price/', {
-          params: {
-            query: {
-              ticketId,
-            },
-          },
-        })
-        if (data.error) {
-          throw new OpenApiError(data.error)
-        }
-        return data.data
-      },
-    },
     auth: {
       sendAuthCode: async (
-        body: paths['/v2/auth/email/verification-codes']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/email/verification-codes']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/email/verification-codes', {
           body,
@@ -1431,7 +1411,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       confirmAuthCode: async (
-        body: paths['/v2/auth/email/verification-codes/verify']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/email/verification-codes/verify']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/email/verification-codes/verify', {
           body,
@@ -1442,7 +1422,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       signup: async (
-        body: paths['/v2/auth/users']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/users']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/users', {
           body,
@@ -1453,7 +1433,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       signIn: async (
-        body: paths['/v2/auth/sessions']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/sessions']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/sessions', {
           body,
@@ -1464,7 +1444,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       reissueToken: async (
-        body: paths['/v2/auth/tokens/refresh']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/tokens/refresh']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/tokens/refresh', {
           body,
@@ -1475,7 +1455,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return data.data
       },
       checkUser: async (
-        body: paths['/v2/auth/check']['post']['requestBody']['content']['application/json'],
+        body: legacyPaths['/v2/auth/check']['post']['requestBody']['content']['application/json'],
       ) => {
         const data = await baseFetchClient.POST('/v2/auth/check', {
           body,
@@ -1516,7 +1496,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         keyword: string
         type?: components['schemas']['SearchListQueryStringDTOSchema']['type']
       }) => {
-        const response = await baseFetchClient.GET('/v1/search/', {
+        const response = await baseFetchClient.GET('/v1/search', {
           params: {
             query: {
               keyword,
@@ -1545,22 +1525,6 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
       },
       getRemoteAppManifest: async () => {
         const response = await baseFetchClient.GET('/v1/app/remote-app-manifest')
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-    },
-    partner: {
-      queryKeys: {
-        all: ['partner'],
-      },
-      sendPartnerContactForm: async (
-        body: components['schemas']['PartnerContactFormDTOSchema'],
-      ) => {
-        const response = await baseFetchClient.POST('/v1/partner/', {
-          body,
-        })
         if (response.error) {
           throw new OpenApiError(response.error)
         }
@@ -1634,14 +1598,16 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
           concertId,
           resolution,
           type,
-        }: components['schemas']['PresignPostBodyDTOSchema']) => [
+        }: legacyComponents['schemas']['PresignPostBodyDTOSchema']) => [
           'v1',
           'presign',
           'event-images',
           { concertId, resolution, type },
         ],
       },
-      postEventImagesPresigned: async (body: components['schemas']['PresignPostBodyDTOSchema']) => {
+      postEventImagesPresigned: async (
+        body: legacyComponents['schemas']['PresignPostBodyDTOSchema'],
+      ) => {
         const response = await baseFetchClient.POST('/v2/events/upload-tokens', {
           body,
         })
@@ -1823,7 +1789,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         unread?: 'true' | 'false'
         type?: NotificationFeedEntityType
       }) => {
-        const response = await baseFetchClient.GET('/v1/notifications/', {
+        const response = await baseFetchClient.GET('/v1/notifications', {
           params: {
             query: { cursor, direction, size, unread, type },
           },
@@ -1892,7 +1858,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
       getVisible: async ({ type }: { type?: 'SERVICE' | 'PRIVACY' }) => {
-        const response = await baseFetchClient.GET('/v1/terms-version/', {
+        const response = await baseFetchClient.GET('/v1/terms-version', {
           params: {
             query: { type },
           },
@@ -1911,7 +1877,7 @@ export class ApiSdk {
   public baseFetchClient: FetchClient
 
   constructor({ baseUrl }: { baseUrl: string }) {
-    this.baseFetchClient = createFetchClient<paths>({
+    this.baseFetchClient = createFetchClient<AllPaths>({
       baseUrl: baseUrl,
       headers: DEFAULT_HEADERS,
     })
