@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/api-sdk",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "description": "Type-safe API SDK for COLDSURF (billets) services.",
   "keywords": [
     "api-sdk",
