@@ -22,7 +22,7 @@ export type FetchOptions = {
 
 /** 알림 목록의 종류 필터 축 — `Feed.entityType`. 알림 지면 카테고리 레일이 이걸로 거른다. */
 export type NotificationFeedEntityType = NonNullable<
-  paths['/v1/notifications/']['get']['parameters']['query']['type']
+  paths['/v1/notifications']['get']['parameters']['query']['type']
 >
 
 export const getApiClient = (baseFetchClient: FetchClient) => {
@@ -51,7 +51,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         cursor: components['schemas']['CursorPaginationQueryStringDTOSchema'],
         { definitionId }: { definitionId?: string },
       ) => {
-        const response = await baseFetchClient.GET('/v2/feeds/', {
+        const response = await baseFetchClient.GET('/v2/feeds', {
           params: {
             query: {
               ...cursor,
@@ -247,7 +247,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         eventCategoryName?: string
         locationCityName?: string
       }) => {
-        const response = await baseFetchClient.GET('/v2/events/', {
+        const response = await baseFetchClient.GET('/v2/events', {
           params: {
             query: {
               offset,
@@ -676,7 +676,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         cursor?: string
         limit?: number
       }) => {
-        const response = await baseFetchClient.GET('/v2/comments/', {
+        const response = await baseFetchClient.GET('/v2/comments', {
           params: {
             query: { threadKey, cursor, limit },
           },
@@ -689,9 +689,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
       createComment: async ({
         payload,
       }: {
-        payload: paths['/v2/comments/']['post']['requestBody']['content']['application/json']
+        payload: paths['/v2/comments']['post']['requestBody']['content']['application/json']
       }) => {
-        const response = await baseFetchClient.POST('/v2/comments/', {
+        const response = await baseFetchClient.POST('/v2/comments', {
           body: payload,
         })
         if (response.error) {
@@ -778,7 +778,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         list: ['event-category', 'list'],
       },
       getEventCategories: async (fetchOptions?: FetchOptions) => {
-        const response = await baseFetchClient.GET('/v1/event-category/', {
+        const response = await baseFetchClient.GET('/v1/event-category', {
           ...fetchOptions,
         })
         if (response.error) {
@@ -931,7 +931,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         offset?: number
         size?: number
       }) => {
-        const response = await baseFetchClient.GET('/v2/venues/', {
+        const response = await baseFetchClient.GET('/v2/venues', {
           params: {
             query: params,
           },
@@ -1516,7 +1516,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         keyword: string
         type?: components['schemas']['SearchListQueryStringDTOSchema']['type']
       }) => {
-        const response = await baseFetchClient.GET('/v1/search/', {
+        const response = await baseFetchClient.GET('/v1/search', {
           params: {
             query: {
               keyword,
@@ -1823,7 +1823,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         unread?: 'true' | 'false'
         type?: NotificationFeedEntityType
       }) => {
-        const response = await baseFetchClient.GET('/v1/notifications/', {
+        const response = await baseFetchClient.GET('/v1/notifications', {
           params: {
             query: { cursor, direction, size, unread, type },
           },
@@ -1892,7 +1892,7 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
       getVisible: async ({ type }: { type?: 'SERVICE' | 'PRIVACY' }) => {
-        const response = await baseFetchClient.GET('/v1/terms-version/', {
+        const response = await baseFetchClient.GET('/v1/terms-version', {
           params: {
             query: { type },
           },
