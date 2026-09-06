@@ -9,7 +9,7 @@ import { execSync } from 'node:child_process'
  * - `openapi.json` — **정본**. billets-server(Hono on Workers, `api.coldsurf.io`) 의 계약.
  *   갱신: `pnpm --filter billets-server openapi:dump > packages/api-sdk/openapi.json`
  * - `legacy-openapi.json` — Hono 로 안 옮겨진 **잔여 계약**(Fastify on Lambda,
- *   `api.billets.coldsurf.io`). auth 6 · `/v1/ticket/` · `/v2/events/upload-tokens`.
+ *   `api.billets.coldsurf.io`). auth 6 · `/v2/events/upload-tokens`.
  *   소비처(billets-app · coldsurf-studio)가 옮겨가면 이 파일은 줄다가 사라진다.
  *   손으로 줄이는 파일이지 재생성 대상이 아니다.
  *

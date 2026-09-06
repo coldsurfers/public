@@ -4,52 +4,6 @@
  */
 
 export interface paths {
-    "/v1/ticket/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query: {
-                    eventId: string;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Default Response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["TicketDTOSchema"][];
-                    };
-                };
-                /** @description Default Response */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v2/auth/check": {
         parameters: {
             query?: never;
@@ -536,26 +490,12 @@ export interface components {
             /** @enum {string} */
             type: "poster" | "detail-image";
         };
-        PriceDTOSchema: {
-            currency: string;
-            id: string;
-            name: string;
-            price: number;
-        };
         ReissueTokenBodyDTOSchemaInput: {
             refreshToken: string;
         };
         SendAuthCodeResponseDTOSchema: {
             /** Format: email */
             email: string;
-        };
-        TicketDTOSchema: {
-            id: string;
-            /** Format: date-time */
-            openDate: string;
-            prices: components["schemas"]["PriceDTOSchema"][];
-            sellerName: string;
-            url: string;
         };
         UserDTOSchema: {
             deactivatedAt: string | null;

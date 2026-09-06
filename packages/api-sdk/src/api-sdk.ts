@@ -867,9 +867,9 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         list: ({ eventId }: { eventId: string }) => ['ticket', 'list', { eventId }],
       },
       getTicketsByEventId: async (eventId: string) => {
-        const response = await baseFetchClient.GET('/v1/ticket/', {
+        const response = await baseFetchClient.GET('/v2/events/{eventId}/tickets', {
           params: {
-            query: {
+            path: {
               eventId,
             },
           },
