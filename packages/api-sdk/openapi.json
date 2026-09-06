@@ -56,6 +56,26 @@
           "keyword"
         ]
       },
+      "DetailImageDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "serialNumber"
+        ]
+      },
       "TicketDTOSchema": {
         "type": "object",
         "properties": {
