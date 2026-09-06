@@ -7828,6 +7828,11 @@ export interface components {
             /** @enum {boolean} */
             ok: true;
         };
+        DetailImageDTOSchema: {
+            id: string;
+            serialNumber: number | null;
+            url: string;
+        };
         DraftEventDataDTOSchema: {
             date?: string;
             detailImageIds?: string[];
