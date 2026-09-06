@@ -1,3 +1,4 @@
+import type { components } from '@coldsurfers/api-sdk'
 import { type CoverTone, coverToneFor } from '@coldsurfers/design-system/tokens'
 
 /**
@@ -22,23 +23,18 @@ import { type CoverTone, coverToneFor } from '@coldsurfers/design-system/tokens'
  */
 
 /**
- * `components['schemas']['ConcertDTOSchema']` 중 **이 화면이 실제로 읽는 필드만**.
- * 전부 옮겨 적지 않는 이유는 하나 — 안 읽는 필드를 적으면 그게 계약처럼 보인다.
+ * **발행본 `@coldsurfers/api-sdk` 의 DTO 를 그대로 문다.** 필사본이 아니다 — 서버가 필드를
+ * 지우거나 타입을 바꾸거나 **필수 필드를 늘리면 이 파일이 컴파일에서 깨진다.** 이 화면이
+ * 계약 검증 자리인 이유가 그 한 줄이다.
  *
- * 정본: `surfers-root/apps/billets-app/src/ui/concert-list-item/concert-list-item.tsx` 가
- * 읽는 것과 같다(`id` · `title` · `date` · `mainVenue` · `isSubscribed`).
+ * 앞선 판은 화면이 읽는 다섯 필드만 손으로 옮겨 적었다. 읽는 것만 적는다는 규율 자체는
+ * 맞았는데, 필사인 이상 **틀려도 아무도 모른다** 는 게 문제였다 — 실제로 둘이 틀려 있었다:
+ * `slug` 는 nullable 이고 `isSubscribed` 는 optional 이다.
+ *
+ * 대가는 화면이 안 읽는 필수 필드(`mainPoster` · `plainVenueText` · `status`)를 목업이
+ * 채워야 한다는 것이고, 그건 [`event`](#) 팩토리 한 곳에서만 일어난다.
  */
-export interface EventDTO {
-  id: string
-  /** 상세로 갈 때 쓴다. 없으면 원본은 탭을 무시한다(`if (!item.slug) return`). */
-  slug: string
-  title: string
-  /** ISO. 서버는 UTC 로 주고 표시는 `Asia/Seoul` 이다. */
-  date: string
-  /** 원본에서 nullable — 공연장 줄이 통째로 빠질 수 있다. */
-  mainVenue: { name: string } | null
-  isSubscribed: boolean
-}
+export type EventDTO = components['schemas']['ConcertDTOSchema']
 
 /** 화면이 읽는 모양. `tone` · `initial` · `meta` 는 **DTO 에 없고 파생된다.** */
 export interface FeedEvent {
@@ -96,7 +92,8 @@ export function toFeedEvent(dto: EventDTO): FeedEvent {
     venueName: dto.mainVenue?.name ?? '',
     tone: coverToneFor(dto.id),
     initial: dto.title.slice(0, 1),
-    saved: dto.isSubscribed,
+    // DTO 에서 optional 이다 — 안 내려오면 안 담은 것으로 본다.
+    saved: dto.isSubscribed ?? false,
   }
 }
 
@@ -130,6 +127,11 @@ const event = (
   date,
   mainVenue: venueName ? { name: venueName } : null,
   isSubscribed,
+  // 화면이 안 읽지만 DTO 에서 필수인 것들. 이 시안은 포스터를 안 그리므로 전부 null 이고,
+  // 목업은 발행 전 초안이 아니라 이미 게시된 이벤트다.
+  mainPoster: null,
+  plainVenueText: null,
+  status: 'PUBLISHED',
 })
 
 /**

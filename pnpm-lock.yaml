@@ -47,6 +47,9 @@ importers:
 
   apps/docs:
     dependencies:
+      '@coldsurfers/api-sdk':
+        specifier: workspace:*
+        version: link:../../packages/api-sdk
       '@coldsurfers/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
