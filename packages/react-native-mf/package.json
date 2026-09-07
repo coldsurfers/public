@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/react-native-mf",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React Native microfrontend layer — load remote bundles into the host JS runtime with a shared dependency scope.",
   "keywords": [
     "react-native",
