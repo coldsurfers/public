@@ -19,9 +19,3 @@ export {
   SHARED_SCOPE_KEY,
   sharedNames,
 } from './runtime/shared-scope'
-
-export {
-  getSharedDependencies,
-  type SharedDependency,
-  sharedDependencyNames,
-} from './shared/get-shared-dependencies'
