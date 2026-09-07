@@ -91,7 +91,8 @@ test('원격 번들이 호스트 사본을 그대로 쓴다', async () => {
 })
 
 test('기본 목록의 서브패스도 치환된다', async () => {
-  // `react/jsx-runtime` 을 놓치면 JSX 변환이 두 번째 React 사본을 조용히 물고 온다.
+  // 기본 목록엔 `react` 만 있다 — 이름이 `react/jsx-runtime` 까지 덮어야 한다.
+  // 놓치면 JSX 변환이 두 번째 React 사본을 조용히 물고 온다.
   const remotes = run(await bundle(), hostScope)
 
   assert.equal(remotes.settings.default().jsx, 'HOST_REACT_jsx')
@@ -103,7 +104,7 @@ test('shared 가 등록돼 있지 않으면 로드 시점에 던진다', async (
   assert.throws(() => run(code, null), /shared 모듈 "react" 이 등록돼 있지 않다/)
 })
 
-test('`/*` 와일드카드가 서브패스를 잡는다', async () => {
+test('이름 하나가 서브패스까지 덮는다', async () => {
   const code = await bundle({
     entryPoints: undefined,
     stdin: {
@@ -111,14 +112,15 @@ test('`/*` 와일드카드가 서브패스를 잡는다', async () => {
       resolveDir: here,
       loader: 'js',
     },
-    plugins: [sharedScopePlugin({ include: ['react-native/*'] })],
+    plugins: [sharedScopePlugin({ include: ['react-native'] })],
   })
 
   // 조회 키는 소비자가 쓴 specifier 그대로다 — 부모 패키지로 접지 않는다.
   assert.match(code, /"react-native\/Libraries\/Utilities\/Platform"/)
 })
 
-test('`/*` 는 맨 이름을 잡지 않는다', async () => {
+test('형제 패키지는 잡지 않는다', async () => {
+  // `react` 가 `react-native` 를 먹으면 안 된다. 경계는 `/` 뿐이다.
   const code = await bundle({
     entryPoints: undefined,
     stdin: {
@@ -126,7 +128,7 @@ test('`/*` 는 맨 이름을 잡지 않는다', async () => {
       resolveDir: here,
       loader: 'js',
     },
-    plugins: [sharedScopePlugin({ include: ['react-native/*'] })],
+    plugins: [sharedScopePlugin({ include: ['react'] })],
     external: ['react-native'],
   })
 

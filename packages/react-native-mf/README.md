@@ -64,26 +64,26 @@ await esbuild.build({
 
 ## shared 목록은 소비처가 정한다
 
-기본값은 **셋뿐**이다 — `react` · `react/jsx-runtime` · `react-native`
-(`DEFAULT_SHARED_MODULES`). RN 마이크로프론트엔드라면 무조건인 것만 남겼다.
+기본값은 **둘뿐**이다 — `react` · `react-native` (`DEFAULT_SHARED_MODULES`).
+RN 마이크로프론트엔드라면 무조건인 것만 남겼다.
 
 어떤 라이브러리를 shared 로 볼지는 **호스트 앱의 사실**이지 이 패키지의 사실이 아니다.
 목록은 소비처가 들고 `include` 로 넘긴다.
 
 ```ts
 sharedScopePlugin({
-  include: [
-    ...DEFAULT_SHARED_MODULES,
-    'react-native-reanimated',
-    '@gorhom/bottom-sheet',
-    '@your-org/design-system/native', // 서브패스도 그냥 이름이다
-    'react-native/*', // 끝의 `/*` 는 서브패스 와일드카드
-  ],
+  include: [...DEFAULT_SHARED_MODULES, 'react-native-reanimated', '@gorhom/bottom-sheet'],
 })
 ```
 
-`'react-native/*'` 는 `react-native/Libraries/...` 를 잡되 맨 이름 `react-native` 는 잡지
-않는다. 둘 다 원하면 둘 다 적는다.
+**규칙은 esbuild 의 `external` 과 같다** — 이름 하나가 그 패키지의 **서브패스까지 덮는다.**
+`'react'` 가 `react/jsx-runtime` 을, `'react-native'` 가 `react-native/Libraries/...` 를 함께
+잡는다. 형제 패키지는 안 잡는다(`'react'` 는 `react-native` 를 먹지 않는다). 그래서 기존
+`external` 목록을 그대로 옮겨오면 된다.
+
+⚠️ **덮는 것과 접는 것은 다르다.** `react/jsx-runtime` 이 치환되면 호스트는 **그 이름으로**
+`registerShared` 해야 한다 — 조회 키는 원격 번들이 쓴 specifier 그대로고, 부모 패키지로
+접지 않는다. 빠뜨리면 로드 시점에 그 이름을 대며 던진다.
 
 ## 회수
 
