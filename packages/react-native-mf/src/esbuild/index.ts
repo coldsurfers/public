@@ -5,4 +5,8 @@
  */
 
 export { type RegisterOptions, withSelfRegister } from './register'
-export { type SharedScopePluginOptions, sharedScopePlugin } from './shared-scope'
+export {
+  DEFAULT_SHARED_MODULES,
+  type SharedScopePluginOptions,
+  sharedScopePlugin,
+} from './shared-scope'

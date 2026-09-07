@@ -30,12 +30,14 @@ import { registerShared } from '@coldsurfers/react-native-mf'
 
 registerShared({
   react: require('react'),
+  'react/jsx-runtime': require('react/jsx-runtime'),
   'react-native': require('react-native'),
 })
 ```
 
-원격 번들은 `import` 대신 이 전역을 읽는다. 치환은 빌드타임에 `./esbuild` 플러그인이 한다.
-그래서 호스트 쪽에 모듈 이름을 손으로 나열하는 화이트리스트가 남지 않는다.
+키는 **원격 번들이 쓴 specifier 그대로**다 — `react/jsx-runtime` 을 부모 `react` 에서
+유도하지 않는다. 원격 번들은 `import` 대신 이 전역을 읽고, 치환은 빌드타임에 `./esbuild`
+플러그인이 한다. 그래서 호스트 쪽에 모듈 이름을 손으로 나열하는 화이트리스트가 남지 않는다.
 
 ## 미니앱 빌드
 
@@ -53,15 +55,35 @@ await esbuild.build({
 })
 ```
 
-`sharedScopePlugin` 이 카탈로그의 이름을 글로벌 참조로 바꾸고, `withSelfRegister` 가
+`sharedScopePlugin` 이 shared 이름을 글로벌 참조로 바꾸고, `withSelfRegister` 가
 `iife` + footer 로 **실행되면 스스로 등록하는** 번들을 만든다. 산출물엔 `require("react")` 가
 남지 않는다.
 
 호스트가 노출하지 않은 이름을 원격 번들이 읽으면 **로드 시점에 던진다.** 조용히 `undefined` 를
 넘기면 원격 번들 안에서 터져서 원인이 안 보인다.
 
-⚠️ 정확히 일치하는 이름만 치환한다 — `react-native/Libraries/...` 같은 deep import 는 그대로
-번들된다.
+## shared 목록은 소비처가 정한다
+
+기본값은 **둘뿐**이다 — `react` · `react-native` (`DEFAULT_SHARED_MODULES`).
+RN 마이크로프론트엔드라면 무조건인 것만 남겼다.
+
+어떤 라이브러리를 shared 로 볼지는 **호스트 앱의 사실**이지 이 패키지의 사실이 아니다.
+목록은 소비처가 들고 `include` 로 넘긴다.
+
+```ts
+sharedScopePlugin({
+  include: [...DEFAULT_SHARED_MODULES, 'react-native-reanimated', '@gorhom/bottom-sheet'],
+})
+```
+
+**규칙은 esbuild 의 `external` 과 같다** — 이름 하나가 그 패키지의 **서브패스까지 덮는다.**
+`'react'` 가 `react/jsx-runtime` 을, `'react-native'` 가 `react-native/Libraries/...` 를 함께
+잡는다. 형제 패키지는 안 잡는다(`'react'` 는 `react-native` 를 먹지 않는다). 그래서 기존
+`external` 목록을 그대로 옮겨오면 된다.
+
+⚠️ **덮는 것과 접는 것은 다르다.** `react/jsx-runtime` 이 치환되면 호스트는 **그 이름으로**
+`registerShared` 해야 한다 — 조회 키는 원격 번들이 쓴 specifier 그대로고, 부모 패키지로
+접지 않는다. 빠뜨리면 로드 시점에 그 이름을 대며 던진다.
 
 ## 회수
 
@@ -73,13 +95,3 @@ const MiniApp = getRemote<React.FC>('settings')
 
 번들이 실행되면 스스로 등록한다([3] self-register). 실행 방식이 소스 eval 이든 바이트코드든
 회수 지점은 이 한 곳이다.
-
-## shared 카탈로그
-
-`src/shared/common-dependencies.json` 이 정본이다. 값은 **호스트 앱이 실제로 무는 버전**이고,
-호스트가 올라가면 여기도 올라가야 한다 — 어긋나면 원격 번들이 없는 API 를 부른다.
-자동 동기화는 Phase 1 의 몫이다.
-
-```ts
-import { getSharedDependencies } from '@coldsurfers/react-native-mf'
-```
