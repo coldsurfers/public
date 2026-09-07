@@ -51,7 +51,8 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "check:type": "tsc --noEmit",
-    "check:exports": "attw --pack . --profile esm-only"
+    "check:exports": "attw --pack . --profile esm-only",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "peerDependencies": {
     "esbuild": ">=0.21.0"
@@ -65,6 +66,7 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@types/node": "^24.10.1",
     "esbuild": "^0.25.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
     "vite-plugin-dts": "^4.5.4"

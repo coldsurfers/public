@@ -16,6 +16,7 @@
     "check:exports": "turbo run check:exports",
     "check:fix": "biome check --write .",
     "check:type": "turbo run check:type",
+    "test": "turbo run test",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
