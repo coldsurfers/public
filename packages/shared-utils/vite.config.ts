@@ -24,16 +24,16 @@ import pkg from './package.json'
  * 의존을 추가하고 여기 적는 걸 잊으면 그 라이브러리가 통째로 `dist` 에 인라인되는데,
  * 빌드도 타입체크도 통과해서 아무도 모른다 (coldsurfers/public#93 리뷰).
  *
- * `dependencies` 와 `peerDependencies` **둘 다** 문다. external 은 「번들에 인라인하지 않는다」이고
- * peer 는 「소비자가 사본 하나를 공유한다」로 축이 다르다 — 어느 쪽이든 번들에서는 빠져야 한다.
- * (`markdown-renderer` 도 `shiki`·`react-markdown` 을 `dependencies` 로 두고 external 로 뺀다.)
+ * `dependencies` 와 `peerDependencies` **둘 다** 문다. 지금은 후자만 차 있지만(날짜 의존은
+ * optional peer 다 — `package.json` 참조), 어느 쪽에 적히든 번들에서는 빠져야 하는 건 같다.
+ * 새 유틸이 소비자에게 안 물릴 가벼운 의존을 `dependencies` 로 들고 와도 그대로 external 이 된다.
  *
  * 이름을 문자열로 넣지 않고 정규식으로 바꾸는 이유: 문자열은 정확 일치라 `date-fns/locale` 같은
  * **서브패스가 external 을 빠져나가 인라인된다.** npm 이름에서 정규식 특수문자는 `.` 뿐이다.
  */
 const manifest = pkg as {
+  // 지금은 비어 있다. 생겼을 때 이 파일을 같이 고쳐야 하는 상황을 만들지 않으려고 미리 읽는다.
   dependencies?: Record<string, string>
-  // 지금은 없다. 생겼을 때 이 파일을 같이 고쳐야 하는 상황을 만들지 않으려고 미리 읽는다.
   peerDependencies?: Record<string, string>
 }
 

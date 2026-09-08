@@ -43,12 +43,22 @@
     "check:type": "tsc --noEmit",
     "check:exports": "attw --pack . --profile esm-only"
   },
-  "dependencies": {
-    "date-fns": "4.1.0",
-    "date-fns-tz": "^3.2.0"
+  "peerDependencies": {
+    "date-fns": "^4",
+    "date-fns-tz": "^3"
+  },
+  "peerDependenciesMeta": {
+    "date-fns": {
+      "optional": true
+    },
+    "date-fns-tz": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "date-fns": "4.1.0",
+    "date-fns-tz": "^3.2.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
     "vite-plugin-dts": "^4.5.4",

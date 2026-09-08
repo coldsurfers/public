@@ -10,7 +10,17 @@ COLDSURF 표면들(web · server · native)이 나눠 쓰는 순수 유틸.
 pnpm add @coldsurfers/shared-utils
 ```
 
-`date-fns`·`date-fns-tz` 는 번들에 들어가지 않으니 소비처에도 설치돼 있어야 한다.
+`/date` 를 쓸 거면 **날짜 라이브러리를 같이 설치한다.**
+
+```sh
+pnpm add date-fns date-fns-tz
+```
+
+둘은 **optional peer** 다 — 안 쓰는 소비처에 38MB(`date-fns` 실측)를 얹지 않으려고 그렇게 뒀다
+(`design-system` 이 `react-native`·`@emotion/*` 을 다루는 방식과 같다).
+
+⚠️ optional 이라 **빠져 있어도 설치 경고가 없다.** `/date` 를 import 하는 순간 런타임에서
+모듈을 못 찾는 걸로 처음 드러난다. 새 진입점이 무거운 의존을 물면 같은 규칙을 따른다.
 
 ## 진입점
 
