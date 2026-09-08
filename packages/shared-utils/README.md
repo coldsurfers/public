@@ -2,7 +2,8 @@
 
 COLDSURF 표면들(web · server · native)이 나눠 쓰는 순수 유틸.
 
-렌더링이 없다 — 프레임워크·DOM 에 기대지 않는 함수만 담는다.
+렌더링이 없다 — DOM 을 만지는 함수는 담지 않는다. SEO 어댑터(`/next` · `/seo-head`)도 태그
+**디스크립터**만 만들어 돌려주고, 그리는 건 소비처 몫이다.
 
 ## 설치
 
@@ -41,10 +42,14 @@ import { normalizeEmail } from '@coldsurfers/shared-utils/email'
 | `/date` | KST 사람 표기 · UTC 일/주말 경계 | `date-fns` `date-fns-tz` |
 | `/email` | `normalizeEmail` — `+alias` 를 걷어낸 이메일 신원 | — |
 | `/event-category` | `eventCategoryUtils` — `Gigs` → `콘서트` | — |
+| `/jwt` | `decodeJwt` — 검증 없는 payload 디코드 | `jwt-decode` |
 | `/kopis-price` | `kopisPriceUtils` — KOPIS 비정형 `price` → 좌석별 가격표 | — |
 | `/location-city` | `locationCityUtils` — `seoul` → `서울` | — |
+| `/metadata` | `buildSeoTags` — 페이지 입력 → 평평한 `SeoTags`(meta·link·JSON-LD). SEO 엔진 | — |
+| `/next` | `createNextMetadata` · `buildSeoScripts` — 엔진 출력 → Next `Metadata` | `next` |
 | `/number` | `getRandomInt` | — |
 | `/parser` | `tryParse` — throw 하지 않는 `JSON.parse` | — |
+| `/seo-head` | `createSeoHead` — 엔진 출력 → `{ meta, links, scripts }` 디스크립터 | — |
 | `/slug` | URL 슬러그 · 공연 슬러그 · 해시태그 · 중복 회피 | `date-fns` `slugify`\* |
 | `/uri` | `fullyDecodeURI` · `fullyDecodePathname` · `isEncoded` · `isDoubleEncoded` | — |
 | `/uuid` | `generateUUID` — `crypto.randomUUID` 없는 환경까지 | — |
@@ -58,6 +63,11 @@ import { normalizeEmail } from '@coldsurfers/shared-utils/email'
 - **`kopisPriceUtils.parse` 는 fail-open** — throw 하지 않는다. 해석 불가면 `[]` 다.
 - **`tryParse` 의 기본 타입 인자는 `unknown`** 이다. 형태를 아는 쪽이 `tryParse<Config>(raw)` 로 선언한다.
 - **`generateUUID` 는 암호학적 난수가 아니다.** 토큰·키에 쓰지 않는다.
+- **`decodeJwt` 는 서명을 검증하지 않는다.** payload 를 읽을 뿐이라 인가 판단에 쓰면 안 된다.
+- **`/seo-head` 는 react 를 물지 않는다.** 이름이 `/react` 가 아닌 이유다 — head 디스크립터를
+  받는 라우터면(TanStack Router 등) 무엇이든 쓴다. 추가 설치도 없다.
+- **`/next` · `/seo-head` 는 같은 엔진(`/metadata`)의 두 어댑터다.** 새 SEO 정책은 엔진에만 넣는다 —
+  어댑터에 넣으면 한쪽 프레임워크에서만 도는 규칙이 생긴다.
 - **`generateSlug` 계열은 확인과 사용 사이에 경합이 있다.** 유일성이 중요한 곳은 저장 시점의
   unique 제약이 정본이다.
 - **`getSafeSlug` 는 `createSlug` 와 제거 문자 집합이 다르다.** 이미 발급된 URL 호환 때문에
