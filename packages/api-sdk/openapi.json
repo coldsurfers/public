@@ -473,6 +473,12 @@
                 "enum": [
                   "RATE_LIMITED"
                 ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "DAILY_EDITION_NOT_FOUND"
+                ]
               }
             ]
           },
@@ -3214,6 +3220,184 @@
                   "definition",
                   "payload"
                 ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "CONCERT_LIST"
+                    ]
+                  },
+                  "definition": {
+                    "type": "string",
+                    "enum": [
+                      "DAILY_EDITION_RELEASE"
+                    ]
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "mainPoster": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "url": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "copyright": {
+                                  "type": "object",
+                                  "nullable": true,
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "owner": {
+                                      "type": "string"
+                                    },
+                                    "license": {
+                                      "type": "string"
+                                    },
+                                    "licenseURL": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "owner",
+                                    "license",
+                                    "licenseURL"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "url",
+                                "copyright"
+                              ]
+                            },
+                            "mainVenue": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name"
+                              ]
+                            },
+                            "slug": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "plainVenueText": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "status": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "DRAFT"
+                                  ]
+                                },
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "PUBLISHED"
+                                  ]
+                                },
+                                {
+                                  "nullable": true
+                                }
+                              ]
+                            },
+                            "viewCount": {
+                              "type": "number"
+                            },
+                            "isSubscribed": {
+                              "type": "boolean"
+                            },
+                            "category": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name"
+                              ]
+                            },
+                            "entryTicketCapacity": {
+                              "type": "integer",
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "date",
+                            "mainPoster",
+                            "mainVenue",
+                            "slug",
+                            "plainVenueText",
+                            "status"
+                          ]
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "data",
+                      "createdAt"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "definition",
+                  "payload"
+                ]
               }
             ]
           },
@@ -3243,7 +3427,8 @@
               "NEW_FEATURE_RELEASE",
               "NEW_EDITORIAL_RELEASE",
               "NEW_USER",
-              "NEW_USER_POST"
+              "NEW_USER_POST",
+              "DAILY_EDITION_RELEASE"
             ]
           },
           "name": {
@@ -3254,6 +3439,271 @@
           "id",
           "key",
           "name"
+        ]
+      },
+      "DailyEditionSummaryDTOSchema": {
+        "type": "object",
+        "properties": {
+          "series": {
+            "type": "string",
+            "enum": [
+              "new-shows",
+              "weekend",
+              "popular"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "intro": {
+            "type": "string"
+          },
+          "poster": {
+            "type": "string",
+            "nullable": true
+          },
+          "concertCount": {
+            "type": "integer"
+          },
+          "sectionCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "series",
+          "slug",
+          "publishedAt",
+          "title",
+          "intro",
+          "poster",
+          "concertCount",
+          "sectionCount"
+        ]
+      },
+      "DailyEditionSeriesSchema": {
+        "type": "string",
+        "enum": [
+          "new-shows",
+          "weekend",
+          "popular"
+        ]
+      },
+      "DailyEditionDataSchema": {
+        "type": "object",
+        "properties": {
+          "series": {
+            "type": "string",
+            "enum": [
+              "new-shows",
+              "weekend",
+              "popular"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "intro": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "pick": {
+                  "type": "object",
+                  "properties": {
+                    "slug": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "genre": {
+                      "type": "string"
+                    },
+                    "venue": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "region": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "slug",
+                        "name",
+                        "region"
+                      ]
+                    },
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "ended": {
+                      "type": "boolean"
+                    },
+                    "ticket": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "seller": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "seller",
+                        "url"
+                      ]
+                    },
+                    "poster": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "headline": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "slug",
+                    "title",
+                    "genre",
+                    "venue",
+                    "startsAt",
+                    "ticket",
+                    "poster",
+                    "headline",
+                    "body"
+                  ]
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "slug": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "genre": {
+                        "type": "string"
+                      },
+                      "venue": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "region": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "slug",
+                          "name",
+                          "region"
+                        ]
+                      },
+                      "startsAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "ended": {
+                        "type": "boolean"
+                      },
+                      "ticket": {
+                        "type": "object",
+                        "nullable": true,
+                        "properties": {
+                          "seller": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "seller",
+                          "url"
+                        ]
+                      },
+                      "poster": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "slug",
+                      "title",
+                      "genre",
+                      "venue",
+                      "startsAt",
+                      "ticket",
+                      "poster"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "pick",
+                "rows"
+              ]
+            }
+          }
+        },
+        "required": [
+          "series",
+          "slug",
+          "publishedAt",
+          "intro",
+          "sections"
         ]
       },
       "PriceDTOSchema": {
@@ -5623,6 +6073,184 @@
                             "definition",
                             "payload"
                           ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "CONCERT_LIST"
+                              ]
+                            },
+                            "definition": {
+                              "type": "string",
+                              "enum": [
+                                "DAILY_EDITION_RELEASE"
+                              ]
+                            },
+                            "payload": {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                      },
+                                      "title": {
+                                        "type": "string"
+                                      },
+                                      "date": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "createdAt": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "mainPoster": {
+                                        "type": "object",
+                                        "nullable": true,
+                                        "properties": {
+                                          "url": {
+                                            "type": "string",
+                                            "nullable": true
+                                          },
+                                          "copyright": {
+                                            "type": "object",
+                                            "nullable": true,
+                                            "properties": {
+                                              "id": {
+                                                "type": "string"
+                                              },
+                                              "owner": {
+                                                "type": "string"
+                                              },
+                                              "license": {
+                                                "type": "string"
+                                              },
+                                              "licenseURL": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "owner",
+                                              "license",
+                                              "licenseURL"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "url",
+                                          "copyright"
+                                        ]
+                                      },
+                                      "mainVenue": {
+                                        "type": "object",
+                                        "nullable": true,
+                                        "properties": {
+                                          "name": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "name"
+                                        ]
+                                      },
+                                      "slug": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "plainVenueText": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "status": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "DRAFT"
+                                            ]
+                                          },
+                                          {
+                                            "type": "string",
+                                            "enum": [
+                                              "PUBLISHED"
+                                            ]
+                                          },
+                                          {
+                                            "nullable": true
+                                          }
+                                        ]
+                                      },
+                                      "viewCount": {
+                                        "type": "number"
+                                      },
+                                      "isSubscribed": {
+                                        "type": "boolean"
+                                      },
+                                      "category": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name"
+                                        ]
+                                      },
+                                      "entryTicketCapacity": {
+                                        "type": "integer",
+                                        "nullable": true
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "title",
+                                      "date",
+                                      "mainPoster",
+                                      "mainVenue",
+                                      "slug",
+                                      "plainVenueText",
+                                      "status"
+                                    ]
+                                  }
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "required": [
+                                "title",
+                                "description",
+                                "data",
+                                "createdAt"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "definition",
+                            "payload"
+                          ]
                         }
                       ]
                     },
@@ -6141,6 +6769,184 @@
                         "type": "string",
                         "enum": [
                           "WEEKEND_EVENTS_NOTIFICATION"
+                        ]
+                      },
+                      "payload": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "date": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "mainPoster": {
+                                  "type": "object",
+                                  "nullable": true,
+                                  "properties": {
+                                    "url": {
+                                      "type": "string",
+                                      "nullable": true
+                                    },
+                                    "copyright": {
+                                      "type": "object",
+                                      "nullable": true,
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "owner": {
+                                          "type": "string"
+                                        },
+                                        "license": {
+                                          "type": "string"
+                                        },
+                                        "licenseURL": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "owner",
+                                        "license",
+                                        "licenseURL"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "copyright"
+                                  ]
+                                },
+                                "mainVenue": {
+                                  "type": "object",
+                                  "nullable": true,
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "name"
+                                  ]
+                                },
+                                "slug": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "plainVenueText": {
+                                  "type": "string",
+                                  "nullable": true
+                                },
+                                "status": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "DRAFT"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "PUBLISHED"
+                                      ]
+                                    },
+                                    {
+                                      "nullable": true
+                                    }
+                                  ]
+                                },
+                                "viewCount": {
+                                  "type": "number"
+                                },
+                                "isSubscribed": {
+                                  "type": "boolean"
+                                },
+                                "category": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ]
+                                },
+                                "entryTicketCapacity": {
+                                  "type": "integer",
+                                  "nullable": true
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "title",
+                                "date",
+                                "mainPoster",
+                                "mainVenue",
+                                "slug",
+                                "plainVenueText",
+                                "status"
+                              ]
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "title",
+                          "description",
+                          "data",
+                          "createdAt"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "definition",
+                      "payload"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "CONCERT_LIST"
+                        ]
+                      },
+                      "definition": {
+                        "type": "string",
+                        "enum": [
+                          "DAILY_EDITION_RELEASE"
                         ]
                       },
                       "payload": {
@@ -9662,6 +10468,109 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily": {
+      "get": {
+        "tags": [
+          "v1",
+          "daily"
+        ],
+        "summary": "편 목록 — 요약만(본문 없음) · 발행일 내림차순",
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/DailyEditionSeriesSchema"
+            },
+            "required": false,
+            "name": "series",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "daily editions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DailyEditionSummaryDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/daily/{series}/{slug}": {
+      "get": {
+        "tags": [
+          "v1",
+          "daily"
+        ],
+        "summary": "편 상세 — 본문 전부",
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/DailyEditionSeriesSchema"
+            },
+            "required": true,
+            "name": "series",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "daily edition",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyEditionDataSchema"
                 }
               }
             }

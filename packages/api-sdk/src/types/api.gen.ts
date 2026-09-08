@@ -197,6 +197,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 편 목록 — 요약만(본문 없음) · 발행일 내림차순 */
+        get: {
+            parameters: {
+                query?: {
+                    series?: components["schemas"]["DailyEditionSeriesSchema"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description daily editions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DailyEditionSummaryDTOSchema"][];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/daily/{series}/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 편 상세 — 본문 전부 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    series: components["schemas"]["DailyEditionSeriesSchema"];
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description daily edition */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DailyEditionDataSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/event-category": {
         parameters: {
             query?: never;
@@ -7812,6 +7916,71 @@ export interface components {
             direction: "next" | "prev";
             size?: number | null;
         };
+        DailyEditionDataSchema: {
+            intro: string;
+            publishedAt: string;
+            sections: {
+                pick: {
+                    body: string[];
+                    ended?: boolean;
+                    genre: string;
+                    headline: string;
+                    poster: string | null;
+                    slug: string;
+                    /** Format: date-time */
+                    startsAt: string;
+                    ticket: {
+                        seller: string;
+                        url: string;
+                    } | null;
+                    title: string;
+                    venue: {
+                        id: string;
+                        name: string;
+                        region: string;
+                        slug: string;
+                    };
+                };
+                rows: {
+                    ended?: boolean;
+                    genre: string;
+                    poster: string | null;
+                    reason?: string;
+                    slug: string;
+                    /** Format: date-time */
+                    startsAt: string;
+                    ticket: {
+                        seller: string;
+                        url: string;
+                    } | null;
+                    title: string;
+                    venue: {
+                        id: string;
+                        name: string;
+                        region: string;
+                        slug: string;
+                    };
+                }[];
+                title: string;
+            }[];
+            /** @enum {string} */
+            series: "new-shows" | "weekend" | "popular";
+            slug: string;
+            title?: string;
+        };
+        /** @enum {string} */
+        DailyEditionSeriesSchema: "new-shows" | "weekend" | "popular";
+        DailyEditionSummaryDTOSchema: {
+            concertCount: number;
+            intro: string;
+            poster: string | null;
+            publishedAt: string;
+            sectionCount: number;
+            /** @enum {string} */
+            series: "new-shows" | "weekend" | "popular";
+            slug: string;
+            title: string | null;
+        };
         DeactivateUserBodyDTOSchema: {
             /** @enum {string} */
             type: "deactivate";
@@ -7891,7 +8060,7 @@ export interface components {
             used: number;
         } | null;
         ErrorResponseDTOSchema: {
-            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED";
+            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED" | "DAILY_EDITION_NOT_FOUND";
             message: string;
         };
         EventCategoryDTOSchema: {
@@ -8174,7 +8343,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** @enum {string} */
-            key: "KOPIS_EVENTS_RELEASE" | "WEEKEND_EVENTS_NOTIFICATION" | "NEW_FEATURE_RELEASE" | "NEW_EDITORIAL_RELEASE" | "NEW_USER" | "NEW_USER_POST";
+            key: "KOPIS_EVENTS_RELEASE" | "WEEKEND_EVENTS_NOTIFICATION" | "NEW_FEATURE_RELEASE" | "NEW_EDITORIAL_RELEASE" | "NEW_USER" | "NEW_USER_POST" | "DAILY_EDITION_RELEASE";
             name: string;
         };
         FeedDTOSchema: {
@@ -8274,6 +8443,48 @@ export interface components {
             } | {
                 /** @enum {string} */
                 definition: "WEEKEND_EVENTS_NOTIFICATION";
+                payload: {
+                    /** Format: date-time */
+                    createdAt: string;
+                    data: {
+                        category?: {
+                            id: string;
+                            name: string;
+                        };
+                        /** Format: date-time */
+                        createdAt?: string;
+                        /** Format: date-time */
+                        date: string;
+                        entryTicketCapacity?: number | null;
+                        /** Format: uuid */
+                        id: string;
+                        isSubscribed?: boolean;
+                        mainPoster: {
+                            copyright: {
+                                id: string;
+                                license: string;
+                                licenseURL: string;
+                                owner: string;
+                            } | null;
+                            url: string | null;
+                        } | null;
+                        mainVenue: {
+                            name: string;
+                        } | null;
+                        plainVenueText: string | null;
+                        slug: string | null;
+                        status: "DRAFT" | "PUBLISHED" | unknown;
+                        title: string;
+                        viewCount?: number;
+                    }[];
+                    description: string;
+                    title: string;
+                };
+                /** @enum {string} */
+                type: "CONCERT_LIST";
+            } | {
+                /** @enum {string} */
+                definition: "DAILY_EDITION_RELEASE";
                 payload: {
                     /** Format: date-time */
                     createdAt: string;
@@ -8937,6 +9148,48 @@ export interface components {
                     };
                     /** @enum {string} */
                     type: "CONCERT_LIST";
+                } | {
+                    /** @enum {string} */
+                    definition: "DAILY_EDITION_RELEASE";
+                    payload: {
+                        /** Format: date-time */
+                        createdAt: string;
+                        data: {
+                            category?: {
+                                id: string;
+                                name: string;
+                            };
+                            /** Format: date-time */
+                            createdAt?: string;
+                            /** Format: date-time */
+                            date: string;
+                            entryTicketCapacity?: number | null;
+                            /** Format: uuid */
+                            id: string;
+                            isSubscribed?: boolean;
+                            mainPoster: {
+                                copyright: {
+                                    id: string;
+                                    license: string;
+                                    licenseURL: string;
+                                    owner: string;
+                                } | null;
+                                url: string | null;
+                            } | null;
+                            mainVenue: {
+                                name: string;
+                            } | null;
+                            plainVenueText: string | null;
+                            slug: string | null;
+                            status: "DRAFT" | "PUBLISHED" | unknown;
+                            title: string;
+                            viewCount?: number;
+                        }[];
+                        description: string;
+                        title: string;
+                    };
+                    /** @enum {string} */
+                    type: "CONCERT_LIST";
                 };
                 /** Format: date-time */
                 createdAt: string;
@@ -9054,6 +9307,48 @@ export interface components {
                     } | {
                         /** @enum {string} */
                         definition: "WEEKEND_EVENTS_NOTIFICATION";
+                        payload: {
+                            /** Format: date-time */
+                            createdAt: string;
+                            data: {
+                                category?: {
+                                    id: string;
+                                    name: string;
+                                };
+                                /** Format: date-time */
+                                createdAt?: string;
+                                /** Format: date-time */
+                                date: string;
+                                entryTicketCapacity?: number | null;
+                                /** Format: uuid */
+                                id: string;
+                                isSubscribed?: boolean;
+                                mainPoster: {
+                                    copyright: {
+                                        id: string;
+                                        license: string;
+                                        licenseURL: string;
+                                        owner: string;
+                                    } | null;
+                                    url: string | null;
+                                } | null;
+                                mainVenue: {
+                                    name: string;
+                                } | null;
+                                plainVenueText: string | null;
+                                slug: string | null;
+                                status: "DRAFT" | "PUBLISHED" | unknown;
+                                title: string;
+                                viewCount?: number;
+                            }[];
+                            description: string;
+                            title: string;
+                        };
+                        /** @enum {string} */
+                        type: "CONCERT_LIST";
+                    } | {
+                        /** @enum {string} */
+                        definition: "DAILY_EDITION_RELEASE";
                         payload: {
                             /** Format: date-time */
                             createdAt: string;
