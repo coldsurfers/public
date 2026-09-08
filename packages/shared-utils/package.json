@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/shared-utils",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "COLDSURF shared utilities — framework-agnostic helpers shared across web, server, and native surfaces.",
   "keywords": [
     "utils",
