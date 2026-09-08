@@ -42,6 +42,10 @@
       "types": "./dist/event-category.d.ts",
       "default": "./dist/event-category.js"
     },
+    "./jwt": {
+      "types": "./dist/jwt.d.ts",
+      "default": "./dist/jwt.js"
+    },
     "./kopis-price": {
       "types": "./dist/kopis-price.d.ts",
       "default": "./dist/kopis-price.js"
@@ -50,6 +54,14 @@
       "types": "./dist/location-city.d.ts",
       "default": "./dist/location-city.js"
     },
+    "./metadata": {
+      "types": "./dist/metadata.d.ts",
+      "default": "./dist/metadata.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "default": "./dist/next.js"
+    },
     "./number": {
       "types": "./dist/number.d.ts",
       "default": "./dist/number.js"
@@ -57,6 +69,10 @@
     "./parser": {
       "types": "./dist/parser.d.ts",
       "default": "./dist/parser.js"
+    },
+    "./seo-head": {
+      "types": "./dist/seo-head.d.ts",
+      "default": "./dist/seo-head.js"
     },
     "./slug": {
       "types": "./dist/slug.d.ts",
@@ -84,7 +100,9 @@
   },
   "peerDependencies": {
     "date-fns": "^4",
-    "date-fns-tz": "^3"
+    "date-fns-tz": "^3",
+    "jwt-decode": "^4",
+    "next": ">=14"
   },
   "peerDependenciesMeta": {
     "date-fns": {
@@ -92,12 +110,21 @@
     },
     "date-fns-tz": {
       "optional": true
+    },
+    "jwt-decode": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "date-fns": "4.1.0",
     "date-fns-tz": "^3.2.0",
+    "jwt-decode": "^4.0.0",
+    "next": "^15.5.0",
+    "schema-dts": "^1.1.5",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
     "vite-plugin-dts": "^4.5.4",
