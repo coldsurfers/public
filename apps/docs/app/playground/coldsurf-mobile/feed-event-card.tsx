@@ -1,8 +1,8 @@
 'use client'
 
-import { ConcertCard, Text } from '@coldsurfers/design-system/native'
+import { ConcertCard, Skeleton, Text } from '@coldsurfers/design-system/native'
 import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeRadius, nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
 import { Bookmark } from 'lucide-react'
 import { Pressable, View } from 'react-native'
 import type { FeedEvent } from './feed-data'
@@ -46,6 +46,9 @@ export function FeedEventCard({ event, onToggleSave }: FeedEventCardProps) {
         initial={event.initial}
         title={event.title}
         meta={event.meta}
+        // 시안 홈 레일(`2852:1217`)의 커버는 146×146 정사각이다. 좁은 레일 폭에서 4:3 보다
+        // 포스터를 덜 자른다 — 축과 값은 `CONCERT_CARD_BARE_SPEC.coverAspectRatio`.
+        coverRatio="square"
         // 공연장이 없으면 줄 자체를 안 넘긴다 — 빈 `Text` 를 넘기면 카드가 빈 줄을 잡는다.
         footer={
           event.venueName ? (
@@ -82,21 +85,22 @@ export function FeedEventCard({ event, onToggleSave }: FeedEventCardProps) {
 }
 
 /**
- * 카드 로딩 자리 — 커버 4:3 과 텍스트 3줄을 **실카드와 같은 치수**로 잡는다.
- * 커버 톤을 안 쓰고 border 색면으로 두는 이유: 톤은 id 에서 나오는데 로딩 중엔 id 가 없다.
- * 웹 스켈레톤은 소비처가 index 로 분산 주입하지만, 여기 레일은 두 장이라 값이 없다.
+ * 카드 로딩 자리 — 커버(정사각)와 텍스트 3줄을 **실카드와 같은 치수**로 잡는다.
+ * 커버 톤을 안 쓰는 이유: 톤은 id 에서 나오는데 로딩 중엔 id 가 없다.
+ *
+ * 앞선 판은 색면 `View` 를 손으로 넷 그렸다. 맥동이 없어 정지 화면과 구분되지 않았고,
+ * 바탕 톤(`border`)도 DS 스켈레톤 톤(`surfaceHover`)과 달라 같은 로딩인데 지면마다 색이
+ * 달랐다. 이제 진짜 `Skeleton` 이 그 셋(맥동 · 톤 · radius)을 든다.
  */
 export function FeedEventCardSkeleton() {
-  const scheme = useScheme()
-  const block = { backgroundColor: scheme.border, borderRadius: nativeRadius.sm }
-
   return (
     <View style={{ width: RAIL_CARD_WIDTH, gap: nativeSpacing[3] }} accessibilityElementsHidden>
-      <View style={{ width: '100%', aspectRatio: 4 / 3, ...block, borderRadius: 8 }} />
+      {/* 커버 — 실카드의 `coverRatio="square"` 와 짝. radius `lg`(8)도 카드와 같다. */}
+      <Skeleton width="100%" aspectRatio={1} radius="lg" />
       <View style={{ gap: 5 }}>
-        <View style={{ ...block, width: '92%', height: 13 }} />
-        <View style={{ ...block, width: '60%', height: 11 }} />
-        <View style={{ ...block, width: '74%', height: 10 }} />
+        <Skeleton width="92%" height={13} />
+        <Skeleton width="60%" height={11} />
+        <Skeleton width="74%" height={10} />
       </View>
     </View>
   )

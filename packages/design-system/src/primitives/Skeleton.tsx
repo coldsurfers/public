@@ -6,14 +6,9 @@ import {
   type ReactElement,
   type Ref,
 } from 'react'
+import { type SkeletonTone, SKELETON_SPEC as spec } from '../contract'
 import { cx } from './cx'
-import {
-  type SkeletonRadius,
-  type SkeletonTone,
-  skeletonRadius,
-  skeletonRoot,
-  skeletonTone,
-} from './Skeleton.css'
+import { type SkeletonRadius, skeletonRadius, skeletonRoot, skeletonTone } from './Skeleton.css'
 
 export type { SkeletonRadius, SkeletonTone }
 
@@ -66,7 +61,7 @@ export function Skeleton({
   width,
   height,
   aspectRatio,
-  radius = 'none',
+  radius = spec.defaultRadius,
   tone = 'neutral',
   asChild,
   className,

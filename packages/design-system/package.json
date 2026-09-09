@@ -61,6 +61,10 @@
       "types": "./dist/native-Button.d.ts",
       "default": "./dist/native-Button.js"
     },
+    "./native/Chip": {
+      "types": "./dist/native-Chip.d.ts",
+      "default": "./dist/native-Chip.js"
+    },
     "./native/ConcertCard": {
       "types": "./dist/native-ConcertCard.d.ts",
       "default": "./dist/native-ConcertCard.js"
@@ -72,6 +76,10 @@
     "./native/Modal": {
       "types": "./dist/native-Modal.d.ts",
       "default": "./dist/native-Modal.js"
+    },
+    "./native/Skeleton": {
+      "types": "./dist/native-Skeleton.d.ts",
+      "default": "./dist/native-Skeleton.js"
     },
     "./native/Spinner": {
       "types": "./dist/native-Spinner.d.ts",

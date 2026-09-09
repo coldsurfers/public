@@ -107,9 +107,11 @@ export default defineConfig({
         // 컴포넌트별 진입점 — 위 「native 서브패스」 주석 참조. 배럴(`native`)은 그대로 남는다.
         // 파일 이름이 평평한 이유도 거기 적혀 있다(`tokens-native` 와 같은 이유).
         'native-Button': 'src/native/Button.tsx',
+        'native-Chip': 'src/native/Chip.tsx',
         'native-ConcertCard': 'src/native/ConcertCard.tsx',
         'native-IconButton': 'src/native/IconButton.tsx',
         'native-Modal': 'src/native/Modal.tsx',
+        'native-Skeleton': 'src/native/Skeleton.tsx',
         'native-Spinner': 'src/native/Spinner.tsx',
         'native-Text': 'src/native/Text.tsx',
         'native-TextInput': 'src/native/TextInput.tsx',

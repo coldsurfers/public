@@ -1,4 +1,5 @@
 import { style, styleVariants } from '@vanilla-extract/css'
+import { SKELETON_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { pulse } from '../css/motion.css'
@@ -25,10 +26,8 @@ export const skeletonRoot = style([pulse])
  */
 export const skeletonToneValue = {
   neutral: vars.color.surfaceHover,
-  onCover: alpha(vars.paper.warm, 25),
+  onCover: alpha(vars.paper.warm, spec.onCoverAlpha),
 } as const
-
-export type SkeletonTone = keyof typeof skeletonToneValue
 
 export const skeletonTone = styleVariants(skeletonToneValue, (background) =>
   inComponentsLayer({ background }),

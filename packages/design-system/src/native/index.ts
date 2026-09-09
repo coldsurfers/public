@@ -12,9 +12,11 @@
  * 축을 늘려야 하면 **웹부터 늘린다.** 여기서 먼저 늘리면 계약이 갈라진다.
  */
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
+export { Chip, type ChipProps, type ChipSize } from './Chip'
 export { ConcertCard, type ConcertCardProps } from './ConcertCard'
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { Modal, type ModalProps } from './Modal'
+export { Skeleton, type SkeletonProps, type SkeletonTone } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
 export { useScheme } from './scheme'
 export { Text, type TextProps, type TextTone } from './Text'
