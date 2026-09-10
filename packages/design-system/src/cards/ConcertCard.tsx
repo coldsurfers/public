@@ -47,6 +47,7 @@ export function ConcertCard({
   footer,
   coverAction,
   variant = 'framed',
+  coverRatio = 'landscape',
   reserveTitleLines = false,
   className,
 }: ConcertCardProps) {
@@ -73,7 +74,7 @@ export function ConcertCard({
   if (variant === 'bare') {
     return (
       <article className={cx(s.bareRoot, className)}>
-        <CoverBlock tone={tone} className={s.bareCover}>
+        <CoverBlock tone={tone} className={cx(s.bareCover, s.bareCoverRatio[coverRatio])}>
           {posterUrl ? (
             <img src={posterUrl} alt="" loading="lazy" className={s.coverImage} />
           ) : (

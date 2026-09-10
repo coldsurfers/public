@@ -34,6 +34,23 @@ export const toPx = (value: string): number => {
   throw new Error(`[design-system/native] 변환할 수 없는 길이: ${value}`)
 }
 
+/**
+ * hex 색에 알파를 먹인다 — 웹 `css/style-utils.ts` 의 `alpha()` 짝.
+ *
+ * 웹은 CSS 변수를 쪼갤 수 없어 `color-mix` 를 쓰지만, RN 은 변수가 없고 값이 이미 hex 라
+ * `rgba()` 로 직접 조립한다. **같은 비율을 받아 같은 색을 내는 것이 계약이다.**
+ *
+ * `#rgb` 단축은 받지 않는다 — 토큰이 6자리만 쓰기 때문이고, 일곱째 형태가 생기면
+ * 여기서 **터지는 게 맞다.** 조용히 통과시키면 RN 쪽 색이 이유 없이 검게 뜬다.
+ */
+export const withAlpha = (hex: string, percent: number): string => {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex)
+  if (!m) throw new Error(`[design-system/native] 알파를 먹일 수 없는 색: ${hex}`)
+  const int = Number.parseInt(m[1], 16)
+  const [r, g, b] = [(int >> 16) & 255, (int >> 8) & 255, int & 255]
+  return `rgba(${r}, ${g}, ${b}, ${percent / 100})`
+}
+
 /** 스케일 키 — RN 컴포넌트가 props 축으로 그대로 쓴다. */
 export type FontSizeKey = keyof typeof fontSize
 export type LineHeightKey = keyof typeof lineHeight

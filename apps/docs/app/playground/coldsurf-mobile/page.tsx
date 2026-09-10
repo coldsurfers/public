@@ -1,6 +1,7 @@
 'use client'
 
-import { Button, Text } from '@coldsurfers/design-system/native'
+import { Chip, Text } from '@coldsurfers/design-system/native'
+import { useScheme } from '@coldsurfers/design-system/native/scheme'
 import { nativeSpacing, paper } from '@coldsurfers/design-system/tokens/native'
 import { MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -101,6 +102,7 @@ const CITY_LABEL = '서울'
 const SKELETON_CARDS = 4
 
 export default function BilletsFeedPage() {
+  const scheme = useScheme()
   const [city] = useState<string>(CITY_LABEL)
   const [genre, setGenre] = useState<Genre>(ALL_GENRES)
   const [tab, setTab] = useState<string>('feed')
@@ -179,26 +181,30 @@ export default function BilletsFeedPage() {
 
             {/*
              * LocationSelector — 누르면 `LocationSelectorModal`. 위치를 못 잡으면 `현재 위치`.
-             * **고른 상태라 `accent` 다.** 시안이 accent 를 쓰는 자리도 정확히 여기 —
-             * *지금 걸려 있는 조건* 이다.
+             *
+             * **필(`Chip`)이다.** 앞선 판은 `Button variant="accent"` 로 accent 를 필 전체에
+             * 깔았는데, 시안(`2852:1202`)은 **흰 필 + accent 점**이다 — accent 가 바탕이 아니라
+             * 표식으로 붙는다. 필터가 여러 개 켜질 때 accent 바탕이 화면을 지배하지 않는 것이
+             * 그 언어의 값이고, 같은 판단이 웹 `Chip` 주석(#39 D-2)에 이미 적혀 있다.
              */}
-            <Button variant="accent" size="sm">
+            <Chip size="md" accessibilityLabel={`위치 ${city}`}>
               {/*
-               * 웹 `Button` 은 `<MapPin/>{city}` 를 그냥 받는데 **여기선 못 받는다** —
-               * RN 은 텍스트 스타일이 상속되지 않아 라벨을 `Text` 로 감싸야 한다.
-               * Root 가 이미 row + gap 이라 조각 둘을 그대로 넘기면 된다.
+               * ⚠️ **라벨 색을 소비처가 다시 계산한다.** `Chip` 의 `labelColorFor` 는 children 이
+               * 문자열일 때만 걸려서, 아이콘이 하나 붙는 순간 축이 정한 색이 끊긴다. 아래
+               * `scheme.body` 는 그 함수의 `md` 비활성 분기를 손으로 옮겨 적은 것이고, 축이 늘면
+               * 이 자리가 조용히 어긋난다 — `Button` 이 가진 것과 **같은 구멍**이라, 닫으려면
+               * DS 가 leading 슬롯을 열거나 라벨 색을 context 로 내려야 한다.
                *
-               * ⚠️ 그 대가로 **라벨 색을 소비처가 다시 계산한다.** `Button` 의 `labelColorFor`
-               * 는 children 이 문자열일 때만 걸려서, 아이콘이 하나 붙는 순간 variant 가 정한
-               * 색이 끊긴다. 아래 `'white'` 는 그 함수의 `accent` 분기를 손으로 옮겨 적은
-               * 것이고, variant 가 늘면 이 자리가 조용히 어긋난다 — DS 가 leading 슬롯을
-               * 열거나 라벨 색을 context 로 내려야 닫히는 구멍이다.
+               * `gap` 도 여기서 준다. 웹 `Chip` 에 gap 축이 없어서(아이콘 조합을 안 쓴다)
+               * native 에도 두지 않았다 — 축을 늘리는 순서는 웹부터다.
                */}
-              <MapPin size={16} color="white" aria-hidden />
-              <Text size="sm" style={{ color: 'white' }}>
-                {city}
-              </Text>
-            </Button>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: nativeSpacing[2] }}>
+                <MapPin size={14} color={scheme.accent} aria-hidden />
+                <Text size="sm" tone="body">
+                  {city}
+                </Text>
+              </View>
+            </Chip>
           </View>
         </View>
 

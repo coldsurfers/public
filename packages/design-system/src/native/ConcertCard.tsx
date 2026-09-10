@@ -1,6 +1,10 @@
 import styled from '@emotion/native'
 import { Image } from 'react-native'
-import { CONCERT_CARD_BARE_SPEC as bare, type ConcertCardBareProps } from '../contract'
+import {
+  CONCERT_CARD_BARE_SPEC as bare,
+  type ConcertCardBareProps,
+  type ConcertCardCoverRatio,
+} from '../contract'
 import type { CoverTone } from '../tokens'
 import { cover, paper } from '../tokens/native'
 import { useScheme } from './scheme'
@@ -43,14 +47,16 @@ const Root = styled.View({
   gap: bare.gap,
 })
 
-const Cover = styled.View<{ $tone: CoverTone }>(({ $tone }) => ({
-  position: 'relative',
-  width: '100%',
-  aspectRatio: bare.coverAspectRatio,
-  borderRadius: bare.coverRadius,
-  overflow: 'hidden',
-  backgroundColor: cover[$tone],
-}))
+const Cover = styled.View<{ $tone: CoverTone; $ratio: ConcertCardCoverRatio }>(
+  ({ $tone, $ratio }) => ({
+    position: 'relative',
+    width: '100%',
+    aspectRatio: bare.coverAspectRatio[$ratio],
+    borderRadius: bare.coverRadius,
+    overflow: 'hidden',
+    backgroundColor: cover[$tone],
+  }),
+)
 
 /** 커버를 채우는 것들(포스터 · 이니셜 판)이 공유하는 자리. 웹의 `inset: 0` 자리다. */
 const Fill = styled.View({
@@ -82,13 +88,14 @@ export function ConcertCard({
   meta,
   footer,
   coverAction,
+  coverRatio = 'landscape',
   reserveTitleLines = false,
 }: ConcertCardProps) {
   const scheme = useScheme()
 
   return (
     <Root>
-      <Cover $tone={tone}>
+      <Cover $tone={tone} $ratio={coverRatio}>
         {posterUrl ? (
           <Image
             source={{ uri: posterUrl }}

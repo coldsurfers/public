@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { style, styleVariants } from '@vanilla-extract/css'
 import { recipe } from '@vanilla-extract/recipes'
 import { CONCERT_CARD_BARE_SPEC as bare } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
@@ -35,10 +35,18 @@ export const bareRoot = style(
 export const bareCover = style(
   inComponentsLayer({
     position: 'relative',
-    aspectRatio: bare.coverAspectRatio,
     width: '100%',
     borderRadius: bare.coverRadius,
   }),
+)
+
+/**
+ * 커버 비율 — `bareCover` 에서 **떼어낸** 축이다. 한 슬롯에 두면 비율을 바꾸는 소비처가
+ * 클래스를 덮어써야 하고, 그건 상세도 다툼이 된다. 값은 `CONCERT_CARD_BARE_SPEC` 이 정본이고
+ * native 는 같은 표를 `styled` 에서 읽는다.
+ */
+export const bareCoverRatio = styleVariants(bare.coverAspectRatio, (aspectRatio) =>
+  inComponentsLayer({ aspectRatio }),
 )
 
 /** 포스터가 없을 때의 대형 이니셜 — 색면 위에 아주 옅게. */

@@ -42,9 +42,12 @@
  * 축을 늘리는 순서는 그대로다 — 웹 구현부터 늘리고, 그다음 여기에 이름을 올린다.
  */
 export type { ButtonSize, ButtonVariant } from './button'
+export { CHIP_SPEC, type ChipSize } from './chip'
 export {
   CONCERT_CARD_BARE_SPEC,
   type ConcertCardBareProps,
+  type ConcertCardCoverRatio,
   type ConcertCardVariant,
 } from './concert-card'
+export { SKELETON_SPEC, type SkeletonTone } from './skeleton'
 export type { ToastTone } from './toast'

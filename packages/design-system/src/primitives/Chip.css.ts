@@ -1,4 +1,5 @@
 import { recipe } from '@vanilla-extract/recipes'
+import { CHIP_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 
@@ -13,6 +14,10 @@ import { vars } from '../css/contract.css'
  * 35·26 은 지금까지 상속 `line-height: 1.5` 에서 계산되던 값 그대로라 픽셀은 안 움직인다
  * (md 14×1.5+6·2+1·2 · sm 12×1.5+4·2). base 의 `whiteSpace: nowrap` 이 항상 한 줄을
  * 보장해서 높이를 박아도 라벨이 잘리지 않는다.
+ *
+ * 치수는 `contract/chip.ts` 의 `CHIP_SPEC` 이 정본이다 — native 구현이 같은 표를 읽으므로
+ * 여기 숫자를 손으로 고치면 두 레인이 갈린다. `:hover`·`transition` 만 리터럴로 남는다:
+ * RN 엔 짝이 없어 **갈라질 상대가 없고**, 짝이 없으면 계약이 아니다.
  */
 export const chip = recipe({
   base: inComponentsLayer({
@@ -20,7 +25,7 @@ export const chip = recipe({
     alignItems: 'center',
     justifyContent: 'center',
     whiteSpace: 'nowrap',
-    fontWeight: vars.fontWeight.semibold,
+    fontWeight: vars.fontWeight[spec.fontWeight],
     cursor: 'pointer',
     transitionProperty: 'color, background-color, border-color',
     transitionDuration: '150ms',
@@ -29,19 +34,19 @@ export const chip = recipe({
   variants: {
     size: {
       md: inComponentsLayer({
-        borderRadius: vars.radius.full,
-        borderWidth: 1,
+        borderRadius: vars.radius[spec.size.md.radius],
+        borderWidth: spec.size.md.borderWidth,
         borderStyle: 'solid',
-        height: 35,
-        paddingInline: 14,
-        fontSize: vars.fontSize.sm,
+        height: spec.size.md.height,
+        paddingInline: spec.size.md.paddingInline,
+        fontSize: vars.fontSize[spec.size.md.fontSize],
       }),
       sm: inComponentsLayer({
-        borderRadius: vars.radius.md,
-        border: 'none',
-        height: 26,
-        paddingInline: 10,
-        fontSize: vars.fontSize.xs,
+        borderRadius: vars.radius[spec.size.sm.radius],
+        borderWidth: spec.size.sm.borderWidth,
+        height: spec.size.sm.height,
+        paddingInline: spec.size.sm.paddingInline,
+        fontSize: vars.fontSize[spec.size.sm.fontSize],
       }),
     },
 

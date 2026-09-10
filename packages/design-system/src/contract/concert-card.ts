@@ -30,6 +30,17 @@ import type { CoverTone } from '../tokens'
 export type ConcertCardVariant = 'framed' | 'bare' | 'cover'
 
 /**
+ * 커버 비율 축 — `bare` 섀시가 사는 두 지면.
+ *
+ * `landscape`(4:3) 는 dice.fm 리스킨 원본(`931:32`)이고, `square`(1:1) 는 billets-app 홈 레일
+ * 시안(`2852:1217`)이 요구한다. 임의 비율을 prop 으로 받지 않고 축으로 가두는 이유: 커버는
+ * 카드 정체성이라 지면마다 다른 비율이 생기면 **같은 카드로 안 보인다.**
+ *
+ * ⚠️ `framed`·`cover` 섀시는 이 축을 보지 않는다 — 둘은 자기 비율을 갖는다.
+ */
+export type ConcertCardCoverRatio = 'landscape' | 'square'
+
+/**
  * `bare` 섀시가 받는 props — **두 구현이 글자 그대로 같은 것.**
  *
  * `./index.ts` 는 "prop 인터페이스 전체를 올리지 않는다" 고 적어 두었는데, 그 근거는
@@ -61,6 +72,13 @@ export interface ConcertCardBareProps {
    */
   coverAction?: ReactNode
   /**
+   * 커버 비율. 기본 `landscape`(4:3).
+   *
+   * 레일처럼 카드 폭이 좁은 자리는 `square` 가 포스터를 덜 자른다 — billets-app 홈 시안이
+   * 그 경우다. 축과 값은 `ConcertCardCoverRatio` · `CONCERT_CARD_BARE_SPEC.coverAspectRatio`.
+   */
+  coverRatio?: ConcertCardCoverRatio
+  /**
    * 제목 **2줄 높이를 예약**한다 (기본 off).
    *
    * 켜는 자리 = **그리드** — 카드가 가로로 줄지어 서므로, 제목 줄 수가 다른 이웃끼리 날짜·공연장
@@ -81,8 +99,12 @@ export interface ConcertCardBareProps {
 export const CONCERT_CARD_BARE_SPEC = {
   /** 커버와 텍스트 블록 사이. */
   gap: 11,
-  /** 커버 — 4:3 한 장. 웹은 `'4 / 3'` 문자열, RN 은 숫자라 나눗셈 결과로 둔다. */
-  coverAspectRatio: 4 / 3,
+  /**
+   * 커버 비율표 — 축은 `ConcertCardCoverRatio`. 웹 `aspectRatio` 도 RN 도 숫자를 그대로 먹어
+   * 나눗셈 결과로 둔다. **이 표를 늘리면 축도 같이 늘어야 한다** — 한쪽만 늘리면 웹 recipe 에
+   * 죽은 클래스가 생기거나 RN 이 `undefined` 를 비율로 받는다.
+   */
+  coverAspectRatio: { landscape: 4 / 3, square: 1 },
   coverRadius: 8,
   /** 포스터가 없을 때 색면 위에 얹는 대형 이니셜. */
   initialFontSize: 62,
