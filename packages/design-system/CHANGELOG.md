@@ -1,5 +1,42 @@
 # @coldsurfers/design-system
 
+## 0.15.0
+
+### Minor Changes
+
+- [#103](https://github.com/coldsurfers/public/pull/103) [`09d0cdc`](https://github.com/coldsurfers/public/commit/09d0cdce6053a980ae530dc979c07c2a64fb228e) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCard`(`bare`)에 커버 비율 축을 연다 — `coverRatio?: 'landscape' | 'square'`, 기본
+  `landscape`(4:3)라 기존 소비처는 바뀌지 않는다.
+
+  `CONCERT_CARD_BARE_SPEC.coverAspectRatio` 가 단일 숫자에서 축별 표로 바뀌었고, 웹은
+  `bareCoverRatio` variants 로 RN 은 `styled` 에서 같은 표를 읽는다. 임의 비율을 prop 으로 받지
+  않는 이유: 커버는 카드 정체성이라 지면마다 다른 비율이 생기면 같은 카드로 안 보인다.
+
+  `square` 를 여는 자리는 billets-app 홈 레일 시안(정사각 146×146)이다.
+
+- [#103](https://github.com/coldsurfers/public/pull/103) [`09d0cdc`](https://github.com/coldsurfers/public/commit/09d0cdce6053a980ae530dc979c07c2a64fb228e) Thanks [@yungblud](https://github.com/yungblud)! - `./native` 에 `Chip` 을 낸다 — 웹 `primitives/Chip` 의 축(size 2 · active)을 RN 으로 옮긴 것.
+
+  치수와 색 배정은 새 `contract/chip.ts` 의 `CHIP_SPEC` 하나를 두 레인이 읽는다. 웹 `Chip.css.ts`
+  가 리터럴로 들고 있던 35·26·14·10 이 그 표로 올라갔고, `:hover`·`transition` 만 웹에 남는다 —
+  RN 엔 짝이 없어 갈라질 상대가 없다.
+
+  RN 엔 자리가 없는 셋(`as` · `asChild` · `className`)은 prop 을 두지 않았다. 있는데 안 먹는
+  prop 은 거짓말을 한다.
+
+- [#103](https://github.com/coldsurfers/public/pull/103) [`09d0cdc`](https://github.com/coldsurfers/public/commit/09d0cdce6053a980ae530dc979c07c2a64fb228e) Thanks [@yungblud](https://github.com/yungblud)! - `./native` 에 `Skeleton` 을 낸다 — 웹 `primitives/Skeleton` 의 축(`width`·`height`·
+  `aspectRatio`·`radius`·`tone`)을 RN 으로 옮긴 것.
+
+  맥동·톤 알파는 새 `contract/skeleton.ts` 의 `SKELETON_SPEC` 을 두 레인이 읽는다. 웹
+  `css/motion.css.ts` 의 keyframes 도 이제 그 표에서 duration·easing·최저 불투명도를 가져온다.
+
+  맥동은 **RN 코어 `Animated`** 로 낸다 — `react-native-reanimated` 를 peer 로 물지 않는다.
+  자리표시자 하나를 위해 소비자에게 네이티브 의존을 지우는 값은 안 낸다(`Spinner` 와 같은 판단).
+  모션 감소 설정이면 맥동을 끄고 한 톤 죽인 정지 상태로 둔다.
+
+  치수 축은 **좁혀서** 옮겼다. 웹 `width` 는 임의 CSS 길이를 받지만 RN 은 `DimensionValue`
+  뿐이고, `aspectRatio` 는 웹이 문자열 RN 이 숫자다 — 같은 표현이 아니라 계약에 올리지 않았다.
+
+  `tokens/native` 에 `withAlpha` 가 함께 열린다 — 웹 `alpha()`(`color-mix`)의 RN 짝(`rgba`)이다.
+
 ## 0.14.0
 
 ### Minor Changes
