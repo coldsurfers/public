@@ -37,6 +37,30 @@ mono 지배가 12px 위와 뚜렷하게 갈렸고, 파일당 1~2종만 쓰여 **
 
 <Swatches group="fontWeight" />
 
+## letter spacing
+
+**본문·UI 축**입니다. 세 단계뿐이고, 크기가 아니라 역할로 고릅니다.
+
+<Swatches group="letterSpacing" />
+
+<Preview name="letter-spacing" padded={false} />
+
+`sprinkles({ letterSpacing })` 로 얹거나, `.css.ts` 에서 `vars.letterSpacing.normal` 을 읽습니다.
+어느 쪽이든 같은 `--letter-spacing-*` 변수를 가리킵니다.
+
+이 축이 왜 필요했는지: 아래 `editorialType` 3그룹만 `letterSpacing` 을 갖고 있어서, 본문·UI 는
+브라우저 기본값(0)이었습니다. Pretendard 로 한글을 0 에 두면 글자가 느슨하게 벌어져 같은
+크기에서 라틴보다 헐렁하게 읽힙니다. 그래서 소비처가 자기 CSS 로 이 자리를 메우고 있었습니다.
+
+큰 글자는 더 조여야 같은 무게로 읽히므로 24px 이상 헤드라인은 `tight` 로 갑니다. mono 는
+`none`(0) 입니다 — 고정폭 글리프는 격자가 곧 리듬이라, 조이면 코드·수치가 뭉칩니다.
+
+<Callout tone="warning">
+  **`editorialType` 의 자간과 겹쳐 쓰지 않습니다.** 저쪽은 크기까지 묶은 합성 슬롯(clamp display ·
+  uppercase eyebrow)이고 이쪽은 어느 크기에든 얹는 단일 속성입니다. 합성 슬롯을 쓰는 자리에서는
+  그쪽 값이 이미 자간을 정하므로 이 토큰을 덧대지 않습니다.
+</Callout>
+
 ## editorial type
 
 매거진 톤의 합성 타이포 슬롯입니다. `eyebrow` · `display` · `caption` 세 그룹이 있고,

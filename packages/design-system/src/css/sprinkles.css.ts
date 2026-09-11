@@ -89,6 +89,7 @@ const staticProperties = defineProperties({
     fontFamily: vars.font,
     fontWeight: vars.fontWeight,
     lineHeight: vars.lineHeight,
+    letterSpacing: vars.letterSpacing,
     /**
      * 반응형이 아닌 이유는 실측이다 — web-next 에 반응형 `text-left/center` 는 0건이고,
      * 대신 `style(inComponentsLayer({ textAlign: 'center' }))` 한 줄이 **7개 파일에 문자
@@ -110,8 +111,11 @@ export type Sprinkles = Parameters<typeof sprinkles>[0]
  * | --- | --- | --- |
  * | `width`·`height`·`maxWidth` | 43·20·4 | **토큰 스케일이 없다.** 넣으려면 값을 지어내야 한다 |
  * | `gridTemplateColumns` | 60 | 같은 이유. 1~6 을 임의로 만드는 건 토큰이 아니다 |
- * | `letterSpacing` | 10 | 토큰 없음. `editorialType` 이 슬롯별로만 갖고 있다 |
  * | `inset`·`order`·`flexShrink` | 각 4~5 | 소수. 필요해질 때 실측으로 다시 판단 |
+ *
+ * `letterSpacing` 은 이 표에서 나갔다 — 본문·UI 자간 축(`letterSpacing` 토큰)이 생겨서
+ * 위 `staticProperties` 로 들어갔다(coldsurfers/public#106). 반응형은 아니다: 자간은 폭이
+ * 바뀌어도 같이 움직일 이유가 없다.
  *
  * 그리고 sprinkles 로는 **원리적으로** 안 되는 둘이 있다:
  * arbitrary 값(`text-[13px]` 류)과 `group-hover:` **63건**(2026-08-04 재측정. 이전 판의 232건은
