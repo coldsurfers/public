@@ -42,9 +42,10 @@ export function AnimatedTabBar({ visible = true, children }: AnimatedTabBarProps
     translateY.value = withTiming(visible ? 0 : height, { duration: TOGGLE_DURATION_MS })
   }, [translateY, visible, height])
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }))
+  const animatedStyle = useAnimatedStyle(() => {
+    'worklet'
+    return { transform: [{ translateY: translateY.value }] }
+  })
 
   return (
     <Dock style={animatedStyle}>

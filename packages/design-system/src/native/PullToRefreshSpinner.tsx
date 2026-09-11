@@ -32,9 +32,10 @@ export function PullToRefreshSpinner() {
     )
   }, [rotation])
 
-  const spinStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }))
+  const spinStyle = useAnimatedStyle(() => {
+    'worklet'
+    return { transform: [{ rotate: `${rotation.value}deg` }] }
+  })
 
   return (
     <Animated.View style={[{ width: SPINNER_SIZE, height: SPINNER_SIZE }, spinStyle]}>

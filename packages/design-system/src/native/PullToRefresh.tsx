@@ -35,6 +35,17 @@ import { PullToRefreshSpinner } from './PullToRefreshSpinner'
  * (피드는 `SectionList`, 목록 화면은 `FlatList`). 어느 쪽을 쓸지는 소비처가 정하고,
  * 여기서는 거기 꽂을 props 만 넘긴다.
  *
+ * ## `'worklet'` 지시어를 손으로 적는 이유
+ *
+ * `react-native-worklets/plugin` 은 **소비 앱에서** 도는데, 워클릿화할 콜백을 호출부의
+ * *로컬 식별자 이름*으로 고른다(`useAnimatedStyle` 등의 이름 집합과 대조). 라이브러리는
+ * 컴파일돼 나가므로 그 이름이 살아 있다는 보장이 소비처의 번들 설정에 달린다 — 실제로
+ * DS 0.17.0 은 minify 때문에 `useAnimatedStyle` 이 `c` 가 되면서 런타임에
+ * `Tried to synchronously call a Remote Function` 으로 터졌다.
+ *
+ * 지시어는 이름과 무관하게 걸린다. `vite.config.ts` 의 `minify: false` 와 **둘 다** 둔다 —
+ * 하나는 원인을 막고 하나는 재발을 막는다.
+ *
  * ⚠️ Android 는 오버스크롤 바운스가 없다 — 스크롤 오프셋이 음수로 내려가지 않으므로 "오프셋이
  * 마이너스면 당김"이라는 iOS 식 판정이 통째로 안 먹는다. 그래서 오프셋이 아니라 **제스처의 이동량**을
  * 재고, 오프셋은 "지금 맨 위인가"를 가르는 데만 쓴다.
@@ -169,9 +180,11 @@ export function PullToRefresh({
      */
     .simultaneousWithExternalGesture(nativeScroll)
     .onBegin(() => {
+      'worklet'
       anchorY.value = 0
     })
     .onUpdate((event) => {
+      'worklet'
       if (isRefreshing.value) return
 
       // 아직 스크롤 안쪽이면 당김이 아니다. 기준점을 계속 밀어두면 맨 위에 닿는 순간 0 에서 시작한다.
@@ -186,6 +199,7 @@ export function PullToRefresh({
     })
     // 취소로 끝나는 경우(가로 스와이프에 뺏김 등)까지 받아야 틈이 열린 채 남지 않는다.
     .onFinalize(() => {
+      'worklet'
       if (isRefreshing.value) return
 
       if (pull.value >= PULL_THRESHOLD) {
@@ -199,20 +213,29 @@ export function PullToRefresh({
     })
 
   /** 높이가 곧 인디케이터 자리라, 다 안 열렸을 땐 인디케이터가 위에서부터 잘려 보인다. */
-  const gapStyle = useAnimatedStyle(() => ({ height: pull.value, top: topInset }))
+  const gapStyle = useAnimatedStyle(() => {
+    'worklet'
+    return { height: pull.value, top: topInset }
+  })
 
   /**
    * 당기는 동안 서서히 진해지고 커진다. 인디케이터는 무한 회전만 할 뿐 "얼마나 당겼는지"를
    * 그리지 못하므로, 그 진행을 불투명도와 크기가 대신 말해준다.
    */
-  const indicatorStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(pull.value, [0, PULL_THRESHOLD], [0, 1], Extrapolation.CLAMP),
-    transform: [
-      { scale: interpolate(pull.value, [0, PULL_THRESHOLD], [0.6, 1], Extrapolation.CLAMP) },
-    ],
-  }))
+  const indicatorStyle = useAnimatedStyle(() => {
+    'worklet'
+    return {
+      opacity: interpolate(pull.value, [0, PULL_THRESHOLD], [0, 1], Extrapolation.CLAMP),
+      transform: [
+        { scale: interpolate(pull.value, [0, PULL_THRESHOLD], [0.6, 1], Extrapolation.CLAMP) },
+      ],
+    }
+  })
 
-  const contentStyle = useAnimatedStyle(() => ({ transform: [{ translateY: pull.value }] }))
+  const contentStyle = useAnimatedStyle(() => {
+    'worklet'
+    return { transform: [{ translateY: pull.value }] }
+  })
 
   return (
     <GestureDetector gesture={pan}>
