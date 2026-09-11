@@ -54,5 +54,6 @@ export {
   TEXT_STYLE_SPEC,
   type TextStyleName,
   type TextStyleSpec,
+  type TextTone,
 } from './text-style'
 export type { ToastTone } from './toast'
