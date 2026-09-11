@@ -13,6 +13,7 @@
  * 예외는 **웹에 짝이 생길 수 없는 표면**(`PullToRefresh`·`TabBar`) 하나뿐이고,
  * 판정은 `docs/native-lane-porting.md` 의 「웹에 짝이 생길 수 없는 표면」이 정본이다.
  */
+export { AnimatedTabBar, type AnimatedTabBarProps } from './AnimatedTabBar'
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
 export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
 export { ConcertCard, type ConcertCardProps } from './ConcertCard'

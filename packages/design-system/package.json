@@ -57,6 +57,10 @@
       "types": "./dist/native.d.ts",
       "default": "./dist/native.js"
     },
+    "./native/AnimatedTabBar": {
+      "types": "./dist/native-AnimatedTabBar.d.ts",
+      "default": "./dist/native-AnimatedTabBar.js"
+    },
     "./native/Button": {
       "types": "./dist/native-Button.d.ts",
       "default": "./dist/native-Button.js"
