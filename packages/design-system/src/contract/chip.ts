@@ -41,12 +41,21 @@ type ChipSizeSpec = {
  * | `md` 비활성 | `surface` | `border` | `body` |
  * | `sm` 비활성 | `surface2` | 없음 | `muted` |
  *
+ * 라벨 서식(크기·굵기·색)은 **필의 계약**이지 텍스트의 계약이 아니다 — 그래서 두 레인 다
+ * `Chip.Label` 슬롯이 그걸 들고, 소비처는 서식을 쓰지 않는다. 웹은 상속이 이미 하던 일이라
+ * 슬롯이 표식뿐이고, RN 은 상속이 없어 슬롯이 실제로 서식을 얹는다 — **자리는 같고 방법이 다르다.**
+ *
  * 웹의 `:hover`(→`surfaceHover`)와 `transition` 은 RN 에 짝이 없다 — 누름 피드백은
  * `TouchableOpacity` 가 이미 준다. 짝이 없으면 계약이 아니므로 웹 `.css.ts` 에 남는다.
  */
 export const CHIP_SPEC = {
   /** 라벨은 항상 한 줄 — 웹 `whiteSpace: nowrap` ↔ RN `numberOfLines`. */
   labelLines: 1,
+  /**
+   * 조각 사이 — 아이콘·dot 을 라벨과 같이 넣는 자리(`Chip.Label`)에서만 보인다.
+   * 라벨만 있으면 붙을 상대가 없어 0 과 같다.
+   */
+  gap: 4,
   /** 두 크기 공통. */
   fontWeight: 'semibold' satisfies FontWeightKey,
   size: {

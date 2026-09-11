@@ -82,7 +82,7 @@ export function ConcertCard({
           )}
           {coverAction ? <div className={s.bareCoverAction}>{coverAction}</div> : null}
         </CoverBlock>
-        {/* 시안 meta — 제목(strong) / 날짜(text) / 공연장(footer, muted) 3줄. */}
+        {/* 시안 meta — 제목(strong) / 날짜(mono·muted) / 공연장(footer, muted) 3줄. */}
         <div className={s.bareMeta}>
           <h3 className={s.bareTitle({ reserve: reserveTitleLines })}>{title}</h3>
           <p className={s.bareLine}>{meta}</p>

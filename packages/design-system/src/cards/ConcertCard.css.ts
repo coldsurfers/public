@@ -110,13 +110,18 @@ export const bareTitle = recipe({
   defaultVariants: { reserve: false },
 })
 
+/**
+ * 날짜 스탬프 — mono. 서체·크기·행간은 `CONCERT_CARD_BARE_SPEC` 이 정본이고, 자간만 여기서
+ * 되돌린다: 본문 기본이 `-0.02em` 이라 고정폭 글리프가 뭉친다(`letterSpacing.none` 의 근거).
+ */
 export const bareLine = style(
   inComponentsLayer({
     ...lineClamp(1),
+    fontFamily: vars.font[bare.metaFontFamily],
     fontSize: bare.metaFontSize,
     lineHeight: `${bare.metaLineHeight}px`,
-    color: vars.color.text,
-    '@media': { [media.tablet]: { fontSize: 15, lineHeight: '23px' } },
+    letterSpacing: vars.letterSpacing.none,
+    color: vars.color.muted,
   }),
 )
 

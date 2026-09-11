@@ -78,3 +78,16 @@ export function Chip(props: ChipProps) {
   } = props
   return <button type={type ?? 'button'} className={cls} {...rest} />
 }
+
+/**
+ * 라벨 슬롯 — 아이콘·dot 을 라벨과 같이 넣을 때 **어디까지가 라벨인지** 표시한다.
+ *
+ * 웹에서는 표식뿐이다. 크기·굵기·색이 이미 필에서 상속되므로 여기서 더 얹을 게 없다.
+ * 그래도 두는 이유는 RN 쪽에 있다 — 거기엔 상속이 없어 이 슬롯이 실제로 서식을 얹는다.
+ * **두 레인의 호출부가 같은 문장이 되는 값**이 이 빈 `span` 의 값이다(`contract/chip.ts`).
+ */
+export function ChipLabel({ children, ...rest }: HTMLAttributes<HTMLSpanElement>) {
+  return <span {...rest}>{children}</span>
+}
+
+Chip.Label = ChipLabel

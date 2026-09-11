@@ -8,8 +8,12 @@ import { Text } from './Text'
  * 로딩 표시 — 웹 `primitives/Spinner` 와 **같은 prop 이름**(`size`·`label`)을 쓴다.
  *
  * 웹은 SVG 로 270° 아크를 직접 그리지만 RN 판은 플랫폼 인디케이터를 쓴다. 시안 아크를
- * 재현하려면 `react-native-svg` 를 peer 로 물어야 하는데, **로더 하나를 위해 소비자에게
- * 네이티브 의존을 하나 더 지우는 것**이라 그 값은 안 낸다. 색(accent)만 맞춘다.
+ * 재현하려면 `react-native-svg` 를 물어야 하는데, **로더 하나를 위해 소비자에게 네이티브
+ * 의존을 하나 더 지우는 것**이라 그 값은 안 낸다. 색(accent)만 맞춘다.
+ *
+ * (`PullToRefresh` 가 들어오면서 `react-native-svg` 가 optional peer 로 열리긴 했다. 그래도
+ * 여기서 쓰지 않는 이유는 같다 — optional 은 *안 쓰면 안 물어도 된다* 는 뜻이라, 이 흔한
+ * 로더가 쓰는 순간 사실상 필수가 된다.)
  *
  * ⚠️ `size` 의 숫자는 **Android 에서만** 반영된다. iOS 의 `UIActivityIndicatorView` 는
  * 크기가 두 단계뿐이라 RN 이 `small`/`large` 로 접는다. 시안과 픽셀로 맞춰야 하는 자리면

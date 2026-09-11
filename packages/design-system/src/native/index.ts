@@ -10,15 +10,24 @@
  *    그 배럴이 `theme.css`·`reset.css` 를 부수효과로 물고 있다.
  *
  * 축을 늘려야 하면 **웹부터 늘린다.** 여기서 먼저 늘리면 계약이 갈라진다.
+ * 예외는 **웹에 짝이 생길 수 없는 표면**(`PullToRefresh`·`TabBar`) 하나뿐이고,
+ * 판정은 `docs/native-lane-porting.md` 의 「웹에 짝이 생길 수 없는 표면」이 정본이다.
  */
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
-export { Chip, type ChipProps, type ChipSize } from './Chip'
+export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
 export { ConcertCard, type ConcertCardProps } from './ConcertCard'
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { Modal, type ModalProps } from './Modal'
+export {
+  PullToRefresh,
+  type PullToRefreshProps,
+  type PullToRefreshScrollableProps,
+  type PullToRefreshScrollableRef,
+} from './PullToRefresh'
 export { Skeleton, type SkeletonProps, type SkeletonTone } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
 export { useScheme } from './scheme'
+export { TabBar, type TabBarItemProps, type TabBarProps, useTabBarHeight } from './TabBar'
 export { Text, type TextProps, type TextTone } from './Text'
 export { TextInput, type TextInputProps } from './TextInput'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'

@@ -77,6 +77,10 @@
       "types": "./dist/native-Modal.d.ts",
       "default": "./dist/native-Modal.js"
     },
+    "./native/PullToRefresh": {
+      "types": "./dist/native-PullToRefresh.d.ts",
+      "default": "./dist/native-PullToRefresh.js"
+    },
     "./native/Skeleton": {
       "types": "./dist/native-Skeleton.d.ts",
       "default": "./dist/native-Skeleton.js"
@@ -84,6 +88,10 @@
     "./native/Spinner": {
       "types": "./dist/native-Spinner.d.ts",
       "default": "./dist/native-Spinner.js"
+    },
+    "./native/TabBar": {
+      "types": "./dist/native-TabBar.d.ts",
+      "default": "./dist/native-TabBar.js"
     },
     "./native/Text": {
       "types": "./dist/native-Text.d.ts",
@@ -137,19 +145,39 @@
     "@emotion/react": "^11",
     "react": "^19",
     "react-dom": "^19",
-    "react-native": ">=0.81"
+    "react-native": ">=0.81",
+    "react-native-gesture-handler": ">=2.20",
+    "react-native-reanimated": ">=4",
+    "react-native-safe-area-context": ">=5",
+    "react-native-svg": ">=15",
+    "react-native-worklets": ">=0.12"
   },
   "peerDependenciesMeta": {
+    "@emotion/native": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
     "react-dom": {
       "optional": true
     },
     "react-native": {
       "optional": true
     },
-    "@emotion/native": {
+    "react-native-gesture-handler": {
       "optional": true
     },
-    "@emotion/react": {
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-safe-area-context": {
+      "optional": true
+    },
+    "react-native-svg": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     }
   },
@@ -163,6 +191,11 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "0.87.0",
+    "react-native-gesture-handler": "3.2.1",
+    "react-native-reanimated": "4.6.0",
+    "react-native-safe-area-context": "5.9.1",
+    "react-native-svg": "15.15.5",
+    "react-native-worklets": "0.12.1",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
     "vite-plugin-dts": "^4.5.4"
