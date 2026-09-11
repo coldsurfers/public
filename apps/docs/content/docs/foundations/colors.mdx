@@ -9,14 +9,33 @@ description: 브랜드 팔레트와 시맨틱 색 — COLDSURF 고정 축.
 `:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없습니다.
 
 <Callout tone="warning">
-색은 **닫힌 축**입니다. spacing · radius · fontSize · lineHeight · fontWeight · fontFamily ·
-breakpoints 는 소비자가 덮을 수 있지만, color · cover · paper 는 COLDSURF 고정값입니다.
+색은 **닫힌 축**입니다. spacing · radius · fontSize · lineHeight · letterSpacing · fontWeight ·
+fontFamily · breakpoints 는 소비자가 덮을 수 있지만, color · cover · paper 는 COLDSURF 고정값입니다.
 덮으면 브랜드가 아닌 다른 것이 됩니다.
 </Callout>
 
 ## 시맨틱 색
 
 <Swatches group="color" />
+
+### 잉크 넷 중 어디까지가 "읽는 글자" 인가
+
+글자색은 네 단계입니다 — `text`(본문 · 제목) · `body`(긴 본문) · `muted`(보조) · `subtle`.
+
+**읽는 글자의 하한선은 `muted` 입니다.**
+
+<Callout tone="warning">
+  **`subtle` 로 읽는 글자를 찍지 않습니다.** WCAG AA 는 4.5:1 인데(18.66px bold · 24px 이상만 3:1)
+  `subtle` 의 실측은 `surface` 위 2.34:1 · `bg` 위 2.04:1 · `paper.warm` 위 2.24:1 입니다.
+  보조 문구 · 라벨 · 캡션까지 전부 `muted`(`surface` 위 5.6:1)가 하한이고, `subtle` 은
+  *읽히지 않아도 되는 것* — 구분선 · placeholder · 비활성 — 에만 씁니다.
+</Callout>
+
+cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하므로 그쪽은 예외입니다.
+
+값을 어둡게 옮기지 않는 이유: 구분선 · 비활성 자리에선 지금 값이 맞고, 소비처가 165곳이라
+값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직입니다. 근거 · 실측은
+[coldsurfers/public#106](https://github.com/coldsurfers/public/issues/106) 입니다.
 
 ## cover — 지형 색면
 

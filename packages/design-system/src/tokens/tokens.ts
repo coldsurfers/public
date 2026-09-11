@@ -10,7 +10,7 @@
  * (숫자는 분리: `surface2` → `--surface-2`).
  *
  * **어느 축을 소비자가 덮을 수 있는가** 는 docs/p1-boundary.md 결정 1 이 정한다:
- * spacing·radius·fontSize·lineHeight·fontWeight·fontFamily·breakpoints 는 열려 있고,
+ * spacing·radius·fontSize·lineHeight·letterSpacing·fontWeight·fontFamily·breakpoints 는 열려 있고,
  * color·cover·paper·editorialType 은 COLDSURF 고정값이다.
  */
 
@@ -75,6 +75,21 @@ export type ColorScheme = {
  *
  * 둘은 다른 색이고 다른 표면이다 — 통일 대상이 아니라 *구별* 대상이다.
  * 새 off-white 를 들일 땐 값을 재사용하기 전에 여기에 이름부터 추가한다.
+ *
+ * ─── 잉크 넷 중 어디까지가 "읽는 글자" 인가 ───
+ *   text    #111111   본문·제목
+ *   body    #2a2a26   긴 본문
+ *   muted   #6b6b66   보조. surface 위 5.6:1 — **읽는 글자의 하한선**
+ *   subtle  #aea99e   구분선·플레이스홀더·비활성. surface 위 2.34:1
+ *
+ * **`subtle` 로 읽는 글자를 찍지 않는다.** WCAG AA 는 4.5:1 인데(18.66px bold·24px 이상만 3:1)
+ * 실측은 surface 위 2.34 · bg 위 2.04 · paper-warm 위 2.24 다. 보조 문구·라벨·캡션까지
+ * 전부 `muted` 가 하한이고, `subtle` 은 *읽히지 않아도 되는 것*(구분선·placeholder·비활성)에만 쓴다.
+ * cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하므로 그쪽은 예외다.
+ *
+ * 값을 어둡게 옮기지 않는 이유: 구분선·비활성 자리에선 지금 값이 맞고, 소비처가 165곳
+ * (public 35 · paul-rockstar 130)이라 값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직인다.
+ * 근거·실측: coldsurfers/public#106
  */
 const light: ColorScheme = {
   bg: '#f2efe8',
@@ -144,6 +159,7 @@ export const cssVarPrefix = {
   fontFamily: 'font-family',
   fontSize: 'font-size',
   lineHeight: 'line-height',
+  letterSpacing: 'letter-spacing',
   fontWeight: 'font-weight',
   spacing: 'spacing',
   radius: 'radius',
@@ -215,6 +231,29 @@ export const lineHeight = {
   snug: '1.4',
   normal: '1.6',
   relaxed: '1.75',
+} as const
+
+/**
+ * 자간 — **본문·UI 축**. 세 단계뿐이고, 크기가 아니라 역할로 고른다.
+ *
+ * 이 축이 왜 필요했나: `editorialType` 3그룹(eyebrow·display·caption)만 `letterSpacing` 을
+ * 갖고 있어서, 본문·UI 는 브라우저 기본값(0)이었다. Pretendard 로 한글을 0 에 두면 글자가
+ * 느슨하게 벌어져 같은 크기에서 라틴보다 헐렁하게 읽힌다. 실전에서는 소비처가 자기 CSS 로
+ * 메우고 있었다(daily-report `tools/resume-pdf` 가 `--track: -0.02em` 을 body 에 건다).
+ *
+ * **`editorialType` 의 자간과 겹치지 않는다.** 저쪽은 크기까지 묶은 합성 슬롯(clamp display ·
+ * uppercase eyebrow)이고, 이쪽은 어느 크기에든 얹는 단일 속성이다. 합성 슬롯을 쓰는 자리에서는
+ * 그쪽 값이 이미 자간을 정하므로 이 토큰을 덧대지 않는다.
+ *
+ * 근거: coldsurfers/public#106
+ */
+export const letterSpacing = {
+  /** 0 — mono. 고정폭 글리프는 격자가 곧 리듬이라, 조이면 코드·수치가 뭉친다. */
+  none: '0',
+  /** -0.02em — 본문·UI 기본. 한글 sans 의 기준선. */
+  normal: '-0.02em',
+  /** -0.03em — 24px 이상 헤드라인. 큰 글자는 더 조여야 같은 무게로 읽힌다. */
+  tight: '-0.03em',
 } as const
 
 export const fontWeight = {
@@ -366,6 +405,7 @@ export const tokens = {
   fontFamily,
   fontSize,
   lineHeight,
+  letterSpacing,
   fontWeight,
   spacing,
   radius,

@@ -64,5 +64,6 @@ function sampleStyle(group: TokenGroup, value: string) {
   if (group === 'fontSize') return { fontSize: value }
   if (group === 'fontWeight') return { fontWeight: value }
   if (group === 'lineHeight') return { lineHeight: value }
+  if (group === 'letterSpacing') return { letterSpacing: value }
   return undefined
 }

@@ -2,6 +2,7 @@ import {
   cover,
   fontSize,
   fontWeight,
+  letterSpacing,
   lineHeight,
   paper,
   radius,
@@ -18,6 +19,7 @@ export type TokenGroup =
   | 'fontSize'
   | 'fontWeight'
   | 'lineHeight'
+  | 'letterSpacing'
 
 /**
  * 토큰 스케일 — **값을 문서에 옮겨 적지 않는다.** `@coldsurfers/design-system/tokens` 에서 읽는다.
@@ -34,4 +36,5 @@ export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
   fontSize,
   fontWeight,
   lineHeight,
+  letterSpacing,
 }
