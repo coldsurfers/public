@@ -1,5 +1,85 @@
 # @coldsurfers/design-system
 
+## 0.16.0
+
+### Minor Changes
+
+- [#107](https://github.com/coldsurfers/public/pull/107) [`f268687`](https://github.com/coldsurfers/public/commit/f268687c1c8818d83f011fe162a6f7310d6384f2) Thanks [@yungblud](https://github.com/yungblud)! - 본문·UI 자간 축을 토큰으로 낸다 — `letterSpacing` 3단계(`none` · `normal` · `tight`)와
+  `--letter-spacing-*` 변수, `sprinkles({ letterSpacing })`.
+
+  지금까지 `editorialType` 3그룹(eyebrow · display · caption)만 `letterSpacing` 을 갖고 있어서
+  본문·UI 는 브라우저 기본값(0)이었다. Pretendard 로 한글을 0 에 두면 같은 크기에서 라틴보다
+  헐렁하게 읽혀, 소비처가 자기 CSS 로 이 자리를 메우고 있었다. 반응형 축으로는 열지 않았다 —
+  자간은 폭이 바뀌어도 같이 움직일 이유가 없다.
+
+  `editorialType` 의 자간과는 겹치지 않는다. 저쪽은 크기까지 묶은 합성 슬롯이고 이쪽은 어느
+  크기에든 얹는 단일 속성이라, 합성 슬롯을 쓰는 자리에선 이 토큰을 덧대지 않는다.
+
+  `color.subtle` 은 값이 그대로다. 다만 **읽는 글자에 쓸 수 없다**는 경계를 토큰 주석과
+  `foundations/colors` 에 적었다 — 실측이 `surface` 위 2.34:1 로 WCAG AA(4.5:1) 밖이고, 보조
+  문구까지 `muted` 가 하한이다. 값을 옮기지 않은 이유는 구분선 · 비활성 자리에선 지금 값이 맞고
+  소비처가 165곳이라 읽는 글자가 아닌 자리까지 같이 움직이기 때문이다.
+
+  근거 · 실측: coldsurfers/public#106
+
+- [#110](https://github.com/coldsurfers/public/pull/110) [`c0eaf13`](https://github.com/coldsurfers/public/commit/c0eaf1348431d58f9241047f4f5dafa13993e221) Thanks [@yungblud](https://github.com/yungblud)! - RN `Text` 도 `textStyle` 을 받는다 — 두 레인이 같은 램프 표를 읽는다.
+
+  웹이 `textStyle` 한 축으로 정리된 동안 RN 은 `size`·`weight`·`leading` 세 축이라, 같은 시안이
+  두 레인에서 다르게 설 수 있었다. 표(`contract/text-style.ts`)는 이미 공유 자리에 있었고 RN 이
+  읽기만 하면 됐다.
+
+  `tokens/native` 에 `letterSpacingFor(size, track)` 를 낸다. RN 의 자간은 `em` 이 아니라 절대
+  포인트라 크기와 짝을 지어야 값이 나온다 — `lineHeightFor` 와 같은 수법이다(`base`·`normal`
+  → `16 × -0.02 = -0.32`). 이 변환이 생기면서 `editorialType` 의 RN 제외 사유에서 자간이 빠졌다.
+  남은 건 `display` 의 `clamp()` 크기뿐이다.
+
+  **`family` 축은 뺀다 — 깨는 변경이다.** 웹 `Text` 에는 없는 축이라(웹은 서체를
+  `sprinkles({ fontFamily })` 로 밀어냈다) 두 레인 정렬이라는 이 판의 목적과 어긋난다. RN 은
+  `sans` 로 고정하고, serif·mono 가 필요한 자리는 `style={{ fontFamily: nativeFontFamily.mono }}`
+  로 간다. 첫 소비처(billets-app)의 `<Text>` 8곳에서 `family` 사용이 0건이라 지금이 major 없이
+  지울 수 있는 자리다. 0.x 라 슬롯은 minor 에 둔다.
+
+  **나머지 기존 동작은 그대로다.** `textStyle` 은 기본값이 없고, 낱개 축(`size`·`leading`)이 주어지면
+  그쪽이 이긴다. 지금 기본값(`base`·`normal`)과 `textStyle="body"`(`base`·`relaxed`)의 행간이
+  달라서, 기본으로 깔면 이미 배포된 화면의 줄 간격이 조용히 바뀐다. 축을 뒤집는 건 major 에서 한다.
+  자간도 `textStyle` 을 준 경우에만 박힌다.
+
+- [#109](https://github.com/coldsurfers/public/pull/109) [`57e7dd1`](https://github.com/coldsurfers/public/commit/57e7dd14931753fc51f58a65d8c2efcef0718d6b) Thanks [@yungblud](https://github.com/yungblud)! - 웹 `Text` primitive 를 낸다 — `<Text as textStyle weight color maxLines>`.
+
+  앞 판에서 낸 램프(`text()`)가 클래스였다면 이건 **기본값을 가진 자리**다. `<Text>` 하나면 크기 ·
+  행간 · 자간 · 색이 전부 정해진 채로 선다. 실측이 보여준 문제가 "고를 것이 많아서 안 고른 것"
+  이었으므로, 고르지 않아도 서게 하는 쪽이 축을 더 늘리는 것보다 낫다.
+
+  `as` 는 `textStyle` 과 따로 고른다. 시각적 크기와 문서 구조는 다른 축이고, 묶으면 "제목처럼
+  보여야 하는 문단"에서 둘 중 하나를 포기하게 된다.
+
+  `maxLines` 만 인라인 스타일이다 — N 이 열린 값이라 클래스로 미리 구울 수 없다. 나머지는 전부
+  `ds-components` 레이어의 클래스라, 호출자가 `className` 으로 얹는 `sprinkles` 유틸이 항상 이긴다.
+
+  `TextTone` 이 `native/Text.tsx` 에서 `contract/text-style.ts` 로 올라갔다. 두 레인이 같은 색
+  축을 쓰게 하려던 것이고, `native/Text` 는 같은 이름을 재수출하므로 **소비자 import 경로는
+  그대로다.**
+
+- [#108](https://github.com/coldsurfers/public/pull/108) [`027b10b`](https://github.com/coldsurfers/public/commit/027b10b212f8b0f4bd35c803181407bb988f4fa3) Thanks [@yungblud](https://github.com/yungblud)! - 글자의 합성 슬롯을 낸다 — `text(name, { weight })` 와 그 정본인 `TEXT_STYLE_SPEC` 7단계
+  (`heading` · `title` · `body` · `bodySm` · `label` · `labelSm` · `micro`).
+
+  크기 축만 토큰이고 행간·자간을 호출부가 각자 정하면 같은 역할의 글자가 지면마다 다르게 선다.
+  실측(public + paul-rockstar)에서 `fontSize` 가 들어간 `sprinkles` 호출 478건에 구별되는 조합이
+  46가지였고, 그중 대다수가 `lineHeight` 를 비운 채였다 — 비우면 상속값이 들어오므로 정해진 적 없는
+  행간이 화면에 서는 셈이다. 램프 7단계는 그 실측의 크기 분포에서 나왔고, 역할이 서지 않은
+  `lg`(18px, 8건)는 단계를 주지 않았다.
+
+  `fontWeight` 는 묶지 않는다 — 같은 크기에 굵기가 2~3종씩 붙어서 이름에 넣으면 7단계가 21개가
+  된다. 색도 밖에 둔다. 둘 다 램프와 직교한 축이다.
+
+  표는 `contract/text-style.ts` 에 둔다(`CHIP_SPEC` 선례). RN `native/Text` 가 웹과 같은 나이브
+  모델(`size`·`weight`·`leading` 따로)이라 같은 표를 읽을 자리가 필요하고, VE 산출물은 CSS
+  문자열이라 RN 으로 못 넘어간다. 이번 판은 웹 레인만 굽는다.
+
+  새 진입점은 만들지 않았다 — `text` 는 메인 배럴에서 나간다. `.css.ts` 는 함수를 export 할 수
+  없어(VE 가 exports 를 직렬화한다) 클래스 맵(`css/text.css.ts`)과 조합 함수(`css/text.ts`)가
+  갈렸다.
+
 ## 0.15.0
 
 ### Minor Changes
