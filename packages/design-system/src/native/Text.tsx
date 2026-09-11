@@ -30,6 +30,10 @@ import { useScheme } from './scheme'
  * 낱개 축(`size`·`leading`)은 남아 있고 **`textStyle` 을 이긴다** — escape hatch 다.
  * 새 코드는 `textStyle` 로 쓰고, 낱개는 램프 밖 조합이 정말 필요할 때만 쓴다.
  *
+ * 서체는 축이 아니다. `sans` 하나로 고정하고, serif·mono 가 필요한 자리는
+ * `style={{ fontFamily: nativeFontFamily.mono }}` 로 간다 — 웹이 서체를
+ * `sprinkles({ fontFamily })` 로 밀어낸 것과 같은 자리다.
+ *
  * `textStyle` 에 기본값을 주지 않은 이유: 지금 기본값(`base`·`normal`)과 `textStyle="body"`
  * (`base`·`relaxed`)의 행간이 다르다. 기본으로 깔면 이미 배포된 화면의 줄 간격이 조용히
  * 바뀐다. 축을 뒤집는 건 major 에서 한다.
@@ -49,7 +53,6 @@ export interface TextProps extends RNTextProps {
   /** 행간 escape hatch. 주면 `textStyle` 의 행간을 덮는다. */
   leading?: LineHeightKey
   tone?: TextTone
-  family?: keyof typeof nativeFontFamily
 }
 
 const Root = styled.Text<{
@@ -59,10 +62,9 @@ const Root = styled.Text<{
   $leading: LineHeightKey
   $track: LetterSpacingKey | undefined
   $tone: TextTone
-  $family: keyof typeof nativeFontFamily
-}>(({ $scheme, $size, $weight, $leading, $track, $tone, $family }) => ({
+}>(({ $scheme, $size, $weight, $leading, $track, $tone }) => ({
   color: $scheme[$tone],
-  fontFamily: nativeFontFamily[$family],
+  fontFamily: nativeFontFamily.sans,
   fontSize: nativeFontSize[$size],
   fontWeight: fontWeight[$weight],
   lineHeight: lineHeightFor($size, $leading),
@@ -78,7 +80,6 @@ export function Text({
   weight = 'regular',
   leading,
   tone = 'body',
-  family = 'sans',
   ...rest
 }: TextProps) {
   const scheme = useScheme()
@@ -92,7 +93,6 @@ export function Text({
       $leading={leading ?? spec?.lineHeight ?? 'normal'}
       $track={spec?.letterSpacing}
       $tone={tone}
-      $family={family}
       {...rest}
     />
   )
