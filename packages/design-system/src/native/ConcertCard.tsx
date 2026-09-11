@@ -6,7 +6,7 @@ import {
   type ConcertCardCoverRatio,
 } from '../contract'
 import type { CoverTone } from '../tokens'
-import { cover, paper } from '../tokens/native'
+import { cover, nativeFontFamily, paper } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
@@ -120,7 +120,7 @@ export function ConcertCard({
         {coverAction ? <CoverAction>{coverAction}</CoverAction> : null}
       </Cover>
 
-      {/* 시안 meta — 제목(strong) / 날짜(text) / 공연장(footer, muted) 3줄. */}
+      {/* 시안 meta — 제목(strong) / 날짜(mono·muted) / 공연장(footer, muted) 3줄. */}
       <Meta>
         <Text
           numberOfLines={bare.titleLines}
@@ -134,12 +134,14 @@ export function ConcertCard({
         >
           {title}
         </Text>
+        {/* 날짜 스탬프 — mono. 웹 `bareLine` 과 같은 표를 읽는다. */}
         <Text
           numberOfLines={1}
           style={{
+            fontFamily: nativeFontFamily[bare.metaFontFamily],
             fontSize: bare.metaFontSize,
             lineHeight: bare.metaLineHeight,
-            color: scheme.text,
+            color: scheme.muted,
           }}
         >
           {meta}

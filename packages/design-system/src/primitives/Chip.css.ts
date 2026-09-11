@@ -24,6 +24,7 @@ export const chip = recipe({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spec.gap,
     whiteSpace: 'nowrap',
     fontWeight: vars.fontWeight[spec.fontWeight],
     cursor: 'pointer',

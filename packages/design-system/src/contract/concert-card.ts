@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
-import type { CoverTone } from '../tokens'
+import type { CoverTone, fontFamily } from '../tokens'
+
+type FontFamilyKey = keyof typeof fontFamily
 
 /**
  * `ConcertCard` 의 계약. 규율은 `./index.ts`.
@@ -125,6 +127,17 @@ export const CONCERT_CARD_BARE_SPEC = {
   titleFontWeight: '700',
   /** 2줄 예약 높이 = 2 × `titleLineHeight`. `reserveTitleLines` 가 켜졌을 때만 쓴다. */
   titleReservedHeight: 42,
-  metaFontSize: 13.5,
-  metaLineHeight: 21,
+  /**
+   * 날짜 스탬프는 문장이 아니라 **수치**다. 토큰이 그 자리를 이미 이름 붙여 뒀다 —
+   * `fontSize['2xs']`(11px)의 정의가 "mono 메타(수치·코드·콜로폰)" 이고, mono 의 자간은
+   * `letterSpacing.none`(0) 이다. 제목 옆에서 sans 13.5 로 서면 제목의 작은 판처럼 읽히는데,
+   * 서체가 갈리면 **두 줄이 서로 다른 일을 한다**는 게 한눈에 보인다.
+   *
+   * 색은 여기 없다 — 위 「무엇이 여기 있고 무엇이 없나」. 두 레인 다 `muted` 를 읽는다.
+   *
+   * 태블릿 확대(웹 15/23)는 같이 걷어냈다. 스탬프는 화면이 넓어졌다고 커지는 글이 아니다.
+   */
+  metaFontFamily: 'mono' satisfies FontFamilyKey,
+  metaFontSize: 11,
+  metaLineHeight: 16,
 } as const

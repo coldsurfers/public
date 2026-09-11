@@ -1,6 +1,6 @@
 import styled from '@emotion/native'
-import type { ComponentPropsWithRef, ReactNode } from 'react'
-import type { TouchableOpacity, ViewStyle } from 'react-native'
+import { type ComponentPropsWithRef, createContext, type ReactNode, useContext } from 'react'
+import type { TextProps, TouchableOpacity, ViewStyle } from 'react-native'
 import { type ChipSize, CHIP_SPEC as spec } from '../contract'
 import { type ColorScheme, fontWeight, nativeFontSize, nativeRadius } from '../tokens/native'
 import { useScheme } from './scheme'
@@ -20,9 +20,19 @@ import { useScheme } from './scheme'
  * ## 아이콘을 넣는 방법
  *
  * 웹은 CSS 가 텍스트 스타일을 상속시켜 `<Dot/>{'서울'}` 이 그냥 되지만 RN 은 안 된다 —
- * 문자열은 `Text` 안에 있어야 한다. 그래서 **문자열 children 만** 라벨로 감싸고 나머지는
- * 그대로 통과시킨다(`Button` 과 같은 처리). 아이콘 + 라벨을 함께 넣는 자리는 소비처가
- * 자기 `View` 로 조립해 넘긴다 — 웹 Chip 에 `gap` 축이 없으므로 여기서 만들지 않는다.
+ * 문자열은 `Text` 안에 있어야 한다. 문자열 children 은 그래서 자동으로 라벨이 되고,
+ * **아이콘과 같이 넣을 때는 `Chip.Label` 로 라벨을 표시한다.**
+ *
+ * ```tsx
+ * <Chip onPress={…}>
+ *   <Chip.Label>모든 장르</Chip.Label>
+ *   <ChevronDown size={12} color={scheme.body} />
+ * </Chip>
+ * ```
+ *
+ * 슬롯이 없으면 서식이 소비처로 샌다 — 노드를 넘기는 순간 크기·굵기·색을 소비처가 직접
+ * 적어야 하고, 그건 **필의 계약**(`CHIP_SPEC`)이지 소비처가 알 것이 아니다. 조각 사이 간격도
+ * 여기서 준다(웹은 `gap`, RN 도 같은 값).
  */
 export type { ChipSize }
 
@@ -46,6 +56,12 @@ const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): st
   return size === 'md' ? scheme.body : scheme.muted
 }
 
+/** 라벨이 자기 서식을 어디서 읽는지 — 필이 정하고 슬롯이 받는다. */
+const ChipContext = createContext<{ size: ChipSize; active: boolean }>({
+  size: 'md',
+  active: false,
+})
+
 const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme
   $size: ChipSize
@@ -54,6 +70,7 @@ const Root = styled.TouchableOpacity<{
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
+  gap: spec.gap,
   height: spec.size[$size].height,
   paddingHorizontal: spec.size[$size].paddingInline,
   borderRadius: nativeRadius[spec.size[$size].radius],
@@ -76,25 +93,40 @@ const Label = styled.Text<{ $color: string; $size: ChipSize }>(({ $color, $size 
 export function Chip({ size = 'md', active = false, children, ...rest }: ChipProps) {
   const scheme = useScheme()
   return (
-    <Root
-      $scheme={scheme}
-      $size={size}
-      $active={active}
-      accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-      {...rest}
-    >
-      {typeof children === 'string' ? (
-        <Label
-          $color={labelColorFor(scheme, size, active)}
-          $size={size}
-          numberOfLines={spec.labelLines}
-        >
-          {children}
-        </Label>
-      ) : (
-        children
-      )}
-    </Root>
+    <ChipContext.Provider value={{ size, active }}>
+      <Root
+        $scheme={scheme}
+        $size={size}
+        $active={active}
+        accessibilityRole="button"
+        accessibilityState={{ selected: active }}
+        {...rest}
+      >
+        {typeof children === 'string' ? <ChipLabel>{children}</ChipLabel> : children}
+      </Root>
+    </ChipContext.Provider>
   )
 }
+
+/**
+ * 라벨 슬롯 — 웹 `Chip.Label` 과 **같은 자리**다. 다만 웹은 상속이 이미 하던 일이라 표식뿐이고
+ * 여기서는 실제로 서식을 얹는다(`contract/chip.ts`).
+ *
+ * `Chip` 밖에서 쓰면 기본 축(`md`·비활성)으로 선다 — throw 하지 않는 건 `Toast` 와 같은 규율이다.
+ */
+export function ChipLabel({ children, ...rest }: TextProps) {
+  const scheme = useScheme()
+  const { size, active } = useContext(ChipContext)
+  return (
+    <Label
+      $color={labelColorFor(scheme, size, active)}
+      $size={size}
+      numberOfLines={spec.labelLines}
+      {...rest}
+    >
+      {children}
+    </Label>
+  )
+}
+
+Chip.Label = ChipLabel
