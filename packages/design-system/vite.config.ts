@@ -95,6 +95,26 @@ export default defineConfig({
     emitTokensCss,
   ],
   build: {
+    /**
+     * **JS 를 minify 하지 않는다 — RN 워클릿이 이름에 걸려 있다.**
+     *
+     * `react-native-worklets/plugin` 은 소비 앱에서 도는데, 워클릿화할 대상을 **호출부의
+     * 로컬 식별자 이름**으로 고른다(`plugin/index.js`: `const name = callee.name` →
+     * `reanimatedFunctionHooks.has(name)`). minify 가 `useAnimatedStyle` 을 `c` 로 줄이면
+     * `c(() => …)` 가 그 목록에 안 걸리고, 콜백은 워클릿이 아닌 채 남는다.
+     *
+     * 증상은 **빌드가 아니라 소비 앱 런타임**에서 난다:
+     * `[Worklets] Tried to synchronously call a Remote Function. Called "anonymous" on the
+     * UI Runtime` (실측: billets-app, DS 0.17.0). 타입도 `check:exports` 도 이걸 못 잡는다.
+     *
+     * 라이브러리가 minify 를 지는 건 원래도 소비자 몫을 뺏는 일이다 — Metro·Hermes 가 앱
+     * 빌드에서 다시 줄인다. CSS 는 이름에 걸린 게 없어 그대로 줄인다(`cssMinify`).
+     *
+     * ⚠️ 이것만 믿지 않는다. 워클릿 콜백에는 `'worklet'` 지시어를 직접 적는다 —
+     *    `native/PullToRefresh.tsx` 참고. 지시어는 이름과 무관하게 걸린다.
+     */
+    minify: false,
+    cssMinify: true,
     lib: {
       entry: {
         index: 'src/index.ts',
