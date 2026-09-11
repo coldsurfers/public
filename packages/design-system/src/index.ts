@@ -19,6 +19,7 @@
 import './css/theme.css'
 import './css/reset.css'
 
+export { TEXT_STYLE_SPEC, type TextStyleName, type TextStyleSpec } from './contract/text-style'
 export { inComponentsLayer } from './css/component-layer'
 export { vars } from './css/contract.css'
 export {
@@ -29,3 +30,4 @@ export {
   utilitiesLayer,
 } from './css/layers'
 export { media } from './css/media'
+export { type TextOptions, text } from './css/text'
