@@ -42,9 +42,25 @@ description: 크기 대신 역할을 고르는 글자 바닥.
 
 ## RN 짝
 
-`@coldsurfers/design-system/native` 의 `Text` 가 같은 자리입니다. 축 이름과 램프 표는
-`contract/text-style.ts` 하나를 같이 읽지만 구현은 갈립니다 — VE 산출물은 CSS 문자열이라
-RN 으로 넘어가지 않습니다.
+`@coldsurfers/design-system/native` 의 `Text` 가 같은 자리이고, **같은 `textStyle` 을 받습니다.**
+램프 표(`contract/text-style.ts`) 하나를 두 레인이 읽으므로 같은 이름을 준 글자는 양쪽에서 같은
+비율로 섭니다. 구현은 갈립니다 — VE 산출물은 CSS 문자열이라 RN 으로 넘어가지 않습니다.
+
+RN 쪽은 `lineHeight` 와 `letterSpacing` 이 배수·`em` 이 아니라 **절대 포인트**라, 크기와 짝지어
+`lineHeightFor` · `letterSpacingFor` 가 값을 냅니다.
+
+```tsx
+import { Text } from '@coldsurfers/design-system/native'
+
+<Text textStyle="body" tone="body">본문</Text>
+```
+
+<Callout>
+  RN 의 낱개 축(`size` · `leading`)은 남아 있고 `textStyle` 을 **이깁니다** — escape hatch 입니다.
+  `textStyle` 에 기본값을 주지 않은 것도 같은 이유입니다: 지금 기본값(`base` · `normal`)과
+  `textStyle="body"`(`base` · `relaxed`)의 행간이 달라서, 기본으로 깔면 이미 배포된 화면의 줄
+  간격이 조용히 바뀝니다. 축을 뒤집는 건 major 에서 합니다.
+</Callout>
 
 ## Props
 
