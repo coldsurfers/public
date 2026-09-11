@@ -1,0 +1,51 @@
+---
+title: Text
+description: 크기 대신 역할을 고르는 글자 바닥.
+---
+
+<Preview name="text-basic" />
+
+웹에서 글자는 원래 유틸(`sprinkles`)의 몫이었습니다 — RN 처럼 모든 글자가 컴포넌트 안에 있어야
+하는 제약이 없으니까요. 그런데 실측이 그 자유의 값을 보여줬습니다: `fontSize` 가 들어간 호출
+478건에 조합 46가지, 그중 대다수가 행간을 비운 채였습니다. **고를 것이 많아서 안 고른 겁니다.**
+
+그래서 이건 유틸을 대체하는 게 아니라 **기본값을 가진 자리**입니다. `<Text>` 하나면 크기 · 행간 ·
+자간 · 색이 전부 정해진 채로 섭니다.
+
+```tsx
+<Text>본문</Text>
+<Text as="h2" textStyle="heading" weight="semibold">섹션 제목</Text>
+<Text textStyle="label" color="muted" maxLines={2}>두 줄에서 자릅니다</Text>
+```
+
+## 태그와 크기는 따로 고릅니다
+
+`textStyle="heading"` 이 곧 `h2` 는 아닙니다. 시각적 크기와 문서 구조는 다른 축이고, 묶으면
+"제목처럼 보여야 하는 문단"에서 둘 중 하나를 포기하게 됩니다. 그래서 `as` 가 따로 있습니다.
+
+## 램프
+
+`textStyle` 이 고르는 7단계는 [타이포 문서](/docs/foundations/typography)에 표로 있습니다.
+왜 7단계인지, 왜 `fontWeight` 와 색을 묶지 않았는지도 거기 적혀 있습니다.
+
+<Callout>
+  한 속성만 달라야 하면 `className` 으로 유틸을 얹습니다 — 램프가 `ds-components` 레이어라
+  `sprinkles` 유틸이 **항상 이깁니다.** 컴포넌트를 쓰지 않고 클래스만 원하면
+  `text('body', { weight: 'medium' })` 를 직접 부를 수도 있습니다.
+</Callout>
+
+<Callout tone="warning">
+  `color` 의 `subtle` · `faint` 는 **읽는 글자에 쓰지 않습니다.** 대비가 WCAG AA 밖이라
+  구분선 · placeholder · 비활성 자리 전용입니다 — 근거는 [색 문서](/docs/foundations/colors).
+  축에 남아 있는 건 그 자리들이 실재하기 때문이지, 본문에 써도 된다는 뜻이 아닙니다.
+</Callout>
+
+## RN 짝
+
+`@coldsurfers/design-system/native` 의 `Text` 가 같은 자리입니다. 축 이름과 램프 표는
+`contract/text-style.ts` 하나를 같이 읽지만 구현은 갈립니다 — VE 산출물은 CSS 문자열이라
+RN 으로 넘어가지 않습니다.
+
+## Props
+
+<Props of="Text" />

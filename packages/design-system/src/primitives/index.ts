@@ -28,6 +28,7 @@ export {
   type SkeletonTone,
 } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
+export { Text, type TextProps, type TextTag } from './Text'
 export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
 export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'

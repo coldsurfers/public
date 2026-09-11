@@ -73,3 +73,14 @@ export const TEXT_STYLE_SPEC: Record<TextStyleName, TextStyleSpec> = {
   labelSm: { fontSize: '2xs', lineHeight: 'snug', letterSpacing: 'normal' },
   micro: { fontSize: '3xs', lineHeight: 'snug', letterSpacing: 'normal' },
 }
+
+/**
+ * 글자색 축. **웹·RN 이 같은 이름을 쓴다** — 값은 각자 자기 토큰 맵에서 읽는다
+ * (`vars.color.muted` ↔ `scheme.muted`). 원래 `native/Text.tsx` 가 들고 있던 것을
+ * 웹 `Text` 가 생기면서 이리로 올렸다.
+ *
+ * ⚠️ `subtle` · `faint` 는 **읽는 글자에 쓰지 않는다.** 대비가 WCAG AA 밖이라
+ * 구분선 · placeholder · 비활성 자리 전용이다 — 근거는 `tokens/tokens.ts` 의 팔레트 주석.
+ * 축에 남겨 둔 이유는 그 자리들이 실재하기 때문이지, 본문에 써도 된다는 뜻이 아니다.
+ */
+export type TextTone = 'text' | 'strong' | 'body' | 'muted' | 'subtle' | 'faint' | 'accent'
