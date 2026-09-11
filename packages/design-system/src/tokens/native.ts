@@ -10,12 +10,23 @@
  * 설계돼 있다(`tokens.ts` 의 `fontSize`·`spacing` 주석). 그래서 `rem × 16` 이 반올림 없이 떨어진다.
  *
  * **여기 없는 것과 그 이유:**
- *   - `editorialType` — `display` 가 `clamp()`, 나머지가 `em` 단위 `letterSpacing` 이다.
- *     RN 은 뷰포트 유동 타입도 상대 자간도 없다. 기계 변환이 아니라 재설계라 별도 결정으로 뺀다
+ *   - `editorialType` — `display` 가 `clamp()` 다. RN 엔 뷰포트 유동 타입이 없어서 기계 변환이
+ *     아니라 재설계이고, 별도 결정으로 뺀다. (자간은 더 이상 제외 사유가 아니다 — 아래
+ *     `letterSpacingFor` 가 크기와 짝지어 절대값으로 바꾼다. 남은 건 크기 축뿐이다)
  *   - `breakpoints` — RN 은 미디어쿼리가 아니라 `useWindowDimensions` 축이다. 같은 이유
  */
 
-import { cover, fontSize, fontWeight, lineHeight, paper, radius, spacing, tokens } from './tokens'
+import {
+  cover,
+  fontSize,
+  fontWeight,
+  letterSpacing,
+  lineHeight,
+  paper,
+  radius,
+  spacing,
+  tokens,
+} from './tokens'
 
 export type { ColorScheme } from './tokens'
 
@@ -54,6 +65,7 @@ export const withAlpha = (hex: string, percent: number): string => {
 /** 스케일 키 — RN 컴포넌트가 props 축으로 그대로 쓴다. */
 export type FontSizeKey = keyof typeof fontSize
 export type LineHeightKey = keyof typeof lineHeight
+export type LetterSpacingKey = keyof typeof letterSpacing
 export type FontWeightKey = keyof typeof fontWeight
 export type SpacingKey = keyof typeof spacing
 export type RadiusKey = keyof typeof radius
@@ -79,6 +91,27 @@ export const lineHeightFor = (
   size: keyof typeof fontSize,
   ratio: keyof typeof lineHeight,
 ): number => nativeFontSize[size] * Number(lineHeight[ratio])
+
+/**
+ * RN 의 `letterSpacing` 도 **절대 포인트**다. 웹 토큰은 `em`(글자 크기 상대)이라 그대로 못
+ * 넘긴다 — `lineHeight` 와 같은 이유로 크기와 짝을 지어야 값이 나온다.
+ *
+ *   letterSpacingFor('base', 'normal')  // 16 × -0.02 = -0.32
+ *
+ * `em` 이 아닌 형태가 토큰에 생기면 여기서 **터지는 게 맞다**. 조용히 `NaN` 을 통과시키면
+ * RN 쪽 글자가 이유 없이 벌어지거나 겹친다 — `toPx` 와 같은 판단이다.
+ */
+export const letterSpacingFor = (
+  size: keyof typeof fontSize,
+  track: keyof typeof letterSpacing,
+): number => {
+  const value = letterSpacing[track]
+  if (value === '0') return 0
+  if (!value.endsWith('em')) {
+    throw new Error(`[design-system/native] 변환할 수 없는 자간: ${value}`)
+  }
+  return nativeFontSize[size] * Number.parseFloat(value)
+}
 
 /**
  * 색은 hex 라 변환이 없다 — 이름만 다시 연다. RN 도 `'#f2efe8'` 를 그대로 먹는다.
