@@ -19,6 +19,12 @@ const withMDX = createMDX()
  *
  * 발행물엔 영향이 없다 — `apps/docs` 는 `private` 이고, 이 별칭은 이 앱의 번들에만 걸린다.
  *
+ * ⚠️ **아래 `turbopack` 블록은 turbopack 으로 빌드할 때만 읽힌다.** Next 16 은 `next dev` ·
+ * `next build` 둘 다 turbopack 이 기본이라 지금은 맞지만, 누가 `--webpack` 을 붙이는 순간
+ * 별칭 둘이 통째로 무시되고 RN 본체(Flow 소스)가 번들에 들어와 파싱에서 깨진다.
+ * webpack 으로 가야 한다면 `webpack: (config) => ...` 안에 `resolve.alias` 로 같은 둘을
+ * 다시 적어야 한다 — `resolveAlias` 는 `TurbopackOptions` 안에만 있는 옵션이다.
+ *
  * @type {import('next').NextConfig}
  */
 const config = {
