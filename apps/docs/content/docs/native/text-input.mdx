@@ -1,0 +1,37 @@
+---
+title: TextInput
+description: 한 줄 입력. 라벨과 에러는 안 든다.
+---
+
+<NativePreview name="native-text-input" />
+
+웹은 `Field` 가 라벨 · 에러 · 입력을 한 묶음으로 들지만, RN 판은 **입력만** 듭니다.
+
+## 왜 `Field` 가 아닌가
+
+라벨과 에러의 조판은 폼 레이아웃의 문제고, 그건 화면마다 다릅니다. 지금 소비처가 하나라
+묶어 두면 그 화면의 조판이 계약이 됩니다. 두 번째 소비처가 같은 조판을 요구할 때 올립니다.
+
+그래서 `invalid` 는 **테두리 색만** 바꿉니다. 메시지를 어디에 어떻게 그릴지는 소비처의 몫입니다.
+
+## ref 는 좁히지 않는다
+
+내부 `TextInput` 인스턴스가 그대로 나옵니다. 다음 칸으로 포커스를 넘기는 게 가장 흔한 경로입니다.
+
+```tsx
+const next = useRef<RNTextInput>(null)
+<TextInput returnKeyType="next" onSubmitEditing={() => next.current?.focus()} />
+```
+
+`useImperativeHandle` 로 `focus` 만 열지 않은 이유는 공개 패키지라서입니다. 소비처가
+`measure`·`isFocused` 중 무엇을 쓸지 아직 모르는데, **좁힌 핸들을 넓히는 것보다 넓은 걸
+좁히는 쪽이 major** 입니다. 두 번째 소비처가 축을 말할 때 좁힙니다.
+
+## 포커스 테두리는 로컬 상태다
+
+RN 에는 `:focus` 가 없어 누군가 상태를 들어야 합니다. 그 상태가 필요한 곳이 이 컴포넌트
+하나뿐이라 컨텍스트로 올리지 않았습니다. `onFocus`/`onBlur` 를 넘겨도 그대로 불립니다.
+
+## Props
+
+<Props of="TextInput" dir="native" />

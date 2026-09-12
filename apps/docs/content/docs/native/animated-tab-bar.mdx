@@ -1,0 +1,67 @@
+---
+title: AnimatedTabBar
+description: TabBar 를 화면 하단에 고정하고 아래로 밀어 숨기는 층.
+---
+
+```tsx
+import { AnimatedTabBar } from '@coldsurfers/design-system/native/AnimatedTabBar'
+import { TabBar, useTabBarHeight } from '@coldsurfers/design-system/native/TabBar'
+
+function Screen() {
+  const [visible, setVisible] = useState(true)
+  const tabBarHeight = useTabBarHeight()
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: tabBarHeight }}>
+        {/* ... */}
+      </ScrollView>
+
+      <AnimatedTabBar visible={visible}>
+        {TABS.map(({ key, label, Icon }) => (
+          <TabBar.Item
+            key={key}
+            label={label}
+            active={key === selected}
+            onPress={() => setSelected(key)}
+            renderIcon={({ color, size, strokeWidth }) => (
+              <Icon color={color} size={size} strokeWidth={strokeWidth} />
+            )}
+          />
+        ))}
+      </AnimatedTabBar>
+    </View>
+  )
+}
+```
+
+<Callout title="미리보기가 없는 이유">
+  reanimated 는 워클릿을 babel 플러그인으로 변환하는데 이 문서 사이트는 turbopack 을 씁니다.
+  그래서 이 표면만 코드로 설명합니다 —
+  [#119](https://github.com/coldsurfers/public/issues/119) 에서 뚫을 방법을 재고 있습니다.
+</Callout>
+
+## [`TabBar`](/docs/native/tab-bar) 와 왜 나뉘어 있나
+
+의존 하나 때문입니다. reanimated 애니메이션 스타일은 `Animated.*` 에만 먹어서, 위치와 이동을
+면이 같이 들면 **면 자체가 reanimated 를 뭅니다.** 그러면 움직일 일이 없는 소비처도 그 의존을
+집니다. 그래서 움직이는 축만 여기로 뺐습니다.
+
+자리를 `position: 'absolute'` 로 잡는 것도 여기입니다 — 슬라이드하려면 레이아웃 흐름에서
+빠져 있어야 하고, 그건 *이동의 조건* 이지 면의 성질이 아닙니다.
+
+## 그래서 화면이 아래 여백을 직접 잡아야 한다
+
+탭바가 흐름에서 빠져 있으니 자리를 비워 주지 않습니다. `useTabBarHeight()` 로 받아
+스크롤 콘텐츠의 `paddingBottom` 에 넣습니다. 안 넣으면 마지막 항목이 탭바에 가립니다.
+
+## 숨김은 언마운트가 아니다
+
+`visible={false}` 는 아래로 **밀어** 숨깁니다(150ms). 언마운트가 아니라 이동이라
+되돌아올 때 아이템 상태가 남아 있습니다.
+
+## Props
+
+<Props of="AnimatedTabBar" dir="native" />
+
+아이템은 그대로 [`TabBar.Item`](/docs/native/tab-bar) 을 씁니다.

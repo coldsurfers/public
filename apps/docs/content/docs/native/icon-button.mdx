@@ -1,0 +1,29 @@
+---
+title: IconButton
+description: 아이콘만 있는 정사각 액션.
+---
+
+<NativePreview name="native-icon-button" />
+
+`Button` 과 **같은 variant 축**을 씁니다. 색 어휘를 하나 더 만들면 같은 `outline` 이
+두 컴포넌트에서 다른 뜻이 될 수 있습니다.
+
+## 크기 축이 `Button` 과 다른 이유
+
+`Button` 의 `sm`·`md`·`cta` 는 *라벨이 있는 컨트롤의 높이* 입니다. 여기는 **손가락이 닿는
+정사각** 이라 축이 다릅니다.
+
+| | 한 변 |
+| --- | --- |
+| `sm` | 36 |
+| `md` (기본) | 44 |
+
+44 는 시안 치수가 아니라 iOS HIG 의 최소 터치 타깃입니다 — 접근성 하한이라 기본값입니다.
+
+## `label` 이 필수인 이유
+
+아이콘만 있어 스크린 리더가 읽을 이름이 없습니다. `accessibilityLabel` 로 들어갑니다.
+
+## Props
+
+<Props of="IconButton" dir="native" />

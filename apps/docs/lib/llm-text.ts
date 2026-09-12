@@ -9,7 +9,8 @@ type Page = (typeof source)['$inferPage']
 /**
  * 페이지 하나의 평문 사본 — `/llms/components/badge.txt` 의 본문.
  *
- * 처리된 마크다운에는 `<Preview />` · `<Props />` · `<Swatches />` 가 태그인 채로 남는다.
+ * 처리된 마크다운에는 `<Preview />` · `<NativePreview />` · `<Props />` · `<Swatches />` 가
+ * 태그인 채로 남는다.
  * 그런데 **에이전트가 가장 원하는 셋(예제 코드 · props · 토큰 값)이 정확히 그 세 자리**다 —
  * 태그만 주면 구멍을 준 셈이라, 화면이 그리는 것과 같은 데이터를 마크다운으로 펼쳐 끼운다.
  *
@@ -23,7 +24,7 @@ export async function getLLMText(page: Page) {
 }
 
 /** 자기닫음 MDX 태그. 본문을 잃는 셋만 상대한다 — `<Callout>` 은 내용이 그대로 남아 건드리지 않는다. */
-const TAG = /<(Preview|Props|Swatches)\s+([^>]*?)\/>/g
+const TAG = /<(NativePreview|Preview|Props|Swatches)\s+([^>]*?)\/>/g
 
 async function expand(markdown: string): Promise<string> {
   const matches = [...markdown.matchAll(TAG)]
@@ -41,10 +42,11 @@ async function expand(markdown: string): Promise<string> {
   return out + markdown.slice(cursor)
 }
 
-type Tag = 'Preview' | 'Props' | 'Swatches'
+type Tag = 'NativePreview' | 'Preview' | 'Props' | 'Swatches'
 
 function render(tag: Tag, attrs: Record<string, string>): Promise<string> | string {
-  if (tag === 'Preview') return previewBlock(attrs.name)
+  // 평문에서는 웹·native 미리보기가 같다 — 둘 다 예제 파일 하나를 펼치는 것뿐이다.
+  if (tag === 'Preview' || tag === 'NativePreview') return previewBlock(attrs.name)
   if (tag === 'Props') return propsBlock(attrs as unknown as PropsQuery)
   return swatchesBlock(attrs.group as TokenGroup)
 }

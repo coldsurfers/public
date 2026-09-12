@@ -29,6 +29,20 @@ const config = {
   turbopack: {
     resolveAlias: {
       'react-native': 'react-native-web',
+      /**
+       * safe-area-context 는 **웹 판을 골라 주지 않으면 안 선다.** 내부에서
+       * `./NativeSafeAreaProvider` 를 상대 경로로 여는데, 그 `.js` 판이 `react-native` 의
+       * 깊은 경로(`Libraries/Utilities/codegenNativeComponent`)를 문다. 위 별칭은 맨 이름에만
+       * 걸리므로 깊은 경로는 RN 본체로 풀리고, 그건 Flow 소스라 파싱조차 안 된다.
+       *
+       * 패키지 안에 `.web.js` 판이 이미 있지만 turbopack 은 node_modules 에서 확장자 우선순위
+       * (`resolveExtensions`)를 적용하지 않는다 — 실측으로 확인했다.
+       *
+       * 그래서 문서 사이트에서만 얇은 shim 으로 바꾼다. 브라우저에는 안전 영역이 없어
+       * 인셋이 전부 0 이고, 실제 웹 판도 측정 전까지 같은 값을 준다 — 미리보기 판정이
+       * 달라지지 않는다. 자세한 경계는 `shims/safe-area-context.tsx`.
+       */
+      'react-native-safe-area-context': './shims/safe-area-context.tsx',
     },
   },
 }
