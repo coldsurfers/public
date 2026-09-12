@@ -43,5 +43,9 @@
     "@types/node": "^22.10.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14"
+  },
+  "dependencies": {
+    "marked": "^18.0.0",
+    "puppeteer-core": "^25.10.0"
   }
 }
