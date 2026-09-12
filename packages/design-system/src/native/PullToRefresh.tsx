@@ -85,6 +85,15 @@ export interface PullToRefreshProps {
    * 화면이 여러 쿼리로 쪼개져 있으면 `Promise.all` 로 묶어 넘기면 된다.
    */
   onRefresh: () => Promise<unknown> | undefined
+  /**
+   * 새로고침이 끝난 순간 한 번 불린다 — haptic 을 물릴 자리다.
+   *
+   * 여기서 DS 가 직접 울리지 않는 건 계약 때문이다. `expo-haptics` 를 물면 Expo 를 쓰지 않는
+   * 소비처까지 그걸 깔아야 한다. 무엇을 어떤 세기로 울릴지도 화면의 맥락이라 소비처의 몫이다.
+   *
+   * 성공·실패를 가리지 않고 불린다 — "요청이 끝났다"는 신호지 "성공했다"는 신호가 아니다.
+   */
+  onHapticFeedback?: () => void
   /** 스크롤러를 그리는 자리. 받은 props 를 그대로 펼쳐 넣어야 한다. */
   children: (scrollableProps: PullToRefreshScrollableProps) => ReactNode
   /** false 면 당김을 아예 받지 않는다(스크롤은 그대로). */
@@ -116,6 +125,7 @@ const Content = styled(Animated.View)({ flex: 1 })
 export function PullToRefresh({
   scrollableRef,
   onRefresh,
+  onHapticFeedback,
   children,
   enabled = true,
   topInset = 0,
@@ -141,9 +151,11 @@ export function PullToRefresh({
    * 렌더 중에 쓰면 버려지는 렌더의 값이 남는다.
    */
   const onRefreshRef = useRef(onRefresh)
+  const onHapticFeedbackRef = useRef(onHapticFeedback)
   useEffect(() => {
     onRefreshRef.current = onRefresh
-  }, [onRefresh])
+    onHapticFeedbackRef.current = onHapticFeedback
+  }, [onRefresh, onHapticFeedback])
 
   const runRefresh = useCallback(async () => {
     try {
@@ -159,6 +171,8 @@ export function PullToRefresh({
        * 인디케이터는 아래 finally 가 닫고, 에러 표시는 소비처(각자의 error boundary)의 몫이다.
        */
     } finally {
+      // 틈이 닫히기 시작하는 것과 **같은 순간**에 울려야 "끝났다"로 읽힌다. 닫힘이 끝난 뒤면 늦다.
+      onHapticFeedbackRef.current?.()
       isRefreshing.value = false
       pull.value = withTiming(0, { duration: 220 })
     }
