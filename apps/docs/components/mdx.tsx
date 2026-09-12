@@ -3,6 +3,7 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs'
 import { TypeTable } from 'fumadocs-ui/components/type-table'
 import defaultMdxComponents from 'fumadocs-ui/mdx'
 import type { MDXComponents } from 'mdx/types'
+import { NativePreview } from '@/components/native-preview'
 import { Preview } from '@/components/preview'
 import { Props } from '@/components/props'
 import { Swatches } from '@/components/swatches'
@@ -11,6 +12,7 @@ export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
     Callout,
+    NativePreview,
     Preview,
     Props,
     Swatches,

@@ -45,10 +45,11 @@ export function createServer(): McpServer {
         'List the COLDSURF design system documents — title, path, and one-line description. ' +
         'Pass a category to narrow it down; omit it to list everything.',
       inputSchema: {
-        category: z
-          .string()
-          .optional()
-          .describe('e.g. "foundations", "components", "patterns". Omit to list all documents.'),
+        category: z.string().optional().describe(
+          // 카테고리를 나열하지 않는다 — 섹션이 늘 때마다 이 줄이 조용히 낡는다.
+          // 정본은 `discover_docs` 가 색인에서 세어 주는 목록이다.
+          'A category from discover_docs, e.g. "components". Omit to list all documents.',
+        ),
       },
     },
     async ({ category }) => {

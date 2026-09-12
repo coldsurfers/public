@@ -19,6 +19,12 @@ const withMDX = createMDX()
  *
  * 발행물엔 영향이 없다 — `apps/docs` 는 `private` 이고, 이 별칭은 이 앱의 번들에만 걸린다.
  *
+ * ⚠️ **아래 `turbopack` 블록은 turbopack 으로 빌드할 때만 읽힌다.** Next 16 은 `next dev` ·
+ * `next build` 둘 다 turbopack 이 기본이라 지금은 맞지만, 누가 `--webpack` 을 붙이는 순간
+ * 별칭 둘이 통째로 무시되고 RN 본체(Flow 소스)가 번들에 들어와 파싱에서 깨진다.
+ * webpack 으로 가야 한다면 `webpack: (config) => ...` 안에 `resolve.alias` 로 같은 둘을
+ * 다시 적어야 한다 — `resolveAlias` 는 `TurbopackOptions` 안에만 있는 옵션이다.
+ *
  * @type {import('next').NextConfig}
  */
 const config = {
@@ -29,6 +35,20 @@ const config = {
   turbopack: {
     resolveAlias: {
       'react-native': 'react-native-web',
+      /**
+       * safe-area-context 는 **웹 판을 골라 주지 않으면 안 선다.** 내부에서
+       * `./NativeSafeAreaProvider` 를 상대 경로로 여는데, 그 `.js` 판이 `react-native` 의
+       * 깊은 경로(`Libraries/Utilities/codegenNativeComponent`)를 문다. 위 별칭은 맨 이름에만
+       * 걸리므로 깊은 경로는 RN 본체로 풀리고, 그건 Flow 소스라 파싱조차 안 된다.
+       *
+       * 패키지 안에 `.web.js` 판이 이미 있지만 turbopack 은 node_modules 에서 확장자 우선순위
+       * (`resolveExtensions`)를 적용하지 않는다 — 실측으로 확인했다.
+       *
+       * 그래서 문서 사이트에서만 얇은 shim 으로 바꾼다. 브라우저에는 안전 영역이 없어
+       * 인셋이 전부 0 이고, 실제 웹 판도 측정 전까지 같은 값을 준다 — 미리보기 판정이
+       * 달라지지 않는다. 자세한 경계는 `shims/safe-area-context.tsx`.
+       */
+      'react-native-safe-area-context': './shims/safe-area-context.tsx',
     },
   },
 }
