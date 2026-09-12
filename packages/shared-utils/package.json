@@ -70,6 +70,10 @@
       "types": "./dist/parser.d.ts",
       "default": "./dist/parser.js"
     },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
+    },
     "./seo-head": {
       "types": "./dist/seo-head.d.ts",
       "default": "./dist/seo-head.js"
@@ -102,7 +106,8 @@
     "date-fns": "^4",
     "date-fns-tz": "^3",
     "jwt-decode": "^4",
-    "next": ">=14"
+    "next": ">=14",
+    "react": ">=18"
   },
   "peerDependenciesMeta": {
     "date-fns": {
@@ -116,14 +121,19 @@
     },
     "next": {
       "optional": true
+    },
+    "react": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@types/react": "catalog:",
     "date-fns": "4.1.0",
     "date-fns-tz": "^3.2.0",
     "jwt-decode": "^4.0.0",
     "next": "^15.5.0",
+    "react": "catalog:",
     "schema-dts": "^1.1.5",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",
