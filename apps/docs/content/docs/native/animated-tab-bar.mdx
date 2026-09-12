@@ -36,8 +36,9 @@ function Screen() {
 ```
 
 <Callout title="미리보기가 없는 이유">
-  reanimated 는 워클릿을 babel 플러그인으로 변환하는데 이 문서 사이트는 turbopack 을 씁니다.
-  그래서 이 표면만 코드로 설명합니다 —
+  reanimated 는 워클릿을 babel 플러그인으로 변환하는데, turbopack 은 **`node_modules` 를
+  babel 대상에서 뺍니다.** 이 사이트가 무는 워클릿은 DS 의 `dist` 안, 즉 `node_modules` 에
+  있어서 기본 배선이 닿지 않습니다. 그래서 이 표면만 코드로 설명합니다 —
   [#119](https://github.com/coldsurfers/public/issues/119) 에서 뚫을 방법을 재고 있습니다.
 </Callout>
 

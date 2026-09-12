@@ -17,8 +17,10 @@ import { readExampleSource } from '@/lib/example-source'
  * 고치지 않고** 그린다. 그래서 여기 그려진다는 건 그 조합이 실제 소비처에서도 선다는 증거다.
  *
  * ⚠️ 다만 별칭 하나로 모든 표면이 오지는 않는다. `react-native-reanimated` 는 워클릿을
- * babel 플러그인이 변환하는데 이 앱은 turbopack 이라 그 플러그인이 돌지 않는다.
- * 그래서 `PullToRefresh` · `AnimatedTabBar` 는 여기 못 오고 코드 블록으로만 설명한다
+ * babel 플러그인이 변환하는데, turbopack 은 babel 을 자동으로 돌리면서도 **`node_modules` 는
+ * 대상에서 뺀다**(Next 16). 이 앱이 무는 워클릿은 DS 의 `dist` 안, 즉 `node_modules` 에 있어서
+ * 기본 배선이 닿지 않는다. 뚫으려면 `turbopack.rules` 로 babel-loader 를 직접 배선해야 하고,
+ * 그게 되는지는 아직 안 재봤다 — `PullToRefresh` · `AnimatedTabBar` 는 그때까지 코드 블록이다
  * (coldsurfers/public#119).
  */
 export async function NativePreview({

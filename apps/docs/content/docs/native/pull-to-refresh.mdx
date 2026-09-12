@@ -25,7 +25,8 @@ function Feed() {
 ```
 
 <Callout title="미리보기가 없는 이유">
-  reanimated 의 워클릿 변환이 babel 플러그인인데 이 사이트는 turbopack 을 씁니다
+  reanimated 의 워클릿 변환이 babel 플러그인인데, turbopack 은 `node_modules` 를 babel 대상에서
+  뺍니다. 이 사이트가 무는 워클릿은 DS 의 `dist` 안에 있어서 기본 배선이 닿지 않습니다
   ([#119](https://github.com/coldsurfers/public/issues/119)).
 
   뚫리더라도 제스처는 **마우스로 흉내 내면 감각이 거짓**이라, 이 표면은 실기기에서 보는 편이
