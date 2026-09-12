@@ -1,3 +1,4 @@
+import { builtinModules } from 'node:module'
 import { defineConfig } from 'vite'
 
 /**
@@ -15,7 +16,10 @@ export default defineConfig({
   build: {
     lib: { entry: { cli: 'src/cli.ts', contract: 'src/tokens/contract.ts' }, formats: ['es'] },
     rollupOptions: {
-      external: [/^node:/],
+      // 의존은 번들에 넣지 않는다. `dependencies` 에 적힌 것은 소비자가 설치할 때 같이
+      // 내려오고, 사본을 하나 더 만들 이유가 없다. node 빌트인도 마찬가지 — 안 빼면
+      // vite 가 브라우저 타깃으로 보고 `path` 를 빈 shim 으로 갈아끼운다.
+      external: [/^node:/, ...builtinModules, 'marked', 'puppeteer-core'],
       // `bin` 은 셸이 직접 실행한다 — shebang 이 없으면 스크립트로 읽히지 않는다.
       output: { banner: '#!/usr/bin/env node' },
     },

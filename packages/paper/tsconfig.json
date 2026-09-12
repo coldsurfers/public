@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    // DOM 은 node CLI 에 필요해서가 아니라, `page.evaluate` 의 콜백이 브라우저 안에서 돌기
+    // 때문이다. 그 함수만 `document` 를 본다.
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
