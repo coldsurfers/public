@@ -1,0 +1,249 @@
+/**
+ * 지면 조판 컴포넌트 — 마크다운이 만들지 않는 태그들.
+ *
+ * 문서가 이 클래스를 안 쓰면 한 줄도 걸리지 않는다. 그래서 기존 문서의 출력이 바뀌지 않는다.
+ *
+ * 다크 면을 지면 전체로 깔지는 않는다 — `@page` margin 영역엔 배경이 안 칠해져 페이지마다
+ * 흰 액자가 생긴다. 그래서 지면 *안쪽* 의 라운드 블록으로 만든다.
+ */
+
+/* 표지 — 한 장을 거의 채우고 다음 내용은 새 장에서 시작한다. 반만 차면 표지로 안 읽힌다.
+   flex 로 세로 중앙 정렬하되 break-inside:avoid 로 한 장 안에 갇혀 있어, 인쇄 엔진이
+   flex 컨테이너를 쪼개지 못하는 문제에 걸리지 않는다. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--print-hero-min-height);
+  margin: 0;
+  padding: 20mm 16mm;
+  border-radius: 20px;
+  background: var(--print-cover);
+  color: var(--print-cover-ink);
+  text-align: center;
+  break-after: page;
+  page-break-after: always;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.hero .eyebrow {
+  color: var(--print-cover-ink-muted);
+}
+
+.hero .display {
+  margin-bottom: 8mm;
+  font-size: 46px;
+  color: var(--print-cover-ink);
+}
+
+.hero .sub {
+  max-width: 130mm;
+  margin: 0 auto 12mm;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--print-cover-ink-muted);
+}
+
+.hero .meta {
+  font-size: 12.5px;
+  color: var(--print-cover-ink-muted);
+}
+
+/* eyebrow → display → sub. 섹션 오프너의 3단 구조. */
+.eyebrow {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  font-weight: var(--print-weight-sub);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--print-ink-muted);
+}
+
+.display {
+  margin: 0 0 14px;
+  font-size: 40px;
+  font-weight: var(--print-weight-strong);
+  line-height: 1.25;
+  letter-spacing: var(--print-track-tight);
+  color: var(--print-ink-strong);
+}
+
+.display.sm {
+  font-size: 28px;
+}
+
+.sub {
+  margin: 0 0 18px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--print-ink-muted);
+}
+
+/* 섹션 오프너 — 여백이 리듬을 만든다. 지면에서 16mm 는 화면의 절반쯤에 해당한다. */
+.opener {
+  padding-top: 16mm;
+  margin-bottom: 6mm;
+  break-after: avoid;
+  page-break-after: avoid;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.opener:first-child {
+  padding-top: 0;
+}
+
+/* 지표 — 표에 넣으면 그냥 데이터가 되고, 카드로 세우면 주장이 된다. */
+.stats {
+  display: flex;
+  gap: 6mm;
+  margin: 6mm 0 8mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.stat {
+  flex: 1;
+  padding: 7mm 6mm;
+  border: 1px solid var(--print-border);
+  border-radius: var(--print-radius);
+  background: var(--print-surface);
+}
+
+.stat .num {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 30px;
+  font-weight: var(--print-weight-strong);
+  line-height: 1.1;
+  letter-spacing: var(--print-track-tight);
+  color: var(--print-accent);
+}
+
+.stat .lab {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--print-ink-muted);
+}
+
+.stat.ink .num {
+  color: var(--print-ink-strong);
+}
+
+/* 카드 그리드 — 태그 pill + 제목 + 본문. */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6mm;
+  margin: 6mm 0 8mm;
+}
+
+.card {
+  flex: 1 1 calc(50% - 6mm);
+  padding: 7mm 6mm;
+  border: 1px solid var(--print-border);
+  border-radius: var(--print-radius);
+  background: var(--print-surface);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.card.wide {
+  flex-basis: 100%;
+}
+
+.card h5 {
+  margin: 8px 0 6px;
+  font-size: 15px;
+  font-weight: var(--print-weight-strong);
+  letter-spacing: var(--print-track);
+  color: var(--print-ink-strong);
+}
+
+.card p {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+.card ul {
+  margin-bottom: 0;
+  font-size: 13.5px;
+}
+
+.tag {
+  display: inline-block;
+  margin: 0 4px 0 0;
+  padding: 3px 9px;
+  border-radius: 100px;
+  background: var(--print-surface-2);
+  font-size: 11px;
+  font-weight: var(--print-weight-sub);
+  letter-spacing: 0;
+  color: var(--print-ink-muted);
+}
+
+.tag.on {
+  background: var(--print-tint);
+  color: var(--print-link);
+}
+
+/* 미션 면 — 색면 위 중앙 문장. 문서에서 한 번만 쓴다. */
+.mission {
+  margin: 10mm 0;
+  padding: 22mm 14mm;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--print-tint) 0%, var(--print-surface) 100%);
+  text-align: center;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.mission .display {
+  margin-bottom: 0;
+  font-size: 26px;
+  line-height: 1.5;
+}
+
+.mission .eyebrow {
+  color: var(--print-ink-muted);
+}
+
+/* 인용 한 줄을 크게 — 판단을 문장으로 세울 때. */
+.pull {
+  margin: 6mm 0 7mm;
+  padding: 2mm 0 2mm 6mm;
+  border-left: 3px solid var(--print-accent);
+  font-size: 19px;
+  font-weight: var(--print-weight-strong);
+  line-height: 1.5;
+  letter-spacing: var(--print-track);
+  color: var(--print-ink-strong);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 시안 블록 — 이미지와 캡션을 한 덩어리로 묶어 페이지 경계에서 갈라지지 않게 한다. */
+.shot {
+  margin: 6mm 0 8mm;
+  text-align: center;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.shot img {
+  margin: 0 auto 8px;
+}
+
+.shot .cap {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--print-ink-muted);
+}

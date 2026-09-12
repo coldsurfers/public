@@ -349,6 +349,9 @@ importers:
 
   packages/paper:
     devDependencies:
+      '@coldsurfers/design-system':
+        specifier: workspace:*
+        version: link:../design-system
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.1

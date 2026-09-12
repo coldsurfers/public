@@ -1,0 +1,63 @@
+/**
+ * 지면 규칙 — 이 파일만 종이의 물리를 안다.
+ *
+ * `@page` 규칙과 지면 기하 변수(`--print-page-*` · `--print-figure-max-height` · `--print-hero-min-height`)는 여기 없다.
+ * 문서마다 다른 값이라 테마가 아니라 **렌더러가 문서별로 주입**한다. Chromium 은 `@page` 의
+ * `size` 에 커스텀 프로퍼티를 받지 않아서, 그 한 줄만 렌더 시점에 만들어진다.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+/* 지면은 캔버스 색으로 둔다. `@page` margin 영역엔 배경을 칠할 수 없어서, 지면에 색을 깔면
+   여백만 흰색으로 남아 페이지마다 액자 테두리가 생긴다. 톤은 표·코드블록의 surface 가 맡는다.
+   margin 영역의 종이색은 html 배경이 canvas 로 전파되며 칠해진다(printBackground 전제). */
+html {
+  background: var(--print-canvas);
+}
+
+/* 여백은 `@page` 가 맡는다 — body padding 은 첫 장 위·마지막 장 아래에만 걸려서,
+   페이지 경계에 걸린 줄이 여백 없이 지면 끝에서 그대로 잘려나간다. */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--print-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 제목 뒤에서 페이지가 갈리면 제목만 이전 장에 남는다. 표·인용·카드는 통째로 한 장에 둔다. */
+h2,
+h3,
+h4 {
+  break-after: avoid;
+  page-break-after: avoid;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+blockquote,
+li,
+tr,
+figure {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 시안 이미지 슬롯. `max-height` 가 핵심이다 — 세로로 긴 모바일 시안은 지면 높이를 그냥 넘겨서,
+   break-inside:avoid 와 맞물려 이미지가 통째로 다음 장으로 밀리고 그 앞장이 빈다.
+   지면에 맞춰 묶으면 이미지 한 장과 본문이 같은 장에 함께 앉는다.
+   `width: auto` 를 함께 둬야 비율이 유지된다. */
+img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--print-figure-max-height);
+  margin: 6px auto 4px;
+  border: 1px solid var(--print-border);
+  border-radius: var(--print-radius);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}

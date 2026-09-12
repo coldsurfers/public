@@ -1,0 +1,216 @@
+/**
+ * 본문 조판 — 마크다운이 만드는 태그만 다룬다.
+ *
+ * 위계는 크기 차이가 아니라 **굵기와 자간**으로 준다. 큰 글자일수록 더 조여야 같은 무게로
+ * 읽혀서, h1 만 tight 자간이고 나머지는 본문과 같은 track 을 쓴다.
+ */
+
+body {
+  font-family: var(--print-font-sans);
+  font-size: 14.5px;
+  line-height: 1.6;
+  letter-spacing: var(--print-track);
+  color: var(--print-ink);
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: 34px;
+  font-weight: var(--print-weight-strong);
+  line-height: 1.2;
+  letter-spacing: var(--print-track-tight);
+  color: var(--print-ink-strong);
+}
+
+h2 {
+  margin: 0 0 8px;
+  padding-top: 9mm;
+  font-size: 19px;
+  font-weight: var(--print-weight-strong);
+  line-height: 1.35;
+  letter-spacing: var(--print-track);
+  color: var(--print-ink-strong);
+}
+
+/* h3 = 회사·소속 단위. 아래 실선으로 블록의 시작을 눈에 두어 h4 와 위계를 가른다. */
+h3 {
+  margin: 0 0 8px;
+  padding-top: 7mm;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--print-border);
+  font-size: 15.5px;
+  font-weight: var(--print-weight-strong);
+  color: var(--print-ink-strong);
+}
+
+/* h4 = 프로젝트 단위. 한 단 아래 굵기로 두어 본문 볼드와 구분하고, 색을 눌러 h3 아래로 내린다. */
+h4 {
+  margin: 0 0 5px;
+  padding-top: 5mm;
+  font-size: 13.5px;
+  font-weight: var(--print-weight-sub);
+  color: var(--print-ink-muted);
+}
+
+p {
+  margin: 0 0 14px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--print-ink-body);
+}
+
+a {
+  color: var(--print-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+
+/* 위계는 무게 대비로 — 볼드는 잉크 끝까지, 나머지는 body/muted 로 눌러 대비를 만든다. */
+strong {
+  font-weight: var(--print-weight-strong);
+  color: var(--print-ink-strong);
+}
+
+/* inline code 는 테두리 없이 면만으로 pill 을 만든다. 코드에는 자간을 걸지 않는다 —
+   고정폭 글리프는 격자가 곧 리듬이라, 조이면 수치가 뭉친다. */
+code {
+  padding: 0.12em 0.45em;
+  border-radius: 6px;
+  background: var(--print-code-bg);
+  color: var(--print-code-fg);
+  font-family: var(--print-font-mono);
+  font-size: 0.85em;
+  letter-spacing: 0;
+}
+
+pre {
+  margin: 18px 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--print-border-soft);
+  border-radius: var(--print-radius);
+  background: var(--print-surface);
+  font-family: var(--print-font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+pre code {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+
+/* italic 을 걷었다 — 본문에서 이미 `_강조_` 로 기울임을 쓰는 문서가 있어 이중으로 걸렸다. */
+blockquote {
+  margin: 18px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--print-accent);
+  border-radius: 0 var(--print-radius) var(--print-radius) 0;
+  background: var(--print-tint);
+  color: var(--print-quote);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+hr {
+  margin: 26px 0;
+  border: none;
+  border-top: 1px solid var(--print-border);
+}
+
+/* 이미지 바로 뒤 한 줄은 캡션으로 읽힌다 — 작게 눌러 본문과 가른다. */
+p > img + em,
+p > em:only-child {
+  font-size: 12.5px;
+  font-style: normal;
+  color: var(--print-ink-muted);
+}
+
+/* 항목 간격은 flex gap 이 아니라 li 의 margin 으로 준다. Chromium 인쇄 엔진은 flex 컨테이너를
+   페이지 경계에서 쪼개지 못해서, 넘치는 항목을 다음 장으로 보내는 대신 그 자리에서 잘라버린다. */
+ul {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--print-ink);
+}
+
+ol {
+  margin: 0 0 14px;
+  padding: 0 0 0 20px;
+  list-style: decimal;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--print-ink);
+}
+
+li {
+  position: relative;
+  margin-bottom: 6px;
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+ul > li {
+  padding-left: 20px;
+}
+
+ul > li::before {
+  content: "—";
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--print-ink-subtle);
+}
+
+li ul,
+li ol {
+  margin-top: 6px;
+}
+
+/* 표 = 지면 위에 뜬 면 한 단. 모서리를 깎으려면 collapse 를 쓸 수 없어
+   separate + border-spacing 0 으로 두고 overflow 로 잘라낸다. */
+table {
+  width: 100%;
+  margin: 18px 0;
+  border: 1px solid var(--print-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--print-radius);
+  overflow: hidden;
+  background: var(--print-surface);
+  font-size: 13.5px;
+}
+
+thead {
+  background: var(--print-surface-2);
+}
+
+th {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--print-border);
+  text-align: left;
+  font-weight: var(--print-weight-sub);
+  color: var(--print-ink-muted);
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--print-border-soft);
+  vertical-align: top;
+  color: var(--print-ink-body);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
