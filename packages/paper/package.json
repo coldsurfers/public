@@ -1,0 +1,46 @@
+{
+  "name": "@coldsurfers/paper",
+  "version": "0.1.0",
+  "description": "COLDSURF markdown-to-PDF CLI — prints documents to paper with design system tokens.",
+  "keywords": [
+    "markdown",
+    "pdf",
+    "print",
+    "cli",
+    "design-tokens",
+    "coldsurf"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/paper",
+  "bugs": "https://github.com/coldsurfers/public/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldsurfers/public.git",
+    "directory": "packages/paper"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "paper": "./dist/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "check:type": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.14"
+  }
+}
