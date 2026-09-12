@@ -1,8 +1,11 @@
 /**
- * `paper.config.json` — 소비처가 갖는 전부.
+ * `paper.config.json` — **없어도 된다.**
  *
- * 설정을 파일 하나로 모으는 이유: 이 툴의 앞선 형태는 값이 세 군데(환경변수 · 하드코딩된
- * 파일 목록 · 파일명별 예외 맵)에 흩어져 있었고, 그래서 무엇이 적용됐는지 읽어서 알 수 없었다.
+ * 설정은 "매번 같은 문서 묶음을 굽는" 소비처의 편의 수단이다. 문서 한 장 구우려고 필수
+ * 필드 넷을 먼저 적게 하면, 처음 쓰는 사람은 설정부터 써야 한다.
+ *
+ * 그래서 필드는 전부 선택이고, 설정 파일 자체도 선택이다. 다만 `--config` 로 **명시한**
+ * 경로가 없으면 그건 실패다 — 사람이 가리킨 파일이 없는 것과, 아예 안 쓰는 것은 다르다.
  *
  * 스키마 라이브러리를 들이지 않는다 — 필드가 여덟이고, 진단 메시지는 직접 쓰는 쪽이 낫다.
  */
@@ -28,13 +31,14 @@ export type PageConfig = {
 }
 
 export type PaperConfig = {
-  /** 마크다운이 있는 디렉터리. 이미지 상대경로도 여기 기준으로 풀린다. */
+  /** 설정의 `files` 가 풀리는 기준. 없으면 실행 위치다. */
   readonly docsDir: string
-  readonly outDir: string
-  /** `coldsurf` 또는 테마 CSS 파일 경로. 소비처 테마는 이 자리로 들어온다. */
+  /** 없으면 문서가 있는 자리의 `pdf/` 다. */
+  readonly outDir: string | undefined
+  /** `coldsurf` 또는 테마 CSS 파일 경로. */
   readonly theme: string
-  /** Chromium 실행 파일. 이 패키지는 브라우저를 내려받지 않는다. */
-  readonly chromePath: string
+  /** 없으면 환경변수와 표준 설치 경로에서 찾는다. */
+  readonly chromePath: string | undefined
   readonly page: PageConfig
   /** `paper build` 가 인자 없이 도는 대상. */
   readonly files: readonly string[]
@@ -42,7 +46,17 @@ export type PaperConfig = {
   readonly overrides: Readonly<Record<string, PageConfig>>
 }
 
-const DEFAULT_PAGE: PageConfig = { format: 'A4', marginY: 14, marginX: 12 }
+export const DEFAULT_PAGE: PageConfig = { format: 'A4', marginY: 14, marginX: 12 }
+
+export const DEFAULT_CONFIG: PaperConfig = {
+  docsDir: process.cwd(),
+  outDir: undefined,
+  theme: 'coldsurf',
+  chromePath: undefined,
+  page: DEFAULT_PAGE,
+  files: [],
+  overrides: {},
+}
 
 class ConfigError extends Error {}
 
@@ -80,24 +94,37 @@ function readPage(raw: unknown, where: string, base: PageConfig): PageConfig {
   }
 }
 
-function readString(raw: unknown, where: string): string {
-  if (typeof raw !== 'string' || raw.trim() === '') fail(`${where} 가 필요하다.`)
+function readOptionalString(raw: unknown, where: string): string | undefined {
+  if (raw === undefined) return undefined
+  if (typeof raw !== 'string' || raw.trim() === '')
+    fail(`${where} 는 비어 있지 않은 문자열이어야 한다.`)
   return raw
 }
 
-/** 설정 파일을 읽어 경로를 전부 절대경로로 편다. 이후 코드는 상대경로를 모른다. */
-export function loadConfig(configPath: string): PaperConfig {
+/**
+ * 설정을 읽는다. `explicit` 이면 파일이 없을 때 실패하고, 아니면 기본값으로 돈다.
+ * 경로는 전부 절대경로로 편다 — 이후 코드는 상대경로를 모른다.
+ */
+export function loadConfig(configPath: string, explicit: boolean): PaperConfig {
   const abs = resolve(configPath)
   const root = dirname(abs)
 
-  let raw: unknown
+  let source: string
   try {
-    raw = JSON.parse(readFileSync(abs, 'utf8'))
+    source = readFileSync(abs, 'utf8')
   } catch (cause) {
     if ((cause as NodeJS.ErrnoException).code === 'ENOENT') {
-      fail(`설정 파일이 없다: ${abs}`)
+      if (explicit) fail(`설정 파일이 없다: ${abs}`)
+      return DEFAULT_CONFIG
     }
     fail(`설정 파일을 읽을 수 없다: ${abs}\n${(cause as Error).message}`)
+  }
+
+  let raw: unknown
+  try {
+    raw = JSON.parse(source)
+  } catch (cause) {
+    fail(`설정 파일이 올바른 JSON 이 아니다: ${abs}\n${(cause as Error).message}`)
   }
   if (typeof raw !== 'object' || raw === null) fail(`설정은 객체여야 한다: ${abs}`)
 
@@ -122,14 +149,16 @@ export function loadConfig(configPath: string): PaperConfig {
     ]),
   )
 
-  const theme = readString(input.theme, 'theme')
+  const docsDir = readOptionalString(input.docsDir, 'docsDir')
+  const outDir = readOptionalString(input.outDir, 'outDir')
+  const theme = readOptionalString(input.theme, 'theme')
 
   return {
-    docsDir: fromRoot(readString(input.docsDir, 'docsDir')),
-    outDir: fromRoot(readString(input.outDir, 'outDir')),
+    docsDir: docsDir === undefined ? root : fromRoot(docsDir),
+    outDir: outDir === undefined ? undefined : fromRoot(outDir),
     // `coldsurf` 는 이 패키지가 굽는 테마 이름이고, 그 외는 소비처 CSS 파일 경로다.
-    theme: theme === 'coldsurf' ? theme : fromRoot(theme),
-    chromePath: readString(input.chromePath, 'chromePath'),
+    theme: theme === undefined || theme === 'coldsurf' ? 'coldsurf' : fromRoot(theme),
+    chromePath: readOptionalString(input.chromePath, 'chromePath'),
     page,
     files: files as readonly string[],
     overrides,

@@ -2,7 +2,7 @@
  * HTML → PDF. Chromium 은 소비처의 것을 쓴다.
  *
  * **브라우저를 내려받지 않는다.** `puppeteer-core` 는 Chromium 을 끌고 오지 않는 쪽이고,
- * 실행 경로는 설정의 `chromePath` 가 준다 — 발행 패키지가 250MB 를 강제하지 않는 자리다.
+ * 실행 경로는 `chrome.ts` 가 찾아서 준다 — 발행 패키지가 250MB 를 강제하지 않는 자리다.
  *
  * HTML 을 문서 디렉터리 안에 잠깐 쓰고 `file://` 로 연다. `setContent` 로 넣으면 문서가
  * `about:blank` 가 되어 상대경로 이미지가 하나도 안 실린다.
@@ -22,12 +22,7 @@ async function launch(chromePath: string): Promise<Browser> {
   try {
     return await puppeteer.launch({ executablePath: chromePath, headless: true })
   } catch (cause) {
-    throw new Error(
-      `Chromium 을 띄우지 못했다: ${chromePath}\n` +
-        `설정의 chromePath 를 확인한다. macOS 기본 설치 경로는\n` +
-        `  /Applications/Google Chrome.app/Contents/MacOS/Google Chrome\n` +
-        `${(cause as Error).message}`,
-    )
+    throw new Error(`Chromium 을 띄우지 못했다: ${chromePath}\n${(cause as Error).message}`)
   }
 }
 

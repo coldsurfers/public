@@ -1,34 +1,33 @@
 import { readFileSync } from 'node:fs'
-import { basename, relative, resolve } from 'node:path'
-import { pageFor } from '../config.js'
+import { relative } from 'node:path'
 import { renderHtml } from '../render/html.js'
 import { printPdf } from '../render/pdf.js'
-import { type Invocation, parse } from './shared.js'
+import { announceChrome, type Document, type Invocation, parse } from './shared.js'
 
 /** 문서 하나를 굽는다. watch 가 같은 함수를 다시 부른다. */
-export async function buildOne(invocation: Invocation, file: string): Promise<string> {
-  const { config } = invocation
-  const srcPath = resolve(config.docsDir, file)
-  const destPath = resolve(config.outDir, `${basename(file, '.md')}.pdf`)
-  const page = pageFor(config, file)
-
+export async function buildOne(invocation: Invocation, document: Document): Promise<string> {
   const html = renderHtml({
-    markdown: readFileSync(srcPath, 'utf8'),
-    theme: config.theme,
-    page,
+    markdown: readFileSync(document.srcPath, 'utf8'),
+    theme: invocation.config.theme,
+    page: document.page,
   })
 
-  await printPdf({ html, docDir: config.docsDir, chromePath: config.chromePath }, destPath)
-  return destPath
+  await printPdf(
+    { html, docDir: document.docDir, chromePath: invocation.chrome.path },
+    document.outPath,
+  )
+  return document.outPath
 }
 
 export async function build(args: readonly string[]): Promise<number> {
   const invocation = parse(args)
+  announceChrome(invocation.chrome)
 
-  for (const file of invocation.files) {
-    const page = pageFor(invocation.config, file)
-    const destPath = await buildOne(invocation, file)
-    console.log(`${file} → ${relative(process.cwd(), destPath)} (${page.format})`)
+  for (const document of invocation.documents) {
+    await buildOne(invocation, document)
+    console.log(
+      `${document.key} → ${relative(process.cwd(), document.outPath)} (${document.page.format})`,
+    )
   }
 
   return 0

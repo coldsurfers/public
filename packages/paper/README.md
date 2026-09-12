@@ -3,31 +3,53 @@
 마크다운을 **지면으로 굽는** CLI. 산출물은 PDF 하나다.
 
 ```bash
-paper build              # 설정의 files 를 전부 굽는다
-paper build a.md b.md    # 이것만
+paper build a.md         # 설정 없이 바로
+paper build              # 설정의 files 를 전부
 paper watch              # 저장하면 다시 굽는다
 paper check              # 없는 이미지 · 빈 장을 찾는다 (있으면 exit 1)
 ```
 
-설정은 `paper.config.json` 에서 읽는다. `--config <경로>` 로 바꾼다.
+PDF 는 문서 옆 `pdf/` 에 떨어진다.
+
+## Chromium
+
+**브라우저를 내려받지 않는다.** 깔려 있는 것을 찾아 쓴다 — macOS · Windows · Linux 의 표준
+설치 경로를 훑고, Chrome 이 없으면 Chromium 이나 Edge 도 받는다.
+
+경로를 직접 주려면 둘 중 하나다. 앞의 것이 이긴다.
+
+```bash
+PAPER_CHROME_PATH=/path/to/chrome paper build a.md
+```
+
+```json
+{ "chromePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" }
+```
+
+환경변수가 설정보다 앞인 이유는 **커밋되지 않는 값이기 때문**이다. 실행 경로는 기계마다
+다른데 설정 파일은 레포에 들어간다 — 팀이 공유하는 설정을 개인 기계가 덮을 수 있어야 한다.
+
+## 설정
+
+**없어도 된다.** 매번 같은 문서 묶음을 굽는 소비처의 편의 수단이다. 기본은
+`paper.config.json` 이고 `--config <경로>` 로 바꾼다. 필드는 전부 선택이다.
 
 ```json
 {
   "docsDir": "docs",
   "outDir": "docs/pdf",
   "theme": "coldsurf",
-  "chromePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "page": { "format": "A4", "marginY": 14, "marginX": 12 },
   "files": ["one.md", "two.md"],
   "overrides": { "wide.md": { "format": "A3" } }
 }
 ```
 
+**인자로 준 경로는 실행 위치 기준, 설정의 `files` 는 `docsDir` 기준이다.** 셸에서 탭 완성으로
+얻는 경로는 실행 위치 기준이고, 설정에 적는 목록은 그 설정이 가리키는 디렉터리 기준이다.
+
 `theme` 은 `coldsurf` 이거나 테마 CSS 파일 경로다. 무엇을 채워야 하는지는
 `src/tokens/contract.ts` 가 목록으로 갖고 있다.
-
-**브라우저를 내려받지 않는다.** `chromePath` 가 가리키는 Chromium 을 쓴다 — 발행 패키지가
-250MB 를 강제하지 않는 자리다.
 
 ## 왜 있는가
 

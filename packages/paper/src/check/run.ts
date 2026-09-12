@@ -6,8 +6,8 @@
  * 전에 잡는다.
  */
 import { existsSync, readFileSync } from 'node:fs'
-import { isAbsolute, join, resolve } from 'node:path'
-import type { PageConfig } from '../config.js'
+import { isAbsolute, join } from 'node:path'
+import type { Document } from '../commands/shared.js'
 import { imageSources, renderHtml } from '../render/html.js'
 import { pdfBuffer } from '../render/pdf.js'
 import { blankPages } from './blank-pages.js'
@@ -32,18 +32,17 @@ function missingImages(markdown: string, docDir: string): readonly Finding[] {
 }
 
 export async function checkDocument(input: {
-  readonly file: string
-  readonly docsDir: string
+  readonly document: Document
   readonly theme: string
-  readonly page: PageConfig
   readonly chromePath: string
 }): Promise<CheckResult> {
-  const markdown = readFileSync(resolve(input.docsDir, input.file), 'utf8')
-  const findings: Finding[] = [...missingImages(markdown, input.docsDir)]
+  const { document } = input
+  const markdown = readFileSync(document.srcPath, 'utf8')
+  const findings: Finding[] = [...missingImages(markdown, document.docDir)]
 
   const pdf = await pdfBuffer({
-    html: renderHtml({ markdown, theme: input.theme, page: input.page }),
-    docDir: input.docsDir,
+    html: renderHtml({ markdown, theme: input.theme, page: document.page }),
+    docDir: document.docDir,
     chromePath: input.chromePath,
   })
 
@@ -58,5 +57,5 @@ export async function checkDocument(input: {
     findings.push({ kind: 'blank-page', detail: `${pageNumber}장 — 읽을 게 없다` })
   }
 
-  return { file: input.file, pageCount, findings }
+  return { file: document.key, pageCount, findings }
 }
