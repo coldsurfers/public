@@ -34,13 +34,18 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node build.mjs",
     "dev": "vite build --watch",
     "check:type": "tsc --noEmit"
   },
   "devDependencies": {
+    "@coldsurfers/design-system": "workspace:*",
     "@types/node": "^22.10.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14"
+  },
+  "dependencies": {
+    "marked": "^18.0.0",
+    "puppeteer-core": "^25.10.0"
   }
 }
