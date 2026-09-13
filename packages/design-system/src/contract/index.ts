@@ -50,6 +50,7 @@ export {
   type ConcertCardVariant,
 } from './concert-card'
 export { SKELETON_SPEC, type SkeletonTone } from './skeleton'
+export { getSpinnerGeometry, SPINNER_SPEC } from './spinner'
 export {
   TEXT_STYLE_SPEC,
   type TextStyleName,

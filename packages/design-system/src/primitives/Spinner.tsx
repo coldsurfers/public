@@ -1,3 +1,4 @@
+import { getSpinnerGeometry, SPINNER_SPEC } from '../contract'
 import { cx } from './cx'
 import {
   spinnerArc,
@@ -15,21 +16,19 @@ import {
  * Figma 컴포넌트 프로퍼티 대응:
  *   `라벨 표시`(BOOLEAN) → `label` 유무. 없으면(기본) 스피너만 = off 상태.
  *   `문구`(TEXT)         → `label` 값.
+ *
+ * 치수는 native 판과 **같은 표를 읽는다** — `contract/spinner.ts` 의 `SPINNER_SPEC`.
  */
 export type SpinnerProps = {
-  /** 지름(px). 기본 30 — Figma 로더 값. */
+  /** 지름(px). 기본은 `SPINNER_SPEC.size` — Figma 로더 값. */
   size?: number
   /** 있으면 스피너 아래 muted 라벨을 렌더. 없으면(기본) 스피너만(Figma `라벨 표시` off). */
   label?: string
   className?: string
 }
 
-const STROKE = 3
-
-export function Spinner({ size = 30, label, className }: SpinnerProps) {
-  const r = (size - STROKE) / 2
-  const circ = 2 * Math.PI * r
-  const arc = circ * 0.75 // 270° sweep — Figma arcData
+export function Spinner({ size = SPINNER_SPEC.size, label, className }: SpinnerProps) {
+  const { radius, circumference, arc } = getSpinnerGeometry(size)
 
   return (
     <div role="status" className={cx(spinnerRoot, className)}>
@@ -42,14 +41,20 @@ export function Spinner({ size = 30, label, className }: SpinnerProps) {
         aria-hidden
         className={spinnerSvg}
       >
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={STROKE} className={spinnerTrack} />
         <circle
           cx={size / 2}
           cy={size / 2}
-          r={r}
-          strokeWidth={STROKE}
+          r={radius}
+          strokeWidth={SPINNER_SPEC.strokeWidth}
+          className={spinnerTrack}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={SPINNER_SPEC.strokeWidth}
           strokeLinecap="round"
-          strokeDasharray={`${arc} ${circ - arc}`}
+          strokeDasharray={`${arc} ${circumference - arc}`}
           className={spinnerArc}
         />
       </svg>
