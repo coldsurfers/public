@@ -26,8 +26,12 @@ export const GetEventsQueryStringDTOSchema = OffsetPaginationDTOSchema.extend({
   longitude: z.coerce.number().optional(),
   /**
    * @TODO: locationCityId should be replaced by locationCityName
+   *
+   * `uuid()` 를 걸지 않는다 — `LocationCity.id` 에 RFC 4122 variant 를 벗어난 값이 이미
+   * 실려 있고(`jeollanam-do` · `jeollabuk-do`), 같은 패키지의 `location.dto.ts` 도 이 id 를
+   * 내보낼 때 `z.string()` 으로 둔다. 받을 때만 조이면 서버가 자기가 준 값을 거부한다.
    */
-  locationCityId: z.string().uuid().optional(),
+  locationCityId: z.string().optional(),
   locationCityName: z.string().optional(),
   eventCategoryName: z.string().optional(),
 })
@@ -69,7 +73,8 @@ const BaseDraftEventDataDTOSchema = z.object({
   detailImageIds: z.array(z.string().uuid()).optional(),
   ticketIds: z.array(z.string().uuid()).optional(),
   eventCategoryId: z.string().uuid().optional(),
-  locationCityId: z.string().uuid().optional(),
+  /** `GetEventsQueryStringDTOSchema` 와 같은 이유로 uuid 를 걸지 않는다. */
+  locationCityId: z.string().optional(),
 })
 
 export const DraftEventDataDTOSchema = BaseDraftEventDataDTOSchema
@@ -113,7 +118,8 @@ export const DeleteEventParamsDTOSchema = z.object({
 export type DeleteEventParamsDTO = z.infer<typeof DeleteEventParamsDTOSchema>
 
 export const GetRecommendedEventsQueryStringDTOSchema = z.object({
-  locationCityId: z.string().uuid().optional(),
+  /** `GetEventsQueryStringDTOSchema` 와 같은 이유로 uuid 를 걸지 않는다. */
+  locationCityId: z.string().optional(),
   eventCategoryId: z.string().uuid().optional(),
 })
 export type GetRecommendedEventsQueryStringDTO = z.infer<
