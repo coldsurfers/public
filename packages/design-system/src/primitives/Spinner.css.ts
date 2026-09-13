@@ -1,4 +1,5 @@
 import { keyframes, style } from '@vanilla-extract/css'
+import { SPINNER_SPEC } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 
@@ -8,7 +9,7 @@ export const spinnerRoot = style(
     display: 'inline-flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 14,
+    gap: SPINNER_SPEC.gap,
   }),
 )
 
@@ -19,7 +20,7 @@ const spin = keyframes({
 export const spinnerSvg = style(
   inComponentsLayer({
     animationName: spin,
-    animationDuration: '1s',
+    animationDuration: `${SPINNER_SPEC.spinDurationMs}ms`,
     animationTimingFunction: 'linear',
     animationIterationCount: 'infinite',
   }),
@@ -34,7 +35,7 @@ export const spinnerArc = style(inComponentsLayer({ stroke: vars.color.accent })
 export const spinnerLabel = style(
   inComponentsLayer({
     fontWeight: vars.fontWeight.medium,
-    fontSize: 13,
+    fontSize: SPINNER_SPEC.labelFontSize,
     color: vars.color.muted,
   }),
 )

@@ -1,26 +1,39 @@
 import styled from '@emotion/native'
-import { ActivityIndicator } from 'react-native'
-import { nativeSpacing } from '../tokens/native'
+import { useEffect } from 'react'
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated'
+import Svg, { Circle } from 'react-native-svg'
+import { getSpinnerGeometry, SPINNER_SPEC } from '../contract'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
 /**
- * 로딩 표시 — 웹 `primitives/Spinner` 와 **같은 prop 이름**(`size`·`label`)을 쓴다.
+ * 로딩 표시 — 웹 `primitives/Spinner` 와 **같은 prop 이름**(`size`·`label`)을 쓰고,
+ * 같은 링을 그린다. light 트랙 링 + `accent` 270° 아크.
  *
- * 웹은 SVG 로 270° 아크를 직접 그리지만 RN 판은 플랫폼 인디케이터를 쓴다. 시안 아크를
- * 재현하려면 `react-native-svg` 를 물어야 하는데, **로더 하나를 위해 소비자에게 네이티브
- * 의존을 하나 더 지우는 것**이라 그 값은 안 낸다. 색(accent)만 맞춘다.
+ * 치수는 양쪽이 같은 표를 읽는다 — `contract/spinner.ts` 의 `SPINNER_SPEC`.
  *
- * (`PullToRefresh` 가 들어오면서 `react-native-svg` 가 optional peer 로 열리긴 했다. 그래도
- * 여기서 쓰지 않는 이유는 같다 — optional 은 *안 쓰면 안 물어도 된다* 는 뜻이라, 이 흔한
- * 로더가 쓰는 순간 사실상 필수가 된다.)
+ * 한때 이 자리는 `ActivityIndicator` 였다. 아크를 그리려면 `react-native-svg` 를 물어야 하는데
+ * "로더 하나 때문에 소비자에게 네이티브 의존을 지우는 값은 안 낸다" 는 판단이었다. 그 판단이
+ * 뒤집힌 근거는 둘이다 — (1) `PullToRefresh` 가 이미 svg 를 optional peer 로 열었고,
+ * (2) 플랫폼 인디케이터로는 **`size` 가 iOS 에서 무시돼**(`UIActivityIndicatorView` 는 두 단계뿐)
+ * 시안과 픽셀로 맞출 수가 없었다. 소비처가 자기 로더를 따로 드는 걸 막는 게 이 컴포넌트의 일이다.
  *
- * ⚠️ `size` 의 숫자는 **Android 에서만** 반영된다. iOS 의 `UIActivityIndicatorView` 는
- * 크기가 두 단계뿐이라 RN 이 `small`/`large` 로 접는다. 시안과 픽셀로 맞춰야 하는 자리면
- * 이 컴포넌트가 아니라 그 표면이 자기 로더를 든다.
+ * ⚠️ 이 표면은 `react-native-svg` · `react-native-reanimated` 를 **실제로 문다.** 둘 다
+ * optional peer 라 native 레인을 쓰는 소비처는 이미 들고 있지만, 배럴이 아니라
+ * `native/Spinner` 진입점으로 열면 안 쓰는 화면까지 끌고 오지 않는다.
+ *
+ * `'worklet'` 을 손으로 적는 이유는 `PullToRefresh` 와 같다 — 워클릿 플러그인이 호출부의
+ * *로컬 식별자 이름*으로 대상을 고르는데, 라이브러리는 컴파일돼 나가므로 그 이름이 살아 있다는
+ * 보장이 소비처의 번들 설정에 달린다.
  */
 export interface SpinnerProps {
-  /** 지름(px). 기본 30 — 웹과 같은 값. iOS 는 위 주의 참조. */
+  /** 지름(px). 기본은 `SPINNER_SPEC.size` — 웹과 같은 값. */
   size?: number
   /** 있으면 스피너 아래 muted 라벨을 렌더. 없으면 스피너만. */
   label?: string
@@ -29,16 +42,53 @@ export interface SpinnerProps {
 const Root = styled.View({
   alignItems: 'center',
   justifyContent: 'center',
-  gap: nativeSpacing[2],
+  gap: SPINNER_SPEC.gap,
 })
 
-export function Spinner({ size = 30, label }: SpinnerProps) {
+export function Spinner({ size = SPINNER_SPEC.size, label }: SpinnerProps) {
   const scheme = useScheme()
+  const { radius, circumference, arc } = getSpinnerGeometry(size)
+  const rotation = useSharedValue(0)
+
+  useEffect(() => {
+    rotation.value = withRepeat(
+      withTiming(360, { duration: SPINNER_SPEC.spinDurationMs, easing: Easing.linear }),
+      -1,
+    )
+  }, [rotation])
+
+  const spinStyle = useAnimatedStyle(() => {
+    'worklet'
+    return { transform: [{ rotate: `${rotation.value}deg` }] }
+  })
+
   return (
     <Root accessibilityRole="progressbar" accessibilityLabel={label}>
-      <ActivityIndicator size={size} color={scheme.accent} />
+      {/* 웹은 SVG 노드에 CSS 키프레임을 걸지만 RN 은 SVG 를 못 돌려 감싼 뷰를 돌린다. */}
+      <Animated.View style={[{ width: size, height: size }, spinStyle]}>
+        <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={scheme.border}
+            strokeWidth={SPINNER_SPEC.strokeWidth}
+            fill="none"
+          />
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={scheme.accent}
+            strokeWidth={SPINNER_SPEC.strokeWidth}
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray={`${arc} ${circumference - arc}`}
+          />
+        </Svg>
+      </Animated.View>
       {label ? (
-        <Text size="sm" tone="muted">
+        <Text weight="medium" tone="muted" style={{ fontSize: SPINNER_SPEC.labelFontSize }}>
           {label}
         </Text>
       ) : null}
