@@ -108,7 +108,8 @@ export const FindManyConcertDTOSchema = z.object({
   take: z.number(),
   skip: z.number(),
   venueGeohash: z.string().nullable(),
-  locationCityId: z.string().uuid().nullable(),
+  /** `event.dto.ts` 의 `GetEventsQueryStringDTOSchema` 와 같은 이유로 uuid 를 걸지 않는다. */
+  locationCityId: z.string().nullable(),
   eventCategoryName: z.string().nullable(),
   locationCityName: z.string().nullable(),
   userId: z.string().uuid().optional(),
