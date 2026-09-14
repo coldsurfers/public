@@ -8,7 +8,18 @@
  */
 export { type ColorToken, color } from './color'
 export { cssVar, type TokenGroup, tokenVarName, varPrefix } from './css-var'
-export { border, type SizeToken, type SpacingToken, size, spacing } from './layout'
+export {
+  border,
+  dashArray,
+  type GapToken,
+  gap,
+  type PadToken,
+  pad,
+  type SizeToken,
+  type SpacingToken,
+  size,
+  spacing,
+} from './layout'
 export {
   type FontFamilyToken,
   type FontSizeToken,
@@ -50,7 +61,7 @@ export const themeVars: Record<string, string> = {
   ...toVars('fontWeight', fontWeight, raw),
   ...toVars('spacing', spacing, px),
   ...toVars('size', size, px),
-  ...toVars('border', { hairline: px(border.hairline), dashArray: border.dashArray }, raw),
+  ...toVars('border', border, px),
 }
 
 /** 자주 쓰는 참조 몇 개. 전부 `cssVar(group, key)` 로도 만들 수 있다. */
