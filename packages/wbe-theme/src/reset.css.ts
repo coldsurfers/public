@@ -1,9 +1,6 @@
 import { globalStyle } from '@vanilla-extract/css'
 import { resetLayer } from './layers'
-import { declareLayerOrder } from './layers.css'
 import { vars } from './theme.css'
-
-declareLayerOrder()
 
 /**
  * 최소 리셋. 지면이 다크 고정이라 **바탕과 글자색을 여기서 못박는다** —

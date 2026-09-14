@@ -35,9 +35,13 @@ export type HairlineVariants = RecipeVariants<typeof hairline>
  * 아직 아무것도 걸리지 않은 릴리즈 자리.
  *
  * ⚠️ 시안의 점선은 6/6 패턴인데 CSS `border-style: dashed` 는 패턴을 지정할 수 없다.
- * 그래서 `repeating-linear-gradient` 로 네 변을 직접 그린다 — `border.dashArray` 가
- * 그대로 반영되는 유일한 길이다.
+ * 그래서 `repeating-linear-gradient` 로 네 변을 직접 그린다 — `border.dash`·`border.dashGap`
+ * 이 그대로 반영되는 유일한 길이다.
  */
+const dashPeriod = `calc(${vars.border.dash} + ${vars.border.dashGap})`
+const dashLine = (direction: 'to right' | 'to bottom') =>
+  `repeating-linear-gradient(${direction}, ${vars.color.line} 0 ${vars.border.dash}, transparent ${vars.border.dash} ${dashPeriod})`
+
 export const dashedSlot = style({
   '@layer': {
     [componentsLayer]: {
@@ -45,12 +49,17 @@ export const dashedSlot = style({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundImage: [
-        `repeating-linear-gradient(to right, ${vars.color.line} 0 6px, transparent 6px 12px)`,
-        `repeating-linear-gradient(to right, ${vars.color.line} 0 6px, transparent 6px 12px)`,
-        `repeating-linear-gradient(to bottom, ${vars.color.line} 0 6px, transparent 6px 12px)`,
-        `repeating-linear-gradient(to bottom, ${vars.color.line} 0 6px, transparent 6px 12px)`,
+        dashLine('to right'),
+        dashLine('to right'),
+        dashLine('to bottom'),
+        dashLine('to bottom'),
       ].join(', '),
-      backgroundSize: '100% 1px, 100% 1px, 1px 100%, 1px 100%',
+      backgroundSize: [
+        `100% ${vars.border.hairline}`,
+        `100% ${vars.border.hairline}`,
+        `${vars.border.hairline} 100%`,
+        `${vars.border.hairline} 100%`,
+      ].join(', '),
       backgroundPosition: 'top left, bottom left, top left, top right',
       backgroundRepeat: 'no-repeat',
     },

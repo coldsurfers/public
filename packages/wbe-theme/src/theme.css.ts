@@ -12,9 +12,7 @@ import {
   tokenVarName,
 } from '@coldsurfers/wbe-tokens'
 import { createGlobalTheme, createGlobalThemeContract } from '@vanilla-extract/css'
-import { declareLayerOrder } from './layers.css'
-
-declareLayerOrder()
+import './layers.css'
 
 /** 스케일의 키만 남기고 값을 비운다 — contract 모양을 토큰에서 그대로 따온다. */
 function nullify<T extends Record<string, unknown>>(scale: T): { [K in keyof T]: null } {
@@ -69,5 +67,5 @@ createGlobalTheme(':root', vars, {
   fontWeight: toText(fontWeight),
   spacing: toPx(spacing),
   size: toPx(size),
-  border: { hairline: `${border.hairline}px`, dashArray: border.dashArray },
+  border: toPx(border),
 })

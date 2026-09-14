@@ -32,7 +32,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "check:exports": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",
@@ -43,6 +44,7 @@
     "@vanilla-extract/sprinkles": "^1.7.1"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@coldsurfers/wbe-tokens": "workspace:*",
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "typescript": "~5.9.3",
