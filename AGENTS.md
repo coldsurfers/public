@@ -44,7 +44,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
   배럴에 넣으면 `vars` 한 줄 쓰는 소비처까지 38 kB 를 문다(`index.js` 3.2 → 41.2 kB 실측).
 - **버전은 changeset 으로만 올린다.** `package.json` 의 `version` 을 손으로 만지지 않는다.
 - **이미 발행 중이다.** `design-system` · `markdown-renderer` 둘 다 GitHub Packages 에 올라가 있고
-  (`publishConfig.registry`), paul-rockstar 의 앱 셋이 레지스트리에서 물어간다. `private: true` 는
+  (`publishConfig.registry`), 사내 앱 셋이 레지스트리에서 물어간다. `private: true` 는
   루트에만 남아 있다. **`exports` 를 빼거나 경로를 바꾸면 그 순간 major 다.**
 
 ## 문서 사이트가 계약 검증이다
@@ -65,7 +65,7 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 
 ⚠️ **`primitives` 배럴에는 `'use client'` 가 없다.** 그래서 RSC 소비자는 서버 컴포넌트에서
 직접 import 할 수 없고, 경계를 자기가 그어야 한다(문서의 `examples/*` 가 전부 `'use client'` 인
-이유). Vite 소비처(paul-rockstar)에선 안 드러나던 축이다 — 열지 말지는 아직 안 정했다.
+이유). Vite 소비처에선 안 드러나던 축이다 — 열지 말지는 아직 안 정했다.
 
 ## 무엇을 여기로 옮기는가
 
@@ -83,14 +83,14 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 
 ## 지금 어디까지 왔나
 
-정본 로드맵: [coldsurfers/paul-rockstar#220](https://github.com/coldsurfers/paul-rockstar/issues/220)
+정본 로드맵은 사내 이슈 트래커에 있다.
 
 - [x] **P0 — 레포 뼈대.** 워크스페이스 · 빌드 · CI · 릴리스 레인
 - [x] **P1 — 경계 확정.** 브랜드 테마 ↔ 범용 축 분리선. `live-surface.ts` 의 warm-paper 헬퍼 귀속
       → [`docs/p1-boundary.md`](docs/p1-boundary.md)
 - [x] **P2 — 병합.** `tokens` + `design-system` 을 한 패키지로. 이름 규칙 소비처 2곳 → 1곳
 - [ ] **P3 — primitives 흡수.** 상한 규칙을 먼저 적고, 그다음 컨트롤 편입
-- [x] **P4 — 공개 배포.** `private` 해제 · GitHub Packages 발행 · paul-rockstar 소비 경로 전환
+- [x] **P4 — 공개 배포.** `private` 해제 · GitHub Packages 발행 · 사내 소비 경로 전환
 - [x] **P5 — 문서 사이트.** `apps/docs` (Fumadocs 정적 · Cloudflare). Foundations 4 + primitives 19
 
 P3 의 컨트롤을 편입할지 판정하기 전에 `docs/p1-boundary.md` 를 읽는다 — 어느 축이 열리고
