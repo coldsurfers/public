@@ -40,17 +40,24 @@ CSS 는 진입점이 물고 온다 — `styles.css` 를 따로 import 하지 않
 3. **sprinkles 값 이름은 토큰 키 그대로**(`paddingX: 'padPage'`). 사전을 한 벌 더 만들면
    토큰이 바뀔 때 조용히 어긋난다.
 4. **점선은 `repeating-linear-gradient` 로 그린다.** CSS `border-style: dashed` 는 패턴을
-   지정할 수 없어 토큰 `border.dashArray`(6/6)가 반영되지 않는다.
+   지정할 수 없다. 네 변을 직접 그려 `border.dash`·`border.dashGap` 을 그대로 반영한다.
 
 ## 빌드 배선
 
-- `wbe-tokens` 는 **external 이 아니다**(devDependency) — 값이 번들에 인라인되므로
-  이 패키지를 발행할 때 토큰 패키지를 같이 공개하지 않아도 된다.
+- `wbe-tokens` 는 **external 이다**(dependency) — 값만 보면 인라인해도 되지만 발행되는
+  `.d.ts` 가 토큰 패키지를 타입으로 물어서, 소비처가 열 수 있는 자리에 있어야 한다.
 - `@fontsource/*` 는 **external 이다.** 번들에 넣으면 폰트 바이너리가 우리 `dist` 로 들어온다.
 - `fonts.ts` 는 `.d.ts` 를 만들지 않는다 — 부수효과만 있는 모듈이라 빈 선언이 되고,
   api-extractor 가 거기서 죽는다. `exports` 맵에서도 `types` 가 없다.
 
-## 상태
+## 발행
 
-**비발행(`private: true`)이다.** 소비처는 paul-rockstar 의 WBE Cloudflare Workers 페이지가
-첫 번째가 된다. 발행 전환 시엔 `publishConfig` · changeset · `check:exports` 가 같이 온다.
+GitHub Packages(`@coldsurfers` 스코프)로 나간다. 첫 소비처는 WBE Cloudflare Workers 페이지다.
+
+```
+npm config set @coldsurfers:registry https://npm.pkg.github.com
+npm i @coldsurfers/wbe-theme
+```
+
+발행 표면은 `dist` 하나고, 진입점 넷(`.` · `./sprinkles` · `./fonts` · `./layers`)은
+`check:exports`(attw)가 지킨다. **`exports` 에서 경로를 빼는 순간 major 다.**

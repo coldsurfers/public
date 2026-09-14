@@ -1,14 +1,30 @@
 {
   "name": "@coldsurfers/wbe-theme",
   "version": "0.0.0",
-  "private": true,
   "description": "WHITE BLIND EYE theme layer — CSS variables, self-hosted fonts, and vanilla-extract recipes.",
+  "keywords": [
+    "vanilla-extract",
+    "design-tokens",
+    "white-blind-eye",
+    "coldsurf"
+  ],
   "license": "MIT",
   "type": "module",
   "sideEffects": [
     "**/*.css",
     "**/*.css.ts"
   ],
+  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/wbe-theme",
+  "bugs": "https://github.com/coldsurfers/public/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coldsurfers/public.git",
+    "directory": "packages/wbe-theme"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
   "files": [
     "dist"
   ],
@@ -36,6 +52,7 @@
     "check:exports": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
   },
   "dependencies": {
+    "@coldsurfers/wbe-tokens": "workspace:*",
     "@fontsource/archivo-black": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/noto-sans-kr": "^5.3.0",
@@ -45,7 +62,6 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@coldsurfers/wbe-tokens": "workspace:*",
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "typescript": "~5.9.3",
     "vite": "^7.1.14",

@@ -5,8 +5,9 @@ import dts from 'vite-plugin-dts'
 /**
  * 라이브러리 빌드 — `.css.ts` 를 여기서 컴파일해 내보낸다. 소비자는 VE 플러그인을 달지 않는다.
  *
- * `@coldsurfers/wbe-tokens` 는 external 이 **아니다**(devDependency). 값이 번들에 인라인되므로
- * 이 패키지를 발행할 때 토큰 패키지를 같이 공개하지 않아도 된다.
+ * `@coldsurfers/wbe-tokens` 는 external 이다. 값만 보면 인라인해도 되지만, 발행되는 `.d.ts` 가
+ * 토큰 패키지를 **타입으로 문다**(`export { color } from '@coldsurfers/wbe-tokens'`). JS 만 보고
+ * 판단하면 소비처의 타입이 없는 패키지를 가리키게 된다 — 그래서 런타임 의존으로 선언한다.
  *
  * `@fontsource/*` 는 반대로 external 이다. 번들에 넣으면 폰트 바이너리가 우리 `dist` 로
  * 들어오는데, 그건 소비처 번들러가 자기 asset 파이프라인으로 처리해야 할 몫이다.
@@ -54,7 +55,7 @@ export default defineConfig({
     },
     cssCodeSplit: false,
     rollupOptions: {
-      external: [/^@fontsource\//],
+      external: [/^@fontsource\//, /^@coldsurfers\/wbe-tokens($|\/)/],
       plugins: [injectStylesImport],
       output: {
         assetFileNames: (asset) =>
