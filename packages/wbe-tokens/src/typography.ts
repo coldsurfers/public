@@ -5,10 +5,14 @@
  *   body     Noto Sans KR     한국어 산문
  *
  * 둘 다 OFL 이라 웹폰트로 실을 수 있다. 패키지는 파일을 싣지 않고 이름만 갖는다.
+ *
+ * `display` · `mono` 는 **영문 전용**이다 — 한글 글리프가 없다. 폰트 대체는 글자 단위라
+ * 한글이 섞여 들어오면 그 글자만 뒤로 넘어가는데, 체인 끝이 `sans-serif` 면 기기마다
+ * 다른 시스템 폰트가 나온다. 그래서 셋 다 `Noto Sans KR`(= `body` 의 얼굴)로 받는다.
  */
 export const fontFamily = {
-  display: "'Archivo Black', 'Arial Black', Helvetica, sans-serif",
-  mono: "'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace",
+  display: "'Archivo Black', 'Arial Black', 'Noto Sans KR', Helvetica, sans-serif",
+  mono: "'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, 'Noto Sans KR', monospace",
   body: "'Noto Sans KR', system-ui, -apple-system, sans-serif",
 } as const
 
