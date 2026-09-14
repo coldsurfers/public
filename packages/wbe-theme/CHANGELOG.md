@@ -1,5 +1,11 @@
 # @coldsurfers/wbe-theme
 
+## 0.2.0
+
+### Minor Changes
+
+- [#146](https://github.com/coldsurfers/public/pull/146) [`b245533`](https://github.com/coldsurfers/public/commit/b245533a9bbb1d2f7919e851c8ec0de1572f2644) Thanks [@yungblud](https://github.com/yungblud)! - 토큰 값을 `wbe-theme` 레이어 안에서 찍는다. 레이어 밖이었을 때는 소비처의 반응형 재선언(`@media { :root { … } }`)과 특이성이 같아 나중에 로드된 쪽이 이겼고, 그 순서를 소비처 번들러가 정해서 재선언이 통째로 죽는 일이 있었다. 리셋에 `a` 도 추가한다 — 기본 파랑/보라 밑줄이 다크 팔레트를 그 자리에서만 깨뜨렸다.
+
 ## 0.1.0
 
 ### Minor Changes
