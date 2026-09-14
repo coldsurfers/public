@@ -9,12 +9,15 @@ import { defineConfig } from 'vite'
  * 인쇄 CSS 는 번들에 넣지 않고 `build.mjs` 가 `dist/css/` 로 그대로 옮긴다. CSS 를 JS 문자열로
  * 굽는 순간 하이라이팅도 포매터도 안 걸리는데, 그게 이 패키지를 만든 이유였다.
  *
- * `contract` 를 따로 굽는 이유: 계약의 정본은 TS 인데 `build.mjs`(node)가 그걸 읽어야 한다.
- * 목록을 두 벌로 적는 대신 빌드 산출물을 읽게 한다.
+ * `contract` · `config` 를 따로 굽는 이유: 정본은 TS 인데 `build.mjs`(node)가 그걸 읽어야 한다.
+ * 목록과 스키마를 두 벌로 적는 대신 빌드 산출물을 읽게 한다.
  */
 export default defineConfig({
   build: {
-    lib: { entry: { cli: 'src/cli.ts', contract: 'src/tokens/contract.ts' }, formats: ['es'] },
+    lib: {
+      entry: { cli: 'src/cli.ts', contract: 'src/tokens/contract.ts', config: 'src/config.ts' },
+      formats: ['es'],
+    },
     rollupOptions: {
       // 의존은 번들에 넣지 않는다. `dependencies` 에 적힌 것은 소비자가 설치할 때 같이
       // 내려오고, 사본을 하나 더 만들 이유가 없다. node 빌트인도 마찬가지 — 안 빼면

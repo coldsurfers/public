@@ -7,6 +7,7 @@ paper build a.md         # 설정 없이 바로
 paper build              # 설정의 files 를 전부
 paper watch              # 저장하면 다시 굽는다
 paper check              # 없는 이미지 · 빈 장을 찾는다 (있으면 exit 1)
+paper init               # 설정 파일을 쓴다 (필요할 때만)
 ```
 
 PDF 는 문서 옆 `pdf/` 에 떨어진다.
@@ -34,8 +35,18 @@ PAPER_CHROME_PATH=/path/to/chrome paper build a.md
 **없어도 된다.** 매번 같은 문서 묶음을 굽는 소비처의 편의 수단이다. 기본은
 `paper.config.json` 이고 `--config <경로>` 로 바꾼다. 필드는 전부 선택이다.
 
+같은 문서 묶음을 반복해서 굽게 됐을 때 `paper init` 으로 만든다. 여기서 복붙하지 않는 이유는
+**`init` 이 `$schema` 를 박기 때문**이다 — 그 한 줄이 박히면 그 다음부터 에디터가 필드 이름과
+`format` 이 받는 값을 안다. 손으로 쓰면 자동완성을 켜는 값을 자동완성 없이 먼저 쳐야 한다.
+
+```bash
+paper init                                   # ./paper.config.json
+paper init --config docs/paper.config.json   # 다른 자리에
+```
+
 ```json
 {
+  "$schema": "./node_modules/@coldsurfers/paper/dist/schema.json",
   "docsDir": "docs",
   "outDir": "docs/pdf",
   "theme": "coldsurf",
@@ -44,6 +55,10 @@ PAPER_CHROME_PATH=/path/to/chrome paper build a.md
   "overrides": { "wide.md": { "format": "A3" } }
 }
 ```
+
+`$schema` 는 설치된 패키지를 **상대경로로** 가리킨다. `init` 이 설정을 쓰는 자리에서 위로
+올라가며 실제 파일을 찾아 계산하므로 설치된 버전과 어긋나지 않는다 — 대신 설정 파일을 다른
+깊이로 옮기면 `../` 수가 안 맞는다. 스키마는 `src/config.ts` 에서 파생한다.
 
 **인자로 준 경로는 실행 위치 기준, 설정의 `files` 는 `docsDir` 기준이다.** 셸에서 탭 완성으로
 얻는 경로는 실행 위치 기준이고, 설정에 적는 목록은 그 설정이 가리키는 디렉터리 기준이다.

@@ -45,10 +45,20 @@ function toDocument(config: PaperConfig, key: string, srcPath: string): Document
   }
 }
 
-export function parse(args: readonly string[]): Invocation {
+/**
+ * `--config <경로>` 를 떼어낸다. 나머지는 커맨드가 알아서 읽는다 — `build` 는 문서 목록으로,
+ * `init` 은 있으면 안 되는 것으로 읽는다.
+ *
+ * `explicit` 은 **사람이 가리켰는가**다. 가리킨 파일이 없으면 실패이고, 아예 안 쓴 것은 기본값이다.
+ */
+export function splitConfigArg(args: readonly string[]): {
+  readonly configPath: string
+  readonly explicit: boolean
+  readonly rest: readonly string[]
+} {
   const rest: string[] = []
   let configPath = 'paper.config.json'
-  let explicitConfig = false
+  let explicit = false
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i]
@@ -56,14 +66,20 @@ export function parse(args: readonly string[]): Invocation {
       const value = args[i + 1]
       if (value === undefined) throw new Error('--config 뒤에 경로가 필요하다.')
       configPath = value
-      explicitConfig = true
+      explicit = true
       i += 1
       continue
     }
     if (arg !== undefined) rest.push(arg)
   }
 
-  const config = loadConfig(configPath, explicitConfig)
+  return { configPath, explicit, rest }
+}
+
+export function parse(args: readonly string[]): Invocation {
+  const { configPath, explicit, rest } = splitConfigArg(args)
+
+  const config = loadConfig(configPath, explicit)
 
   const documents =
     rest.length > 0
