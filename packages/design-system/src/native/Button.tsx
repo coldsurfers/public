@@ -58,7 +58,7 @@ const SIZES = {
   cta: { height: 46, paddingHorizontal: 22, fontSize: 15, radius: 10 },
 } as const
 
-/** 웹 variant 표와 1:1. `accent` 의 흰 글씨는 웹과 같은 리터럴이다(스킴을 안 탄다). */
+/** 웹 variant 표와 1:1. `accent`·`danger` 의 흰 글씨는 웹과 같은 리터럴이다(스킴을 안 탄다). */
 const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
   switch (variant) {
     case 'primary':
@@ -69,6 +69,8 @@ const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
       return { backgroundColor: scheme.accent }
     case 'outline':
       return { backgroundColor: 'white', borderWidth: 1, borderColor: scheme.border }
+    case 'danger':
+      return { backgroundColor: scheme.statusDanger }
   }
 }
 
@@ -82,6 +84,8 @@ const labelColorFor = (scheme: ColorScheme, variant: ButtonVariant): string => {
       return 'white'
     case 'outline':
       return scheme.text
+    case 'danger':
+      return 'white'
   }
 }
 

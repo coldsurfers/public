@@ -37,6 +37,8 @@ const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
       return { backgroundColor: scheme.accent }
     case 'outline':
       return { backgroundColor: 'white', borderWidth: 1, borderColor: scheme.border }
+    case 'danger':
+      return { backgroundColor: scheme.statusDanger }
   }
 }
 
