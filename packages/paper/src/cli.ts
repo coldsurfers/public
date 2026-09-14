@@ -6,6 +6,7 @@
  */
 import { build } from './commands/build.js'
 import { check } from './commands/check.js'
+import { init } from './commands/init.js'
 import { watch } from './commands/watch.js'
 
 type Command = {
@@ -17,6 +18,7 @@ const COMMANDS: Readonly<Record<string, Command>> = {
   build: { summary: '문서를 PDF 로 굽는다', run: build },
   watch: { summary: '저장하면 다시 굽는다', run: watch },
   check: { summary: '깨진 이미지 · 지면을 넘는 그림을 찾는다', run: check },
+  init: { summary: '설정 파일을 쓴다 — 없어도 도니까 필요할 때만', run: init },
 }
 
 function usage(): string {

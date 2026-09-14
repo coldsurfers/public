@@ -1,21 +1,23 @@
 /**
- * `coldsurf` 테마 CSS 한 장을 굽고, 정적 인쇄 CSS 를 `dist/css/` 로 옮긴다.
+ * `coldsurf` 테마 CSS 한 장을 굽고, 정적 인쇄 CSS 를 `dist/css/` 로 옮기고, 설정 스키마를 낸다.
  *
  * **왜 `.mjs` 인가:** 값의 정본은 DS 안에 있고 여기는 이름만 바꿔 옮긴다. 그 한 장을 굽자고
  * TS 러너를 하나 더 들이지 않는다 — 선례는 `packages/tailwind4-theme/build.mjs`.
  *
- * **왜 `dist/contract.js` 를 읽는가:** 계약의 정본은 `src/tokens/contract.ts`(TS)라 node 가
- * 직접 못 연다. vite 가 먼저 굽고 이 스크립트가 그 산출물을 읽는다 — 그래서 `build` 는
- * `vite build && node build.mjs` 순서다. 목록을 여기 다시 적으면 이름이 두 벌이 된다.
+ * **왜 `dist/contract.js` · `dist/config.js` 를 읽는가:** 정본은 TS 라 node 가 직접 못 연다.
+ * vite 가 먼저 굽고 이 스크립트가 그 산출물을 읽는다 — 그래서 `build` 는
+ * `vite build && node build.mjs` 순서다. 목록이나 스키마를 여기 다시 적으면 두 벌이 된다.
  */
 import { cpSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { fontFamily, letterSpacing, paper, radius, tokens } from '@coldsurfers/design-system/tokens'
+import { CONFIG_SCHEMA } from './dist/config.js'
 import { PRINT_VAR_NAMES } from './dist/contract.js'
 
 const root = dirname(fileURLToPath(import.meta.url))
-const cssOutDir = join(root, 'dist', 'css')
+const distDir = join(root, 'dist')
+const cssOutDir = join(distDir, 'css')
 
 const light = tokens.color.semantic.light
 
@@ -97,4 +99,10 @@ for (const file of readdirSync(join(root, 'src', 'css')).filter((f) => f.endsWit
   cpSync(join(root, 'src', 'css', file), join(cssOutDir, file))
 }
 
-console.log(`paper: dist/css — 테마 1장 + 정적 ${readdirSync(join(root, 'src', 'css')).length}장`)
+// `paper init` 이 박는 `$schema` 가 가리키는 파일. 값은 `src/config.ts` 에서 파생되고
+// 여기는 직렬화만 한다 — 스키마를 손으로 들고 있으면 열거가 두 벌이 된다.
+writeFileSync(join(distDir, 'schema.json'), `${JSON.stringify(CONFIG_SCHEMA, null, 2)}\n`, 'utf8')
+
+console.log(
+  `paper: dist/css — 테마 1장 + 정적 ${readdirSync(join(root, 'src', 'css')).length}장 · schema.json`,
+)
