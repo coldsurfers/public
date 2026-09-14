@@ -443,7 +443,7 @@ importers:
   packages/wbe-theme:
     dependencies:
       '@coldsurfers/wbe-tokens':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../wbe-tokens
       '@fontsource/archivo-black':
         specifier: ^5.3.0
