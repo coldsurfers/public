@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/wbe-theme",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "WHITE BLIND EYE theme layer — CSS variables, self-hosted fonts, and vanilla-extract recipes.",
   "keywords": [
     "vanilla-extract",
