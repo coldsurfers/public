@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/wbe-tokens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "WHITE BLIND EYE label design tokens — dark-fixed scheme derived from the Figma comps.",
   "keywords": [
     "design-tokens",
