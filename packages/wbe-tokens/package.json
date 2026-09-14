@@ -1,0 +1,19 @@
+{
+  "name": "@coldsurfers/wbe-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "WHITE BLIND EYE label design tokens — dark-fixed scheme derived from the Figma comps.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "check:type": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}
