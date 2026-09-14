@@ -11,7 +11,8 @@ import {
   type TokenGroup,
   tokenVarName,
 } from '@coldsurfers/wbe-tokens'
-import { createGlobalTheme, createGlobalThemeContract } from '@vanilla-extract/css'
+import { assignVars, createGlobalThemeContract, globalStyle } from '@vanilla-extract/css'
+import { themeLayer } from './layers'
 import './layers.css'
 
 /** 스케일의 키만 남기고 값을 비운다 — contract 모양을 토큰에서 그대로 따온다. */
@@ -58,14 +59,33 @@ export const vars = createGlobalThemeContract(
   (_value, path) => tokenVarName(path[0] as TokenGroup, path[1] as string),
 )
 
-createGlobalTheme(':root', vars, {
-  color,
-  fontFamily,
-  fontSize: toPx(fontSize),
-  lineHeight: toText(lineHeight),
-  letterSpacing: toEm(letterSpacing),
-  fontWeight: toText(fontWeight),
-  spacing: toPx(spacing),
-  size: toPx(size),
-  border: toPx(border),
+/**
+ * 값 주입 — **레이어 안에서 찍는다.** (`createGlobalTheme` 을 안 쓰는 이유가 이것이다)
+ *
+ * `createGlobalTheme` 은 `:root` 를 레이어 밖에 찍는다. 그러면 소비처가 같은 변수를
+ * 반응형으로 다시 선언할 때(`@media { :root { … } }`) 특이성이 `:root` 대 `:root` 로
+ * 같아져 **나중에 로드된 쪽**이 이긴다. 그리고 그 순서는 소비처 번들러가 정한다 —
+ * 이 CSS 는 패키지를 import 한 *컴포넌트 청크*에 실려 나가므로 진입점의 import 순서로
+ * 잡히지 않는다. 실제로 `white-blind-eye` 의 모바일 재선언 27개가 통째로 죽어 375px
+ * 에서 display 가 46px 이 아니라 136px 로 그려졌다.
+ *
+ * 레이어 안에 넣으면 **레이어 밖이 언제나 레이어를 이기므로**, 소비처의 평범한
+ * `:root` 한 줄이 로드 순서와 무관하게 항상 덮는다.
+ */
+globalStyle(':root', {
+  '@layer': {
+    [themeLayer]: {
+      vars: assignVars(vars, {
+        color,
+        fontFamily,
+        fontSize: toPx(fontSize),
+        lineHeight: toText(lineHeight),
+        letterSpacing: toEm(letterSpacing),
+        fontWeight: toText(fontWeight),
+        spacing: toPx(spacing),
+        size: toPx(size),
+        border: toPx(border),
+      }),
+    },
+  },
 })

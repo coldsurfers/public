@@ -33,3 +33,11 @@ globalStyle('ul, ol', {
 globalStyle('img', {
   '@layer': { [resetLayer]: { display: 'block', maxWidth: '100%' } },
 })
+
+/**
+ * 링크. 기본 파랑/보라 + 밑줄이 남으면 다크 고정 팔레트가 그 자리에서만 깨진다.
+ * 색은 부모에서 물려받게 두고, 강조가 필요하면 호출부가 `text` recipe 로 정한다.
+ */
+globalStyle('a', {
+  '@layer': { [resetLayer]: { color: 'inherit', textDecoration: 'none' } },
+})

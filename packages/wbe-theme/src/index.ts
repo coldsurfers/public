@@ -26,7 +26,7 @@ export {
   spacing,
   tokenVarName,
 } from '@coldsurfers/wbe-tokens'
-export { componentsLayer, LAYER_ORDER, resetLayer } from './layers'
+export { componentsLayer, LAYER_ORDER, resetLayer, themeLayer } from './layers'
 export { dashedSlot, type HairlineVariants, hairline } from './surface.css'
 export { type TextVariants, text } from './text.css'
 export { vars } from './theme.css'
