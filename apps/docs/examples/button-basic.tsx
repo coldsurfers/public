@@ -8,6 +8,7 @@ export default function Example() {
       <Button variant="accent">티켓 예매</Button>
       <Button variant="outline">공유</Button>
       <Button variant="ghost">읽기 →</Button>
+      <Button variant="danger">탈퇴하기</Button>
     </>
   )
 }

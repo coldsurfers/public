@@ -59,6 +59,15 @@ export const button = recipe({
         color: 'white',
         selectors: { '&:hover': { background: vars.color.accentHover } },
       }),
+      /**
+       * 되돌릴 수 없는 액션. hover 는 `accentHover` 같은 짝 토큰이 없어 `primary` 와 같은
+       * 방식(투명도)으로 낸다 — 상태 색 하나를 위해 토큰을 늘리지 않는다.
+       */
+      danger: inComponentsLayer({
+        background: vars.color.statusDanger,
+        color: 'white',
+        selectors: { '&:hover': { opacity: 0.9 } },
+      }),
       // base 의 `border: none` 을 shorthand 로 덮는다 — longhand 로 켜면 base 의 shorthand 와
       // 우선순위가 소스 순서에 걸려 조용히 사라진다.
       outline: inComponentsLayer({

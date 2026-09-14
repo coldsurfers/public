@@ -16,6 +16,7 @@ import { cx } from './cx'
  *   variant="ghost"   → 무테 텍스트 액션. 시안의 `읽기 →` · `취향 다시 고르기 ↻`
  *   variant="accent"  → 러스트 필 + 흰 텍스트. 랜딩 히어로 프라이머리 CTA
  *   variant="outline" → 흰 배경 + 테두리. 랜딩 히어로 세컨더리 CTA
+ *   variant="danger"  → statusDanger 필 + 흰 텍스트. 되돌릴 수 없는 액션(탈퇴·영구 삭제)
  * `trailingIcon` 은 라벨 뒤 아이콘(화살표 등) 슬롯.
  * `asChild` 면 <button> 대신 자식 엘리먼트(예: 라우터 Link)에 스타일을 입혀 렌더한다 —
  * 라우팅 CTA 를 실제 <a> 로 내보낼 때. 자식은 단일 엘리먼트여야 하며 라벨은 그 children.
