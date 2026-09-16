@@ -12,6 +12,11 @@
  * 한 장에 함께 실린다.
  */
 export { ArticleCard, type ArticleCardProps } from './ArticleCard'
-export { ConcertCard, type ConcertCardProps } from './ConcertCard'
+export {
+  ConcertCard,
+  type ConcertCardCoverRatio,
+  type ConcertCardProps,
+  type ConcertCardVariant,
+} from './ConcertCard'
 export { ConcertCardSkeleton, type ConcertCardSkeletonProps } from './ConcertCardSkeleton'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'

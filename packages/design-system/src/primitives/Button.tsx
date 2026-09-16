@@ -11,6 +11,12 @@ import { button, buttonIcon } from './Button.css'
 import { cx } from './cx'
 
 /**
+ * 축 이름을 소비처가 부를 수 있게 낸다 — native 짝이 이미 하던 것(`native/Button`)이다.
+ * 열지 않으면 소비처가 `Record<…>` 나 `useState<…>` 자리에서 유니온을 자기 쪽에 다시 적는다.
+ */
+export type { ButtonSize, ButtonVariant }
+
+/**
  * 액션 버튼.
  *   variant="primary" → ink 필 + paper 텍스트. 시안의 `취향 이어보기 →` CTA
  *   variant="ghost"   → 무테 텍스트 액션. 시안의 `읽기 →` · `취향 다시 고르기 ↻`

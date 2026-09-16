@@ -9,10 +9,10 @@
  * 두 곳 이상에서 쓰이면 옮긴다. 한 곳뿐이면 두 번째 소비처가 생길 때까지 보류.
  */
 export { Badge, type BadgeProps } from './Badge'
-export { Button, type ButtonProps } from './Button'
+export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
 export { Callout, type CalloutProps, type CalloutTone } from './Callout'
 export { Checkbox, type CheckboxProps } from './Checkbox'
-export { Chip, ChipLabel, type ChipProps } from './Chip'
+export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
 export { CoverBlock, type CoverBlockProps, coverTone } from './CoverBlock'
 export { cx } from './cx'
 export { EmptyState, type EmptyStateProps } from './EmptyState'
@@ -28,7 +28,13 @@ export {
   type SkeletonTone,
 } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
-export { Text, type TextProps, type TextTag } from './Text'
+export {
+  Text,
+  type TextProps,
+  type TextStyleName,
+  type TextTag,
+  type TextTone,
+} from './Text'
 export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
 export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'

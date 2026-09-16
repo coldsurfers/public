@@ -5,8 +5,16 @@ import {
   isValidElement,
   type ReactElement,
 } from 'react'
+import type { ChipSize } from '../contract'
 import { chip } from './Chip.css'
 import { cx } from './cx'
+
+/**
+ * 축 이름을 소비처가 부를 수 있게 낸다 — native 짝이 이미 하던 것(`native/Chip`)이다.
+ * 웹은 여태 `'sm' | 'md'` 를 여기서 다시 적고 있었다: `CHIP_SPEC` 이 정본인 축을 두 곳이 들면
+ * 한쪽만 늘어도 아무도 안 막는다.
+ */
+export type { ChipSize }
 
 /**
  * Pill — 시안의 4 맥락을 한 어휘로 덮는다.
@@ -30,7 +38,7 @@ import { cx } from './cx'
  */
 type ChipBase = {
   active?: boolean
-  size?: 'sm' | 'md'
+  size?: ChipSize
   /**
    * 자기 엘리먼트 대신 자식(라우터 `Link`)에 스타일을 입힌다 — `Button`·`Skeleton` 과 같은
    * 규율(#39 D-6). 필터 칩은 **크롤 가능한 `<a href>` 여야** 필터된 면이 색인되므로
