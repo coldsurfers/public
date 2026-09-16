@@ -18,8 +18,12 @@ import {
 import { useScheme } from './scheme'
 
 /**
- * 아크 인디케이터 — `Spinner` 를 쓰지 않는 이유는 그쪽이 플랫폼 인디케이터라 이 아크를
- * 못 그리기 때문이다(`Spinner.tsx` 가 열어 둔 "그 표면이 자기 로더를 든다" 자리).
+ * 아크 인디케이터.
+ *
+ * `Spinner` 를 쓰지 않는 이유가 한때는 "그쪽이 플랫폼 인디케이터라 이 아크를 못 그린다" 였는데
+ * **그 근거는 뒤집혔다** — `Spinner.tsx` 도 지금은 같은 Svg + reanimated 아크다. 남는 이유는
+ * 튜닝이다: 여기는 26 · 2.5 · 135° 로 당김 제스처에 붙어 서고, `Spinner` 는 30 · 3 · 270° 로
+ * 혼자 선다. 공식은 `getSpinnerGeometry` 로 같이 쓴다(`PullToRefresh.constants.ts`).
  */
 export function PullToRefreshSpinner() {
   const scheme = useScheme()

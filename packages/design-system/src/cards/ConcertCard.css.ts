@@ -45,8 +45,17 @@ export const bareCover = style(
  * 클래스를 덮어써야 하고, 그건 상세도 다툼이 된다. 값은 `CONCERT_CARD_BARE_SPEC` 이 정본이고
  * native 는 같은 표를 `styled` 에서 읽는다.
  */
+/**
+ * ⚠️ **`String()` 이 필수다.** VE 는 숫자를 받으면 `px` 를 붙이는데 `aspect-ratio` 는 단위를
+ * 못 받는 속성이라 `aspect-ratio: 1.333…px` 가 되고 **브라우저가 선언을 통째로 버린다.**
+ * 빌드도 타입도 안 잡고 CSS 에 글자는 남아서, 산출물을 열어보기 전엔 안 보인다
+ * (실측: `dist/styles.css` 에 `aspect-ratio:1.3333333333333333px` · `aspect-ratio:1px`).
+ *
+ * 표는 숫자로 둔다 — RN 은 `aspectRatio` 에 숫자를 그대로 먹는다(`native/ConcertCard.tsx`).
+ * 단위 변환은 `tokens/native.ts` 의 `toPx` 와 같은 축이고, 여기서는 방향이 반대일 뿐이다.
+ */
 export const bareCoverRatio = styleVariants(bare.coverAspectRatio, (aspectRatio) =>
-  inComponentsLayer({ aspectRatio }),
+  inComponentsLayer({ aspectRatio: String(aspectRatio) }),
 )
 
 /** 포스터가 없을 때의 대형 이니셜 — 색면 위에 아주 옅게. */

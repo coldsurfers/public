@@ -1,3 +1,4 @@
+import type { ConcertCardVariant } from '../contract'
 import { pulse } from '../css/motion.css'
 import { CoverBlock, cx } from '../primitives'
 import type { CoverTone } from '../tokens'
@@ -12,7 +13,7 @@ export interface ConcertCardSkeletonProps {
   /** 커버 색면 tone — 소비처가 index 등으로 분산 주입. */
   tone: CoverTone
   /** `ConcertCard` 의 같은 이름 prop 과 짝 — 섀시가 어긋나면 로드 전후가 튄다. */
-  variant?: 'framed' | 'bare' | 'cover'
+  variant?: ConcertCardVariant
   /** `ConcertCard` 의 같은 이름 prop 과 짝 — 제목 자리 높이를 실카드와 맞춘다. */
   reserveTitleLines?: boolean
   className?: string
