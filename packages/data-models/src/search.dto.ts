@@ -4,7 +4,9 @@ export const SearchDTOSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('artist'),
     name: z.string(),
-    profileImgUrl: z.string(),
+    // 아티스트 대부분은 ArtistProfileImage 가 없다 (743명 중 697명, 2026-08-20 실측).
+    // non-nullable 이면 소비자의 행 단위 safeParse 가 그들을 통째로 버려 검색 결과에서 사라진다.
+    profileImgUrl: z.string().nullable(),
     id: z.string(),
   }),
   z.object({
