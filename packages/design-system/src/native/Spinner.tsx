@@ -1,5 +1,6 @@
 import styled from '@emotion/native'
 import { useEffect } from 'react'
+import type { ViewProps } from 'react-native'
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -32,7 +33,7 @@ import { Text } from './Text'
  * *로컬 식별자 이름*으로 대상을 고르는데, 라이브러리는 컴파일돼 나가므로 그 이름이 살아 있다는
  * 보장이 소비처의 번들 설정에 달린다.
  */
-export interface SpinnerProps {
+export interface SpinnerProps extends ViewProps {
   /** 지름(px). 기본은 `SPINNER_SPEC.size` — 웹과 같은 값. */
   size?: number
   /**
@@ -48,7 +49,7 @@ const Root = styled.View({
   gap: SPINNER_SPEC.gap,
 })
 
-export function Spinner({ size = SPINNER_SPEC.size, label }: SpinnerProps) {
+export function Spinner({ size = SPINNER_SPEC.size, label, ...rest }: SpinnerProps) {
   const scheme = useScheme()
   const { radius, circumference, arc } = getSpinnerGeometry(size)
   const rotation = useSharedValue(0)
@@ -66,7 +67,11 @@ export function Spinner({ size = SPINNER_SPEC.size, label }: SpinnerProps) {
   })
 
   return (
-    <Root accessibilityRole="progressbar" accessibilityLabel={label ?? SPINNER_SPEC.fallbackLabel}>
+    <Root
+      accessibilityRole="progressbar"
+      accessibilityLabel={label ?? SPINNER_SPEC.fallbackLabel}
+      {...rest}
+    >
       {/* 웹은 SVG 노드에 CSS 키프레임을 걸지만 RN 은 SVG 를 못 돌려 감싼 뷰를 돌린다. */}
       <Animated.View style={[{ width: size, height: size }, spinStyle]}>
         <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>

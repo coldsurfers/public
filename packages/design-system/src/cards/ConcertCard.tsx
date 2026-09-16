@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react'
 import type { ConcertCardBareProps, ConcertCardVariant } from '../contract'
 import { CoverBlock, cx } from '../primitives'
 import * as s from './ConcertCard.css'
@@ -7,7 +8,20 @@ import * as s from './ConcertCard.css'
  * `reserveTitleLines`)은 **계약에서 온다** — native 구현이 같은 인터페이스를 쓴다.
  * 여기 적는 건 **웹에만 있는 것**뿐이다.
  */
-export interface ConcertCardProps extends ConcertCardBareProps {
+/**
+ * 루트 `<article>` 로 그대로 흘려보내는 DOM props — `id` · `data-*` · `aria-*` · `style` ·
+ * `onMouseEnter` 등.
+ *
+ * **`title` 만 뺀다.** 카드가 그 이름을 이미 자기 API(제목 문자열)로 쓴다 — 둘을 같이 두면
+ * `ConcertCardBareProps.title`(필수 `string`)과 DOM 의 `title`(선택 툴팁)이 한 이름에서
+ * 부딪힌다(TS2320). 뺀 쪽은 DOM 툴팁이고, 그건 이 카드가 애초에 안 내던 것이다.
+ *
+ * `onClick` 이 열리는 건 `cards/index.ts` 의 "라우터 비의존" 과 어긋나지 않는다 — 카드가
+ * 라우터를 **import 하지 않는다**는 뜻이지, 소비처가 준 DOM 핸들러를 버린다는 뜻이 아니었다.
+ */
+type CardDomProps = Omit<HTMLAttributes<HTMLElement>, 'title'>
+
+export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
   /** 취향 매치 라벨 — `96% 취향`. 없으면 미노출. **`framed` 전용** (시안의 `bare` 엔 자리가 없다). */
   matchLabel?: string
   /** 커버 좌상단 mono 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
@@ -22,7 +36,6 @@ export interface ConcertCardProps extends ConcertCardBareProps {
    * ⚠️ native 는 `bare` 만 구현한다 — 그래서 그쪽엔 이 prop 이 아예 없다.
    */
   variant?: ConcertCardVariant
-  className?: string
 }
 
 /**
@@ -73,7 +86,8 @@ type FramedCardProps = Pick<
   | 'footer'
   | 'coverAction'
   | 'className'
->
+> &
+  HTMLAttributes<HTMLElement>
 
 /**
  * 액자 섀시 — 테두리·배경이 있는 기본 카드.
@@ -94,9 +108,10 @@ function FramedCard({
   footer,
   coverAction,
   className,
+  ...rest
 }: FramedCardProps) {
   return (
-    <article className={cx(s.framedRoot, className)}>
+    <article className={cx(s.framedRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={s.framedCover}>
         <CoverImage src={posterUrl} />
         {matchLabel ? (
@@ -129,7 +144,8 @@ type BareCardProps = Pick<
   | 'coverRatio'
   | 'reserveTitleLines'
   | 'className'
->
+> &
+  HTMLAttributes<HTMLElement>
 
 /**
  * 민짜 섀시 — 섀시 없이 포스터 블록 + 그 아래 3줄 텍스트(제목 / 날짜 / 공연장).
@@ -146,9 +162,10 @@ function BareCard({
   coverRatio = 'landscape',
   reserveTitleLines = false,
   className,
+  ...rest
 }: BareCardProps) {
   return (
-    <article className={cx(s.bareRoot, className)}>
+    <article className={cx(s.bareRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={cx(s.bareCover, s.bareCoverRatio[coverRatio])}>
         {posterUrl ? (
           <CoverImage src={posterUrl} />
@@ -170,7 +187,8 @@ function BareCard({
 type CoverCardProps = Pick<
   ConcertCardProps,
   'tone' | 'posterUrl' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
->
+> &
+  HTMLAttributes<HTMLElement>
 
 /**
  * 커버 섀시 — 세로 커버 한 장에 eyebrow·담기·제목을 얹고, 커버 아래 메타 1줄.
@@ -189,9 +207,10 @@ function CoverCard({
   meta,
   coverAction,
   className,
+  ...rest
 }: CoverCardProps) {
   return (
-    <article className={cx(s.coverRoot, className)}>
+    <article className={cx(s.coverRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={s.coverCover}>
         <CoverImage src={posterUrl} />
         <div className={s.coverScrim} />
