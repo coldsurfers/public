@@ -53,6 +53,9 @@ importers:
       '@coldsurfers/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
+      '@coldsurfers/screens':
+        specifier: workspace:*
+        version: link:../../packages/screens
       cnfast:
         specifier: ^0.1.0
         version: 0.1.0
@@ -383,6 +386,42 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.23.13
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.14
+        version: 7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0)
+      vite-plugin-dts:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/node@24.13.3)(rollup@4.62.4)(typescript@5.9.3)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))
+
+  packages/screens:
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.18.5
+        version: 0.18.5
+      '@coldsurfers/design-system':
+        specifier: workspace:*
+        version: link:../design-system
+      '@emotion/native':
+        specifier: 11.11.0
+        version: 11.11.0(@emotion/react@11.10.6(@types/react@19.2.18)(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      '@emotion/react':
+        specifier: 11.10.6
+        version: 11.10.6(@types/react@19.2.18)(react@19.2.8)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8)
+      react-native-safe-area-context:
+        specifier: 5.9.1
+        version: 5.9.1(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
