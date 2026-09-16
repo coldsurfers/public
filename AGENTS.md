@@ -16,10 +16,12 @@ pnpm biome ci .     # lint + format + import order
 pnpm check:type     # turbo run check:type
 pnpm build          # turbo run build
 pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 attw 로 해석해본다
+pnpm test           # turbo run test — 지금은 auth-client · react-native-mf · shared-utils 셋
 ```
 
-넷 다 통과해야 커밋한다. pre-commit 에서 biome, pre-push 에서 biome ci + check:type 이 돈다
-(`lefthook.yml`). `--no-verify` 금지.
+다섯 다 통과해야 커밋한다. **다섯째를 빼먹기 쉽다** — 훅은 앞의 셋만 돌고(pre-commit 에서
+biome, pre-push 에서 biome ci + check:type · `lefthook.yml`), `pnpm test` 는 CI 에서만 걸린다
+(`ci.yml`). 테스트를 가진 패키지를 손댔으면 로컬에서 직접 돌린다. `--no-verify` 금지.
 
 | 바꾼 것 | 추가로 볼 것 |
 | --- | --- |
@@ -43,9 +45,17 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 - **JS 가 무거운 모듈은 배럴이 아니라 자기 진입점으로 연다.** `sprinkles` 가 그 자리다 —
   배럴에 넣으면 `vars` 한 줄 쓰는 소비처까지 38 kB 를 문다(`index.js` 3.2 → 41.2 kB 실측).
 - **버전은 changeset 으로만 올린다.** `package.json` 의 `version` 을 손으로 만지지 않는다.
-- **이미 발행 중이다.** `design-system` · `markdown-renderer` 둘 다 GitHub Packages 에 올라가 있고
-  (`publishConfig.registry`), 사내 앱 셋이 레지스트리에서 물어간다. `private: true` 는
-  루트에만 남아 있다. **`exports` 를 빼거나 경로를 바꾸면 그 순간 major 다.**
+- **이미 발행 중이다 — `packages/*` 열셋 전부.** 하나도 빠짐없이 `publishConfig.registry` 로
+  GitHub Packages 에 올라간다. `private: true` 는 루트에만 남아 있다.
+
+  ```
+  api-sdk 4.3.0 · auth-client 0.4.0 · data-models 0.12.2 · design-system 0.20.0
+  design-system-mcp 0.1.1 · markdown-renderer 0.2.0 · paper 0.3.0 · react-native-mf 0.2.0
+  screens 0.1.0 · shared-utils 0.3.0 · tailwind4-theme 0.1.0 · wbe-theme 0.2.0 · wbe-tokens 0.1.0
+  ```
+
+  **이 문서 첫 문장이 걸리는 범위가 그 열셋이다.** 예전엔 둘만 적혀 있어서 나머지가 규약 밖처럼
+  읽혔다 — `exports` 를 빼거나 경로를 바꾸면 **어느 패키지든** 그 순간 major 다.
 
 ## 문서 사이트가 계약 검증이다
 
@@ -81,7 +91,10 @@ pnpm check:exports  # turbo run check:exports — 발행될 exports·d.ts 를 at
 **흡수에는 상한이 있다.** 시안 컨트롤 높이가 다섯 종이라 그대로 받으면 `Button.size` 가 7종이
 된다 — 그건 추상화가 아니라 목록이다. variant 를 늘리기 전에 *이 축이 이 컴포넌트의 것인가*를 묻는다.
 
-## 지금 어디까지 왔나
+## 지금 어디까지 왔나 — `design-system` 한 패키지
+
+**아래 P0~P5 는 레포 전체가 아니라 `design-system` 의 단계다.** 나머지 열둘은 여기 항목이 없고
+각자 README 나 이슈를 든다(예: `react-native-mf` 는 자기 README 의 Phase 표).
 
 정본 로드맵은 사내 이슈 트래커에 있다.
 
