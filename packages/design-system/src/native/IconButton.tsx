@@ -1,8 +1,9 @@
 import styled from '@emotion/native'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import type { TouchableOpacity, ViewStyle } from 'react-native'
+import type { TouchableOpacity } from 'react-native'
 import type { ButtonVariant } from '../contract'
 import { type ColorScheme, nativeRadius } from '../tokens/native'
+import { DISABLED_OPACITY, surfaceFor } from './button-style'
 import { useScheme } from './scheme'
 
 /**
@@ -26,30 +27,6 @@ export interface IconButtonProps extends ComponentPropsWithRef<typeof TouchableO
 }
 
 const SIDE: Record<IconButtonSize, number> = { sm: 36, md: 44 }
-
-const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
-  switch (variant) {
-    case 'primary':
-      return { backgroundColor: scheme.text }
-    case 'ghost':
-      return { backgroundColor: 'transparent' }
-    case 'accent':
-      return { backgroundColor: scheme.accent }
-    case 'outline':
-      return { backgroundColor: 'white', borderWidth: 1, borderColor: scheme.border }
-    case 'danger':
-      return { backgroundColor: scheme.statusDanger }
-  }
-}
-
-/**
- * 비활성 표시.
- *
- * `Root` 의 **기본 스타일**로 넣는다. `style` prop 으로 얹으면 소비자가 `style` 을 넘기는
- * 순간 그 한 겹이 통째로 덮여서 **비활성이 활성처럼 보인다.** 기본 스타일이면 소비자
- * `style` 이 이기는 것도 덮는 것도 명시적 선택이 된다.
- */
-const DISABLED_OPACITY = 0.4
 
 const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme

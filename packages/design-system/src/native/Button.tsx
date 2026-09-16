@@ -1,32 +1,11 @@
 import styled from '@emotion/native'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
-import type { TouchableOpacity, ViewStyle } from 'react-native'
-import type { ButtonSize, ButtonVariant } from '../contract'
-import {
-  type ColorScheme,
-  fontWeight,
-  nativeFontSize,
-  nativeRadius,
-  nativeSpacing,
-} from '../tokens/native'
+import type { TouchableOpacity } from 'react-native'
+import { type ButtonSize, type ButtonVariant, BUTTON_SPEC as spec } from '../contract'
+import { type ColorScheme, fontWeight, nativeFontSize, nativeRadius } from '../tokens/native'
+import { colorFor, DISABLED_OPACITY, surfaceFor } from './button-style'
 import { useScheme } from './scheme'
 
-/**
- * 액션 버튼 — **웹 `primitives/Button` 과 같은 축**이다(variant 4 · size 3).
- * 두 플랫폼이 같은 prop 계약을 쓰는 것이 이 레인의 전제라, 여기서 축을 늘리거나 이름을
- * 바꾸면 계약이 갈라진다. 축을 늘려야 하면 웹부터 늘린다.
- *
- * 웹의 `:hover` 자리는 `TouchableOpacity` 의 누름 투명도가 대신한다 — RN 엔 hover 가 없고,
- * 누름 피드백은 플랫폼이 이미 갖고 있다.
- *
- * ref 는 `ComponentPropsWithRef` 로 딸려 온다 — React 19 는 함수 컴포넌트에도 `ref` 를 그냥
- * prop 으로 넘기므로 `forwardRef` 가 필요 없다. 웹 `primitives` 는 아직 `forwardRef` 인데,
- * 그건 React 19 이전 코드라 그렇다(통일은 별건).
- *
- * 높이는 `height` 로 박는다. 웹 `Button.css.ts` 의 §높이 규율과 같은 이유이자, RN 에서는
- * 더 강하다 — 세로 padding 으로 높이를 만들면 폰트 메트릭이 달라지는 iOS/Android 에서
- * 같은 버튼이 다른 높이로 선다.
- */
 export type { ButtonSize, ButtonVariant }
 
 export interface ButtonProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
@@ -38,65 +17,18 @@ export interface ButtonProps extends ComponentPropsWithRef<typeof TouchableOpaci
 }
 
 /**
- * 치수는 웹 `Button.css.ts` 와 같은 값이다(36·52·46 / 16·24·22).
- * `cta` 의 15px 은 스케일 밖 리터럴 — 토큰이 12.5~17px 구간을 의도적으로 접었고,
- * 그 결정을 시안 CTA 한 자리 때문에 뒤집지 않는다(`tokens.ts` 타이포 스케일 주석).
+ * 치수 둘만 해석이 필요하다 — 스케일 안이면 토큰 맵에서, 밖이면 숫자 그대로(`cta` 만 후자).
+ * `height`·`paddingInline` 은 `BUTTON_SPEC` 에서 이미 px 라 그대로 쓴다.
  */
-const SIZES = {
-  sm: {
-    height: 36,
-    paddingHorizontal: nativeSpacing[4],
-    fontSize: nativeFontSize.sm,
-    radius: nativeRadius.md,
-  },
-  md: {
-    height: 52,
-    paddingHorizontal: nativeSpacing[6],
-    fontSize: nativeFontSize.base,
-    radius: nativeRadius.lg,
-  },
-  cta: { height: 46, paddingHorizontal: 22, fontSize: 15, radius: 10 },
-} as const
-
-/** 웹 variant 표와 1:1. `accent`·`danger` 의 흰 글씨는 웹과 같은 리터럴이다(스킴을 안 탄다). */
-const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
-  switch (variant) {
-    case 'primary':
-      return { backgroundColor: scheme.text }
-    case 'ghost':
-      return { backgroundColor: 'transparent' }
-    case 'accent':
-      return { backgroundColor: scheme.accent }
-    case 'outline':
-      return { backgroundColor: 'white', borderWidth: 1, borderColor: scheme.border }
-    case 'danger':
-      return { backgroundColor: scheme.statusDanger }
-  }
+function fontSizeFor(size: ButtonSize): number {
+  const value = spec.size[size].fontSize
+  return typeof value === 'number' ? value : nativeFontSize[value]
 }
 
-const labelColorFor = (scheme: ColorScheme, variant: ButtonVariant): string => {
-  switch (variant) {
-    case 'primary':
-      return scheme.bg
-    case 'ghost':
-      return scheme.body
-    case 'accent':
-      return 'white'
-    case 'outline':
-      return scheme.text
-    case 'danger':
-      return 'white'
-  }
+function radiusFor(size: ButtonSize): number {
+  const value = spec.size[size].radius
+  return typeof value === 'number' ? value : nativeRadius[value]
 }
-
-/**
- * 비활성 표시.
- *
- * `Root` 의 **기본 스타일**로 넣는다. `style` prop 으로 얹으면 소비자가 `style` 을 넘기는
- * 순간 그 한 겹이 통째로 덮여서 **비활성이 활성처럼 보인다.** 기본 스타일이면 소비자
- * `style` 이 이기는 것도 덮는 것도 명시적 선택이 된다.
- */
-const DISABLED_OPACITY = 0.4
 
 const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme
@@ -107,10 +39,10 @@ const Root = styled.TouchableOpacity<{
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: nativeSpacing[2],
-  height: SIZES[$size].height,
-  paddingHorizontal: SIZES[$size].paddingHorizontal,
-  borderRadius: SIZES[$size].radius,
+  gap: spec.gap,
+  height: spec.size[$size].height,
+  paddingHorizontal: spec.size[$size].paddingInline,
+  borderRadius: radiusFor($size),
   opacity: $disabled ? DISABLED_OPACITY : 1,
   ...surfaceFor($scheme, $variant),
 }))
@@ -125,10 +57,22 @@ const Root = styled.TouchableOpacity<{
 const Label = styled.Text<{ $color: string; $fontSize: number }>(({ $color, $fontSize }) => ({
   color: $color,
   fontSize: $fontSize,
-  fontWeight: fontWeight.medium,
+  fontWeight: fontWeight[spec.fontWeight],
   includeFontPadding: false,
 }))
 
+/**
+ * 액션 버튼 — **웹 `primitives/Button` 과 같은 축**이다(variant 5 · size 3).
+ * 치수와 variant→색 배정은 `contract/button.ts` 의 `BUTTON_SPEC` 이 정본이라 여기 숫자를
+ * 손으로 적지 않는다. 축을 늘려야 하면 웹부터 늘리고 그다음 계약에 올린다.
+ *
+ * 웹의 `:hover` 자리는 `TouchableOpacity` 의 누름 투명도가 대신한다 — RN 엔 hover 가 없고,
+ * 누름 피드백은 플랫폼이 이미 갖고 있다.
+ *
+ * ref 는 `ComponentPropsWithRef` 로 딸려 온다 — React 19 는 함수 컴포넌트에도 `ref` 를 그냥
+ * prop 으로 넘기므로 `forwardRef` 가 필요 없다. 웹 `primitives` 는 아직 `forwardRef` 인데,
+ * 그건 React 19 이전 코드라 그렇다(통일은 별건).
+ */
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -149,7 +93,7 @@ export function Button({
       {...rest}
     >
       {typeof children === 'string' ? (
-        <Label $color={labelColorFor(scheme, variant)} $fontSize={SIZES[size].fontSize}>
+        <Label $color={colorFor(scheme, spec.variant[variant].label)} $fontSize={fontSizeFor(size)}>
           {children}
         </Label>
       ) : (

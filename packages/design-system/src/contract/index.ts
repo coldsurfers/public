@@ -7,7 +7,7 @@
  * | 층 | 무엇 | 여기 |
  * | --- | --- | --- |
  * | 타입 | `ButtonVariant` 같은 유니온 축 | ✅ 지금 |
- * | 값 | 축 → 치수·토큰키 표 | ✅ `CONCERT_CARD_BARE_SPEC` · `BUTTON_SPEC` 은 아직 자리만 |
+ * | 값 | 축 → 치수·토큰키 표 | ✅ `BUTTON_SPEC` · `CHIP_SPEC` · `CONCERT_CARD_BARE_SPEC` … |
  * | 스타일 | VE recipe · emotion 객체 | ❌ 각 구현 |
  *
  * 스타일이 못 넘어오는 이유는 `native/index.ts` 에 적혀 있다 — VE 의 산출물은 CSS 문자열이고
@@ -41,7 +41,12 @@
  *
  * 축을 늘리는 순서는 그대로다 — 웹 구현부터 늘리고, 그다음 여기에 이름을 올린다.
  */
-export type { ButtonSize, ButtonVariant } from './button'
+export {
+  BUTTON_SPEC,
+  type ButtonColor,
+  type ButtonSize,
+  type ButtonVariant,
+} from './button'
 export { CHIP_SPEC, type ChipSize } from './chip'
 export {
   CONCERT_CARD_BARE_SPEC,
