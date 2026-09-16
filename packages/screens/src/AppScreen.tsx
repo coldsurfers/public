@@ -3,13 +3,18 @@ import { useScheme } from '@coldsurfers/design-system/native/scheme'
 import { useTabBarHeight } from '@coldsurfers/design-system/native/TabBar'
 import styled from '@emotion/native'
 import { type ReactNode, Suspense } from 'react'
-import type { StyleProp, ViewStyle } from 'react-native'
+import type { ViewProps } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export type AppScreenOffsetTop = 'none' | 'safeArea'
 export type AppScreenOffsetBottom = 'none' | 'safeArea' | 'tabBar'
 
-export interface AppScreenProps {
+/**
+ * `ViewProps` 를 extends 하는 이유는 DS `TabBarProps` 와 같다 — 루트 `View` 로 그냥
+ * 통과하는 축(`style` · `testID` · 접근성)을 여기서 다시 세지 않는다. 화면 루트는 e2e 가
+ * 잡는 자리라 `testID` 가 특히 든다.
+ */
+export interface AppScreenProps extends ViewProps {
   children: ReactNode
   /** 상단 여백. 기본 `'none'` — 헤더는 react-navigation 소관이라 화면 밖이다. */
   offsetTop?: AppScreenOffsetTop
@@ -17,7 +22,6 @@ export interface AppScreenProps {
   offsetBottom?: AppScreenOffsetBottom
   /** Suspense 폴백. 기본은 정중앙 DS `Spinner`. */
   fallback?: ReactNode
-  style?: StyleProp<ViewStyle>
 }
 
 const Root = styled.View<{ $bg: string; $top: number; $bottom: number }>(
@@ -82,7 +86,7 @@ export function AppScreen({
   offsetTop = 'none',
   offsetBottom = 'tabBar',
   fallback,
-  style,
+  ...rest
 }: AppScreenProps) {
   const scheme = useScheme()
   const { top: topInset, bottom: bottomInset } = useSafeAreaInsets()
@@ -92,12 +96,7 @@ export function AppScreen({
     offsetBottom === 'tabBar' ? tabBarHeight : offsetBottom === 'safeArea' ? bottomInset : 0
 
   return (
-    <Root
-      $bg={scheme.bg}
-      $top={offsetTop === 'safeArea' ? topInset : 0}
-      $bottom={bottom}
-      style={style}
-    >
+    <Root $bg={scheme.bg} $top={offsetTop === 'safeArea' ? topInset : 0} $bottom={bottom} {...rest}>
       <Suspense
         fallback={
           fallback ?? (

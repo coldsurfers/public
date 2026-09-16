@@ -45,6 +45,9 @@ const tabBarHeight = useTabBarHeight()
 인셋을 상수로 박지 않습니다 — 홈 인디케이터 높이는 기기마다 다르고 0 인 기기(SE · iPad)도
 있어서, 박으면 그런 기기에서 탭바 아래가 빈 채로 남습니다.
 
+화면 전체가 이 여백을 져야 하면 직접 계산하는 대신
+[`AppScreen`](/docs/screens/app-screen) 의 `offsetBottom="tabBar"` 를 씁니다.
+
 <Callout type="warn" title="위 미리보기의 높이는 실기기 높이가 아닙니다">
   브라우저에서는 `Platform.OS === 'web'` 이라 아래 여백이 0 입니다. 실기기에서는 iOS 가
   홈 인디케이터 인셋만큼, Android 가 12 만큼 더 큽니다.

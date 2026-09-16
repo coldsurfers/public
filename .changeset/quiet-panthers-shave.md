@@ -9,3 +9,4 @@
 
 여백은 `offsetTop`(`'none'`·`'safeArea'`) / `offsetBottom`(`'none'`·`'safeArea'`·`'tabBar'`)
 두 축이다. 탭바 높이는 DS `useTabBarHeight()` 를 읽어 인셋을 상수로 박지 않는다.
+`ViewProps` 를 extends 해서 `style`·`testID`·접근성 축은 루트로 통과한다.

@@ -32,12 +32,20 @@ const SIMPLIFY: NonNullable<GenerateOptions['typeSimplifier']> = {
   },
 }
 
-const SRC = path.join(process.cwd(), '..', '..', 'packages', 'design-system', 'src')
+/**
+ * 패키지 루트 — `packages/<pkg>/src` 를 본다.
+ *
+ * 한때 `design-system/src` 로 못박혀 있었는데, `@coldsurfers/screens` 가 생기면서 풀었다.
+ * 문서 사이트가 여러 패키지를 이는 순간 이 경로가 축이 된다.
+ */
+const PACKAGES = path.join(process.cwd(), '..', '..', 'packages')
 
 export interface PropsQuery {
   /** 컴포넌트 이름. `Button` → `primitives/Button.tsx` 의 `ButtonProps`. */
   of: string
-  /** `src/` 아래 디렉터리. */
+  /** `packages/` 아래 패키지 이름. 기본은 `design-system`. */
+  pkg?: string
+  /** `src/` 아래 디렉터리. 파일이 `src/` 바로 밑이면 `'.'`. */
   dir?: string
   /** 파일 이름이 컴포넌트 이름과 다를 때. */
   file?: string
@@ -72,13 +80,14 @@ export interface PropsTable {
 
 export async function collectProps({
   of,
+  pkg = 'design-system',
   dir = 'primitives',
   file,
   name,
   only,
 }: PropsQuery): Promise<PropsTable | null> {
   const typeName = name ?? `${of}Props`
-  const filePath = path.join(SRC, dir, file ?? `${of}.tsx`)
+  const filePath = path.join(PACKAGES, pkg, 'src', dir, file ?? `${of}.tsx`)
 
   const [docs, source] = await Promise.all([
     generator.generateTypeTable({ path: filePath, name: typeName }, { typeSimplifier: SIMPLIFY }),

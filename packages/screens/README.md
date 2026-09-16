@@ -33,7 +33,8 @@ import { AppScreen } from '@coldsurfers/screens/AppScreen'
 | `offsetTop` | `'none'` · `'safeArea'` | `'none'` |
 | `offsetBottom` | `'none'` · `'safeArea'` · `'tabBar'` | `'tabBar'` |
 | `fallback` | Suspense 폴백 | 정중앙 DS `Spinner` |
-| `style` | | |
+
+`ViewProps` 를 extends 한다 — `style` · `testID` · 접근성 축은 루트 `View` 로 그냥 통과한다.
 
 ## 안 드는 것
 
