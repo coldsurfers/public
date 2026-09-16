@@ -1,3 +1,5 @@
+import { globalRecord } from './global-record'
+
 /**
  * [6] 원격 레지스트리 — 실행된 번들이 스스로 등록하고, 호스트가 여기서 회수한다.
  *
@@ -8,19 +10,7 @@
 
 export const REMOTE_REGISTRY_KEY = '__RN_MF_REMOTES__' as const
 
-type RemoteRegistry = Record<string, unknown>
-
-const globalRef = globalThis as typeof globalThis & {
-  [REMOTE_REGISTRY_KEY]?: RemoteRegistry
-}
-
-function registry(): RemoteRegistry {
-  const existing = globalRef[REMOTE_REGISTRY_KEY]
-  if (existing) return existing
-  const created: RemoteRegistry = {}
-  globalRef[REMOTE_REGISTRY_KEY] = created
-  return created
-}
+const registry = globalRecord<unknown>(REMOTE_REGISTRY_KEY)
 
 /** 원격 번들의 self-register footer 가 부른다. */
 export function registerRemote(name: string, value: unknown): void {
@@ -32,8 +22,9 @@ export function getRemote<T = unknown>(name: string): T | undefined {
   return registry()[name] as T | undefined
 }
 
+/** `getRemote` 와 같은 판정이다 — 등록은 됐는데 값이 `undefined` 면 회수할 게 없는 것과 같다. */
 export function hasRemote(name: string): boolean {
-  return name in registry()
+  return registry()[name] !== undefined
 }
 
 export function remoteNames(): string[] {

@@ -27,7 +27,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['esbuild', 'node:fs', 'node:path', 'node:process'],
+      external: ['esbuild', 'node:fs', 'node:path', 'node:process', 'node:url'],
       output: {
         // bin 은 node 가 직접 실행하므로 shebang 이 필요하다. 엔트리가 여럿이라
         // 전역 banner 를 쓰면 런타임 배럴에도 들어가므로 청크를 골라 붙인다.
