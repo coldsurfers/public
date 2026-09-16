@@ -1,5 +1,72 @@
 # @coldsurfers/design-system
 
+## 0.21.0
+
+### Minor Changes
+
+- [#162](https://github.com/coldsurfers/public/pull/162) [`7dd2cde`](https://github.com/coldsurfers/public/commit/7dd2cdec3d822462b5e681cfd7d96afc2800cf8a) Thanks [@yungblud](https://github.com/yungblud)! - `cards/*` 넷과 로더 넷이 DOM props 를 받는다 — `id` · `data-*` · `aria-*` · `style` ·
+  `onMouseEnter` 등.
+
+  `primitives/*` 와 `layout/*` 는 예외 없이 `HTMLAttributes` 를 extends 하고 rest 를 펴는데
+  `cards` 진입점만 `className` 하나로 닫혀 있었다. 소비처가 테스트 훅이나 `id` 를 붙이려면
+  카드를 한 겹 더 감싸야 했다.
+
+  `ConcertCard` 만 DOM `title`(툴팁)을 받지 않는다 — 카드가 그 이름을 이미 제목 문자열로 쓴다.
+
+  native `Spinner` 도 `ViewProps` 를 받는다. 같은 레인의 `Skeleton`·`Text`·`Chip`·`Button` 은
+  이미 받고 있었고 이 하나만 `style` 조차 못 받았다.
+
+- [#166](https://github.com/coldsurfers/public/pull/166) [`1da2363`](https://github.com/coldsurfers/public/commit/1da236355c5fcead95934dc5704292b38b4c8520) Thanks [@yungblud](https://github.com/yungblud)! - 웹 레인의 축 타입을 소비처가 이름으로 부를 수 있게 낸다 — native 레인이 이미 하던 것이다.
+
+  `./primitives` 는 `ButtonSize` · `ButtonVariant` · `ChipSize` · `TextTone` · `TextStyleName` 을,
+  `./cards` 는 `ConcertCardVariant` · `ConcertCardCoverRatio` 를, `./native` 는 `TextStyleName` 을
+  추가로 내보낸다. `Props['variant']` 로 짚을 수는 있었지만 `Record<…>` · `useState<…>` 자리에선
+  이름이 필요해서, 소비처가 유니온을 자기 쪽에 다시 적게 되는 경로였다.
+
+  덤으로 웹 `Chip` 이 `'sm' | 'md'` 를 직접 적던 것을 계약의 `ChipSize` 로 바꾼다.
+
+### Patch Changes
+
+- [#160](https://github.com/coldsurfers/public/pull/160) [`488a4e0`](https://github.com/coldsurfers/public/commit/488a4e04029523aab65fb120397ad0a09c3497bb) Thanks [@yungblud](https://github.com/yungblud)! - 접근성 비대칭 세 곳을 고친다 — 전부 타입이 통과하던 자리다.
+
+  - `native/Modal` 의 필수 `label` 이 아무 데도 안 붙고 있었다. RN 의 `Modal` 은 props 를
+    네이티브 뷰로 명시 목록만 넘기고 `accessibilityLabel` 은 그 목록에 없다. 다이얼로그 이름을
+    실제 표면인 패널이 들게 옮기고, 웹과 같은 prop 이름 셋(`role`·`aria-modal`·`aria-label`)을 쓴다.
+  - 웹 `Chip` 의 `active` 가 스크린 리더에 안 읽혔다. 색으로만 갈렸다. 토글로 쓰는 칩
+    (`active` 를 넘긴 자리)에만 `aria-pressed` 를 붙인다 — RN 짝은 이미 하고 있던 일이다.
+  - `native/Spinner` 가 `label` 없이 쓰이면 이름 없는 `progressbar` 였다. 웹이 이미 들고 있던
+    폴백을 `SPINNER_SPEC.fallbackLabel` 로 올려 두 레인이 같은 문구를 말한다.
+
+- [#157](https://github.com/coldsurfers/public/pull/157) [`a8d689d`](https://github.com/coldsurfers/public/commit/a8d689d22139cd000a88cc969688ab408407c4d1) Thanks [@yungblud](https://github.com/yungblud)! - `Button` 의 치수·variant 색 표를 `contract/button.ts` 의 `BUTTON_SPEC` 으로 모은다.
+
+  웹 recipe(`Button.css.ts`)와 RN 구현에 같은 값이 두 벌 적혀 있었고 담보가 주석 한 줄이었다.
+  이제 양쪽이 한 표를 각자의 토큰 맵으로 읽는다. 산출 CSS 는 바이트 단위로 동일하다.
+
+  RN 두 구현이 같이 쓰는 표면 계산은 `native/button-style.ts` 로 뺀다 — 진입점이 아닌 모듈이라
+  `exports` 맵에 오르지 않고, `native/IconButton` 이 `native/Button` 을 통째로 물지도 않는다.
+  공개 API 는 그대로다.
+
+- [#161](https://github.com/coldsurfers/public/pull/161) [`f3ef29f`](https://github.com/coldsurfers/public/commit/f3ef29f7ece9a857b5b2aac4be096d73c8500e56) Thanks [@yungblud](https://github.com/yungblud)! - 같은 값이 두 곳에 손으로 적혀 갈라지던 자리 셋을 한 표에서 읽게 한다.
+
+  - **`bare` 카드 커버의 `aspect-ratio` 가 웹에서 아예 안 먹고 있었다.** VE 가 숫자에 `px` 를
+    붙여 `aspect-ratio: 1.333…px` 로 나갔고 브라우저가 선언을 버렸다. `String()` 으로 고친다 —
+    빌드도 타입도 못 잡던 자리라 산출 CSS 를 열어보고 찾았다.
+  - `ConcertCardSkeleton` 이 `CONCERT_CARD_BARE_SPEC` 의 값 여섯을 손으로 다시 적고 있었다.
+    spec 을 고치면 실카드만 따라오고 스켈레톤은 남아서, 이 컴포넌트가 막으려던 로드 점프가 났다.
+  - `Toast` 의 `error` 점이 웹은 `accent`, RN 은 `statusDanger` 로 갈려 있었다. ink pill 위
+    대비가 2.95:1 로 비텍스트 하한(3:1)을 못 넘어 RN 쪽이 안 보였다. `accent`(4.25:1)로 통일하고,
+    어느 축에서 어느 색을 읽는지를 `contract/toast.ts` 의 표에 적는다.
+  - 아크 기하 공식이 세 번째로 손으로 적혀 있던 `PullToRefresh` 가 `getSpinnerGeometry` 를
+    쓴다. 함수가 굵기·각도를 인자로 받게 열되 기본값은 그대로다 — 픽셀은 안 움직인다.
+
+- [#156](https://github.com/coldsurfers/public/pull/156) [`3a2f619`](https://github.com/coldsurfers/public/commit/3a2f619024b13f9271409105fa79e4957e1ebd30) Thanks [@yungblud](https://github.com/yungblud)! - `native/Button` · `native/IconButton` 의 비활성 투명도가 소비자 `style` 에 덮여 사라지던 것을 고친다.
+
+  투명도를 `style` prop 으로 얹고 있어서 `<Button style={{ marginTop: 8 }} disabled />` 처럼
+  `style` 을 넘기면 그 한 겹이 통째로 덮였다 — 비활성 버튼이 활성과 똑같이 보였다.
+  컴포넌트 기본 스타일로 옮겨서 소비자 `style` 이 이기는 것도 덮는 것도 명시적 선택이 되게 한다.
+
+- [#154](https://github.com/coldsurfers/public/pull/154) [`062b4d2`](https://github.com/coldsurfers/public/commit/062b4d2908854f382da6f2c71798ca234f625a2f) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCard` 의 섀시 셋을 `FramedCard`·`BareCard`·`CoverCard` 세 컴포넌트로 분해. `variant` prop 과 `ConcertCardProps` 는 그대로라 공개 표면은 동일하다(`dist/cards.d.ts` 동일). 커버 안 `space-between` 을 채우려고 넣었던 빈 `<span />` 셋은 `margin: auto` 로 대체 — 슬롯 하나가 비면 남은 하나가 제자리를 잃던 자리다.
+
 ## 0.20.0
 
 ### Minor Changes
