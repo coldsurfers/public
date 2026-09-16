@@ -76,7 +76,10 @@ export function Chip(props: ChipProps) {
     type,
     ...rest
   } = props
-  return <button type={type ?? 'button'} className={cls} {...rest} />
+  // `props.active` 를 읽는다 — 위에서 기본값을 먹인 `active` 가 아니다. 토글이 아닌 칩
+  // (`active` 를 아예 안 넘기는 자리)까지 `aria-pressed="false"` 를 달면 누르는 상태가
+  // 없는 버튼을 토글이라고 말하게 된다. 안 넘겼으면 `undefined` 라 속성이 안 붙는다.
+  return <button type={type ?? 'button'} aria-pressed={props.active} className={cls} {...rest} />
 }
 
 /**
