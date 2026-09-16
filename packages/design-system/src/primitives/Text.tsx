@@ -7,6 +7,12 @@ import { cx } from './cx'
 import { textTone } from './Text.css'
 
 /**
+ * 축 이름을 소비처가 부를 수 있게 낸다 — native 짝이 이미 하던 것(`native/Text`)이다.
+ * 열지 않으면 소비처가 `Record<…>` 나 `useState<…>` 자리에서 유니온을 자기 쪽에 다시 적는다.
+ */
+export type { TextStyleName, TextTone }
+
+/**
  * 글자 하나를 세우는 바닥.
  *
  * 웹에서 글자는 원래 유틸(`sprinkles`)의 몫이었다 — RN 처럼 모든 글자가 컴포넌트 안에 있어야

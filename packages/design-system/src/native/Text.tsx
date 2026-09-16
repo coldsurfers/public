@@ -42,7 +42,7 @@ import { useScheme } from './scheme'
  * 파일(`Pretendard-Bold` 등)로 등록한 앱에서는 `fontFamily` 를 그 이름으로 바꿔야 하고,
  * 이 축은 무시된다. 등록 방식은 앱의 결정이라 DS 는 토큰이 말하는 가변 폰트를 전제한다.
  */
-export type { TextTone } from '../contract/text-style'
+export type { TextStyleName, TextTone } from '../contract/text-style'
 
 export interface TextProps extends RNTextProps {
   /** 램프의 역할 이름. 크기·행간·자간을 한 번에 정한다. 표는 `contract/text-style.ts`. */

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import type { ConcertCardBareProps, ConcertCardVariant } from '../contract'
+import type { ConcertCardBareProps, ConcertCardCoverRatio, ConcertCardVariant } from '../contract'
 import { CoverBlock, cx } from '../primitives'
 import * as s from './ConcertCard.css'
 
@@ -8,6 +8,12 @@ import * as s from './ConcertCard.css'
  * `reserveTitleLines`)은 **계약에서 온다** — native 구현이 같은 인터페이스를 쓴다.
  * 여기 적는 건 **웹에만 있는 것**뿐이다.
  */
+/**
+ * 축 이름을 소비처가 부를 수 있게 낸다 — `ConcertCardProps['variant']` 로도 짚히지만
+ * `Record<ConcertCardVariant, …>` 자리에선 이름이 필요하다. native 짝과 같은 규율.
+ */
+export type { ConcertCardCoverRatio, ConcertCardVariant }
+
 /**
  * 루트 `<article>` 로 그대로 흘려보내는 DOM props — `id` · `data-*` · `aria-*` · `style` ·
  * `onMouseEnter` 등.
