@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/screens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "React Native screen shell — safe-area · tab bar offsets · suspense boundary, built on @coldsurfers/design-system.",
   "keywords": [
     "react-native",
