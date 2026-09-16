@@ -49,6 +49,20 @@ const config = {
        * 달라지지 않는다. 자세한 경계는 `shims/safe-area-context.tsx`.
        */
       'react-native-safe-area-context': './shims/safe-area-context.tsx',
+      /**
+       * `react-native-svg` · `react-native-reanimated` 도 같은 함정이다 — DS `native/Spinner`
+       * 가 둘을 물고, svg 는 `fabric/*NativeComponent` 를 거쳐 RN 깊은 경로(Flow)로,
+       * reanimated 는 모듈 최상단의 `__DEV__` 로 깨진다.
+       *
+       * svg 는 `.web.js` 판으로 별칭을 걸어 봤지만 **안 된다** — 그 파일이 `./elements` 를
+       * 상대 경로로 열고 `resolveAlias` 는 상대 경로를 못 잡아 native 판으로 되돌아간다.
+       * reanimated 는 `turbopack.define` 으로 `__DEV__` 를 넣어 봤지만 프리렌더(Node)
+       * 패스엔 안 먹었다. 그래서 둘 다 얇은 대역으로 바꾼다.
+       *
+       * ⚠️ reanimated 대역은 **모션을 죽인다.** 경계는 `shims/react-native-reanimated.tsx`.
+       */
+      'react-native-svg': './shims/react-native-svg.tsx',
+      'react-native-reanimated': './shims/react-native-reanimated.tsx',
     },
   },
 }
