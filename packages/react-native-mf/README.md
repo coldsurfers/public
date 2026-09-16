@@ -87,11 +87,18 @@ sharedScopePlugin({
 
 ## 회수
 
+**등록되는 값은 모듈 네임스페이스다.** 미니앱이 `export default` 를 쓰면 한 겹 더 들어간다 —
+원격 번들이 named export 를 여럿 낼 수 있어서 여기서 `.default` 를 풀지 않는다.
+
 ```ts
 import { getRemote } from '@coldsurfers/react-native-mf'
 
-const MiniApp = getRemote<React.FC>('settings')
+const settings = getRemote<{ default: React.FC }>('settings')
+const MiniApp = settings?.default
 ```
+
+아직 실행 전이면 `undefined` 다 — 던지지 않는다. 번들을 실행할지 말지는 로더가 판단하는
+자리라, 있는지만 묻고 싶으면 `hasRemote(name)` 을 쓴다.
 
 번들이 실행되면 스스로 등록한다([3] self-register). 실행 방식이 소스 eval 이든 바이트코드든
 회수 지점은 이 한 곳이다.

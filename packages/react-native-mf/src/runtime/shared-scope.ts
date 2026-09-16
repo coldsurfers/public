@@ -1,3 +1,5 @@
+import { globalRecord } from './global-record'
+
 /**
  * [1] Shared scope — 호스트가 자기 사본을 전역에 노출한다.
  *
@@ -12,17 +14,7 @@ export const SHARED_SCOPE_KEY = '__RN_MF_SHARED__' as const
 
 type SharedScope = Record<string, unknown>
 
-const globalRef = globalThis as typeof globalThis & {
-  [SHARED_SCOPE_KEY]?: SharedScope
-}
-
-function scope(): SharedScope {
-  const existing = globalRef[SHARED_SCOPE_KEY]
-  if (existing) return existing
-  const created: SharedScope = {}
-  globalRef[SHARED_SCOPE_KEY] = created
-  return created
-}
+const scope = globalRecord<unknown>(SHARED_SCOPE_KEY)
 
 /**
  * 호스트 부트에서 한 번 부른다. 넘긴 값이 그대로 singleton 이 된다.
