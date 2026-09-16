@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.12.2
+
+### Patch Changes
+
+- [#150](https://github.com/coldsurfers/public/pull/150) [`7520a2f`](https://github.com/coldsurfers/public/commit/7520a2f1da58742a5523bffcac87a224c374459a) Thanks [@yungblud](https://github.com/yungblud)! - 검색 DTO 의 artist `profileImgUrl` 을 nullable 로 교체. 프로필 이미지가 없는 아티스트(실측 93.8%)가 소비자의 행 단위 `safeParse` 에서 버려져 검색 결과에서 통째로 사라지던 문제.
+
 ## 0.12.1
 
 ### Patch Changes
