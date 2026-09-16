@@ -50,7 +50,8 @@ const ErrorDot = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
   width: 6,
   height: 6,
   borderRadius: nativeRadius.full,
-  backgroundColor: $scheme.statusDanger,
+  // 상태색이 아니라 `accent` 인 이유는 ink pill 위 대비다 — `contract/toast.ts` 의 색 표.
+  backgroundColor: $scheme.accent,
 }))
 
 export function ToastProvider({ children }: { children: ReactNode }) {

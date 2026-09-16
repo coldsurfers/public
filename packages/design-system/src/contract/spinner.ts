@@ -40,9 +40,20 @@ export const SPINNER_SPEC = {
 /**
  * 아크 링의 기하. `strokeDasharray` 가 양쪽에서 **같은 세 숫자**를 받아야 같은 링이 된다 —
  * 두 파일에서 따로 계산하면 한쪽 반올림만 바뀌어도 아무도 못 잡는다.
+ *
+ * 굵기·각도는 기본이 `SPINNER_SPEC` 이되 **인자로 열어 둔다.** `PullToRefresh` 의 인디케이터가
+ * 같은 공식을 쓰면서 다른 튜닝(26 · 2.5 · 135°)으로 서기 때문이다 — 그쪽은 웹 짝이 없어
+ * 값이 계약이 아니지만, **공식이 세 번째로 손으로 적히는 것**은 이 함수가 막으려던 바로 그것이다.
+ * 값은 호출부에, 식은 여기에.
  */
-export function getSpinnerGeometry(size: number) {
-  const radius = (size - SPINNER_SPEC.strokeWidth) / 2
+export function getSpinnerGeometry(
+  size: number,
+  {
+    strokeWidth = SPINNER_SPEC.strokeWidth,
+    arcSweep = SPINNER_SPEC.arcSweep,
+  }: { strokeWidth?: number; arcSweep?: number } = {},
+) {
+  const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  return { radius, circumference, arc: circumference * SPINNER_SPEC.arcSweep }
+  return { radius, circumference, arc: circumference * arcSweep }
 }

@@ -1,5 +1,6 @@
 import { style } from '@vanilla-extract/css'
 import { recipe } from '@vanilla-extract/recipes'
+import { CONCERT_CARD_BARE_SPEC as bare } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
@@ -7,7 +8,14 @@ import { skeletonToneValue } from '../primitives/Skeleton.css'
 
 /**
  * `ConcertCard` 의 로딩 스켈레톤 — 섀시·치수를 실카드와 맞춰 로드 전후가 튀지 않게 한다.
- * 실카드가 바뀌면 여기도 같이 바뀌어야 한다는 뜻이라, 값이 겹치는 건 의도다.
+ *
+ * 값이 겹치는 건 의도다. **그래서 겹치는 값은 읽어온다** — 실카드가 읽는 표(`bare.*`)를 여기서도
+ * 읽는다. 손으로 같은 숫자를 적어두면 spec 을 고쳤을 때 실카드만 따라오고 스켈레톤은 남아서,
+ * 이 컴포넌트가 막으려던 바로 그 점프가 난다. 바탕색을 `skeletonToneValue` 에서 읽는 것과
+ * 같은 수법이다.
+ *
+ * `@media(tablet)` 값만 리터럴로 남는다 — RN 엔 미디어 쿼리가 없어 갈릴 짝이 없다
+ * (`ConcertCard.css.ts` 머리말과 같은 이유).
  */
 
 /* ── bare ── */
@@ -16,16 +24,17 @@ export const bareRoot = style(
   inComponentsLayer({
     display: 'flex',
     flexDirection: 'column',
-    gap: 11,
+    gap: bare.gap,
     '@media': { [media.tablet]: { gap: 13 } },
   }),
 )
 
 export const bareCover = style(
   inComponentsLayer({
-    aspectRatio: '4 / 3',
+    // `String()` 인 이유는 `ConcertCard.css.ts` 의 `bareCoverRatio` 위에 적혀 있다.
+    aspectRatio: String(bare.coverAspectRatio.landscape),
     width: '100%',
-    borderRadius: 8,
+    borderRadius: bare.coverRadius,
   }),
 )
 
@@ -33,7 +42,7 @@ export const bareMeta = style(
   inComponentsLayer({
     display: 'flex',
     flexDirection: 'column',
-    gap: 2,
+    gap: bare.metaGap,
     '@media': { [media.tablet]: { gap: 3 } },
   }),
 )
@@ -53,8 +62,14 @@ export const titleBar = recipe({
 
   variants: {
     reserve: {
-      true: inComponentsLayer({ height: 42, '@media': { [media.tablet]: { height: 46 } } }),
-      false: inComponentsLayer({ height: 21, '@media': { [media.tablet]: { height: 23 } } }),
+      true: inComponentsLayer({
+        height: bare.titleReservedHeight,
+        '@media': { [media.tablet]: { height: 46 } },
+      }),
+      false: inComponentsLayer({
+        height: bare.titleLineHeight,
+        '@media': { [media.tablet]: { height: 23 } },
+      }),
     },
   },
 

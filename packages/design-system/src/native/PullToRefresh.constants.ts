@@ -5,6 +5,8 @@
  * `docs/native-lane-porting.md` 의 「웹에 짝이 생길 수 없는 표면」.
  */
 
+import { getSpinnerGeometry } from '../contract'
+
 /** 이만큼 당겨서 놓아야 새로고침이 걸린다. 이 거리에서 인디케이터가 완전히 진해진다. */
 export const PULL_THRESHOLD = 72
 
@@ -32,8 +34,20 @@ export const FAIL_OFFSET_X = 20
 /** 인디케이터 지름. */
 export const SPINNER_SIZE = 26
 export const SPINNER_STROKE_WIDTH = 2.5
-export const SPINNER_RADIUS = (SPINNER_SIZE - SPINNER_STROKE_WIDTH) / 2
-export const SPINNER_CIRCUMFERENCE = 2 * Math.PI * SPINNER_RADIUS
 /** 원의 135° 만 그린다 — 도는 게 보이려면 끊긴 데가 있어야 한다. */
-export const SPINNER_ARC = SPINNER_CIRCUMFERENCE * (135 / 360)
+const SPINNER_ARC_SWEEP = 135 / 360
+
+/**
+ * 값은 위에 있고 **식은 `contract/spinner.ts` 가 든다.** 이 파일이 `contract/` 가 아닌 건
+ * 위 머리말대로 값에 짝이 없어서지, 반지름·둘레 공식까지 따로 적을 근거는 아니다 —
+ * 그 공식이 세 번째로 손으로 적히면 한쪽 반올림이 갈려도 아무도 못 잡는다.
+ */
+export const {
+  radius: SPINNER_RADIUS,
+  circumference: SPINNER_CIRCUMFERENCE,
+  arc: SPINNER_ARC,
+} = getSpinnerGeometry(SPINNER_SIZE, {
+  strokeWidth: SPINNER_STROKE_WIDTH,
+  arcSweep: SPINNER_ARC_SWEEP,
+})
 export const SPIN_DURATION_MS = 900
