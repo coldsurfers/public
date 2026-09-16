@@ -42,16 +42,27 @@ const surfaceFor = (scheme: ColorScheme, variant: ButtonVariant): ViewStyle => {
   }
 }
 
+/**
+ * 비활성 표시.
+ *
+ * `Root` 의 **기본 스타일**로 넣는다. `style` prop 으로 얹으면 소비자가 `style` 을 넘기는
+ * 순간 그 한 겹이 통째로 덮여서 **비활성이 활성처럼 보인다.** 기본 스타일이면 소비자
+ * `style` 이 이기는 것도 덮는 것도 명시적 선택이 된다.
+ */
+const DISABLED_OPACITY = 0.4
+
 const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme
   $variant: ButtonVariant
   $size: IconButtonSize
-}>(({ $scheme, $variant, $size }) => ({
+  $disabled: boolean
+}>(({ $scheme, $variant, $size, $disabled }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   width: SIDE[$size],
   height: SIDE[$size],
   borderRadius: nativeRadius.md,
+  opacity: $disabled ? DISABLED_OPACITY : 1,
   ...surfaceFor($scheme, $variant),
 }))
 
@@ -69,8 +80,8 @@ export function IconButton({
       $scheme={scheme}
       $variant={variant}
       $size={size}
+      $disabled={disabled ?? false}
       disabled={disabled}
-      style={disabled ? { opacity: 0.4 } : undefined}
       accessibilityRole="button"
       accessibilityLabel={label}
       {...rest}
