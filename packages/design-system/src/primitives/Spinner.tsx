@@ -61,7 +61,7 @@ export function Spinner({ size = SPINNER_SPEC.size, label, className }: SpinnerP
       {label ? (
         <span className={spinnerLabel}>{label}</span>
       ) : (
-        <span className={srOnly}>불러오는 중</span>
+        <span className={srOnly}>{SPINNER_SPEC.fallbackLabel}</span>
       )}
     </div>
   )

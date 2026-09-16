@@ -35,7 +35,10 @@ import { Text } from './Text'
 export interface SpinnerProps {
   /** 지름(px). 기본은 `SPINNER_SPEC.size` — 웹과 같은 값. */
   size?: number
-  /** 있으면 스피너 아래 muted 라벨을 렌더. 없으면 스피너만. */
+  /**
+   * 있으면 스피너 아래 muted 라벨을 렌더. 없으면 스피너만 — 다만 **접근성 이름은 남는다**
+   * (`SPINNER_SPEC.fallbackLabel`). 웹과 같은 폴백이다.
+   */
   label?: string
 }
 
@@ -63,7 +66,7 @@ export function Spinner({ size = SPINNER_SPEC.size, label }: SpinnerProps) {
   })
 
   return (
-    <Root accessibilityRole="progressbar" accessibilityLabel={label}>
+    <Root accessibilityRole="progressbar" accessibilityLabel={label ?? SPINNER_SPEC.fallbackLabel}>
       {/* 웹은 SVG 노드에 CSS 키프레임을 걸지만 RN 은 SVG 를 못 돌려 감싼 뷰를 돌린다. */}
       <Animated.View style={[{ width: size, height: size }, spinStyle]}>
         <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>

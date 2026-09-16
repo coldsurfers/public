@@ -25,6 +25,16 @@ export const SPINNER_SPEC = {
   labelFontSize: 13,
   /** 한 바퀴. 웹 `animationDuration: '1s'`. */
   spinDurationMs: 1000,
+  /**
+   * `label` 이 없을 때 쓰는 접근성 이름. **보이는 문구가 아니다** — 웹은 `srOnly`,
+   * native 는 `accessibilityLabel` 로만 나간다.
+   *
+   * 스피너는 라벨 없이 쓰는 게 기본값(Figma `라벨 표시` off)이라, 이름이 없으면 그냥
+   * 이름 없는 `progressbar` 가 된다. 웹은 이미 이 폴백을 들고 있었고 native 만 빠져 있어서
+   * **같은 컴포넌트의 접근성 수준이 플랫폼마다 달랐다.** 두 레인이 같은 문구를 말해야 하므로
+   * 리터럴을 양쪽에 적지 않고 여기 둔다.
+   */
+  fallbackLabel: '불러오는 중',
 } as const
 
 /**
