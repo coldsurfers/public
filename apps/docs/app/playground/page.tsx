@@ -13,6 +13,12 @@ const SCREENS = [
     description:
       'billets-app 이 처음 여는 4탭 피드를 리스킨. 장르를 고르면 원본처럼 피드가 통째로 바뀌고, 카드는 진짜 ConcertCard 다. 파일이 P3 흡수 판정 단위로 갈려 있어 소비 레포가 집어갈 수 있다.',
   },
+  {
+    href: '/playground/app-screen',
+    title: 'AppScreen — 여백 두 축',
+    description:
+      '@coldsurfers/screens 의 AppScreen. offsetTop · offsetBottom 을 바꿔 가며 콘텐츠가 absolute 탭바 아래로 숨는지 본다. 브라우저는 인셋이 0 이라 safeArea 축은 여기서 안 보인다.',
+  },
 ]
 
 export default function PlaygroundIndex() {

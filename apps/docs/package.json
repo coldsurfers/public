@@ -12,6 +12,7 @@
   "dependencies": {
     "@coldsurfers/api-sdk": "workspace:*",
     "@coldsurfers/design-system": "workspace:*",
+    "@coldsurfers/screens": "workspace:*",
     "cnfast": "^0.1.0",
     "fumadocs-core": "^16.15.4",
     "fumadocs-mdx": "^15.4.0",

@@ -1,0 +1,87 @@
+---
+title: AppScreen
+description: 화면 한 장의 바닥 판. 배경 · 위아래 여백 · 로딩 경계.
+---
+
+<NativePreview name="screens-app-screen" height={420} />
+
+`offsetBottom` 을 `none` 으로 내려 보세요. 콘텐츠 테두리가 탭바 아래로 들어갑니다 — 이 컴포넌트가
+존재하는 이유가 그 한 줄입니다.
+
+## 무엇을 들고 무엇을 안 드는가
+
+| 여기 | 여기가 아닌 곳 |
+| --- | --- |
+| 배경색 · safe-area 여백 · 탭바 여백 · Suspense 경계 | 헤더 → react-navigation `options.header` |
+| | 에러 경계 → **소비처** |
+| | 탭바 자체 → [`TabBar`](/docs/native/tab-bar) |
+
+**에러 경계를 안 드는 이유는 의존입니다.** react-query 경계를 넣으면 이 패키지가 react-query 를
+물고, 데이터를 안 읽는 화면까지 그 의존을 집니다. 소비처가 바깥에서 감쌉니다.
+
+## 여백을 두 축으로 가른다
+
+```tsx
+<AppScreen offsetTop="safeArea" offsetBottom="tabBar">
+  <MyList />
+</AppScreen>
+```
+
+| | 값 | 무엇이 되는가 |
+| --- | --- | --- |
+| `offsetTop` | `none` · `safeArea` | `0` · `insets.top` |
+| `offsetBottom` | `none` · `safeArea` · `tabBar` | `0` · `insets.bottom` · `useTabBarHeight()` |
+
+`left` · `right` 는 받지 않습니다. 앞판 소비처 22곳에서 한 번도 안 썼습니다 — 있는데 안 먹는
+prop 은 거짓말을 합니다.
+
+### 왜 불리언 둘이 아니라 열거형인가
+
+앞판은 `edges: Edges` 와 `withBottomTab: boolean` 을 따로 받았는데 **둘 다 하단을 건드렸습니다.**
+조합 넷이 만드는 값이 이랬습니다.
+
+| 앞판 | paddingBottom |
+| --- | --- |
+| `edges=[]`, `withBottomTab` | `tabBarHeight - insets.bottom` |
+| `edges=['bottom']`, `withBottomTab` | `tabBarHeight` |
+| `edges=['bottom']` | `insets.bottom` |
+| `edges=[]` | `0` |
+
+`tabBarHeight - insets.bottom` 은 앞판이 탭바 높이를 **상수로 박아서** 생긴 보정식입니다.
+[`useTabBarHeight()`](/docs/native/tab-bar) 는 인셋을 포함해 계산하므로 보정이 필요 없고,
+넷이 세 값으로 접힙니다.
+
+## 탭바는 `absolute` 로 얹힌다
+
+화면이 자기 아래 여백을 직접 잡아야 하는 이유입니다. 탭바를 흐름 안에 넣으면 `offsetBottom` 이
+할 일이 없습니다.
+
+```tsx
+<View style={{ flex: 1 }}>
+  <AppScreen offsetBottom="tabBar">{children}</AppScreen>
+  <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+    <TabBar>{/* … */}</TabBar>
+  </View>
+</View>
+```
+
+## Suspense
+
+`fallback` 없이 쓰면 정중앙 design-system `Spinner` 가 섭니다.
+
+<Callout type="warn" title="기본 fallback 은 svg 와 reanimated 를 전이로 뭅니다">
+  `Spinner` 가 `react-native-svg` · `react-native-reanimated` 를 씁니다. native 레인을 쓰는
+  소비처는 보통 이미 들고 있지만, 안 들고 싶으면 `fallback` 을 직접 넘기세요.
+</Callout>
+
+<Callout type="warn" title="위 미리보기의 여백은 실기기 여백이 아닙니다">
+  브라우저에는 안전 영역이 없어 인셋이 전부 0 입니다. `safeArea` 두 값이 여기서는 `none` 과
+  똑같이 보이고, `useTabBarHeight()` 도 `Platform.OS === 'web'` 이라 인셋을 안 탑니다.
+  **실기기에서는 홈 인디케이터만큼 더 큽니다** — 자로 재서 시안과 맞추면 안 됩니다.
+
+  스피너도 안 돕니다. 문서 사이트가 reanimated 를 얇은 대역으로 바꿔 두기 때문입니다.
+</Callout>
+
+## Props
+
+<Props of="AppScreen" pkg="screens" dir="." />
