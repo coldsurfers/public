@@ -177,10 +177,18 @@ export const coverTopRow = style(
     position: 'relative',
     display: 'flex',
     alignItems: 'flex-start',
-    justifyContent: 'space-between',
     gap: 12,
   }),
 )
+
+/**
+ * 담기 슬롯을 우측으로 민다.
+ *
+ * `coverTopRow` 에 `space-between` 을 주면 **두 자리가 다 찼을 때만** 맞는다 — eyebrow 가
+ * 없으면 담기가 왼쪽으로 붙으므로 자리를 채우는 빈 노드가 필요해진다. `auto` 여백은 이웃의
+ * 유무를 묻지 않으므로 그 빈 노드가 사라진다.
+ */
+export const coverTopAction = style(inComponentsLayer({ marginInlineStart: 'auto' }))
 
 export const coverEyebrow = style(
   inComponentsLayer({
@@ -229,6 +237,11 @@ export const framedRoot = style(
   }),
 )
 
+/**
+ * 매치 라벨(위) · 이니셜(아래). 세로 배치는 `space-between` 이 아니라 `framedInitial` 의
+ * `marginTop: auto` 가 만든다 — 둘은 서로 독립적으로 없을 수 있고(포스터가 있으면 이니셜이,
+ * 매치 근거가 없으면 라벨이), `space-between` 은 한쪽이 비면 남은 하나를 위로 끌어올린다.
+ */
 export const framedCover = style(
   inComponentsLayer({
     position: 'relative',
@@ -236,7 +249,6 @@ export const framedCover = style(
     height: 190,
     flexShrink: 0,
     flexDirection: 'column',
-    justifyContent: 'space-between',
     padding: 16,
   }),
 )
@@ -273,9 +285,11 @@ export const framedMatchDot = style(
   }),
 )
 
+/** 커버 바닥에 앉는다 — 위에 매치 라벨이 있든 없든 `auto` 여백이 같은 자리를 만든다. */
 export const framedInitial = style(
   inComponentsLayer({
     position: 'relative',
+    marginTop: 'auto',
     fontFamily: vars.font.serif,
     fontSize: vars.fontSize['5xl'],
     lineHeight: 1,
