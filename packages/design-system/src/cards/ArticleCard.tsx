@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react'
 import { CoverBlock, cx, Eyebrow } from '../primitives'
 import type { CoverTone } from '../tokens'
 import * as s from './ArticleCard.css'
@@ -6,7 +7,7 @@ import * as s from './ArticleCard.css'
  * 매거진 아티클 카드 — 썸네일(tone) + 본문(category eyebrow · title · excerpt · meta).
  * router 비의존 — 클릭은 소비처가 `Link` 로 감싼다.
  */
-export interface ArticleCardProps {
+export interface ArticleCardProps extends HTMLAttributes<HTMLElement> {
   tone: CoverTone
   /** 실제 썸네일 URL. 있으면 tone 색면 위에 채워 얹고, 없으면 색면만 노출(데이터 정직성). */
   thumbnailUrl?: string
@@ -16,7 +17,6 @@ export interface ArticleCardProps {
   excerpt: string
   /** `7.15 · 24분` · `7.11`. */
   meta: string
-  className?: string
 }
 
 export function ArticleCard({
@@ -27,9 +27,10 @@ export function ArticleCard({
   excerpt,
   meta,
   className,
+  ...rest
 }: ArticleCardProps) {
   return (
-    <article className={cx(s.card, className)}>
+    <article className={cx(s.card, className)} {...rest}>
       <CoverBlock tone={tone} className={s.cover}>
         {thumbnailUrl ? (
           <img src={thumbnailUrl} alt="" loading="lazy" className={s.coverImage} />

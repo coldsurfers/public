@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react'
 import { getSpinnerGeometry, SPINNER_SPEC } from '../contract'
 import { cx } from './cx'
 import {
@@ -19,19 +20,18 @@ import {
  *
  * 치수는 native 판과 **같은 표를 읽는다** — `contract/spinner.ts` 의 `SPINNER_SPEC`.
  */
-export type SpinnerProps = {
+export interface SpinnerProps extends HTMLAttributes<HTMLDivElement> {
   /** 지름(px). 기본은 `SPINNER_SPEC.size` — Figma 로더 값. */
   size?: number
   /** 있으면 스피너 아래 muted 라벨을 렌더. 없으면(기본) 스피너만(Figma `라벨 표시` off). */
   label?: string
-  className?: string
 }
 
-export function Spinner({ size = SPINNER_SPEC.size, label, className }: SpinnerProps) {
+export function Spinner({ size = SPINNER_SPEC.size, label, className, ...rest }: SpinnerProps) {
   const { radius, circumference, arc } = getSpinnerGeometry(size)
 
   return (
-    <div role="status" className={cx(spinnerRoot, className)}>
+    <div role="status" className={cx(spinnerRoot, className)} {...rest}>
       {/* biome-ignore lint/a11y/noSvgWithoutTitle: 장식용 — 접근성 이름은 role="status" 컨테이너가 가짐 */}
       <svg
         width={size}
