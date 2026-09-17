@@ -12,4 +12,7 @@
 공개 패키지가 `react-native-fs` 같은 네이티브 모듈을 물지 않는다. `invalidate({ keep })` 가
 옛 버전 파일을 정리한다.
 
+Suspense 어댑터 `useRemote` 도 같이 낸다. React 를 import 하지 않아 peer 는 늘지 않는다 —
+훅 API 를 부르지 않고 "있으면 값, 없으면 약속을 던진다" 만 한다.
+
 배럴(`.`)에 재수출한다 — 새 진입점을 열지 않는다. 순수 추가다.

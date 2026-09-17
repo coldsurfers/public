@@ -137,21 +137,12 @@ resolver 는 `await` 를 품어도 된다(위의 `getManifest`). 부팅에서 �
 
 ### 2. 화면에서 — Suspense
 
-`load` 는 약속을, `getRemote` 는 값을 돌려준다. 그래서 훅 하나가 Suspense 계약 그대로다.
+`load` 는 약속을, `getRemote` 는 값을 돌려준다. 그 둘을 Suspense 계약으로 접은 게 `useRemote` 다.
 
 ```tsx
-import { getRemote, scriptManager } from '@coldsurfers/react-native-mf'
+import { useRemote } from '@coldsurfers/react-native-mf'
 
-function useRemote<T>(name: string): T {
-  const loaded = getRemote<T>(name)
-  if (loaded) return loaded
-
-  // 등록 전이면 약속을 던진다. `load` 가 in-flight 를 접으므로 렌더가 몇 번 돌아도
-  // 받는 건 한 번이고, 한 번 등록되면 위에서 동기로 끝나 다시는 던지지 않는다
-  throw scriptManager.load<T>(name)
-}
-
-function SettingsScreen() {
+function SettingsScreen(props: Props) {
   const { default: MiniApp } = useRemote<{ default: FC<Props> }>('settings')
 
   return <MiniApp {...props} />
@@ -166,11 +157,17 @@ function SettingsScreen() {
 </ErrorBoundary>
 ```
 
-> **훅은 이 패키지가 내지 않는다.** 내면 `react` 를 peer 로 물어야 하는데, 지금 이 패키지의
-> 런타임 레인은 React 를 모른다. 위 여섯 줄은 소비처에 두는 게 맞다.
+로딩·에러 상태를 손으로 들 자리가 사라진다 — 상태 셋(`loading`/`error`/`data`)이 Suspense
+경계와 ErrorBoundary 로 옮겨간다. 재시도도 ErrorBoundary 가 든다: **실패는 기억되지 않아서**
+다시 렌더하면 다시 받는다.
 
-`useRemote` 를 쓰면 로딩·에러 상태를 손으로 들 자리가 사라진다 — 상태 셋(`loading`/`error`/
-`data`)이 Suspense 경계와 ErrorBoundary 로 옮겨간다.
+> **이 훅은 `react` 를 import 하지 않는다.** 훅 API 를 하나도 부르지 않기 때문이다 — 하는 일은
+> "있으면 값, 없으면 약속을 던진다" 뿐이고 그걸 받는 건 React 쪽이다. 그래서 런타임 레인은
+> 여전히 React 를 모르고, peer 도 늘지 않는다.
+
+네 줄짜리라 소비처에서 다시 쓰기 쉬운데, 그 네 줄이 로더 내부에 기대고 있어서 패키지가 든다.
+**동기 조회가 먼저**여야 이미 실행된 번들을 다시 안 받고, **약속을 그대로 던져야** `load` 의
+in-flight 접기가 살아 있다. `useState`/`useEffect` 로 감싸면 그 보장이 깨져 번들이 두 번 실행된다.
 
 ### 3. 그 사이 — 프리페치
 

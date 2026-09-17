@@ -27,3 +27,4 @@ export {
   SHARED_SCOPE_KEY,
   sharedNames,
 } from './runtime/shared-scope'
+export { useRemote } from './runtime/use-remote'
