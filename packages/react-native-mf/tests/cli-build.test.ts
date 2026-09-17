@@ -5,9 +5,12 @@
  * **block-scoping 후처리가 실제로 `let` 을 걷어냈는가.** 셋 다 타입도 빌드도 못 잡고,
  * 깨지면 로드 시점이나 런타임에서야 드러난다.
  *
- * 임시 프로젝트를 `node_modules/.cache` 안에 세우는 이유는 둘이다 — babel 이 config 의
- * preset 을 위로 올라가며 찾고, esbuild 도 bare import 를 같은 방식으로 찾는다. 레포 밖
- * (`os.tmpdir()`)에 세우면 둘 다 아무것도 못 찾는다. 덤으로 tsc·biome 의 시야 밖이다.
+ * 임시 프로젝트 자리는 두 조건을 **동시에** 만족해야 한다. 패키지 **안**이어야 하고 — babel 이
+ * config 의 preset 을 위로 올라가며 찾고 esbuild 도 bare import 를 같은 방식으로 찾는다,
+ * 레포 밖(`os.tmpdir()`)에 세우면 둘 다 아무것도 못 찾는다 — 그러면서 **`node_modules` 아래면
+ * 안 된다.** esbuild 가 그 경로를 서드파티로 보고 `"use strict"` 를 빼기 때문에, 픽스처를
+ * 거기 두면 아래 strict 테스트가 원인을 못 가린다. `tsconfig` 의 `include` 가 `src`·`tests`
+ * 뿐이라 tsc 시야 밖인 건 그대로다.
  */
 import assert from 'node:assert/strict'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
@@ -15,13 +18,13 @@ import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
-import { runBuild } from '../src/cli/build'
+import { runBuild, TRANSPILE_CACHE } from '../src/cli/build'
 import type { BuildOptions } from '../src/cli/build-options'
 import { REMOTE_REGISTRY_KEY } from '../src/runtime/registry'
 import { SHARED_SCOPE_KEY } from '../src/runtime/shared-scope'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const projectDir = join(here, '../node_modules/.cache/rn-mf-cli-test')
+const projectDir = join(here, '../.tmp-cli-test')
 
 /** 호스트가 노출하는 사본 자리. 값이 그대로 원격 번들에 도달하는지 보는 표식이다. */
 const hostScope = {
@@ -119,6 +122,18 @@ test('구운 번들이 self-register 와 shared 치환을 담는다', async (t) 
   assert.equal(used.label, 'a0!')
 
   t.diagnostic(`bundle ${bytes} bytes`)
+})
+
+test('산출물이 strict 모드다 — 중간 산출물을 node_modules 아래 두면 조용히 깨진다', async () => {
+  // 소스는 ESM 이고 ESM 은 명세상 strict 인데, 원격 번들은 `new Function` 으로 실행되므로
+  // 지시어가 없으면 sloppy 로 돈다 — 선언 안 한 변수 할당이 전역을 만들고 함수 안 `this` 가
+  // `globalThis` 가 된다. esbuild 는 엔트리가 `node_modules/` 아래면 이 지시어를 안 붙인다.
+  // 실측(0.25.7): `build/.probe` → `"use strict";` · `node_modules/.cache/probe` → 없음.
+  const { outFile } = await runBuild(options({ outFile: 'build/strict.js' }))
+  const code = await readFile(outFile, 'utf8')
+
+  assert.match(code.split('\n')[0], /^"use strict";$/, '최상위 "use strict" 가 사라졌다')
+  assert.ok(!TRANSPILE_CACHE.includes('node_modules'), '중간 산출물이 node_modules 아래다')
 })
 
 test('block-scoping 후처리가 let 을 걷어낸다', async () => {

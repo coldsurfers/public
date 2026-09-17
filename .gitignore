@@ -27,3 +27,4 @@ out/
 .source/
 next-env.d.ts
 .wrangler/
+.tmp-cli-test/

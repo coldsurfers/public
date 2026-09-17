@@ -145,8 +145,20 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 (`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
 없앤다 — 미니앱 자기 코드가 같은 자리를 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
 
-중간 산출물은 `node_modules/.cache/react-native-mf/<name>/` 에 떨어진다. **프로젝트 안이어야
-한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
+중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 자리 조건이 둘이다.
+
+- **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
+  레포 밖(`os.tmpdir()`)에 두면 미니앱 의존성이 통째로 안 잡힌다
+- **`node_modules` 아래면 안 된다** — esbuild 가 그 경로를 서드파티로 보고 최상위
+  `"use strict"` 를 안 붙인다. 소스는 ESM(명세상 strict)인데 원격 번들은 `new Function` 으로
+  실행되므로, 지시어가 없으면 **sloppy 로 돈다**
+
+실측 (esbuild 0.25.7, 같은 소스·같은 옵션, 디렉터리만 다르게):
+
+| 엔트리 위치 | 산출물 첫 줄 |
+| --- | --- |
+| `build/.probe/index.js` | `"use strict";` |
+| `node_modules/.cache/probe/index.js` | `var __E__ = (() => {` |
 
 ## 직접 esbuild 를 부를 때
 
