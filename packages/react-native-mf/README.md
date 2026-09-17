@@ -19,6 +19,70 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 
 `esbuild` 는 optional peer 다. 런타임 레인만 쓰는 앱은 안 깔아도 된다.
 
+## 실제로 꽂히는 자리 — `globalThis` 두 칸
+
+호스트와 원격 번들은 **모듈 그래프가 다르다.** 따로 번들돼서 서로를 `import` 할 수 없다.
+둘이 만날 수 있는 곳은 런타임 전역 하나뿐이고, 그래서 칸이 둘이다.
+
+| 전역 키 | 쓰는 쪽 | 읽는 쪽 |
+| --- | --- | --- |
+| `__RN_MF_SHARED__` | 호스트 — `registerShared()` | 원격 번들 (빌드타임 치환된 코드) |
+| `__RN_MF_REMOTES__` | 원격 번들 — footer 가 자기를 넣는다 | 호스트 — `getRemote()` |
+
+**방향이 반대인 일방통행 둘이다.** 호스트가 의존성을 내려주고, 미니앱이 자기를 올려준다.
+
+### ① 미니앱 → shared 를 읽는다 (빌드타임 치환)
+
+`sharedScopePlugin` 이 `import` 를 **모듈 소스째로 갈아끼운다**. 산출물에 `require("react")` 가
+남지 않는 이유다.
+
+```js
+// 미니앱 소스
+import { useState } from 'react'
+```
+
+```js
+// 번들 안 — 플러그인이 'react' 모듈을 이 여섯 줄로 바꿔치기한다
+var scope = globalThis["__RN_MF_SHARED__"];
+var mod = scope && scope["react"];
+if (mod === undefined) {
+  throw new Error('[react-native-mf] shared 모듈 "react" 이 등록돼 있지 않다. ...');
+}
+module.exports = mod;
+```
+
+조회 키는 **미니앱이 쓴 specifier 그대로**다 — `react/jsx-runtime` 은 `react/jsx-runtime` 으로 찾는다.
+
+### ② 미니앱 → 자기를 꽂는다 (footer)
+
+`withSelfRegister` 가 esbuild 를 `iife` + `globalName` 으로 돌리고, 산출물 끝에 두 줄을 붙인다.
+
+```js
+// 번들 맨 끝 — 실행되면 이 두 줄이 돈다
+globalThis["__RN_MF_REMOTES__"] = globalThis["__RN_MF_REMOTES__"] || {};
+globalThis["__RN_MF_REMOTES__"]["settings"] = __RN_MF_REMOTE_ENTRY__;
+```
+
+**"꽂는다" 가 일어나는 물리적 지점이 이 두 줄이다.** 호스트는 아무것도 안 한다 — 번들을
+실행하기만 하고, 올라오는 건 번들이 스스로 한다.
+
+### ③ 호스트 → 실행시킨다
+
+`scriptManager.load` 안의 한 줄이 전부다.
+
+```ts
+new Function(`${source}\n//# sourceURL=${locator.url}`)()   // ← ②의 두 줄이 여기서 돈다
+const remote = getRemote(name)                               // ← 그래서 바로 회수된다
+```
+
+`require` 를 주입하지 않는다. 주입하던 시절엔 호스트가 모듈 이름을 손으로 나열한
+화이트리스트를 들어야 했는데, ①의 치환이 그 자리를 없앴다.
+
+### 부트 순서는 상관없다
+
+두 칸 다 **먼저 만지는 쪽이 만든다**(`globalRecord` 의 지연 생성). 원격 번들이 호스트보다
+먼저 실행돼도, 반대여도 같은 칸을 본다.
+
 ## 호스트 배선
 
 호스트가 **자기 사본**을 노출한다. 원격 번들이 `react` 를 자기 안에 번들해 오면 런타임에
