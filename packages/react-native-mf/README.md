@@ -108,9 +108,17 @@ const MiniApp = settings?.default
 `getRemote` 는 **회수** 지점이고, 거기까지 데려오는 일(받기 · 캐시 · 실행)이 `scriptManager` 다.
 React 밖이라 부팅 프리페치 · 탭 진입 전 프리로드가 마운트에 묶이지 않는다.
 
-```ts
-import { scriptManager } from '@coldsurfers/react-native-mf'
+**배선과 로드는 시점이 다르다.** 배선은 부팅에 한 번, 로드는 화면이 필요할 때다. 한 블록처럼
+보이면 resolver 를 컴포넌트 안에서 등록하게 되고, 그러면 마운트마다 resolver 가 쌓인다.
 
+### 1. 부팅에 한 번 — 배선
+
+`index.js`, `registerShared` 옆자리. React 트리 **밖**이다.
+
+```ts
+import { registerShared, scriptManager } from '@coldsurfers/react-native-mf'
+
+registerShared(SHARED_MODULES)
 scriptManager.setStorage(storage)
 
 scriptManager.addResolver(async (name) => {
@@ -119,21 +127,74 @@ scriptManager.addResolver(async (name) => {
   const { latestVersion } = (await getManifest())[name]
   return { url: `${CDN}/${name}/v${latestVersion}/index.bundle.js`, version: latestVersion }
 })
-
-const settings = await scriptManager.load<{ default: React.FC }>('settings')
 ```
 
 **dev/prod 는 resolver 한 자리에서 갈린다.** 채널·롤백도 같은 자리다 — URL 결정이 컴포넌트
 계층에 있으면 그게 세 곳으로 흩어진다.
 
+resolver 는 `await` 를 품어도 된다(위의 `getManifest`). 부팅에서 등록만 하고 **실제 호출은
+첫 `load` 때**라, 배선이 네트워크를 기다리지 않는다.
+
+### 2. 화면에서 — Suspense
+
+`load` 는 약속을, `getRemote` 는 값을 돌려준다. 그래서 훅 하나가 Suspense 계약 그대로다.
+
+```tsx
+import { getRemote, scriptManager } from '@coldsurfers/react-native-mf'
+
+function useRemote<T>(name: string): T {
+  const loaded = getRemote<T>(name)
+  if (loaded) return loaded
+
+  // 등록 전이면 약속을 던진다. `load` 가 in-flight 를 접으므로 렌더가 몇 번 돌아도
+  // 받는 건 한 번이고, 한 번 등록되면 위에서 동기로 끝나 다시는 던지지 않는다
+  throw scriptManager.load<T>(name)
+}
+
+function SettingsScreen() {
+  const { default: MiniApp } = useRemote<{ default: FC<Props> }>('settings')
+
+  return <MiniApp {...props} />
+}
+```
+
+```tsx
+<ErrorBoundary fallback={<LoadFailed />}>
+  <Suspense fallback={<Spinner />}>
+    <SettingsScreen />
+  </Suspense>
+</ErrorBoundary>
+```
+
+> **훅은 이 패키지가 내지 않는다.** 내면 `react` 를 peer 로 물어야 하는데, 지금 이 패키지의
+> 런타임 레인은 React 를 모른다. 위 여섯 줄은 소비처에 두는 게 맞다.
+
+`useRemote` 를 쓰면 로딩·에러 상태를 손으로 들 자리가 사라진다 — 상태 셋(`loading`/`error`/
+`data`)이 Suspense 경계와 ErrorBoundary 로 옮겨간다.
+
+### 3. 그 사이 — 프리페치
+
+화면이 필요해지기 전에 디스크를 데운다. 탭 진입 직전이나 부팅 유휴 시간.
+
+```ts
+requestIdleCallback(() => {
+  scriptManager.prefetch('settings')
+})
+```
+
+`prefetch` 와 `load` 는 **같은 다운로드를 접는다** — 프리페치 중에 화면이 열려도 두 번 받지 않는다.
+
+### 표면 셋
+
 - `load(name)` — **이미 레지스트리에 있으면 재실행하지 않는다.** 두 번째 실행은 미니앱
   top-level 의 `new QueryClient` 를 다시 만든다. 동시에 두 번 불러도 한 번만 받고 한 번만 실행한다
-- `prefetch(name)` — 디스크까지만 데운다. **실행하지 않는다** — 실행은 `load` 의 몫이고,
-  둘은 같은 다운로드를 접는다
+- `prefetch(name)` — 디스크까지만 데운다. **실행하지 않는다** — 실행은 미니앱 top-level 을 도는
+  일이라 이 이름 뒤에 숨기지 않는다
 - `invalidate({ keep, name })` — 옛 버전 파일을 지운다. **디스크만** 비운다: 이미 실행된 번들을
   런타임에서 내리는 방법은 없다. 새 버전은 다음 부팅에 실행된다
 
-실패는 기억하지 않는다 — 던진 로드를 다시 부르면 다시 받는다.
+실패는 기억하지 않는다 — 던진 로드를 다시 부르면 다시 받는다. ErrorBoundary 의 재시도가
+그대로 먹는다는 뜻이다. **단, 이미 실행된 번들의 교체는 재시도로 안 된다**(위 `invalidate`).
 
 ## 스토리지는 소비처가 준다
 
