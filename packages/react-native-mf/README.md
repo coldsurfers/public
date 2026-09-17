@@ -111,6 +111,58 @@ React 밖이라 부팅 프리페치 · 탭 진입 전 프리로드가 마운트�
 **배선과 로드는 시점이 다르다.** 배선은 부팅에 한 번, 로드는 화면이 필요할 때다. 한 블록처럼
 보이면 resolver 를 컴포넌트 안에서 등록하게 되고, 그러면 마운트마다 resolver 가 쌓인다.
 
+### 이름 하나가 넷을 잇는다
+
+미니앱을 "꽂는다" 는 건 **같은 문자열을 네 자리에 두는 것**이다. 그 외에 호스트가 미니앱을
+아는 방법은 없다 — import 도, 등록 테이블도 없다.
+
+| 자리 | 코드 | 누가 |
+| --- | --- | --- |
+| 미니앱 빌드 | `withSelfRegister({ name: 'settings' })` | 미니앱 CI |
+| 번들 footer 의 자기등록 | `registerRemote('settings', ns)` | 번들이 실행되며 스스로 |
+| resolver 가 받는 인자 | `(name) => name === 'settings' ? {...} : undefined` | 호스트 부팅 |
+| 화면 | `useRemote('settings')` | 호스트 화면 |
+
+어긋나면 **번들은 받아지고 실행도 되는데 회수에서 던진다.** 그 에러가 이름을 대준다
+(`실행한 번들이 "settings" 으로 등록되지 않았다`).
+
+### 끝까지 한 번 — settings 미니앱
+
+**① 미니앱**: 평범한 RN 컴포넌트다. 호스트를 모른다.
+
+```tsx
+// settings-mini-app/src/index.tsx
+export default function SettingsApp(props: Props) { ... }
+```
+
+```ts
+// settings-mini-app/build.mjs
+await esbuild.build({
+  entryPoints: ['src/index.tsx'],
+  outfile: `dist/v${version}/index.bundle.js`,
+  bundle: true,
+  plugins: [sharedScopePlugin({ include: SHARED_MODULES })],
+  ...withSelfRegister({ name: 'settings' }),
+})
+```
+
+**② 올리기**: 산출물은 `dist/v1.1.2/index.bundle.js` 하나. 버전을 **경로에** 두고, 어느 버전이
+최신인지는 호스트가 매니페스트로 묻는다.
+
+```json
+{ "settings": { "latestVersion": "1.1.2" } }
+```
+
+경로에 버전이 있어야 롤백이 배포가 아니라 **매니페스트 한 줄**이 된다.
+
+**③ 호스트 부팅**: 이름 하나를 URL 로 바꾸는 자리 — 아래 `1. 부팅에 한 번` 의 resolver 다.
+
+**④ 화면**: `useRemote('settings')`. 여기서 미니앱이 처음 실행된다.
+
+**⑤ 새 버전**: 매니페스트가 `1.1.3` 을 가리키면 resolver 가 새 URL·새 캐시 키를 준다.
+**이미 실행된 번들은 이번 세션에서 안 바뀐다** — JS 런타임에 올라간 모듈을 내리는 방법이 없다.
+다음 부팅에 `1.1.3` 이 뜨고, 그때 `invalidate({ keep: ['1.1.3'], name: 'settings' })` 로 옛 파일을 지운다.
+
 ### 1. 부팅에 한 번 — 배선
 
 `index.js`, `registerShared` 옆자리. React 트리 **밖**이다.
