@@ -4,8 +4,8 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 
 미니앱이 새 의존성을 쓸 때마다 호스트를 고쳐 스토어에 다시 올려야 하는 구조를 끊는 것이 목표다.
 
-> 🚧 **Phase 1 — 빌드 파이프라인.** 런타임과 번들러 플러그인이 동작한다. CLI 는 아직 계약만
-> 세워져 있다. 로드맵: [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85)
+> 🚧 **Phase 1 · 1.5.** 런타임 · 번들러 플러그인 · 로더(`scriptManager`)가 동작한다. CLI 는 아직
+> 계약만 세워져 있다. 로드맵: [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85)
 
 ## 레인
 
@@ -13,7 +13,7 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 
 | 진입점 | 어디서 도나 | 상태 |
 | --- | --- | --- |
-| `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 |
+| `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 · `scriptManager` |
 | `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | ✅ shared 치환 · self-register |
 | `@coldsurfers/react-native-mf/cli` | bin | ⏸ Phase 1 |
 
@@ -102,3 +102,56 @@ const MiniApp = settings?.default
 
 번들이 실행되면 스스로 등록한다([3] self-register). 실행 방식이 소스 eval 이든 바이트코드든
 회수 지점은 이 한 곳이다.
+
+## 로드 — `scriptManager`
+
+`getRemote` 는 **회수** 지점이고, 거기까지 데려오는 일(받기 · 캐시 · 실행)이 `scriptManager` 다.
+React 밖이라 부팅 프리페치 · 탭 진입 전 프리로드가 마운트에 묶이지 않는다.
+
+```ts
+import { scriptManager } from '@coldsurfers/react-native-mf'
+
+scriptManager.setStorage(storage)
+
+scriptManager.addResolver(async (name) => {
+  if (__DEV__) return { url: `http://localhost:8081/${name}.bundle`, cache: false }
+
+  const { latestVersion } = (await getManifest())[name]
+  return { url: `${CDN}/${name}/v${latestVersion}/index.bundle.js`, version: latestVersion }
+})
+
+const settings = await scriptManager.load<{ default: React.FC }>('settings')
+```
+
+**dev/prod 는 resolver 한 자리에서 갈린다.** 채널·롤백도 같은 자리다 — URL 결정이 컴포넌트
+계층에 있으면 그게 세 곳으로 흩어진다.
+
+- `load(name)` — **이미 레지스트리에 있으면 재실행하지 않는다.** 두 번째 실행은 미니앱
+  top-level 의 `new QueryClient` 를 다시 만든다. 동시에 두 번 불러도 한 번만 받고 한 번만 실행한다
+- `prefetch(name)` — 디스크까지만 데운다. **실행하지 않는다** — 실행은 `load` 의 몫이고,
+  둘은 같은 다운로드를 접는다
+- `invalidate({ keep, name })` — 옛 버전 파일을 지운다. **디스크만** 비운다: 이미 실행된 번들을
+  런타임에서 내리는 방법은 없다. 새 버전은 다음 부팅에 실행된다
+
+실패는 기억하지 않는다 — 던진 로드를 다시 부르면 다시 받는다.
+
+## 스토리지는 소비처가 준다
+
+`fetch` 는 이 패키지가 들고, **저장만** 주입받는다. 반대로 갈랐으면 여기가
+`react-native-fs` 를 물어야 하는데, 그건 공개 패키지가 소비자에게 네이티브 모듈을 강요하는 것이다.
+
+```ts
+import type { ScriptStorage } from '@coldsurfers/react-native-mf'
+
+const storage: ScriptStorage = {
+  read: async (key) => (await RNFS.exists(path(key)) ? RNFS.readFile(path(key), 'utf8') : null),
+  write: (key, content) => RNFS.writeFile(path(key), content, 'utf8'),
+  remove: (key) => RNFS.unlink(path(key)),
+  list: async () => (await RNFS.readDir(DIR)).map((entry) => entry.name),
+}
+```
+
+키는 **불투명 문자열**이다 — 파일 이름 하나로 바꾸기만 하면 된다. 안에 뭐가 들었는지(`name@version`)는
+`invalidate` 만 안다. 소비처가 그 규칙을 다시 만들면 규칙이 두 곳으로 갈린다.
+
+읽기·쓰기가 던져도 로드는 안 깨진다 — 캐시는 최적화지 정본이 아니다.
