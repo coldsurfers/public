@@ -18,7 +18,37 @@ test('import 만으로는 process.exitCode 를 건드리지 않는다', async ()
 test('run 은 직접 부르면 종료 코드를 돌려준다', async () => {
   const { run } = await import('../src/cli/index')
 
-  assert.equal(run(['--help']), 0)
-  assert.equal(run([]), 1, '명령이 없으면 usage 를 내고 실패로 끝난다')
-  assert.equal(run(['build']), 1, 'Phase 1 에선 아직 구현되지 않았다')
+  assert.equal(await run(['--help']), 0)
+  assert.equal(await run([]), 1, '명령이 없으면 usage 를 내고 실패로 끝난다')
+  assert.equal(await run(['bundle']), 1, '모르는 명령은 usage 를 내고 실패로 끝난다')
+
+  // 인자 오류는 `./build` 를 **열기 전에** 끝난다 — esbuild·babel 이 없는 환경에서도
+  // 여기까지는 돌아야 한다. 최상단 import 로 되돌아가면 이 줄이 모듈 로드에서 터진다.
+  assert.equal(await run(['build']), 1, '필수 옵션이 없으면 실패로 끝난다')
+})
+
+test('매니페스트 오류도 ./build 를 열기 전에 끝난다', async () => {
+  const { run } = await import('../src/cli/index')
+
+  // 없는 매니페스트는 인자 오류와 같은 종류다 — peer 를 깔지 않은 쪽에서도 잡혀야 한다.
+  assert.equal(
+    await run(['build', '-o', 'a.js', '-n', 'settings', '--shared-from', 'no-such.json']),
+    1,
+  )
+
+  // 정본을 하나로 모으려고 연 플래그다. 둘을 같이 받으면 목적이 사라진다.
+  assert.equal(
+    await run([
+      'build',
+      '-o',
+      'a.js',
+      '-n',
+      'settings',
+      '--shared',
+      'react',
+      '--shared-from',
+      'a.json',
+    ]),
+    1,
+  )
 })
