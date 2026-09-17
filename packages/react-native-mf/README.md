@@ -4,8 +4,8 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 
 미니앱이 새 의존성을 쓸 때마다 호스트를 고쳐 스토어에 다시 올려야 하는 구조를 끊는 것이 목표다.
 
-> 🚧 **Phase 1 · 1.5.** 런타임 · 번들러 플러그인 · 로더(`scriptManager`)가 동작한다. CLI 는 아직
-> 계약만 세워져 있다. 로드맵: [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85)
+> 🚧 **Phase 1 · 1.5.** 런타임 · 번들러 플러그인 · 로더(`scriptManager`) · 빌드 CLI 가 동작한다.
+> 로드맵: [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85)
 
 ## 레인
 
@@ -15,9 +15,10 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 | --- | --- | --- |
 | `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 · `scriptManager` |
 | `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | ✅ shared 치환 · self-register |
-| `@coldsurfers/react-native-mf/cli` | bin | ⏸ Phase 1 |
+| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` — babel transpile → 번들 → block-scoping |
 
-`esbuild` 는 optional peer 다. 런타임 레인만 쓰는 앱은 안 깔아도 된다.
+`esbuild` · `@babel/core` · `@babel/plugin-transform-block-scoping` 은 **optional peer** 다.
+런타임 레인만 쓰는 앱은 셋 다 안 깔아도 된다 — CLI 는 실제로 부를 때 연다.
 
 ## 실제로 꽂히는 자리 — `globalThis` 두 칸
 
@@ -103,9 +104,53 @@ registerShared({
 유도하지 않는다. 원격 번들은 `import` 대신 이 전역을 읽고, 치환은 빌드타임에 `./esbuild`
 플러그인이 한다. 그래서 호스트 쪽에 모듈 이름을 손으로 나열하는 화이트리스트가 남지 않는다.
 
-## 미니앱 빌드
+## 미니앱 빌드 — `build`
 
-빌드 머신에서만 도는 레인이다. 두 조각을 esbuild 옵션에 얹는다.
+```jsonc
+// settings-mini-app/package.json
+"scripts": {
+  "build:bundle": "react-native-mf build -o build/out/index.bundle.js -n settings --shared-from ../../apps/host/shared-modules.json"
+}
+```
+
+세 걸음이고 어느 하나도 다른 둘로 대체되지 않는다.
+
+| | 무엇을 | 왜 |
+| --- | --- | --- |
+| ① babel transpile | 소스 트리 전체를 미니앱 **자기** config 로 | esbuild 는 AST 를 다시 쓰는 babel 플러그인(reanimated worklet 등)을 못 돈다 |
+| ② esbuild bundle | shared 치환 + self-register footer | 아래 `./esbuild` 레인 그대로 |
+| ③ block-scoping | 산출물의 `let`/`const` 제거 | Hermes **런타임 컴파일러** — 아래 ⚠️ |
+
+| 옵션 | |
+| --- | --- |
+| `-o, --out-file <path>` | 산출물 경로 (필수) |
+| `-n, --name <name>` | 원격 이름 — 호스트가 이 이름으로 회수한다 (필수) |
+| `--src <dir>` · `--entry <file>` | 기본 `src` · `index.ts` (entry 는 `--src` 기준) |
+| `--shared-from <path>` | 호스트가 내놓은 매니페스트에서 읽는다 — **권장**, 아래 참고 |
+| `--shared <names>` | 직접 적는다. 반복하거나 쉼표로 잇는다. 기본은 `react,react-native` |
+| `--babel-config <path>` | 생략하면 babel 이 cwd 에서 `babel.config.*` 를 찾는다 |
+| `--no-block-scoping` | ③ 을 끈다 |
+
+⚠️ **`--shared` 와 `--shared-from` 은 같이 못 쓴다.** 정본을 하나로 모으려고 연 플래그라
+둘을 같이 받으면 목적이 사라진다.
+
+⚠️ **미니앱에 `babel.config.js` 가 있어야 한다.** 이 패키지는 RN 프리셋을 들지 않는다 —
+어떤 프리셋·플러그인을 태울지는 미니앱의 사실이고, 여기가 들면 RN 이나 reanimated 가 올라갈
+때마다 이 패키지가 발행돼야 한다. shared 목록에서 그은 선과 같은 선이다.
+
+⚠️ **③ 은 Hermes 런타임 컴파일러 때문이다.** 원격 번들만 `new Function` 으로 실행돼서
+hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `let` 을 반복마다 새 바인딩으로
+만들지 않아 클로저가 마지막 값을 붙든다. esbuild 가 CJS 인터롭용으로 넣는 `__copyProps` 가
+정확히 그 모양이라, shared 모듈의 **모든 프로퍼티가 마지막 export 하나로** 읽혔다
+(`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
+없앤다 — 미니앱 자기 코드가 같은 자리를 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
+
+중간 산출물은 `node_modules/.cache/react-native-mf/<name>/` 에 떨어진다. **프로젝트 안이어야
+한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
+
+## 직접 esbuild 를 부를 때
+
+CLI 가 안 맞으면 두 조각을 자기 esbuild 옵션에 얹는다. 빌드 머신에서만 도는 레인이다.
 
 ```ts
 import { sharedScopePlugin, withSelfRegister } from '@coldsurfers/react-native-mf/esbuild'
@@ -132,13 +177,43 @@ await esbuild.build({
 RN 마이크로프론트엔드라면 무조건인 것만 남겼다.
 
 어떤 라이브러리를 shared 로 볼지는 **호스트 앱의 사실**이지 이 패키지의 사실이 아니다.
-목록은 소비처가 들고 `include` 로 넘긴다.
+목록은 소비처가 들고 `include`(또는 CLI 의 `--shared`)로 넘긴다.
 
 ```ts
 sharedScopePlugin({
   include: [...DEFAULT_SHARED_MODULES, 'react-native-reanimated', '@gorhom/bottom-sheet'],
 })
 ```
+
+### 그래서 미니앱은 목록을 들지 않는다 — `--shared-from`
+
+호스트의 사실인데 미니앱이 같은 목록을 또 적으면 **정본이 둘**이 된다. 둘은 조용히 갈라진다 —
+빠진 이름은 에러가 아니라 **미니앱 번들 안의 사본**으로 나타나서, 로드는 되고 React 만 둘이 된다.
+
+그래서 호스트가 자기 레지스트리 키를 파일 하나로 내놓고 미니앱은 아무 목록도 안 든다.
+
+```jsonc
+// 호스트가 내놓는다. registerShared 에 넘기는 키 그대로다
+["react", "react/jsx-runtime", "react-native", "@coldsurfers/design-system/native/Text", …]
+```
+
+```bash
+react-native-mf build -o out.js -n settings --shared-from ../../apps/host/shared-modules.json
+```
+
+**치환 필터는 CLI 가 파생한다.** 두 자리가 쓰는 모양이 다르기 때문이다.
+
+| | 모양 | 예 |
+| --- | --- | --- |
+| 호스트 등록·조회 | 정확한 specifier | `@coldsurfers/design-system/native/Text` |
+| 빌드 치환 필터 | 패키지 이름 (서브패스를 덮는다) | `@coldsurfers/design-system` |
+
+후자는 전자의 **순수 함수**다. 실측으로 billets-app 의 키 27개에서 파생한 18개가 손으로 쓰던
+목록과 정확히 일치했다 — 그러니 파생을 소비처에 시키지 않는다. 시키면 그 단계가 또 손작업이다.
+
+덮는 쪽으로 파생하는 이유: 정확 일치로만 치환하면 호스트가 등록하지 않은 서브패스
+(`react-native/Libraries/...`)가 **조용히 번들에 들어간다.** 패키지 이름으로 덮으면 치환은 되고
+조회 키가 없어서 로드 시점에 그 이름을 대며 던진다 — 조용한 사본보다 시끄러운 실패가 낫다.
 
 **규칙은 esbuild 의 `external` 과 같다** — 이름 하나가 그 패키지의 **서브패스까지 덮는다.**
 `'react'` 가 `react/jsx-runtime` 을, `'react-native'` 가 `react-native/Libraries/...` 를 함께
