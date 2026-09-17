@@ -266,7 +266,7 @@ function SettingsScreen(props: Props) {
 ```
 
 ```tsx
-<ErrorBoundary fallback={<LoadFailed />}>
+<ErrorBoundary onReset={() => resetRemote('settings')} fallback={<LoadFailed />}>
   <Suspense fallback={<Spinner />}>
     <SettingsScreen />
   </Suspense>
@@ -274,8 +274,23 @@ function SettingsScreen(props: Props) {
 ```
 
 로딩·에러 상태를 손으로 들 자리가 사라진다 — 상태 셋(`loading`/`error`/`data`)이 Suspense
-경계와 ErrorBoundary 로 옮겨간다. 재시도도 ErrorBoundary 가 든다: **실패는 기억되지 않아서**
-다시 렌더하면 다시 받는다.
+경계와 ErrorBoundary 로 옮겨간다.
+
+⚠️ **`onReset` 에서 `resetRemote(name)` 를 부른다.** 실패는 기억되고, 지워줘야 다음 렌더가
+다시 받는다. 안 부르면 경계를 리셋해도 같은 에러가 즉시 되돌아온다.
+
+기억하는 이유는 React 쪽 사정이다. React 는 렌더에서 던져진 약속의 **상태를 보지 않아서**,
+매 렌더 새 약속을 던지면 실패가 무한 루프가 된다. 에러로 바꿔 던져도 비우면 안 된다 — React 는
+에러를 만나면 트리를 **한 번 처음부터 다시 그려보고** 같은 에러가 또 나야 경계로 올리는데,
+비워두면 그 렌더가 새 로드를 시작해 루프가 이어진다. 실측(react-test-renderer · React 19):
+
+| 던지는 것 | 렌더 | fetch | 결과 |
+| --- | --- | --- | --- |
+| 매 렌더 새 약속 | 21+ | 5 | 경계가 못 받는다 |
+| 정착 뒤 에러, 던지며 비움 | 21+ | 5 | 마찬가지 |
+| **정착 뒤 에러, 남겨둠** | **5** | **1** | ✅ 경계가 받는다 |
+
+react-query 가 에러를 캐시에 두고 `QueryErrorResetBoundary` 로만 지우는 것과 같은 모양이다.
 
 > **이 훅은 `react` 를 import 하지 않는다.** 훅 API 를 하나도 부르지 않기 때문이다 — 하는 일은
 > "있으면 값, 없으면 약속을 던진다" 뿐이고 그걸 받는 건 React 쪽이다. 그래서 런타임 레인은
@@ -306,8 +321,8 @@ requestIdleCallback(() => {
 - `invalidate({ keep, name })` — 옛 버전 파일을 지운다. **디스크만** 비운다: 이미 실행된 번들을
   런타임에서 내리는 방법은 없다. 새 버전은 다음 부팅에 실행된다
 
-실패는 기억하지 않는다 — 던진 로드를 다시 부르면 다시 받는다. ErrorBoundary 의 재시도가
-그대로 먹는다는 뜻이다. **단, 이미 실행된 번들의 교체는 재시도로 안 된다**(위 `invalidate`).
+`load` 자체는 실패를 기억하지 않는다 — 다시 부르면 다시 받는다. 기억하는 건 `useRemote` 쪽이고
+`resetRemote` 가 지운다. **이미 실행된 번들의 교체는 어느 쪽 재시도로도 안 된다**(위 `invalidate`).
 
 ## 스토리지는 소비처가 준다
 
