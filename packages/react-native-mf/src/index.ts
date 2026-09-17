@@ -12,6 +12,14 @@ export {
   registerRemote,
   remoteNames,
 } from './runtime/registry'
+export type {
+  InvalidateOptions,
+  ScriptLocator,
+  ScriptManager,
+  ScriptResolver,
+} from './runtime/script-manager'
+export { createScriptManager, scriptManager } from './runtime/script-manager'
+export type { ScriptStorage } from './runtime/script-storage'
 export {
   getShared,
   hasShared,
@@ -19,3 +27,4 @@ export {
   SHARED_SCOPE_KEY,
   sharedNames,
 } from './runtime/shared-scope'
+export { useRemote } from './runtime/use-remote'
