@@ -18,14 +18,27 @@ import { sharedScopePlugin } from '../esbuild/shared-scope'
 import type { BuildOptions } from './build-options'
 
 /**
- * transpile 중간 산출물 자리. **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의
- * 위치에서 bare import(`@tanstack/react-query`)를 찾는다. `os.tmpdir()` 로 빼면 거기서 위로
- * 올라가도 `node_modules` 가 없어서 미니앱의 의존성이 통째로 안 잡힌다.
+ * transpile 중간 산출물 자리. 두 조건을 **동시에** 만족해야 한다.
  *
- * `build/` 가 아니라 `node_modules/.cache` 인 이유는 하나 — 소비처가 gitignore 를 새로
- * 쓰지 않아도 되고, 산출물(`--out-file`)과 중간물이 한 디렉터리에서 섞이지 않는다.
+ * 1. **프로젝트 안이어야 한다.** esbuild 는 transpile 된 파일의 위치에서 bare import
+ *    (`@tanstack/react-query`)를 찾는다. `os.tmpdir()` 로 빼면 거기서 위로 올라가도
+ *    `node_modules` 가 없어서 미니앱의 의존성이 통째로 안 잡힌다.
+ * 2. **`node_modules` 아래면 안 된다.** esbuild 는 `node_modules/` 경로의 파일을 서드파티로
+ *    보고 최상위 `"use strict"` 를 붙이지 않는다. 소스는 ESM 으로 쓰였고 ESM 은 명세상
+ *    strict 인데, 원격 번들은 `new Function` 으로 실행되므로 지시어가 없으면 **sloppy 로
+ *    돈다** — 선언 안 한 변수 할당이 전역을 만들고 함수 안 `this` 가 `globalThis` 가 된다.
+ *
+ * 실측(esbuild 0.25.7, 같은 소스·같은 옵션, 디렉터리만 다르게):
+ *
+ * | 엔트리 위치 | 산출물 첫 줄 |
+ * | --- | --- |
+ * | `build/.probe/index.js` | `"use strict";` |
+ * | `node_modules/.cache/probe/index.js` | `var __E__ = (() => {` |
+ *
+ * 그래서 `build/` 아래다. 소비처는 대개 `build/` 를 이미 gitignore 한다 — 산출물
+ * (`--out-file`)이 보통 거기 떨어지기 때문이다.
  */
-const TRANSPILE_CACHE = 'node_modules/.cache/react-native-mf'
+export const TRANSPILE_CACHE = 'build/.transpiled'
 
 const SOURCE_EXTENSION = /\.(?:tsx?|jsx?)$/
 
