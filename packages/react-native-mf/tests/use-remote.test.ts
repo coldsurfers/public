@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import { afterEach, test } from 'node:test'
 import { REMOTE_REGISTRY_KEY, registerRemote } from '../src/runtime/registry'
 import { scriptManager } from '../src/runtime/script-manager'
-import { useRemote } from '../src/runtime/use-remote'
+import { resetRemote, useRemote } from '../src/runtime/use-remote'
 
 type Globals = Record<string, unknown>
 const globals = globalThis as unknown as Globals
@@ -18,6 +18,17 @@ function remoteSource(name: string): string {
     `globalThis[${registry}] = globalThis[${registry}] || {};`,
     `globalThis[${registry}][${JSON.stringify(name)}] = { default: 'late' };`,
   ].join('\n')
+}
+
+/** 렌더가 던진 것을 그대로 돌려준다 — Suspense 경계가 받는 자리를 흉내낸다. */
+function catchThrown(render: () => unknown): unknown {
+  try {
+    render()
+  } catch (thrown) {
+    return thrown
+  }
+
+  return undefined
 }
 
 afterEach(() => {
@@ -90,6 +101,84 @@ test('던진 약속은 load 와 같은 것이다 — 두 번 받지 않는다', 
     await Promise.all(promises)
     assert.equal(promises.length, 3)
     assert.equal(fetched, 1)
+  } finally {
+    dispose()
+  }
+})
+
+test('로드가 거절되면 다음 렌더엔 약속이 아니라 에러를 던진다', async () => {
+  globals.fetch = (() => Promise.reject(new Error('network down'))) as unknown as typeof fetch
+
+  const dispose = scriptManager.addResolver(() => ({ url: 'https://cdn/settings.js' }))
+
+  try {
+    // 첫 렌더 — 아직 결과를 모르니 약속이다
+    const pending = catchThrown(() => useRemote('settings'))
+    assert.ok(pending instanceof Promise)
+    await assert.rejects(pending as Promise<unknown>)
+
+    // React 는 거절된 약속을 다시 렌더로 갚는다. 여기서 또 약속을 던지면 무한 루프다
+    const settled = catchThrown(() => useRemote('settings'))
+    assert.ok(settled instanceof Error)
+    assert.equal((settled as Error).message, 'network down')
+  } finally {
+    resetRemote('settings')
+    dispose()
+  }
+})
+
+test('에러는 지워줄 때까지 남는다 — React 의 재시도 렌더가 새 로드를 시작하지 않는다', async () => {
+  let fetched = 0
+  globals.fetch = (() => {
+    fetched += 1
+    return Promise.reject(new Error('network down'))
+  }) as unknown as typeof fetch
+
+  const dispose = scriptManager.addResolver(() => ({ url: 'https://cdn/settings.js' }))
+
+  try {
+    await assert.rejects(catchThrown(() => useRemote('settings')) as Promise<unknown>)
+
+    // React 는 에러를 만나면 트리를 한 번 다시 그려본다. 그 렌더가 또 받아오면 루프가 된다
+    assert.ok(catchThrown(() => useRemote('settings')) instanceof Error)
+    assert.ok(catchThrown(() => useRemote('settings')) instanceof Error)
+    assert.equal(fetched, 1)
+  } finally {
+    resetRemote('settings')
+    dispose()
+  }
+})
+
+test('resetRemote 가 재시도를 연다', async () => {
+  let fetched = 0
+  globals.fetch = (() => {
+    fetched += 1
+    // 두 번째 시도는 성공한다
+    if (fetched === 1) return Promise.reject(new Error('network down'))
+
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      text: () => Promise.resolve(remoteSource('settings')),
+    })
+  }) as unknown as typeof fetch
+
+  const dispose = scriptManager.addResolver(() => ({ url: 'https://cdn/settings.js' }))
+
+  try {
+    await assert.rejects(catchThrown(() => useRemote('settings')) as Promise<unknown>)
+    assert.ok(catchThrown(() => useRemote('settings')) instanceof Error)
+
+    // ErrorBoundary 의 재시도 핸들러가 부르는 자리
+    resetRemote('settings')
+
+    const retried = catchThrown(() => useRemote('settings'))
+    assert.ok(retried instanceof Promise)
+    await retried
+
+    // biome-ignore lint/correctness/useHookAtTopLevel: 위와 같은 이유
+    assert.deepEqual(useRemote('settings'), { default: 'late' })
+    assert.equal(fetched, 2)
   } finally {
     dispose()
   }
