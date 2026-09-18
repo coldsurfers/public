@@ -201,7 +201,7 @@ export const coverTopAction = style(inComponentsLayer({ marginInlineStart: 'auto
 
 export const coverEyebrow = style(
   inComponentsLayer({
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.sans,
     fontSize: 11,
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '1px',

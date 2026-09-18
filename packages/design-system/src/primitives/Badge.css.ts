@@ -3,7 +3,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 
-/** 카드 위 작은 표식. `solid` = ink 필 mono 라벨, `soft` = 무테 subtle 메타. */
+/** 카드 위 작은 표식. `solid` = ink 필 라벨, `soft` = 무테 subtle 메타. 둘 다 sans — 이유는 `Eyebrow.css.ts`. */
 export const badge = recipe({
   base: inComponentsLayer({
     display: 'inline-flex',
@@ -16,7 +16,7 @@ export const badge = recipe({
       solid: inComponentsLayer({
         background: vars.color.text,
         color: vars.color.bg,
-        fontFamily: vars.font.mono,
+        fontFamily: vars.font.sans,
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
         fontSize: 10,

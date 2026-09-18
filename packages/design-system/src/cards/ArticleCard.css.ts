@@ -47,7 +47,7 @@ export const excerpt = style(
 export const meta = style(
   inComponentsLayer({
     marginTop: 16,
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.sans,
     fontSize: vars.fontSize.xs,
     color: vars.color.subtle,
   }),

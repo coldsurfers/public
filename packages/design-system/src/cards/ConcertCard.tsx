@@ -30,7 +30,7 @@ type CardDomProps = Omit<HTMLAttributes<HTMLElement>, 'title'>
 export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
   /** 취향 매치 라벨 — `96% 취향`. 없으면 미노출. **`framed` 전용** (시안의 `bare` 엔 자리가 없다). */
   matchLabel?: string
-  /** 커버 좌상단 mono 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
+  /** 커버 좌상단 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
   eyebrow?: string
   /**
    * `framed`(기본) — 테두리·배경 있는 액자 카드(`/live-events`·`/nearby`·`/gig-guide`).
@@ -180,7 +180,8 @@ function BareCard({
         )}
         {coverAction ? <div className={s.bareCoverAction}>{coverAction}</div> : null}
       </CoverBlock>
-      {/* 시안 meta — 제목(strong) / 날짜(mono·muted) / 공연장(footer, muted) 3줄. */}
+      {/* 시안 meta — 제목(strong) / 날짜(mono·muted — 스탬프는 수치라 mono 를 지킨다) /
+          공연장(footer, muted) 3줄. */}
       <div className={s.bareMeta}>
         <h3 className={s.bareTitle({ reserve: reserveTitleLines })}>{title}</h3>
         <p className={s.bareLine}>{meta}</p>

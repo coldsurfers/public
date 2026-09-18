@@ -4,7 +4,11 @@ import { vars } from '../css/contract.css'
 import { editorialType } from '../tokens'
 
 /**
- * mono uppercase 라벨.
+ * uppercase 메타 라벨.
+ *
+ * **sans 다.** 한때 mono(JetBrains Mono) 였는데, 그건 매거진 콜로폰 톤을 노린 선택이었다.
+ * 한국어 라벨(`GENRE · 장르`)이 절반을 차지하는 자리라 Latin 만 mono 로 갈리고 한글은
+ * fallback 으로 떨어져 한 줄 안에서 두 폰트가 보였다. 라벨은 본문과 같은 얼굴로 간다.
  *
  * 크기·자간은 `packages/tokens` 의 `editorialType.eyebrow` 를 **그대로 읽는다** — 기존
  * `text-eyebrow-*` Tailwind 유틸이 보던 것과 같은 값이다. 값을 여기 베끼면 SSOT 가 갈라진다.
@@ -14,7 +18,7 @@ const eyebrowType = editorialType.eyebrow
 
 export const eyebrow = recipe({
   base: inComponentsLayer({
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.sans,
     textTransform: 'uppercase',
   }),
 
