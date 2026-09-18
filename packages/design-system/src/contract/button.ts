@@ -27,9 +27,13 @@ type FontWeightKey = keyof typeof fontWeight
 /**
  * 토큰 키거나, **스킴을 안 타는 리터럴**이다.
  *
- * `white` 는 토큰이 아니다 — `accent`·`danger` 필 위의 글자와 `outline` 의 바탕은 스킴이
- * 뒤집혀도 흰색이어야 한다(웹 recipe 가 `'white'` 리터럴을 쓰는 것과 같은 이유). 리터럴을
- * *허용*하는 게 아니라, 리터럴이라는 사실을 타입에 적어 두는 것이다.
+ * `white` 는 토큰이 아니다 — `accent`·`danger` 필 *위의 글자*는 스킴이 뒤집혀도 흰색이어야
+ * 한다. 그 둘은 자기 바탕(Surf Blue·danger)을 리터럴로 깔고 앉으므로 글자도 같이 고정된다.
+ * 리터럴을 *허용*하는 게 아니라, 리터럴이라는 사실을 타입에 적어 두는 것이다.
+ *
+ * ⚠️ **`outline` 의 바탕은 여기 해당하지 않는다.** 한때 `'white'` 였는데, 그건 *면*이라
+ * 스킴을 따라야 한다 — 잉크 밴드처럼 라이트 페이지 안 한 구간만 어두운 표면에서 흰 알약이
+ * 남고 `label: 'text'` 는 제대로 뒤집혀 흰 글자가 되어, 흰 바탕에 흰 글자가 됐다.
  */
 export type ButtonColor = keyof ColorScheme | 'white' | 'transparent'
 
@@ -89,7 +93,7 @@ const VARIANT = {
   primary: { background: 'text', label: 'bg' },
   ghost: { background: 'transparent', label: 'body' },
   accent: { background: 'accent', label: 'white' },
-  outline: { background: 'white', label: 'text', border: { width: 1, color: 'border' } },
+  outline: { background: 'surface', label: 'text', border: { width: 1, color: 'border' } },
   danger: { background: 'statusDanger', label: 'white' },
 } satisfies Record<ButtonVariant, ButtonVariantSpec>
 
