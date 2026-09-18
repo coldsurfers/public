@@ -48,7 +48,7 @@ function PageBannerBody({ className, ...rest }: HTMLAttributes<HTMLParagraphElem
 
 /**
  * eyebrow 슬롯이 없는 이유: 소비처 둘 중 **한 곳만** 쓴다(`SigninBand` 의 `COLDSURF · 관심 목록`).
- * 게다가 그건 mono·uppercase 가 아니라 `Eyebrow` primitive 와도 다른 결이다. 두 번째 소비처가
+ * 게다가 그건 uppercase 가 아니라 `Eyebrow` primitive 와도 다른 결이다. 두 번째 소비처가
  * 생길 때까지 앱에 둔다 — `PageBanner` 의 자식으로 그냥 놓으면 된다.
  */
 export const PageBanner = Object.assign(PageBannerRoot, {

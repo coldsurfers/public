@@ -60,7 +60,7 @@ export const excerpt = style(
 
 export const byline = style(
   inComponentsLayer({
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.sans,
     fontSize: vars.fontSize.xs,
     color: vars.color.subtle,
   }),
