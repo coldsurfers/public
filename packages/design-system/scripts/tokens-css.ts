@@ -18,6 +18,7 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
+  ink,
   lineHeight,
   paper,
   radius,
@@ -61,6 +62,8 @@ ${varBlock('radius', radius)}
 ${varBlock('cover', cover)}
 
 ${varBlock('paper', paper)}
+
+${varBlock('ink', ink)}
 
 ${colorBlock(tokens.color.semantic.light)}
 }

@@ -61,29 +61,30 @@ export type ColorScheme = {
 /**
  * COLDSURF brand palette — **스킴은 이 하나(paper)뿐이다.**
  * ink(dark) 스킴은 폐기했다(paul-rockstar #299). 색을 뒤집는 축이 없으므로 `light` 가 곧 `:root` 다.
- *   paper   #f2efe8 · paper-2 #e9e5db · rule #d8d2c5
- *   ink     #111111 · ink-soft #1c1c1a
- *   muted   #6b6b66 · subtle #aea99e
- *   sweep   #e5322b · sweep-deep #b8221c
+ *   paper   #f5f7fa · paper-2 #eaf6ff · rule #d7dee7
+ *   ink     #0a0f1a · ink-soft #263248
+ *   muted   #5b6472 · subtle #9ca3af
+ *   surf    #2563ff · surf-deep #1d4fd8
  *
- * sweep red 는 "Pick 호수·편집 액션" 한 자리에만 쓰는 강조색이다.
- * 본문 link 는 ink 로 두고, hover 시에만 sweep 를 노출한다.
+ * surf blue 는 주 액션·링크 hover·코드 강조에 쓰는 브랜드 강조색이다.
+ * 본문 link 는 ink 로 두고, hover 시에만 surf 를 노출한다.
  *
  * ─── off-white 이름 사전 (하나의 이름은 하나의 값만 가리킨다) ───
- *   paper        #f2efe8   위 브랜드 정본. `light.bg` 와 같은 값
- *   warm-paper   #fafaf7   Figma 시안의 라이트 고정 표면. 아래 `paper.warm` 토큰
+ *   paper        #f5f7fa   위 브랜드 정본. `light.bg` 와 같은 값
+ *   warm-paper   #f9fbfd   Figma 시안의 라이트 고정 표면. 아래 `paper.warm` 토큰
+ *                          (키는 역사적 이름이다 — 값은 더 이상 warm 계열이 아니다)
  *
  * 둘은 다른 색이고 다른 표면이다 — 통일 대상이 아니라 *구별* 대상이다.
  * 새 off-white 를 들일 땐 값을 재사용하기 전에 여기에 이름부터 추가한다.
  *
  * ─── 잉크 넷 중 어디까지가 "읽는 글자" 인가 ───
- *   text    #111111   본문·제목
- *   body    #2a2a26   긴 본문
- *   muted   #6b6b66   보조. surface 위 5.6:1 — **읽는 글자의 하한선**
- *   subtle  #aea99e   구분선·플레이스홀더·비활성. surface 위 2.34:1
+ *   text    #0a0f1a   본문·제목
+ *   body    #263248   긴 본문
+ *   muted   #5b6472   보조. surface 위 5.98:1 — **읽는 글자의 하한선**
+ *   subtle  #9ca3af   구분선·플레이스홀더·비활성. surface 위 2.54:1
  *
  * **`subtle` 로 읽는 글자를 찍지 않는다.** WCAG AA 는 4.5:1 인데(18.66px bold·24px 이상만 3:1)
- * 실측은 surface 위 2.34 · bg 위 2.04 · paper-warm 위 2.24 다. 보조 문구·라벨·캡션까지
+ * 실측은 surface 위 2.54 · bg 위 2.36 · paper-warm 위 2.48 다. 보조 문구·라벨·캡션까지
  * 전부 `muted` 가 하한이고, `subtle` 은 *읽히지 않아도 되는 것*(구분선·placeholder·비활성)에만 쓴다.
  * cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하므로 그쪽은 예외다.
  *
@@ -92,32 +93,32 @@ export type ColorScheme = {
  * 근거·실측: coldsurfers/public#106
  */
 const light: ColorScheme = {
-  bg: '#f2efe8',
+  bg: '#f5f7fa',
   surface: '#ffffff',
-  surface2: '#e9e5db',
-  surfaceHover: '#ece8de',
-  surfaceGhost: 'rgba(17, 17, 17, 0.03)',
-  surfaceGhostHover: 'rgba(17, 17, 17, 0.06)',
-  surfaceActive: 'rgba(17, 17, 17, 0.08)',
-  border: '#d8d2c5',
-  borderSoft: '#e9e5db',
+  surface2: '#eaf6ff',
+  surfaceHover: '#eef2f7',
+  surfaceGhost: 'rgba(10, 15, 26, 0.03)',
+  surfaceGhostHover: 'rgba(10, 15, 26, 0.06)',
+  surfaceActive: 'rgba(10, 15, 26, 0.08)',
+  border: '#d7dee7',
+  borderSoft: '#e5ebf2',
 
-  text: '#111111',
-  strong: '#0a0a0a',
-  body: '#2a2a26',
-  muted: '#6b6b66',
-  subtle: '#aea99e',
-  faint: '#d8d2c5',
+  text: '#0a0f1a',
+  strong: '#05090f',
+  body: '#263248',
+  muted: '#5b6472',
+  subtle: '#9ca3af',
+  faint: '#c3cbd6',
 
-  heading: '#111111',
-  accent: '#d6451f',
-  accentHover: '#b3360f',
-  link: '#111111',
-  linkHover: '#d6451f',
-  blockquote: '#444444',
+  heading: '#0a0f1a',
+  accent: '#2563ff',
+  accentHover: '#1d4fd8',
+  link: '#0a0f1a',
+  linkHover: '#2563ff',
+  blockquote: '#3f4a5c',
 
-  codeBg: '#e9e5db',
-  codeFg: '#b3360f',
+  codeBg: '#eaf6ff',
+  codeFg: '#1d4fd8',
 
   statusSuccess: '#1f7a3a',
   statusSuccessBg: 'rgba(31, 122, 58, 0.14)',
@@ -165,6 +166,7 @@ export const cssVarPrefix = {
   radius: 'radius',
   cover: 'cover',
   paper: 'paper',
+  ink: 'ink',
 } as const
 
 export type TokenScaleGroup = keyof typeof cssVarPrefix
@@ -315,15 +317,17 @@ export const radius = {
  * dark 스킴이 살아 있던 때에도 뒤집지 않았다. `--cover-*` 로 `:root` 에, `--color-cover-*` 로 `@theme` 에 fan-out 되어
  * `bg-cover-forest` · `text-cover-plum` 유틸이 생성된다.
  *
- * hex 는 Figma Page 7 커버 블록 무손실 샘플.
+ * hex 는 Figma Page 16 커버 블록 무손실 샘플. 키 이름(forest·moss·wine…)은 값이 쿨 계열로
+ * 옮겨간 뒤에도 유지한다 — `coverToneFor` 가 `Object.keys` **순서**로 결정적 분산을 하므로
+ * 키를 바꾸면 이미 발행된 모든 이벤트의 커버색이 재배치된다. 이름은 색이 아니라 슬롯이다.
  */
 export const cover = {
-  forest: '#29423d',
-  wine: '#522e33',
-  navy: '#333847',
-  moss: '#473d24',
-  steel: '#2e334c',
-  plum: '#3d2942',
+  forest: '#1f3a44',
+  wine: '#4a2f42',
+  navy: '#2c3e4e',
+  moss: '#26305c',
+  steel: '#1e2a44',
+  plum: '#382c4c',
 } as const
 
 export type CoverTone = keyof typeof cover
@@ -335,12 +339,38 @@ export type CoverTone = keyof typeof cover
  * pick 상세는 시안이 라이트 전용이라 항상 이 색 위에 산다. 그래서 스킴을 타는 자리였던
  * semantic color(`bg`·`surface`)가 아니라 별도 이름을 갖는다.
  *
- * 브랜드 정본 paper(`#f2efe8` = `light.bg`)와는 **다른 값·다른 이름**이다. 위 이름 사전 참조.
+ * 브랜드 정본 paper(`#f5f7fa` = `light.bg`)와는 **다른 값·다른 이름**이다. 위 이름 사전 참조.
  * `--paper-warm` 으로 `:root` 에, `--color-paper-warm` 으로 `@theme` 에 fan-out 되어
  * `bg-paper-warm` 유틸이 생성된다.
  */
 export const paper = {
-  warm: '#fafaf7',
+  warm: '#f9fbfd',
+} as const
+
+/**
+ * ink — **다크 밴드**의 색 넷. `cover`·`paper` 와 같은 성격의 스킴 불변 scale 이다.
+ *
+ * 랜딩·이벤트 상세는 라이트 고정이지만 그 안에서 헤더·히어로·캡처 밴드처럼 *한 구간만*
+ * 어둡게 눕는 자리가 있다(Figma Page 16 시안). 전역 스킴을 뒤집는 축이 아니므로
+ * ink(dark) 스킴 폐기 결정(paul-rockstar #299)은 그대로 두고, 그 구간이 쓰는 색만 상수로 낸다.
+ *
+ * `base` 는 `light.text` 와 같은 hex 다 — 라이트에선 글자, 다크 밴드에선 바닥인 한 색이다.
+ * `border` 도 `light.body` 와 같다. 이름이 겹치는 게 아니라 **역할이 둘인 값**이라 양쪽에 둔다.
+ *
+ * 밴드 위 글자는 `surface`(#161e2e) 기준 White 15.9:1 · `subtle` 4.4:1 로 둘 다 AA 를 넘는다.
+ * `accent`(Ice Blue) 는 밴드 위 링크·인디케이터 전용이다 — 라이트 위에선 1.6:1 이라 쓰지 않는다.
+ *
+ * `--ink-*` 로 `:root` 에 fan-out 된다.
+ */
+export const ink = {
+  /** Deep Night — 밴드 바닥. `light.text` 와 같은 값 */
+  base: '#0a0f1a',
+  /** 밴드 위 카드·칩·검색바 */
+  surface: '#161e2e',
+  /** 밴드 위 구분선·2차 버튼 테두리. `light.body` 와 같은 값 */
+  border: '#263248',
+  /** Ice Blue — 밴드 위 링크·인디케이터. 라이트 표면에서는 쓰지 않는다 */
+  accent: '#7dd3fc',
 } as const
 
 /**
