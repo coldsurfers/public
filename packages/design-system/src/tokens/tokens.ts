@@ -61,26 +61,45 @@ export type ColorScheme = {
 /**
  * COLDSURF brand palette — **스킴은 이 하나(paper)뿐이다.**
  * ink(dark) 스킴은 폐기했다(paul-rockstar #299). 색을 뒤집는 축이 없으므로 `light` 가 곧 `:root` 다.
- *   paper   #f2efe8 · paper-2 #e9e5db · rule #d8d2c5
+ *   paper   #efefef · paper-2 #e5e5e5 · rule #d2d2d2
  *   ink     #111111 · ink-soft #1c1c1a
- *   muted   #6b6b66 · subtle #aea99e
- *   sweep   #e5322b · sweep-deep #b8221c
+ *   muted   #6b6b6b · subtle #a9a9a9
+ *   accent  #6d28d9 · accent-hover #5b21b6  (전기 바이올렛)
  *
- * sweep red 는 "Pick 호수·편집 액션" 한 자리에만 쓰는 강조색이다.
- * 본문 link 는 ink 로 두고, hover 시에만 sweep 를 노출한다.
+ * accent 는 "primary CTA · 기능 아이콘칩 · 편집 액션" 한 자리에만 쓰는 강조색이다.
+ * 본문 link 는 ink 로 두고, hover 시에만 accent 를 노출한다.
  *
  * ─── off-white 이름 사전 (하나의 이름은 하나의 값만 가리킨다) ───
- *   paper        #f2efe8   위 브랜드 정본. `light.bg` 와 같은 값
+ *   paper        #efefef   위 브랜드 정본. `light.bg` 와 같은 값
  *   warm-paper   #fafaf7   Figma 시안의 라이트 고정 표면. 아래 `paper.warm` 토큰
  *
- * 둘은 다른 색이고 다른 표면이다 — 통일 대상이 아니라 *구별* 대상이다.
- * 새 off-white 를 들일 땐 값을 재사용하기 전에 여기에 이름부터 추가한다.
+ * 둘은 다른 표면이다 — 값이 가까워졌어도 *구별* 대상이다(`bg` 는 카드가 뜨는 바탕,
+ * `paper.warm` 은 라이트 고정 표면). 새 off-white 를 들일 땐 값을 재사용하기 전에 이름부터 추가한다.
+ *
+ * ─── 뉴트럴이 무채색인 이유 (2026-09-18) ───
+ * 회색 램프에서 따뜻한 기를 **전부** 뺐다(R=G=B). beam(Ash #8A8F98)·corp(Mist #9CA3AF)이 차가운
+ * 회색이라, 한 램프가 세 제품을 다 받으려면 노란기가 걸림돌이었다.
+ *
+ * 규칙은 한 줄이다 — **G 채널만 남긴다.** 상대휘도의 71.5% 가 G 라서, 원래 색과 같은 휘도를
+ * 갖는 무채색이 곧 `#GGGGGG` 다. 그래서 **대비비가 실질적으로 불변이고**(아래 실측), 값이
+ * 전부 반복 자리 회색으로 떨어진다. 옮긴 건 채도뿐이다.
+ *
+ * ─── `accent` 를 러스트에서 전기 바이올렛으로 (2026-09-18) ───
+ * 램프가 무채색이 되면서 "눈이 가는 자리"를 만들 수단이 `accent` 하나로 줄었다. 그래서 전압을
+ * 올리되, **글자로도 필로도 성립하는** 색이어야 했다.
+ *
+ * 형광(beam 의 Beam #C9FF3D)을 먼저 넣어 봤고 **물렀다.** 형광펜이 종이 위에서 보이는 건
+ * 명도가 아니라 채도 덕인데(OKLab C=0.214) WCAG 대비비는 그 축을 안 센다 — `bg` 위 1.02:1 이라
+ * 탭바 활성 라벨·아이콘·2px 밑줄이 통째로 사라졌다(docs playground 에서 실측).
+ *
+ * `#6d28d9` 는 **채도가 그 형광보다 높으면서**(C=0.241) 글자 7.10:1 · 흰 글자 필 7.10:1 이다.
+ * 채도와 가독성을 같이 얻으려면 색이 어두워야 한다 — 형광펜이 아니라 네온인 이유다.
  *
  * ─── 잉크 넷 중 어디까지가 "읽는 글자" 인가 ───
  *   text    #111111   본문·제목
- *   body    #2a2a26   긴 본문
- *   muted   #6b6b66   보조. surface 위 5.6:1 — **읽는 글자의 하한선**
- *   subtle  #aea99e   구분선·플레이스홀더·비활성. surface 위 2.34:1
+ *   body    #2a2a2a   긴 본문
+ *   muted   #6b6b6b   보조. surface 위 5.6:1 — **읽는 글자의 하한선**
+ *   subtle  #a9a9a9   구분선·플레이스홀더·비활성. surface 위 2.34:1
  *
  * **`subtle` 로 읽는 글자를 찍지 않는다.** WCAG AA 는 4.5:1 인데(18.66px bold·24px 이상만 3:1)
  * 실측은 surface 위 2.34 · bg 위 2.04 · paper-warm 위 2.24 다. 보조 문구·라벨·캡션까지
@@ -92,32 +111,32 @@ export type ColorScheme = {
  * 근거·실측: coldsurfers/public#106
  */
 const light: ColorScheme = {
-  bg: '#f2efe8',
+  bg: '#efefef',
   surface: '#ffffff',
-  surface2: '#e9e5db',
-  surfaceHover: '#ece8de',
+  surface2: '#e5e5e5',
+  surfaceHover: '#e8e8e8',
   surfaceGhost: 'rgba(17, 17, 17, 0.03)',
   surfaceGhostHover: 'rgba(17, 17, 17, 0.06)',
   surfaceActive: 'rgba(17, 17, 17, 0.08)',
-  border: '#d8d2c5',
-  borderSoft: '#e9e5db',
+  border: '#d2d2d2',
+  borderSoft: '#e5e5e5',
 
   text: '#111111',
   strong: '#0a0a0a',
-  body: '#2a2a26',
-  muted: '#6b6b66',
-  subtle: '#aea99e',
-  faint: '#d8d2c5',
+  body: '#2a2a2a',
+  muted: '#6b6b6b',
+  subtle: '#a9a9a9',
+  faint: '#d2d2d2',
 
   heading: '#111111',
-  accent: '#d6451f',
-  accentHover: '#b3360f',
+  accent: '#6d28d9',
+  accentHover: '#5b21b6',
   link: '#111111',
-  linkHover: '#d6451f',
+  linkHover: '#6d28d9',
   blockquote: '#444444',
 
-  codeBg: '#e9e5db',
-  codeFg: '#b3360f',
+  codeBg: '#e5e5e5',
+  codeFg: '#5b21b6',
 
   statusSuccess: '#1f7a3a',
   statusSuccessBg: 'rgba(31, 122, 58, 0.14)',
