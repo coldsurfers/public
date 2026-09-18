@@ -4,6 +4,7 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
+  ink,
   letterSpacing,
   lineHeight,
   paper,
@@ -44,6 +45,8 @@ const shape = {
   cover,
   /** `paper.warm` 은 `color.bg` 와 **다른 표면**이다. 통일 대상이 아니라 구별 대상. */
   paper,
+  /** 라이트 표면 안에 한 구간만 눕는 다크 밴드 넷. 전역 스킴이 아니다. */
+  ink,
 }
 
 /**
@@ -61,6 +64,7 @@ const TOKEN_GROUP: Record<keyof typeof shape, TokenScaleGroup> = {
   radius: 'radius',
   cover: 'cover',
   paper: 'paper',
+  ink: 'ink',
 }
 
 export const vars = createGlobalThemeContract(shape, (_value, path) => {
