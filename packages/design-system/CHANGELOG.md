@@ -1,5 +1,21 @@
 # @coldsurfers/design-system
 
+## 0.26.0
+
+### Minor Changes
+
+- [#184](https://github.com/coldsurfers/public/pull/184) [`db15673`](https://github.com/coldsurfers/public/commit/db156733e54f4f291375e4e4fab437069a2a2e18) Thanks [@yungblud](https://github.com/yungblud)! - 인디케이터 3색 · 아티스트 노드 톤 8색 · 인쇄 스킴 추가
+
+  세 자리 모두 소비 앱(`apps/web-next`)이 리터럴로 들고 있던 값이다. 원색층이 세운 원칙("앱이 각자 파던 층을 DS 가 진다") 그대로 올린다.
+
+  **① `palette` 에 인디케이터 셋** — `lagoon`(시안) · `pine`(틸그린) · `iris`(바이올렛). 레일·상태 색점용 **채도 있는** 색이다. `cover` 6톤을 못 쓰는 이유는 면적 — 그쪽은 색면용 어두운 톤이라 8px 점으로 줄이면 전부 같은 검정으로 뭉친다. 넷 중 첫 자리는 `surfBlue` 가 겸하므로 셋만 는다.
+
+  **② `nodeTone` 8색 + `NODE_TONES` · `nodeToneFor`** — taste engine 노드가 이름 해시로 고르는 색면. `cover` 와 별개 축인 이유 셋: 중성 다크 셋을 포함하고(노드가 여럿 붙는 화면이라 전부 틴트면 알록달록해진다), 목적이 *여덟이 서로 갈리는 것*이라 6으로 못 줄이며, `cover` 는 이벤트 표지 축이다. `coverToneFor` 와 **해시가 다르다** — 원본 구현을 그대로 옮겼고, 바꾸면 이미 노출된 화면의 색 배치가 통째로 달라진다.
+
+  **③ `printThemeVars`** — 종이 위의 `ColorScheme`. 화면 스킴에서 파생되지 않는다(`bg` #f5f7fa 를 그대로 인쇄하면 잉크만 먹는다). ⚠️ **DS 는 전역으로 발행하지 않는다** — `@media print` 를 `theme.css.ts` 에 넣으면 인쇄를 안 쓰는 소비 앱의 인쇄까지 바뀐다. 값만 내고 주입은 필요한 앱이 한다.
+
+  이름이 하나도 안 없어지므로 minor 다.
+
 ## 0.25.0
 
 ### Minor Changes
