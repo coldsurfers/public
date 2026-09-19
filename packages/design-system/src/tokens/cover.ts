@@ -1,4 +1,4 @@
-import { type CoverTone, cover } from './tokens'
+import { type CoverTone, cover, type NodeTone, nodeTone } from './tokens'
 
 /**
  * 포스터 없는 이벤트/아티스트의 커버 색면 톤 — `cover` 팔레트를 id 로 결정적 분산한다.
@@ -16,4 +16,19 @@ export function coverToneFor(id: string): CoverTone {
   let h = 0
   for (let i = 0; i < id.length; i++) h = (h + id.charCodeAt(i)) % COVER_TONES.length
   return COVER_TONES[h]
+}
+
+/**
+ * 아티스트 노드 톤 — `nodeTone` 을 이름으로 결정적 분산한다. `coverToneFor` 의 형제.
+ *
+ * 해시가 `coverToneFor`(문자코드 누적)와 **다르다** — 이쪽은 `h * 31 + code` 다. 값 출처였던
+ * `apps/web-next` 의 구현을 그대로 옮겼기 때문이고, 바꾸면 이미 노출된 화면의 색 배치가
+ * 통째로 달라진다. 두 함수를 통일하고 싶으면 그건 시각 변경으로 따로 다룬다.
+ */
+export const NODE_TONES = Object.keys(nodeTone) as readonly NodeTone[]
+
+export function nodeToneFor(name: string): NodeTone {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0
+  return NODE_TONES[h % NODE_TONES.length]
 }

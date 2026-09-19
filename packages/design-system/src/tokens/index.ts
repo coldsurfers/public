@@ -9,5 +9,5 @@
  * CSS 를 만들지 않는다. 변수 발행은 `../css/theme.css.ts` 가 하고, Tailwind `@theme` 같은
  * 소비처 전용 산출물은 아예 이 패키지 밖이다(docs/p1-boundary.md 결정 4).
  */
-export { COVER_TONES, coverToneFor } from './cover'
+export { COVER_TONES, coverToneFor, NODE_TONES, nodeToneFor } from './cover'
 export * from './tokens'
