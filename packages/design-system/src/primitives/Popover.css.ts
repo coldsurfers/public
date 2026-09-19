@@ -32,6 +32,6 @@ export const POPOVER_MENU_CLS = style(
     border: `1px solid ${vars.color.border}`,
     background: vars.color.surface,
     padding: 4,
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+    boxShadow: vars.shadow.lg,
   }),
 )

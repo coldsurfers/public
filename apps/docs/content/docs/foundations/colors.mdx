@@ -37,6 +37,26 @@ cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하�
 값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직입니다. 근거 · 실측은
 [coldsurfers/public#106](https://github.com/coldsurfers/public/issues/106) 입니다.
 
+## palette — 원색층
+
+위 semantic color 가 *역할*(`--text` · `--border`)을 말한다면, 여기는 **색 자체**에 이름을 줍니다.
+CSS 변수는 `--cs-*` 로 나갑니다.
+
+역할 이름이 안 붙는 자리가 있기 때문입니다 — 그라디언트 정지색, 잉크 밴드 안의 타일 바닥,
+내비 글자처럼 "그 색이어서 그 색인" 자리입니다. 그런 자리를 `--surface` 로 부르면 거짓말이 되고,
+리터럴로 쓰면 팔레트가 움직일 때 혼자 뒤처집니다.
+
+<Callout type="warn">
+**의미이름이 있는 자리에 원색을 쓰지 마세요.** 본문 글자는 `palette.deepNight` 이 아니라
+`color.text` 입니다 — 둘은 지금 같은 값이지만 같은 뜻이 아니고, 역할이 움직일 때 갈립니다.
+원색은 *역할 이름이 없는 자리*의 탈출구이지 의미층의 대체재가 아닙니다.
+</Callout>
+
+앞 10색이 Figma 팔레트 보드이고, 뒤는 보드 밖 파생색입니다.
+semantic color 와 `ink` 는 전부 이 표에서 파생합니다 — hex 정본은 여기 하나입니다.
+
+<Swatches group="palette" />
+
 ## cover — 지형 색면
 
 카드 커버의 바닥색입니다. semantic color 와 달리 **스킴을 타지 않는 불변 scale** 입니다.

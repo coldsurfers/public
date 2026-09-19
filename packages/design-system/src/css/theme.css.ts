@@ -4,11 +4,14 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
+  gradient,
   ink,
   letterSpacing,
   lineHeight,
+  palette,
   paper,
   radius,
+  shadow,
   spacing,
   tokens,
 } from '../tokens'
@@ -56,6 +59,11 @@ globalStyle(':root', {
         ...assignVars(vars.cover, cover),
         ...assignVars(vars.paper, paper),
         ...assignVars(vars.ink, ink),
+        // 원색층 `--cs-*`. 위 의미이름들과 **같은 값을 두 번 발행하는 게 아니다** —
+        // TS 쪽에서 `light`·`ink` 가 이미 `palette` 를 참조하므로 hex 정본은 하나다.
+        ...assignVars(vars.palette, palette),
+        ...assignVars(vars.shadow, shadow),
+        ...assignVars(vars.gradient, gradient),
       },
     },
   },

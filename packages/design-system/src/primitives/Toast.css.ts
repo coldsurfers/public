@@ -28,7 +28,7 @@ export const toast = recipe({
     padding: '11px 18px',
     fontWeight: vars.fontWeight.medium,
     fontSize: 13.5,
-    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.18)',
+    boxShadow: vars.shadow.md,
     pointerEvents: 'none',
     transitionProperty: 'opacity, transform',
     transitionDuration: '200ms',

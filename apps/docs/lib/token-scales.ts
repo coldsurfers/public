@@ -4,6 +4,7 @@ import {
   fontWeight,
   letterSpacing,
   lineHeight,
+  palette,
   paper,
   radius,
   spacing,
@@ -12,6 +13,7 @@ import {
 
 export type TokenGroup =
   | 'color'
+  | 'palette'
   | 'cover'
   | 'paper'
   | 'spacing'
@@ -29,6 +31,7 @@ export type TokenGroup =
  */
 export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
   color: tokens.color.semantic.light,
+  palette,
   cover,
   paper,
   spacing,

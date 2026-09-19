@@ -59,6 +59,119 @@ export type ColorScheme = {
 }
 
 /**
+ * COLDSURF 원색 — **hex 정본.** 아래 `light` · `ink` 는 전부 여기서 파생한다.
+ *
+ * 정본은 Figma Playground-Dev-CM Page 16 의 팔레트 보드다. 앞 열이 보드 10색이고,
+ * 뒤 열은 보드 밖 파생색으로 `apps/im-coldsurf` 랜딩에서 실제로 필요해 생긴 값이다.
+ *
+ * ─── 왜 이 층이 따로 있는가 ───
+ * 의미이름(`--bg`·`--text`)은 *역할*을 말한다. 그런데 역할 이름이 안 붙는 자리가 있다 —
+ * 그라디언트 정지색, 잉크 밴드 안의 타일 바닥, 내비 글자처럼 "그 색이어서 그 색인" 자리다.
+ * 그런 자리를 의미이름으로 부르면 거짓말이 되고(`--surface` 가 그라디언트 끝일 리 없다),
+ * 리터럴로 쓰면 팔레트가 움직일 때 혼자 뒤처진다. 그래서 **원색에도 이름을 준다.**
+ *
+ * 앱 셋이 이 층을 각자 팠던 것이 근거다 — `im-coldsurf` 가 `--cs-*` 18색,
+ * `beam-web` 이 `--beam-*` 8색, `web-next` 가 `--cs-grad-hero` 하나.
+ * 셋 다 구조가 같았다(원색 선언 → 의미이름에 먹임). 앱이 특이한 게 아니라 여기가 비어 있었다.
+ * 설계·실측: `docs/palette-layer.md`
+ *
+ * ─── 쓰는 규율 ───
+ * **의미이름이 있는 자리에 원색을 쓰지 않는다.** 본문 글자는 `palette.deepNight` 이 아니라
+ * `color.text` 다 — 둘은 지금 같은 값이지만 같은 뜻이 아니고, 역할이 움직일 때 갈린다.
+ * 원색은 *역할 이름이 없는 자리*의 탈출구이지 의미층의 대체재가 아니다.
+ *
+ * CSS 변수는 `--cs-*` 로 발행된다(`cssVarPrefix.palette`). RN 은 `./native.ts` 가 그대로 재수출한다.
+ */
+export const palette = {
+  // ─── 보드 10색 ───
+  /** Deep Night. 본문 글자이자 잉크 밴드 바닥 */
+  deepNight: '#0a0f1a',
+  /** 잉크 밴드 위 카드·칩·검색바 */
+  card: '#161e2e',
+  /** 잉크 밴드 위 구분선. 라이트에서는 긴 본문 글자색 */
+  divider: '#263248',
+  /** Glacier. 틴트 면·코드 바닥 */
+  glacier: '#eaf6ff',
+  white: '#ffffff',
+  /** Surf Blue. 주 액션·링크 hover. **화면당 하나** */
+  surfBlue: '#2563ff',
+  /** Ice Blue. 잉크 밴드 위 링크·인디케이터. 라이트 표면에서는 쓰지 않는다 */
+  iceBlue: '#7dd3fc',
+  /** 구분선·플레이스홀더·비활성. ⚠️ 읽는 글자로 쓰지 않는다(surface 위 2.54:1) */
+  mist: '#9ca3af',
+  /** 보조 글자. **읽는 글자의 하한선**(surface 위 5.98:1) */
+  slate: '#5b6472',
+  haze: '#c3cbd6',
+
+  // ─── 파생 (보드 밖) ───
+  /** 페이지 바닥. `light.bg` 와 같은 값 */
+  paper: '#f5f7fa',
+  /** 가라앉은 라이트 면. ⚠️ `light.surfaceHover`(#eef2f7)와 **다른 값**이다 — 미결 ⓑ */
+  paperSunk: '#edf1f6',
+  /** 라이트 구분선. ⚠️ `light.borderSoft`(#e5ebf2)와 **다른 값**이다 — 미결 ⓑ */
+  hairline: '#dce3eb',
+  /** 진한 라이트 구분선. `light.border` 와 같은 값 */
+  hairlineStrong: '#d7dee7',
+  /** 히어로 그라디언트의 끝. deepNight 에서 푸르게 한 단 뜬다 */
+  nightDeep: '#0b132e',
+  /** 아티스트 카드 바닥 */
+  cardDeep: '#101a2e',
+  /** 숫자 타일 바탕. 잉크 위에 얹히므로 card 보다 한 단 어둡다 */
+  tile: '#111a2b',
+  /** 잉크 밴드 위 내비 글자 */
+  navText: '#e5e7eb',
+  /** 모달·시트 뒤에 까는 막. deepNight 를 그대로 흐린 값이라 여기 둔다 */
+  scrim: 'rgba(10, 15, 26, 0.64)',
+} as const
+
+/**
+ * 그림자 — **깊이 축 하나.** 컴포넌트 이름으로 칸을 만들지 않는다.
+ *
+ * 이 축이 왜 생겼나: DS 자기 컴포넌트가 이미 서로 다른 그림자를 리터럴로 들고 있었다
+ * (`Popover`·`Modal`·`Toast`). 축이 없으니 새 그림자가 필요할 때마다 값을 새로 찍는
+ * 것 말고 할 수 있는 게 없었고, 그래서 셋이 서로를 모른다.
+ *
+ * ⚠️ **값을 정규화하지 않았다.** 셋의 기존 값을 그대로 옮기고 깊이 순으로 이름만 붙였다 —
+ * 스케일처럼 보이게 하려고 값을 고르면 그 순간 세 컴포넌트에 시각 회귀가 난다.
+ * 눈금이 고르지 않은 건 알고 있고, 고르는 건 별도 결정이다.
+ *
+ * `Checkbox` 의 포커스 링은 여기 없다 — 그건 깊이가 아니라 **포커스 축**이고
+ * `color-mix` 로 액센트에서 파생되는 동적 값이다. 같은 이름 아래 두면 축이 섞인다.
+ */
+export const shadow = {
+  /** 카드·노트. 가장 얕다 */
+  sm: '0 6px 18px rgba(10, 23, 51, 0.08)',
+  /** 떠 있는 작은 면 — `Toast` */
+  md: '0 6px 20px rgba(0, 0, 0, 0.18)',
+  /** 팝오버·드롭다운 — `Popover` */
+  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+  /** 모달 — `Modal` */
+  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+  /** 액센트 CTA. **색이 들어간 유일한 그림자**라 깊이 눈금 밖에 둔다 */
+  accent: '0 10px 26px rgba(37, 99, 255, 0.28)',
+} as const
+
+/**
+ * 표면 그라디언트 — Figma Page 16 시안의 `gradientTransform` 을 그대로 옮겼다.
+ *
+ * 각도가 둘뿐인 게 규칙이다 — **히어로만 세로(180deg), 나머지는 전부 대각(135deg).**
+ *
+ * 정지색에 이름을 주지 않았다. 소비처가 이 값 안뿐이라 이름이 값보다 짧지 않고,
+ * 팔레트에 올리면 "쓰이지 않는 이름" 이 다섯 늘어난다. 팔레트는 *부를 일이 있는* 색만 담는다.
+ *
+ * `cover` 6톤과 헷갈리지 않는다 — 저쪽은 데이터로 정해지는 표지 색이고 여기는 고정 표면이다.
+ */
+export const gradient = {
+  /** 히어로 밴드. 유일한 세로 */
+  hero: 'linear-gradient(180deg, #0a0f1a 0%, #0b132e 100%)',
+  show: 'linear-gradient(135deg, #eaf6ff 0%, #c7e4ff 100%)',
+  artist: 'linear-gradient(135deg, #101a2e 0%, #0a0f1a 100%)',
+  venue: 'linear-gradient(135deg, #dceeff 0%, #eaf6ff 100%)',
+  ticket: 'linear-gradient(135deg, #f1f5f9 0%, #e3edf7 100%)',
+  panel: 'linear-gradient(135deg, #eaf6ff 0%, #dde9ff 100%)',
+} as const
+
+/**
  * COLDSURF brand palette — **스킴은 이 하나(paper)뿐이다.**
  * ink(dark) 스킴은 폐기했다(paul-rockstar #299). 색을 뒤집는 축이 없으므로 `light` 가 곧 `:root` 다.
  *   paper   #f5f7fa · paper-2 #eaf6ff · rule #d7dee7
@@ -92,32 +205,40 @@ export type ColorScheme = {
  * (public 35 · paul-rockstar 130)이라 값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직인다.
  * 근거·실측: coldsurfers/public#106
  */
+/*
+ * 값은 하나도 안 바뀌었다 — 리터럴이 `palette` 참조로 바뀐 것뿐이다(런타임엔 같은 hex 문자열).
+ * 아직 리터럴인 자리는 **팔레트에 대응 색이 없는 자리**이고, 각각 사유를 달아 뒀다.
+ */
 const light: ColorScheme = {
-  bg: '#f5f7fa',
-  surface: '#ffffff',
-  surface2: '#eaf6ff',
+  bg: palette.paper,
+  surface: palette.white,
+  surface2: palette.glacier,
+  /** ⚠️ `palette.paperSunk`(#edf1f6)와 1단위 차. 합칠지는 미결 ⓑ — 지금은 구별한다 */
   surfaceHover: '#eef2f7',
   surfaceGhost: 'rgba(10, 15, 26, 0.03)',
   surfaceGhostHover: 'rgba(10, 15, 26, 0.06)',
   surfaceActive: 'rgba(10, 15, 26, 0.08)',
-  border: '#d7dee7',
+  border: palette.hairlineStrong,
+  /** ⚠️ `palette.hairline`(#dce3eb)과 다른 값. 미결 ⓑ */
   borderSoft: '#e5ebf2',
 
-  text: '#0a0f1a',
+  text: palette.deepNight,
+  /** 보드에 없는 값 — deepNight 보다 한 단 더 검다. 접을지는 미결 ⓔ */
   strong: '#05090f',
-  body: '#263248',
-  muted: '#5b6472',
-  subtle: '#9ca3af',
-  faint: '#c3cbd6',
+  body: palette.divider,
+  muted: palette.slate,
+  subtle: palette.mist,
+  faint: palette.haze,
 
-  heading: '#0a0f1a',
-  accent: '#2563ff',
+  heading: palette.deepNight,
+  accent: palette.surfBlue,
+  /** surf-deep. 보드에 없다 */
   accentHover: '#1d4fd8',
-  link: '#0a0f1a',
-  linkHover: '#2563ff',
+  link: palette.deepNight,
+  linkHover: palette.surfBlue,
   blockquote: '#3f4a5c',
 
-  codeBg: '#eaf6ff',
+  codeBg: palette.glacier,
   codeFg: '#1d4fd8',
 
   statusSuccess: '#1f7a3a',
@@ -157,6 +278,10 @@ export const cssVarName = (key: string): string =>
  */
 export const cssVarPrefix = {
   color: '',
+  /** 원색층. `('palette','deepNight')` → `--cs-deep-night`. 의미이름(접두 없음)과 한눈에 갈린다 */
+  palette: 'cs',
+  shadow: 'shadow',
+  gradient: 'gradient',
   fontFamily: 'font-family',
   fontSize: 'font-size',
   lineHeight: 'line-height',
@@ -300,12 +425,29 @@ export const spacing = {
   '24': '6rem',
 } as const
 
+/**
+ * 눈금은 2 → 4 → 8 → 12 → 16 → 24 로 간다.
+ *
+ * `2xl`·`3xl` 은 2026-09-19 에 붙였다. 천장이 12px 이라 큰 카드·패널이 전부 리터럴로
+ * 새고 있었다 — `apps/im-coldsurf` 와 `apps/web-next` 랜딩 실측에서 16 이 2회, 24 가 5회.
+ *
+ * ⚠️ **두 앱이 실제로 쓰는 radius 는 이 둘 말고도 14 · 18 · 20 · 28 이 있는데 안 넣었다.**
+ * 그것들이 눈금이 아니라 **반응형 짝**이기 때문이다 — 노트 14→16 · 카드 20→24 · 패널 24→28.
+ * 짝을 이름 하나로 부르려면 `editorialType` 처럼 합성 슬롯이어야 하고, 그건 눈금이 아니라
+ * **프리미티브 층(P3)의 결정**이다. 여기에 14·18·20·28 을 평평하게 늘어놓으면
+ * 그건 스케일이 아니라 목록이 된다(AGENTS.md 「흡수에는 상한이 있다」).
+ *
+ * 그래서 이번엔 *눈금이 이어지는 둘*만 넣는다. 짝은 P3 에서 슬롯으로 정한다.
+ * 미결 ⓒ 의 보수적 선택이고, 추가만이라 되돌릴 수 있다 — `docs/palette-layer.md`.
+ */
 export const radius = {
   none: '0',
   sm: '2px',
   md: '4px',
   lg: '8px',
   xl: '12px',
+  '2xl': '16px',
+  '3xl': '24px',
   full: '9999px',
 } as const
 
@@ -364,13 +506,13 @@ export const paper = {
  */
 export const ink = {
   /** Deep Night — 밴드 바닥. `light.text` 와 같은 값 */
-  base: '#0a0f1a',
+  base: palette.deepNight,
   /** 밴드 위 카드·칩·검색바 */
-  surface: '#161e2e',
+  surface: palette.card,
   /** 밴드 위 구분선·2차 버튼 테두리. `light.body` 와 같은 값 */
-  border: '#263248',
+  border: palette.divider,
   /** Ice Blue — 밴드 위 링크·인디케이터. 라이트 표면에서는 쓰지 않는다 */
-  accent: '#7dd3fc',
+  accent: palette.iceBlue,
 } as const
 
 /**
@@ -439,8 +581,17 @@ export const tokens = {
   fontWeight,
   spacing,
   radius,
+  palette,
+  shadow,
+  gradient,
   cover,
   paper,
+  /**
+   * ⚠️ 여기 빠져 있었다. `theme.css.ts` 는 `assignVars(vars.ink, ink)` 로 `--ink-*` 를
+   * 발행하는데 이 집계에는 없어서, 이 객체를 파생 원본으로 쓰는 `./native.ts` 에도 안 실렸다.
+   * 결과: **RN 은 다크 밴드 색 넷을 못 읽는다.** 웹만 보면 드러나지 않던 구멍이다.
+   */
+  ink,
   editorialType,
   breakpoints,
 } as const

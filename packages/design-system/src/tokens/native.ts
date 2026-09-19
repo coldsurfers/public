@@ -20,8 +20,10 @@ import {
   cover,
   fontSize,
   fontWeight,
+  ink,
   letterSpacing,
   lineHeight,
+  palette,
   paper,
   radius,
   spacing,
@@ -119,7 +121,12 @@ export const letterSpacingFor = (
  * 웹과 같은 객체를 그대로 쓴다.
  */
 export const nativeColor = tokens.color.semantic
-export { cover, paper }
+/**
+ * `ink` 는 스킴이 아니라 **다크 밴드 표면색 넷**이다(`base`·`surface`·`border`·`accent`).
+ * 웹에서 `--ink-*` 로 이미 발행되고 있었는데 RN 쪽에 노출이 빠져 있어 여기 추가한다 —
+ * 값은 `tokens.ts` 것 그대로고 변환도 없다(색은 hex 문자열이라 RN 이 그대로 먹는다).
+ */
+export { cover, ink, palette, paper }
 
 /**
  * RN 에는 fallback 스택이 없다 — `fontFamily` 는 **등록된 폰트 하나**를 가리켜야 하고,
