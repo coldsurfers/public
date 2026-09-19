@@ -120,6 +120,21 @@ export const palette = {
   tile: '#111a2b',
   /** 잉크 밴드 위 내비 글자 */
   navText: '#e5e7eb',
+
+  // ─── 인디케이터 (보드 밖) ───
+  /*
+   * 레일·상태 색점용 **채도 있는** 셋. `cover` 6톤을 못 쓰는 이유는 면적이다 — 그쪽은
+   * 색면용 어두운 톤이라 8px 점으로 줄이면 넷이 다 같은 검정으로 뭉친다(web-next
+   * `/live-events` 실측). 점은 채도가 있어야 서로 갈린다.
+   *
+   * 넷 중 첫 자리는 `surfBlue` 가 겸한다 — 첫 레일이 브랜드색인 건 의도다. 그래서 여기 셋뿐이다.
+   */
+  /** 색점 — 시안. `surfBlue` 다음 자리 */
+  lagoon: '#0e9cc4',
+  /** 색점 — 틸그린 */
+  pine: '#2f9e6f',
+  /** 색점 — 바이올렛 */
+  iris: '#7159d9',
   /** 모달·시트 뒤에 까는 막. deepNight 를 그대로 흐린 값이라 여기 둔다 */
   scrim: 'rgba(10, 15, 26, 0.64)',
 } as const
@@ -304,12 +319,63 @@ export const tokenVarName = (group: TokenScaleGroup, key: string): string => {
 }
 
 /**
+ * 인쇄면 스킴 — 종이 위의 `ColorScheme`.
+ *
+ * 화면 스킴에서 파생되지 않는다. 종이는 흰 바탕에 검은 잉크가 기준이고, `bg`(#f5f7fa) 같은
+ * 화면 표면색을 그대로 인쇄하면 잉크만 먹는다. 그래서 값이 따로 있다.
+ *
+ * ⚠️ **DS 는 이걸 전역으로 발행하지 않는다.** `@media print` 블록을 `theme.css.ts` 에 넣으면
+ * 인쇄를 쓰지 않는 소비 앱들의 인쇄 결과까지 바뀐다. 값만 내고, 주입은 필요한 앱이
+ * 아래 `printThemeVars` 로 한다(현재 소비처: `apps/web-next`).
+ *
+ * 값 출처는 그 앱의 `styles.css` 였다. 화면과 다른 축이라 원색층(`palette`)에서도 파생되지
+ * 않는다 — 여기 hex 가 있는 게 정상이다.
+ */
+const print: ColorScheme = {
+  ...light,
+
+  bg: '#ffffff',
+  surface: '#ffffff',
+  surface2: '#f3f4f6',
+  surfaceHover: '#f3f4f6',
+  border: '#dddddd',
+  borderSoft: '#eeeeee',
+
+  text: '#2a2a2a',
+  strong: '#1f2937',
+  body: '#2a2a2a',
+  muted: '#4b5563',
+  subtle: '#6b7280',
+  faint: '#9ca3af',
+
+  heading: '#0a0a0a',
+  accent: '#1d4ed8',
+  accentHover: '#1d4ed8',
+  link: '#1d4ed8',
+  linkHover: '#1d4ed8',
+  blockquote: '#444444',
+  codeBg: '#f3f4f6',
+  codeFg: '#1d4ed8',
+}
+
+/**
  * light(paper) 스킴을 CSS 변수 레코드로 — `{ '--bg': '#f2efe8', '--text': '#111111', … }`.
  * 전역 테마와 무관하게 특정 서브트리를 paper 로 고정할 때 컨테이너 `style` 로 주입한다.
  * MVP 랜딩 표면은 시안 기준 항상 light. SSR 인라인이라 플래시 없음.
  */
 export const lightThemeVars: Record<string, string> = Object.fromEntries(
   (Object.entries(light) as Array<[keyof ColorScheme, string]>).map(([k, v]) => [
+    `--${tokenVarName('color', k)}`,
+    v,
+  ]),
+)
+
+/**
+ * 인쇄 스킴을 CSS 변수 레코드로 — `@media print` 안에 그대로 붓는다.
+ * VE 라면 `globalStyle(':root', { '@media': { print: { vars: printThemeVars } } })` 가 그 자리다.
+ */
+export const printThemeVars: Record<string, string> = Object.fromEntries(
+  (Object.entries(print) as Array<[keyof ColorScheme, string]>).map(([k, v]) => [
     `--${tokenVarName('color', k)}`,
     v,
   ]),
@@ -473,6 +539,31 @@ export const cover = {
 } as const
 
 export type CoverTone = keyof typeof cover
+
+/**
+ * 아티스트 노드 색면 여덟 — taste engine 의 노드가 이름 해시로 하나를 고른다.
+ *
+ * `cover` 와 **겹치지 않는 별개 축**이다. 셋을 구별한다:
+ *   - `cover` 는 6톤 전부 틴트가 있고, 이벤트 표지 한 장을 채우는 색면이다
+ *   - 여기는 **중성 다크 셋**(`slate`·`graphite`·`iron`)을 포함한다. 노드가 여럿 붙어 있는
+ *     화면이라 톤이 골고루 퍼져야 하고, 전부 틴트를 주면 화면이 알록달록해진다
+ *   - 목적이 **여덟이 서로 갈리는 것**이라 6으로 줄이면 목적이 깨진다
+ *
+ * 값 출처는 `apps/web-next` 의 `TasteEngine` 이다. flag 가 prod 에 켜져 있어 관객에게 실제로
+ * 보이는 살아있는 표면 값이고, 그래서 앱이 아니라 여기가 정본이어야 한다.
+ */
+export const nodeTone = {
+  teal: '#1c3038',
+  wine: '#331f30',
+  slate: '#22262b',
+  violet: '#272040',
+  navy: '#1f2b38',
+  graphite: '#22292e',
+  iron: '#2b2b33',
+  steel: '#333847',
+} as const
+
+export type NodeTone = keyof typeof nodeTone
 
 /**
  * warm paper — Figma 시안의 **라이트 고정 표면** 바닥색.
