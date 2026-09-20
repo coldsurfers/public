@@ -388,6 +388,16 @@ export const fontFamily = {
   serif: "'Instrument Serif', 'Noto Serif KR', 'Times New Roman', serif",
   /** 메타·라벨·코드. 매거진 콜로폰 톤. */
   mono: "'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace",
+  /**
+   * 숫자·라틴 소자간 표기. **한글은 절대 이 스택으로 넘기지 않는다** — 글리프가 없다.
+   *
+   * 앱 셋(`im-coldsurf` · `web-next` · `beam-web`)이 **같은 문자열을 각자** 들고 있었다.
+   * 앞의 둘은 `theme.css.ts` 의 같은 줄 번호까지 같다. 원색층(`--cs-*`)을 올린 것과 같은
+   * 근거다 — 앱이 특이한 게 아니라 여기가 비어 있었다.
+   *
+   * `sans` 와 역할이 갈린다: 저쪽이 읽는 글이고 이쪽은 **세는 글**(수치·워드마크·메타)이다.
+   */
+  geist: "'Geist Variable', ui-sans-serif, system-ui, sans-serif",
 } as const
 
 /**
