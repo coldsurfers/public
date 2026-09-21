@@ -53,6 +53,14 @@ export default function Example() {
         footer="예스24 라이브홀"
         coverAction={<Button size="sm">담기</Button>}
       />
+      {/* 위와 같은 그림, 더 큰 칸. 여러 열 그리드처럼 칸이 넓은 자리에서 세로 포스터가 덜 잘린다. */}
+      <ConcertCard.CoverLarge
+        tone="steel"
+        title="Jambinai"
+        meta="8.09 토"
+        footer="무신사 개러지"
+        coverAction={<Button size="sm">담기</Button>}
+      />
     </div>
   )
 }

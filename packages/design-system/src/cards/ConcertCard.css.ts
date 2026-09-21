@@ -193,11 +193,38 @@ export const coverCover = recipe({
         padding: 18,
         '@media': { [media.tablet]: { height: 300 } },
       }),
+      /**
+       * `compact` 과 **같은 레이아웃, 더 큰 칸**이다 — 글은 똑같이 커버 안에 있고 치수만 다르다.
+       *
+       * 여는 자리 = **여러 열 그리드**. 칸이 420px 폭쯤 되는데 `compact` 높이(300)를 그대로
+       * 쓰면 가로로 누운 칸에 세로 포스터가 들어가 상하단이 크게 잘린다. 높이를 키우면 칸이
+       * 세로로 서서 포스터가 원래 비율에 가깝게 들어온다.
+       */
+      large: inComponentsLayer({
+        height: 420,
+        borderRadius: vars.radius['3xl'],
+        padding: 24,
+        '@media': { [media.tablet]: { height: 460 } },
+      }),
     },
   },
 
   defaultVariants: { size: 'full' },
 })
+
+/**
+ * 글이 커버 **안**에 있는 두 크기(`compact`·`large`)가 함께 쓰는 스크림 — 카드 전체 높이.
+ *
+ * 한 벌로 두는 이유는 값이 우연히 같아서가 아니라 **같아야 해서**다. 한쪽만 손보면 같은
+ * 레이아웃의 두 칸이 서로 다른 밝기로 읽힌다.
+ */
+const insideScrim = {
+  top: 0,
+  background: `linear-gradient(180deg, ${alpha(vars.palette.deepNight, 0)} 0%, ${alpha(
+    vars.palette.deepNight,
+    72,
+  )} 55%, ${alpha(vars.palette.deepNight, 92)} 100%)`,
+} as const
 
 /**
  * 커버 그라디언트 — 포스터가 밝아도 글이 읽힌다.
@@ -221,13 +248,8 @@ export const coverScrim = recipe({
         background: 'linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.62))',
         '@media': { [media.tablet]: { height: 240 } },
       }),
-      compact: inComponentsLayer({
-        top: 0,
-        background: `linear-gradient(180deg, ${alpha(vars.palette.deepNight, 0)} 0%, ${alpha(
-          vars.palette.deepNight,
-          72,
-        )} 55%, ${alpha(vars.palette.deepNight, 92)} 100%)`,
-      }),
+      compact: inComponentsLayer(insideScrim),
+      large: inComponentsLayer(insideScrim),
     },
   },
 
@@ -265,6 +287,16 @@ export const coverEyebrow = style(
   }),
 )
 
+/**
+ * 글이 커버 안에 있는 두 크기가 함께 쓰는 제목 — `full` 보다 한 단 낮다.
+ * 제목이 포스터를 가리지 않아야 해서고, 흰색은 이 크기에서 대비를 든다.
+ */
+const insideTitle = {
+  fontSize: 17,
+  lineHeight: '24px',
+  color: vars.palette.white,
+} as const
+
 export const coverTitle = recipe({
   base: inComponentsLayer({
     ...lineClamp(2),
@@ -281,12 +313,12 @@ export const coverTitle = recipe({
         color: vars.paper.warm,
         '@media': { [media.tablet]: { fontSize: 30, letterSpacing: '-0.5px' } },
       }),
-      /** 작은 칸에선 제목이 포스터를 가리지 않아야 해서 한 단 내린다. 흰색은 이 크기에서 대비. */
-      compact: inComponentsLayer({
-        fontSize: 17,
-        lineHeight: '24px',
-        color: vars.palette.white,
-      }),
+      compact: inComponentsLayer(insideTitle),
+      /**
+       * `large` 가 칸은 커도 제목은 `compact` 와 **같은 한 단**이다. 커지는 건 포스터가 보일
+       * 면적이지 글의 몫이 아니다 — 여기서 제목까지 키우면 큰 칸일수록 포스터가 더 가려진다.
+       */
+      large: inComponentsLayer(insideTitle),
     },
   },
 
