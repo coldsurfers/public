@@ -21,6 +21,7 @@ export {
   type ConcertCardVariant,
   type CoverCompactConcertCardProps,
   type CoverConcertCardProps,
+  type CoverLargeConcertCardProps,
   type FramedConcertCardProps,
 } from './ConcertCard'
 export { ConcertCardSkeleton, type ConcertCardSkeletonProps } from './ConcertCardSkeleton'

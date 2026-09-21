@@ -22,7 +22,7 @@ export type { ConcertCardCoverRatio, ConcertCardVariant }
  * 없으면 계약이 아니다(`ConcertCardVariant` 가 native 쪽 prop 이 아닌 것과 같은 이유).
  * native 가 이 섀시를 옮기는 날 그때 올린다.
  */
-export type ConcertCardSize = 'full' | 'compact'
+export type ConcertCardSize = 'full' | 'compact' | 'large'
 
 /**
  * 루트 `<article>` 로 그대로 흘려보내는 DOM props — `id` · `data-*` · `aria-*` · `style` ·
@@ -48,10 +48,11 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
    * `full` — 세로 커버 한 장(430/500)에 eyebrow·담기·제목을 얹고, **메타는 커버 밖** 1줄.
    * `compact` — 작은 칸(290/300)이라 셋을 다 커버 안에 넣는다: 날짜(`meta`) → 제목 →
    * 공연장(`footer`). 스크림이 카드 전체 높이에 걸려 글이 포스터 위에서 읽힌다.
+   * `large` — `compact` 와 같은 그림, 더 큰 칸(420/460 · 여백 24). 여러 열 그리드용.
    *
-   * ⚠️ `compact` 에서만 `footer` 가 그려진다 — `full` 은 커버 아래에 메타 한 줄만 두는 섀시다.
+   * ⚠️ `full` 에서만 `footer` 가 안 그려진다 — 커버 아래에 메타 한 줄만 두는 섀시라서다.
    * 그 비대칭이 **이 문에만 남아 있다.** 정적 프로퍼티 문에는 이 축이 없다 — 크기가 문 이름
-   * (`ConcertCard.Cover` · `ConcertCard.CoverCompact`)에 박혀 있고, `full` 쪽은 `footer` 를
+   * (`ConcertCard.Cover` · `.CoverCompact` · `.CoverLarge`)에 박혀 있고, `full` 쪽은 `footer` 를
    * 타입에서 아예 안 연다. 여기 남긴 건 `variant` 문이 쓰던 축이라서다(빼면 major).
    */
   size?: ConcertCardSize
@@ -61,7 +62,8 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
    * 텍스트. `/`(트렌딩 레일)·`/@<handle>`(담은 공연 그리드)이 쓴다.
    * `cover` — 시안 날짜 피드 리스킨(Figma `1093:171`·`1093:576`): 세로 커버 한 장에 eyebrow·담기·
    * 제목을 **얹고** 커버 아래엔 메타 1줄. `/live-events/new` 와 그 날짜 상세가 쓴다.
-   * 작은 칸(랜딩·그리드)은 같은 섀시의 `size="compact"` — 축은 `ConcertCardSize`.
+   * 작은 칸(레일)은 같은 섀시의 `size="compact"`, 여러 열 그리드는 `size="large"` —
+   * 축은 `ConcertCardSize`.
    *
    * ⚠️ native 는 `bare` 만 구현한다 — 그래서 그쪽엔 이 prop 이 아예 없다.
    */
@@ -87,8 +89,8 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * ## 문은 둘, 하나는 관대하고 하나는 정확하다
  *
  * 그 섀시들을 정적 프로퍼티로도 낸다 — `ConcertCard.Framed` · `ConcertCard.Bare` ·
- * `ConcertCard.Cover` · `ConcertCard.CoverCompact`. **문이 넷인데 섀시는 셋**인 건 커버만
- * 크기로 갈라 냈기 때문이다(아래).
+ * `ConcertCard.Cover` · `ConcertCard.CoverCompact` · `ConcertCard.CoverLarge`.
+ * **문이 다섯인데 섀시는 셋**인 건 커버만 크기로 갈라 냈기 때문이다(아래).
  *
  * 평평한 `ConcertCardProps` 는 세 섀시의 축을 합집합으로 들고 있어서, 어느 문으로 들어오든
  * 타입이 **안 먹는 prop 을 통과시킨다**(`cover` 에 `matchLabel`, `framed` 에 `size`). 그중
@@ -110,12 +112,16 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * <ConcertCard.CoverCompact … />                    // 새 코드는 이쪽 (정확한 문)
  * ```
  *
- * ### 커버만 문이 둘인 이유
+ * ### 커버만 문이 셋인 이유
  *
- * `size` 는 크기 플래그처럼 생겼지만 **슬롯이 갈리는 축**이다 — `compact` 에서만 `footer` 가
+ * `size` 는 크기 플래그처럼 생겼지만 **슬롯이 갈리는 축**이다 — `full` 밖에서만 `footer` 가
  * 그려지고 `meta` 가 커버 밖에서 안으로 옮겨 간다. 한 문에 플래그로 두면 `full` 쪽에서
  * `footer` 가 `initial` 과 똑같은 병(있는데 안 먹는 prop)에 걸린다. 크기를 **문 이름에 박으면**
  * 플래그가 바깥에서 사라져 그 병이 성립하지 않는다.
+ *
+ * `CoverCompact` 와 `CoverLarge` 사이는 슬롯이 같아 진짜 크기 축이다. 그런데도 문으로 나눈 건
+ * 커버 문만 플래그를 되받으면 규율이 반쪽이 되기 때문이다 — 소비처가 「커버는 문으로 고른다」
+ * 하나만 외우면 되게 둔다.
  */
 export function ConcertCard({ variant = 'framed', ...props }: ConcertCardProps) {
   if (variant === 'cover') return <CoverCard {...props} />
@@ -276,7 +282,7 @@ function BareCard({
  * 아무 데도 안 그린다 — `initial` 과 같은 병이다. 공연장 줄이 필요하면 문이 다르다
  * (`ConcertCard.CoverCompact`).
  *
- * ⚠️ **`size` 도 없다.** 크기를 문이 이미 골랐다 — 아래 「문 둘, 플래그 0」.
+ * ⚠️ **`size` 도 없다.** 크기를 문이 이미 골랐다 — 아래 「커버만 문이 셋인 이유」.
  */
 export type CoverConcertCardProps = Pick<
   ConcertCardProps,
@@ -296,14 +302,26 @@ export type CoverConcertCardProps = Pick<
 export type CoverCompactConcertCardProps = CoverConcertCardProps & Pick<ConcertCardProps, 'footer'>
 
 /**
- * 안쪽 구현이 받는 것 — 바깥 두 문의 합집합 + `size`. **export 하지 않는다.**
+ * `ConcertCard.CoverLarge` 가 받는 것의 전부 — **`CoverCompact` 와 글자 그대로 같다.**
+ *
+ * 같은데도 이름을 따로 두는 건 **문↔타입 짝을 깨지 않기 위해서**다. 문이 넷인데 타입이 셋이면
+ * 소비처가 `CoverLarge` 의 props 를 짚을 때 이름이 다른 문을 빌려야 하고, 그때부터 "이 둘이
+ * 왜 같지" 를 매번 되짚게 된다. 같다는 사실은 여기 한 줄로 적혀 있는 편이 싸다.
+ *
+ * ⚠️ 둘이 갈리는 날엔 이 별칭을 풀고 각자 `Pick` 을 쓴다 — 별칭을 유지하려고 한쪽을 못 늘리는
+ * 일이 생기면 안 된다.
+ */
+export type CoverLargeConcertCardProps = CoverCompactConcertCardProps
+
+/**
+ * 안쪽 구현이 받는 것 — 바깥 세 문의 합집합 + `size`. **export 하지 않는다.**
  * 이게 밖으로 나가면 방금 닫은 문(`size` 플래그)이 다시 열린다.
  */
 type CoverCardProps = CoverCompactConcertCardProps & Pick<ConcertCardProps, 'size'>
 
 /**
  * 커버 섀시의 **안쪽 구현** — 세로 커버 한 장에 글을 얹는다. 밖으로 나가는 건 이 함수가
- * 아니라 크기를 고정한 두 문(`ConcertCard.Cover` · `ConcertCard.CoverCompact`)이다.
+ * 아니라 크기를 고정한 세 문(`ConcertCard.Cover` · `.CoverCompact` · `.CoverLarge`)이다.
  * `variant="cover"` 문만 `size` 를 그대로 받아 여기로 흘린다.
  *
  * 크기 축(`size`)이 **글이 어디까지 커버 안인가**를 가른다:
@@ -311,10 +329,12 @@ type CoverCardProps = CoverCompactConcertCardProps & Pick<ConcertCardProps, 'siz
  * - `full`(기본) — eyebrow·담기·제목만 얹고 메타는 커버 **밖** 1줄. 날짜 피드가 쓴다.
  * - `compact` — 날짜(`meta`) → 제목 → 공연장(`footer`) 셋을 다 커버 **안** 하단에. 작은 칸이라
  *   커버 밖에 한 줄을 더 두면 카드가 두 덩어리로 갈라져 보인다.
+ * - `large` — `compact` 와 **같은 그림, 더 큰 칸**(420/460 · 여백 24). 여러 열 그리드처럼 칸이
+ *   넓은 자리에서 세로 포스터가 덜 잘린다.
  *
- * **마크업을 둘로 나누지 않은 이유**: 커버 셸(`CoverBlock`·포스터·스크림)과 위 줄이 **글자
+ * **마크업을 셋으로 나누지 않은 이유**: 커버 셸(`CoverBlock`·포스터·스크림)과 위 줄이 **글자
  * 그대로 같다.** 나누면 그 넷이 두 벌이 되고, 담기 버튼 자리를 한쪽에서만 고치는 날이 온다.
- * 갈리는 건 아래 블록 하나뿐이라 그 하나만 분기한다. 바깥 문이 둘인 것과 어긋나지 않는다 —
+ * 갈리는 건 아래 블록 하나뿐이라 그 하나만 분기한다. 바깥 문이 셋인 것과 어긋나지 않는다 —
  * **타입만 둘이고 그림은 하나다.**
  *
  * 위 줄의 좌우 배치는 `coverTopAction` 의 `marginInlineStart: auto` 가 만든다. eyebrow 가
@@ -339,7 +359,9 @@ function CoverCard({
   className,
   ...rest
 }: CoverCardProps) {
-  const compact = size === 'compact'
+  // 글이 커버 안에 드는가 — 크기가 아니라 **레이아웃**을 가르는 선이다. `compact` 와 `large` 는
+  // 같은 쪽에 서고 치수만 다르다.
+  const textInside = size !== 'full'
 
   return (
     <article className={cx(s.coverRoot, className)} {...rest}>
@@ -350,7 +372,7 @@ function CoverCard({
           {eyebrow ? <span className={s.coverEyebrow}>{eyebrow}</span> : null}
           {coverAction ? <div className={s.coverTopAction}>{coverAction}</div> : null}
         </div>
-        {compact ? (
+        {textInside ? (
           <div className={s.coverStack}>
             <p className={s.coverStamp}>{meta}</p>
             <h3 className={s.coverTitle({ size })}>{title}</h3>
@@ -360,7 +382,7 @@ function CoverCard({
           <h3 className={s.coverTitle({ size })}>{title}</h3>
         )}
       </CoverBlock>
-      {compact ? null : <p className={s.coverMeta}>{meta}</p>}
+      {textInside ? null : <p className={s.coverMeta}>{meta}</p>}
     </article>
   )
 }
@@ -393,12 +415,29 @@ function CoverCompactCard(props: CoverCompactConcertCardProps) {
 }
 
 /**
+ * 커버 섀시 · 큰 칸(글은 커버 안) — `CoverCompact` 와 **같은 그림, 더 큰 칸**(420/460 · 여백 24).
+ * 문은 `ConcertCard.CoverLarge`(= `<ConcertCard variant="cover" size="large" />`).
+ *
+ * 여는 자리 = **여러 열 그리드**. 칸이 420px 폭쯤 되면 `CoverCompact` 높이(300)로는 칸이 가로로
+ * 누워 세로 포스터의 상하단이 크게 잘린다. 레일처럼 칸이 좁은 자리는 `CoverCompact` 가 맞다.
+ *
+ * **받는 것**: `ConcertCard.CoverCompact` 와 글자 그대로 같다(`footer` 포함).
+ * **안 받는 것**: `initial` · `size` · `matchLabel` · `coverRatio`·`reserveTitleLines`.
+ */
+function CoverLargeCard(props: CoverLargeConcertCardProps) {
+  return <CoverCard {...props} size="large" />
+}
+
+/**
  * 섀시별 문 — `variant` 문과 **같은 그림**을 가리킨다(순수 additive).
  *
- * 문이 넷인데 섀시는 셋이다. 커버만 둘로 쪼갠 건 `size` 가 크기 플래그가 아니라 **슬롯이
+ * 문이 다섯인데 섀시는 셋이다. 커버만 셋으로 쪼갠 건 `size` 가 크기 플래그가 아니라 **슬롯이
  * 갈리는 축**이기 때문이다 — `full` 은 `footer` 를 아무 데도 안 그린다. 한 문에 플래그로 두면
- * 이 PR 이 `initial` 에서 고친 병(있는데 안 먹는 prop)을 `footer` 자리에 새로 만든다.
+ * `initial` 에서 고친 병(있는데 안 먹는 prop)을 `footer` 자리에 새로 만든다.
  * 문으로 쪼개면 플래그가 **바깥에서 사라져** 크기가 문 이름에 박힌다.
+ *
+ * `CoverCompact` 와 `CoverLarge` 는 슬롯이 같고 치수만 다르다 — 그 둘 사이는 진짜 크기 축이라
+ * 플래그로 둬도 거짓말을 안 하지만, 그러면 커버 문만 플래그를 되받아 규율이 반쪽이 된다.
  *
  * **평평한 `ConcertCardProps.size` 는 남는다.** `variant` 문이 쓰는 축이라 빼면 major 이고,
  * 애초에 그 문은 관대한 쪽이다 — 두 체계가 공존한다. 정확한 쪽이 필요하면 정적 프로퍼티로 온다.
@@ -413,3 +452,4 @@ ConcertCard.Framed = FramedCard
 ConcertCard.Bare = BareCard
 ConcertCard.Cover = CoverFullCard
 ConcertCard.CoverCompact = CoverCompactCard
+ConcertCard.CoverLarge = CoverLargeCard
