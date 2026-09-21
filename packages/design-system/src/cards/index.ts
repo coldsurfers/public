@@ -16,6 +16,7 @@ export {
   ConcertCard,
   type ConcertCardCoverRatio,
   type ConcertCardProps,
+  type ConcertCardSize,
   type ConcertCardVariant,
 } from './ConcertCard'
 export { ConcertCardSkeleton, type ConcertCardSkeletonProps } from './ConcertCardSkeleton'

@@ -15,6 +15,16 @@ import * as s from './ConcertCard.css'
 export type { ConcertCardCoverRatio, ConcertCardVariant }
 
 /**
+ * `cover` 섀시의 크기 축.
+ *
+ * **계약(`contract/concert-card.ts`)에 올리지 않았다.** 거기 있는 건 *두 구현이 같은 숫자를
+ * 써야 하는 것* 뿐인데, native 는 `bare` 하나만 구현해 `cover` 섀시 자체가 없다 — 갈라질 짝이
+ * 없으면 계약이 아니다(`ConcertCardVariant` 가 native 쪽 prop 이 아닌 것과 같은 이유).
+ * native 가 이 섀시를 옮기는 날 그때 올린다.
+ */
+export type ConcertCardSize = 'full' | 'compact'
+
+/**
  * 루트 `<article>` 로 그대로 흘려보내는 DOM props — `id` · `data-*` · `aria-*` · `style` ·
  * `onMouseEnter` 등.
  *
@@ -33,11 +43,22 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
   /** 커버 좌상단 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
   eyebrow?: string
   /**
+   * 커버 카드의 크기. 기본 `full`. **`cover` 전용**.
+   *
+   * `full` — 세로 커버 한 장(430/500)에 eyebrow·담기·제목을 얹고, **메타는 커버 밖** 1줄.
+   * `compact` — 작은 칸(290/300)이라 셋을 다 커버 안에 넣는다: 날짜(`meta`) → 제목 →
+   * 공연장(`footer`). 스크림이 카드 전체 높이에 걸려 글이 포스터 위에서 읽힌다.
+   *
+   * ⚠️ `compact` 에서만 `footer` 가 그려진다 — `full` 은 커버 아래에 메타 한 줄만 두는 섀시다.
+   */
+  size?: ConcertCardSize
+  /**
    * `framed`(기본) — 테두리·배경 있는 액자 카드(`/live-events`·`/nearby`·`/gig-guide`).
    * `bare` — 시안 dice.fm 리스킨(Figma `931:32`·`931:259`): 섀시 없이 4:3 포스터 블록 + 그 아래 3줄
    * 텍스트. `/`(트렌딩 레일)·`/@<handle>`(담은 공연 그리드)이 쓴다.
    * `cover` — 시안 날짜 피드 리스킨(Figma `1093:171`·`1093:576`): 세로 커버 한 장에 eyebrow·담기·
    * 제목을 **얹고** 커버 아래엔 메타 1줄. `/live-events/new` 와 그 날짜 상세가 쓴다.
+   * 작은 칸(랜딩·그리드)은 같은 섀시의 `size="compact"` — 축은 `ConcertCardSize`.
    *
    * ⚠️ native 는 `bare` 만 구현한다 — 그래서 그쪽엔 이 prop 이 아예 없다.
    */
@@ -193,18 +214,36 @@ function BareCard({
 
 type CoverCardProps = Pick<
   ConcertCardProps,
-  'tone' | 'posterUrl' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
+  | 'tone'
+  | 'posterUrl'
+  | 'eyebrow'
+  | 'title'
+  | 'meta'
+  | 'footer'
+  | 'coverAction'
+  | 'size'
+  | 'className'
 > &
   HTMLAttributes<HTMLElement>
 
 /**
- * 커버 섀시 — 세로 커버 한 장에 eyebrow·담기·제목을 얹고, 커버 아래 메타 1줄.
+ * 커버 섀시 — 세로 커버 한 장에 글을 얹는다. 크기 축(`size`)이 **글이 어디까지 커버 안인가**를
+ * 가른다:
+ *
+ * - `full`(기본) — eyebrow·담기·제목만 얹고 메타는 커버 **밖** 1줄. 날짜 피드가 쓴다.
+ * - `compact` — 날짜(`meta`) → 제목 → 공연장(`footer`) 셋을 다 커버 **안** 하단에. 작은 칸이라
+ *   커버 밖에 한 줄을 더 두면 카드가 두 덩어리로 갈라져 보인다.
+ *
+ * 둘로 컴포넌트를 나누지 않은 이유: 커버 셸(`CoverBlock`·포스터·스크림)과 위 줄이 **글자
+ * 그대로 같다.** 나누면 그 넷이 두 벌이 되고, 담기 버튼 자리를 한쪽에서만 고치는 날이 온다.
+ * 갈리는 건 아래 블록 하나뿐이라 그 하나만 분기한다.
  *
  * 위 줄의 좌우 배치는 `coverTopAction` 의 `marginInlineStart: auto` 가 만든다. eyebrow 가
  * 없어도 담기 버튼은 제자리(우)를 지킨다 — 자리를 채우려고 빈 노드를 넣지 않는다.
+ * `compact` 가 eyebrow 없이 담기만 두는 것도 그래서 공짜다.
  *
  * ⚠️ 이 섀시엔 `initial` 자리가 없다. 포스터가 없으면 tone 색면만 남는다 —
- * 430px 세로 커버에 이니셜 한 자를 띄우면 mock 티가 나고, 이 지면은 실데이터 면이다.
+ * 세로 커버에 이니셜 한 자를 띄우면 mock 티가 나고, 이 지면은 실데이터 면이다.
  */
 function CoverCard({
   tone,
@@ -212,22 +251,34 @@ function CoverCard({
   eyebrow,
   title,
   meta,
+  footer,
   coverAction,
+  size = 'full',
   className,
   ...rest
 }: CoverCardProps) {
+  const compact = size === 'compact'
+
   return (
     <article className={cx(s.coverRoot, className)} {...rest}>
-      <CoverBlock tone={tone} className={s.coverCover}>
+      <CoverBlock tone={tone} className={s.coverCover({ size })}>
         <CoverImage src={posterUrl} />
-        <div className={s.coverScrim} />
+        <div className={s.coverScrim({ size })} />
         <div className={s.coverTopRow}>
           {eyebrow ? <span className={s.coverEyebrow}>{eyebrow}</span> : null}
           {coverAction ? <div className={s.coverTopAction}>{coverAction}</div> : null}
         </div>
-        <h3 className={s.coverTitle}>{title}</h3>
+        {compact ? (
+          <div className={s.coverStack}>
+            <p className={s.coverStamp}>{meta}</p>
+            <h3 className={s.coverTitle({ size })}>{title}</h3>
+            {footer ? <div className={s.coverVenue}>{footer}</div> : null}
+          </div>
+        ) : (
+          <h3 className={s.coverTitle({ size })}>{title}</h3>
+        )}
       </CoverBlock>
-      <p className={s.coverMeta}>{meta}</p>
+      {compact ? null : <p className={s.coverMeta}>{meta}</p>}
     </article>
   )
 }

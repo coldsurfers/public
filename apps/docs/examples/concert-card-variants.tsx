@@ -40,6 +40,16 @@ export default function Example() {
         title="Parannoul"
         meta="7.30 수 · 무신사 개러지"
       />
+      <ConcertCard
+        variant="cover"
+        size="compact"
+        tone="plum"
+        initial="ㅇ"
+        title="Oohyo"
+        meta="8.02 토"
+        footer="예스24 라이브홀"
+        coverAction={<Button size="sm">담기</Button>}
+      />
     </div>
   )
 }
