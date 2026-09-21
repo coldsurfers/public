@@ -14,7 +14,12 @@
 `bare` 는 바깥 삼항이 먼저 갈라서 `CoverImage` 의 빈 갈래가 죽은 코드였다. `CoverImage` 를
 `CoverFill(src, fallback)` 로 바꿔 판정 주인을 하나로 뒀다(무상태 유지).
 
-기존 `posterUrl`·`initial` 은 그대로 산다 — `cover` 를 안 주면 동작이 같다.
+정확한 문(`ConcertCard.Framed`·`.Bare`·`.Cover*`)에선 커버 축이 **유니온**이다 — `cover` 를
+주면 `posterUrl`·`initial` 이 타입에서 닫힌다. 합집합으로 두면 슬롯을 쓰는 소비처가 아무 데도
+안 그려질 자모 한 글자를 여전히 지어내야 했다(이 파일이 `variant="cover"` 에 대해 고발하던
+그 병). 덤으로 `cover` 와 `posterUrl` 을 같이 줬을 때 누가 이기는지 외울 일도 없어진다.
+
+기존 `posterUrl`·`initial` 은 그대로 산다 — `cover` 를 안 주면 동작도 타입도 같다.
 
 ```tsx
 // 그대로 (변화 없음)

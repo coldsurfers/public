@@ -46,6 +46,10 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
    * 클라이언트 전용이 되고, `primitives` 배럴이 `Toast` 로 겪은 RSC 사고를 그대로 반복한다.
    * 그래서 자리만 카드가 정하고 내용물은 소비처가 준다(`coverAction` 과 같은 규율).
    *
+   * ⚠️ 이건 **관대한 문**(`variant`)의 모양이라 `initial` 과 같이 열려 있다 — 계약상 그게
+   * 필수라서다. 정확한 문(정적 프로퍼티)에선 둘이 **유니온**이라 `cover` 를 주면 안 그려질
+   * 자모를 지어낼 필요가 없다(`CoverSourceProps`).
+   *
    * ⚠️ 공유 계약(`ConcertCardBareProps`)이 아니라 **웹 props 에만** 있다. native 는 이 자리를
    * 안 그리므로 공유로 올리면 「있는데 안 먹는 prop」이 하나 더 생긴다(`initial`·`footer` 가
    * 이미 앓은 병).
@@ -137,10 +141,21 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * 커버 문만 플래그를 되받으면 규율이 반쪽이 되기 때문이다 — 소비처가 「커버는 문으로 고른다」
  * 하나만 외우면 되게 둔다.
  */
-export function ConcertCard({ variant = 'framed', ...props }: ConcertCardProps) {
-  if (variant === 'cover') return <CoverCard {...props} />
-  if (variant === 'bare') return <BareCard {...props} />
-  return <FramedCard {...props} />
+export function ConcertCard({
+  variant = 'framed',
+  cover,
+  posterUrl,
+  initial,
+  ...rest
+}: ConcertCardProps) {
+  // 관대한 문은 커버 축 셋을 다 받는다(계약상 `initial` 이 필수라 닫을 수가 없다). 안쪽 섀시는
+  // 정확한 문의 유니온(`CoverSourceProps`)을 받으므로 여기서 한 번 갈라 넘긴다 — 판정은
+  // `CoverFill` 과 같다. `cover` 가 있으면 그것, 없으면 포스터 축.
+  const source: CoverSourceProps = cover ? { cover } : { posterUrl, initial }
+
+  if (variant === 'cover') return <CoverCard {...rest} {...source} />
+  if (variant === 'bare') return <BareCard {...rest} {...source} />
+  return <FramedCard {...rest} {...source} />
 }
 
 /**
@@ -163,6 +178,33 @@ function CoverFill({ src, fallback }: { src?: string | null; fallback?: ReactNod
 }
 
 /**
+ * 커버를 채우는 축 — **둘 중 하나만 선다.** 정확한 문(정적 프로퍼티)이 쓰는 모양이다.
+ *
+ * `cover` 를 주면 포스터 축(`posterUrl`·`initial`)이 타입에서 **닫힌다**. 안 주면 예전 그대로 —
+ * 포스터가 있으면 포스터, 없으면 이니셜.
+ *
+ * 합집합으로 두면 `cover` 를 꽂은 소비처가 계약상 필수인 `initial` 을 **여전히 지어내야 한다** —
+ * 이 파일이 `variant="cover"` 에 대해 고발하던 「있는데 안 먹는 prop」이 슬롯 자리에 그대로
+ * 재현된다. 유니온이면 타입이 그걸 막고, `cover` 와 `posterUrl` 을 같이 줘서 어느 쪽이 이기는지
+ * 를 소비처가 외워야 하는 일도 같이 사라진다.
+ *
+ * ⚠️ **관대한 문(`variant`)은 이 모양을 안 쓴다.** 거기선 셋이 다 열려 있다 — 계약(`initial`)을
+ * 바꾸면 native 레인이 따라와야 하고 그건 이 변경의 범위가 아니다. 두 체계가 공존한다는 말의
+ * 타입 쪽 면이고, 그 문으로 들어온 props 는 `ConcertCard` 가 여기 모양으로 갈라 넘긴다.
+ */
+type CoverSourceProps =
+  | { cover: ReactNode; posterUrl?: never; initial?: never }
+  | { cover?: never; posterUrl?: string | null; initial: string }
+
+/**
+ * 이니셜 축이 없는 섀시(`cover`)용 — 폴백이 tone 색면뿐이라 자모 자리가 애초에 없다.
+ * 나머지는 `CoverSourceProps` 와 같다.
+ */
+type CoverSourceWithoutInitialProps =
+  | { cover: ReactNode; posterUrl?: never }
+  | { cover?: never; posterUrl?: string | null }
+
+/**
  * `ConcertCard.Framed` 가 받는 것의 전부.
  *
  * ⚠️ **이름이 `ConcertCardFramedProps` 가 아닌 이유**: 짝인 민짜 쪽이 `ConcertCardBareProps`
@@ -172,17 +214,9 @@ function CoverFill({ src, fallback }: { src?: string | null; fallback?: ReactNod
  */
 export type FramedConcertCardProps = Pick<
   ConcertCardProps,
-  | 'tone'
-  | 'initial'
-  | 'posterUrl'
-  | 'cover'
-  | 'matchLabel'
-  | 'title'
-  | 'meta'
-  | 'footer'
-  | 'coverAction'
-  | 'className'
+  'tone' | 'matchLabel' | 'title' | 'meta' | 'footer' | 'coverAction' | 'className'
 > &
+  CoverSourceProps &
   HTMLAttributes<HTMLElement>
 
 /**
@@ -245,9 +279,6 @@ function FramedCard({
 export type BareConcertCardProps = Pick<
   ConcertCardProps,
   | 'tone'
-  | 'initial'
-  | 'posterUrl'
-  | 'cover'
   | 'title'
   | 'meta'
   | 'footer'
@@ -256,6 +287,7 @@ export type BareConcertCardProps = Pick<
   | 'reserveTitleLines'
   | 'className'
 > &
+  CoverSourceProps &
   HTMLAttributes<HTMLElement>
 
 /**
@@ -305,6 +337,7 @@ function BareCard({
  *
  * ⚠️ **`initial` 이 없다.** 평평한 `ConcertCardProps` 에서는 계약상 필수라 `variant="cover"`
  * 소비처가 안 그려질 자모를 지어내야 했는데, 이 문으로 들어오면 타입이 그 자리를 아예 안 연다.
+ * 커버 축은 `CoverSourceWithoutInitialProps` — `cover` 냐 `posterUrl` 이냐 둘 중 하나다.
  *
  * ⚠️ **`footer` 도 없다.** `full` 커버는 커버 밖에 메타 한 줄만 두는 섀시라 그 슬롯을
  * 아무 데도 안 그린다 — `initial` 과 같은 병이다. 공연장 줄이 필요하면 문이 다르다
@@ -314,8 +347,9 @@ function BareCard({
  */
 export type CoverConcertCardProps = Pick<
   ConcertCardProps,
-  'tone' | 'posterUrl' | 'cover' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
+  'tone' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
 > &
+  CoverSourceWithoutInitialProps &
   HTMLAttributes<HTMLElement>
 
 /**
