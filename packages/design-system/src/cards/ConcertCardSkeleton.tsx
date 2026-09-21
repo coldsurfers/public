@@ -2,18 +2,18 @@ import type { HTMLAttributes } from 'react'
 import type { ConcertCardVariant } from '../contract'
 import { pulse } from '../css/motion.css'
 import { CoverBlock, cx } from '../primitives'
-import type { CoverTone } from '../tokens'
 import type { ConcertCardSize } from './ConcertCard'
 import * as s from './ConcertCardSkeleton.css'
 
 /**
- * ConcertCard 의 로딩 스켈레톤 — 같은 섀시(rounded·border·cover tone 커버)로 로드 전후 라운드·
- * 테두리·커버 색면이 튀지 않는다. `CoverBlock` 을 재사용해 tone 색이 실카드와 정확히 같은 소스에서
- * 나온다. tone 은 소비처(레일)가 결정적으로 분산 주입한다. router·데이터 비의존.
+ * ConcertCard 의 로딩 스켈레톤 — 같은 섀시(rounded·border·커버 면)로 로드 전후 라운드·테두리·
+ * 커버 색면이 튀지 않는다. `CoverBlock` 을 재사용해 면이 실카드와 정확히 같은 소스에서 나온다.
+ *
+ * **면에 축이 없다.** 예전엔 소비처(레일)가 6톤을 index 로 분산 주입했는데, 스켈레톤이 뜻하는 건
+ * 「아직 그림이 없다」라서 `Skeleton`(막대들)과 밝기가 갈리면 안 된다 — 둘 다 `note` 다.
+ * router·데이터 비의존.
  */
 export interface ConcertCardSkeletonProps extends HTMLAttributes<HTMLDivElement> {
-  /** 커버 색면 tone — 소비처가 index 등으로 분산 주입. */
-  tone: CoverTone
   /** `ConcertCard` 의 같은 이름 prop 과 짝 — 섀시가 어긋나면 로드 전후가 튄다. */
   variant?: ConcertCardVariant
   /** `ConcertCard` 의 같은 이름 prop 과 짝 — **`cover` 전용**. 어긋나면 높이가 튄다. */
@@ -38,7 +38,6 @@ export type BareConcertCardSkeletonProps = ConcertCardSkeletonSlotProps &
   Pick<ConcertCardSkeletonProps, 'reserveTitleLines'>
 
 export function ConcertCardSkeleton({
-  tone,
   variant = 'framed',
   size = 'full',
   reserveTitleLines = false,
@@ -50,7 +49,7 @@ export function ConcertCardSkeleton({
     const textInside = size !== 'full'
     return (
       <div aria-hidden="true" className={cx(s.coverRoot, className)} {...rest}>
-        <CoverBlock tone={tone} className={cx(s.coverCover({ size }), pulse)} />
+        <CoverBlock className={cx(s.coverCover({ size }), pulse)} />
         {textInside ? null : <div className={cx(s.coverBar, pulse)} />}
       </div>
     )
@@ -59,7 +58,7 @@ export function ConcertCardSkeleton({
   if (variant === 'bare') {
     return (
       <div aria-hidden="true" className={cx(s.bareRoot, className)} {...rest}>
-        <CoverBlock tone={tone} className={cx(s.bareCover, pulse)} />
+        <CoverBlock className={cx(s.bareCover, pulse)} />
         <div className={s.bareMeta}>
           <div className={cx(s.titleBar({ reserve: reserveTitleLines }), pulse)} />
           <div className={cx(s.lineBarShort, pulse)} />
@@ -71,7 +70,7 @@ export function ConcertCardSkeleton({
 
   return (
     <div aria-hidden="true" className={cx(s.framedRoot, className)} {...rest}>
-      <CoverBlock tone={tone} className={cx(s.framedCover, pulse)} />
+      <CoverBlock className={cx(s.framedCover, pulse)} />
       <div className={s.framedBody}>
         <div className={cx(s.framedBar1, pulse)} />
         <div className={cx(s.framedBar2, pulse)} />

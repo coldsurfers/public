@@ -58,7 +58,12 @@ export const bareCoverRatio = styleVariants(bare.coverAspectRatio, (aspectRatio)
   inComponentsLayer({ aspectRatio: String(aspectRatio) }),
 )
 
-/** 포스터가 없을 때의 대형 이니셜 — 색면 위에 아주 옅게. */
+/**
+ * 포스터가 없을 때의 대형 이니셜 — 면 위에 아주 옅게.
+ *
+ * 색을 직접 안 정한다. `CoverBlock` 이 톤으로 정한 `currentColor` 를 물고 투명도만 얹는다 —
+ * 어두운 6톤에선 종이, `note` 에선 잉크가 되어 면이 밝아져도 글자가 따라 뒤집힌다.
+ */
 export const bareInitial = style(
   inComponentsLayer({
     position: 'absolute',
@@ -69,7 +74,8 @@ export const bareInitial = style(
     fontWeight: bare.titleFontWeight,
     fontSize: bare.initialFontSize,
     lineHeight: 1,
-    color: alpha(vars.paper.warm, bare.initialOpacity * 100),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
     '@media': { [media.tablet]: { fontSize: 76 } },
   }),
 )
@@ -445,7 +451,13 @@ export const framedMatchDot = style(
   }),
 )
 
-/** 커버 바닥에 앉는다 — 위에 매치 라벨이 있든 없든 `auto` 여백이 같은 자리를 만든다. */
+/**
+ * 커버 바닥에 앉는다 — 위에 매치 라벨이 있든 없든 `auto` 여백이 같은 자리를 만든다.
+ *
+ * 색·투명도는 `bareInitial` 과 **같은 규율**이다(면이 정한 `currentColor` + 워터마크 한 값).
+ * 예전엔 흰색 85% 라 민짜 쪽(22%)보다 훨씬 짙었는데, 면이 `note` 로 밝아지면 그 값이 잉크
+ * 85% 가 되어 워터마크가 아니라 드롭캡이 된다. 두 섀시가 같은 것을 그리므로 값도 하나다.
+ */
 export const framedInitial = style(
   inComponentsLayer({
     position: 'relative',
@@ -453,7 +465,8 @@ export const framedInitial = style(
     fontFamily: vars.font.serif,
     fontSize: vars.fontSize['5xl'],
     lineHeight: 1,
-    color: alpha('white', 85),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
   }),
 )
 

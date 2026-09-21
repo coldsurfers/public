@@ -42,7 +42,6 @@ export function FeedEventCard({ event, onToggleSave }: FeedEventCardProps) {
   return (
     <View style={{ width: RAIL_CARD_WIDTH }}>
       <ConcertCard
-        tone={event.tone}
         initial={event.initial}
         title={event.title}
         meta={event.meta}

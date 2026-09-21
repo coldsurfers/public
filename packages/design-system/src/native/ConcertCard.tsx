@@ -5,8 +5,7 @@ import {
   type ConcertCardBareProps,
   type ConcertCardCoverRatio,
 } from '../contract'
-import type { CoverTone } from '../tokens'
-import { cover, nativeFontFamily, paper } from '../tokens/native'
+import { ink, nativeColor, nativeFontFamily } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
@@ -47,16 +46,20 @@ const Root = styled.View({
   gap: bare.gap,
 })
 
-const Cover = styled.View<{ $tone: CoverTone; $ratio: ConcertCardCoverRatio }>(
-  ({ $tone, $ratio }) => ({
-    position: 'relative',
-    width: '100%',
-    aspectRatio: bare.coverAspectRatio[$ratio],
-    borderRadius: bare.coverRadius,
-    overflow: 'hidden',
-    backgroundColor: cover[$tone],
-  }),
-)
+/**
+ * 커버 바닥 — **면이 하나다.** 웹 `CoverBlock` 의 기본 톤(`note`)과 같은 자리고, 값은 각자
+ * 자기 축에서 읽는다(웹 `vars.color.surfaceHover` · 여기 `nativeColor.light.surfaceHover`).
+ * `cover` 6톤 축은 걷어냈다 — 이 면이 뜻하는 건 「아직 그림이 없다」라서 `Skeleton`(API 대기)과
+ * 밝기가 갈리면 안 된다.
+ */
+const Cover = styled.View<{ $ratio: ConcertCardCoverRatio }>(({ $ratio }) => ({
+  position: 'relative',
+  width: '100%',
+  aspectRatio: bare.coverAspectRatio[$ratio],
+  borderRadius: bare.coverRadius,
+  overflow: 'hidden',
+  backgroundColor: nativeColor.light.surfaceHover,
+}))
 
 /** 커버를 채우는 것들(포스터 · 이니셜 판)이 공유하는 자리. 웹의 `inset: 0` 자리다. */
 const Fill = styled.View({
@@ -81,7 +84,6 @@ const Meta = styled.View({
 })
 
 export function ConcertCard({
-  tone,
   initial,
   posterUrl,
   title,
@@ -95,28 +97,28 @@ export function ConcertCard({
 
   return (
     <Root>
-      <Cover $tone={tone} $ratio={coverRatio}>
+      <Cover $ratio={coverRatio}>
+        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다(웹과 같다). */}
+        <Fill pointerEvents="none">
+          <Text
+            style={{
+              fontSize: bare.initialFontSize,
+              lineHeight: bare.initialFontSize,
+              fontWeight: bare.titleFontWeight,
+              color: ink.base,
+              opacity: bare.initialOpacity,
+            }}
+          >
+            {initial}
+          </Text>
+        </Fill>
         {posterUrl ? (
           <Image
             source={{ uri: posterUrl }}
             resizeMode="cover"
             style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           />
-        ) : (
-          <Fill pointerEvents="none">
-            <Text
-              style={{
-                fontSize: bare.initialFontSize,
-                lineHeight: bare.initialFontSize,
-                fontWeight: bare.titleFontWeight,
-                color: paper.warm,
-                opacity: bare.initialOpacity,
-              }}
-            >
-              {initial}
-            </Text>
-          </Fill>
-        )}
+        ) : null}
         {coverAction ? <CoverAction>{coverAction}</CoverAction> : null}
       </Cover>
 
