@@ -1,5 +1,4 @@
 import type { components } from '@coldsurfers/api-sdk'
-import { type CoverTone, coverToneFor } from '@coldsurfers/design-system/tokens'
 
 /**
  * 이 화면의 **데이터 경계**. 목업이 사는 자리이자, billets-app 이 목업을 실 API 로 갈아끼울 때
@@ -9,7 +8,7 @@ import { type CoverTone, coverToneFor } from '@coldsurfers/design-system/tokens'
  *
  * 앞선 판은 `page.tsx` 안에 `E('t1', '실리카겔 SIREN', '7.24 금', …)` 같은 줄이 늘어서 있었다.
  * 그리면 되는 시안으로는 충분한데, **이식하려는 순간 그 줄들이 전부 거짓말이 된다** —
- * `7.24 금` 은 API 가 주는 값이 아니라 사람이 미리 접어 둔 결과고, `tone` 과 이니셜은 애초에
+ * `7.24 금` 은 API 가 주는 값이 아니라 사람이 미리 접어 둔 결과고, 이니셜은 애초에
  * DTO 에 없는 필드다. 즉 시안이 *이미 변환이 끝난 값*을 들고 있어서, 변환이 어디서 일어나야
  * 하는지가 화면 어디에도 안 적혀 있었다.
  *
@@ -36,7 +35,7 @@ import { type CoverTone, coverToneFor } from '@coldsurfers/design-system/tokens'
  */
 export type EventDTO = components['schemas']['ConcertDTOSchema']
 
-/** 화면이 읽는 모양. `tone` · `initial` · `meta` 는 **DTO 에 없고 파생된다.** */
+/** 화면이 읽는 모양. `initial` · `meta` 는 **DTO 에 없고 파생된다.** */
 export interface FeedEvent {
   id: string
   title: string
@@ -44,7 +43,6 @@ export interface FeedEvent {
   meta: string
   /** 카드 셋째 줄. 공연장이 없으면 빈 문자열이라 카드가 줄을 접는다. */
   venueName: string
-  tone: CoverTone
   initial: string
   saved: boolean
 }
@@ -76,12 +74,10 @@ function formatEventDate(iso: string): string {
 /**
  * DTO → 화면. **파생 규칙이 여기 한 곳에만 있다.**
  *
- * `tone` 은 손으로 고르지 않는다 — DS 가 발행하는 `coverToneFor(id)` 가 팔레트에서
- * 결정적으로 뽑는다. web-next 도 같은 함수를 쓰므로 두 표면의 톤 분산이 *같은 소스*에서
- * 나온다. 앞선 판처럼 목업에 `tone` 을 적어 두면 그 순간 소스가 둘이 되고, 실 데이터로
- * 갈아끼울 때 누가 톤을 정하는지가 다시 열린 질문이 된다.
+ * 커버 면에는 **파생할 것이 없다.** 예전엔 `coverToneFor(id)` 로 6톤을 흩어 넣었는데, 그
+ * 면이 뜻하는 건 「아직 그림이 없다」라 이제 `note` 하나다 — 카드가 알아서 깐다.
  *
- * `initial` 은 제목 첫 글자다. 포스터가 붙으면(`posterUrl`) 카드가 이니셜을 안 그리므로
+ * `initial` 은 제목 첫 글자다. 포스터가 붙으면(`posterUrl`) 그 위를 포스터가 덮으므로
  * 이 값은 포스터 없는 이벤트에서만 보인다.
  */
 export function toFeedEvent(dto: EventDTO): FeedEvent {
@@ -90,7 +86,6 @@ export function toFeedEvent(dto: EventDTO): FeedEvent {
     title: dto.title,
     meta: formatEventDate(dto.date),
     venueName: dto.mainVenue?.name ?? '',
-    tone: coverToneFor(dto.id),
     initial: dto.title.slice(0, 1),
     // DTO 에서 optional 이다 — 안 내려오면 안 담은 것으로 본다.
     saved: dto.isSubscribed ?? false,

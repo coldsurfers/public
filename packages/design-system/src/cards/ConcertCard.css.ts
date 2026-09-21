@@ -58,7 +58,12 @@ export const bareCoverRatio = styleVariants(bare.coverAspectRatio, (aspectRatio)
   inComponentsLayer({ aspectRatio: String(aspectRatio) }),
 )
 
-/** 포스터가 없을 때의 대형 이니셜 — 색면 위에 아주 옅게. */
+/**
+ * 포스터가 없을 때의 대형 이니셜 — 면 위에 아주 옅게.
+ *
+ * 색을 직접 안 정한다. `CoverBlock` 이 톤으로 정한 `currentColor` 를 물고 투명도만 얹는다 —
+ * 어두운 6톤에선 종이, `note` 에선 잉크가 되어 면이 밝아져도 글자가 따라 뒤집힌다.
+ */
 export const bareInitial = style(
   inComponentsLayer({
     position: 'absolute',
@@ -69,7 +74,8 @@ export const bareInitial = style(
     fontWeight: bare.titleFontWeight,
     fontSize: bare.initialFontSize,
     lineHeight: 1,
-    color: alpha(vars.paper.warm, bare.initialOpacity * 100),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
     '@media': { [media.tablet]: { fontSize: 76 } },
   }),
 )
@@ -398,9 +404,11 @@ export const framedRoot = style(
 )
 
 /**
- * 매치 라벨(위) · 이니셜(아래). 세로 배치는 `space-between` 이 아니라 `framedInitial` 의
- * `marginTop: auto` 가 만든다 — 둘은 서로 독립적으로 없을 수 있고(포스터가 있으면 이니셜이,
- * 매치 근거가 없으면 라벨이), `space-between` 은 한쪽이 비면 남은 하나를 위로 끌어올린다.
+ * 커버 셸. **흐름에 서는 건 매치 라벨 하나뿐**이고, 나머지(이니셜·포스터·담기)는 전부 층이다.
+ *
+ * 예전엔 이니셜도 흐름에 서서 `marginTop: auto` 로 세로 배치를 만들었다. 그건 포스터가 이
+ * 자리를 *대신* 채우던 시절의 모양이라, 바닥이 항상 깔리는 지금은 그 auto 여백이 라벨까지
+ * 끌어내린다. 층을 층으로 두면 라벨은 포스터가 있든 없든 제자리(상단)에 선다.
  */
 export const framedCover = style(
   inComponentsLayer({
@@ -445,15 +453,30 @@ export const framedMatchDot = style(
   }),
 )
 
-/** 커버 바닥에 앉는다 — 위에 매치 라벨이 있든 없든 `auto` 여백이 같은 자리를 만든다. */
+/**
+ * 커버 좌하단에 앉는다 — **흐름 밖**이다(`bareInitial` 과 같다).
+ *
+ * 예전엔 `marginTop: auto` 로 흐름 안에 있었는데, 그건 포스터가 이 자리를 *대신* 채울 때만
+ * 성립했다. 이제 바닥은 포스터가 있든 없든 **항상** 깔리므로, 흐름에 두면 그 auto 여백이
+ * 뒤따르는 매치 라벨까지 같이 끌어내린다. 층은 층으로 둔다 — 그래야 「매치 라벨과 이니셜은
+ * 서로를 필요로 하지 않는다」가 말뿐이 아니라 실제로 참이 된다.
+ *
+ * `left`·`bottom` 은 커버의 `padding`(16)과 같은 값이다 — 흐름에 있던 시절의 자리를 그대로 딴다.
+ *
+ * 색·투명도는 `bareInitial` 과 **같은 규율**이다(면이 정한 `currentColor` + 워터마크 한 값).
+ * 예전엔 흰색 85% 라 민짜 쪽(22%)보다 훨씬 짙었는데, 면이 `note` 로 밝아지면 그 값이 잉크
+ * 85% 가 되어 워터마크가 아니라 드롭캡이 된다. 두 섀시가 같은 것을 그리므로 값도 하나다.
+ */
 export const framedInitial = style(
   inComponentsLayer({
-    position: 'relative',
-    marginTop: 'auto',
+    position: 'absolute',
+    left: 16,
+    bottom: 16,
     fontFamily: vars.font.serif,
     fontSize: vars.fontSize['5xl'],
     lineHeight: 1,
-    color: alpha('white', 85),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
   }),
 )
 
