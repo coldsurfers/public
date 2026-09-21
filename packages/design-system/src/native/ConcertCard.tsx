@@ -11,7 +11,7 @@ import { Text } from './Text'
 
 /**
  * 공연 카드 — 웹 `cards/ConcertCard` 의 **`bare` 섀시**를 RN 으로 옮긴 것.
- * 커버(포스터 or tone·이니셜) 4:3 한 장 + 그 아래 3줄 텍스트(제목 · 메타 · footer).
+ * 커버(`note` 면 + 이니셜, 그 위 포스터) 4:3 한 장 + 그 아래 3줄 텍스트(제목 · 메타 · footer).
  *
  * ## 웹과 무엇이 같고 무엇이 다른가
  *
@@ -98,8 +98,15 @@ export function ConcertCard({
   return (
     <Root>
       <Cover $ratio={coverRatio}>
-        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다(웹과 같다). */}
-        <Fill pointerEvents="none">
+        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다(웹과 같다).
+            접근성 트리에서 빼는 건 이게 **장식**이라서다 — 제목은 아래 텍스트가 이미 말하는데
+            자모 한 글자가 그 앞에서 읽히면 같은 말을 두 번 한다. `pointerEvents` 는 터치만
+            막지 리더에선 안 빠지므로 두 플랫폼 플래그를 같이 단다(웹 `aria-hidden` 짝). */}
+        <Fill
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
           <Text
             style={{
               fontSize: bare.initialFontSize,

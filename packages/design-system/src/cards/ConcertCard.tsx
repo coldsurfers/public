@@ -4,7 +4,7 @@ import { CoverBlock, cx } from '../primitives'
 import * as s from './ConcertCard.css'
 
 /**
- * 공통분(`tone`·`initial`·`posterUrl`·`title`·`meta`·`footer`·`coverAction`·
+ * 공통분(`initial`·`posterUrl`·`title`·`meta`·`footer`·`coverAction`·
  * `reserveTitleLines`)은 **계약에서 온다** — native 구현이 같은 인터페이스를 쓴다.
  * 여기 적는 건 **웹에만 있는 것**뿐이다.
  */
@@ -87,7 +87,8 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
 }
 
 /**
- * 공연 카드 — 시안 라이브 표면(Figma 585-126). 커버(포스터 or tone·이니셜) + 본문(title·meta·footer).
+ * 공연 카드 — 시안 라이브 표면(Figma 585-126). 커버(`note` 면 + 이니셜, 그 위 포스터) +
+ * 본문(title·meta·footer).
  * router 비의존 — 클릭은 소비처가 `Link` 로 감싼다. 높이는 내용 기준(고정 없음).
  *
  * 커버는 **두 겹**이다. 바닥은 `note` 면 + 옅은 이니셜이고 언제나 카드가 그린다. 그 위를
@@ -195,12 +196,12 @@ export type FramedConcertCardProps = Pick<
  * 액자 섀시 — 테두리·배경이 있는 기본 카드. 문은 `ConcertCard.Framed`
  * (= `<ConcertCard variant="framed" />`, 기본값).
  *
- * **받는 것**: `matchLabel`(취향 라벨) + 공통분(`tone`·`initial`·`posterUrl`·`title`·`meta`·
+ * **받는 것**: `matchLabel`(취향 라벨) + 공통분(`initial`·`posterUrl`·`title`·`meta`·
  * `footer`·`coverAction`).
  * **안 받는 것**: `eyebrow`·`size`(cover 전용) · `coverRatio`·`reserveTitleLines`(bare 전용).
  *
- * 커버 안의 세로 배치는 `framedInitial` 의 `marginTop: auto` 가 만든다. 매치 라벨과 이니셜은
- * 서로를 필요로 하지 않으므로 둘 다 자기 자리를 스스로 잡는다.
+ * 커버 안에서 **흐름에 서는 건 매치 라벨 하나뿐**이다. 이니셜·포스터·담기는 전부 층이라
+ * 서로의 자리를 밀지 않는다 — 라벨은 포스터가 있든 없든 상단에 선다.
  *
  * ⚠️ 제목 2줄 예약은 이 섀시가 `framedTitle` 의 `minHeight` 로 **항상** 한다 —
  * 그래서 `reserveTitleLines` 를 받지 않는다(`contract/concert-card.ts`).
@@ -220,8 +221,13 @@ function FramedCard({
   return (
     <article className={cx(s.framedRoot, className)} {...rest}>
       <CoverBlock className={s.framedCover}>
-        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다. */}
-        <span className={s.framedInitial}>{initial}</span>
+        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다.
+            `aria-hidden` 인 건 이게 **장식**이라서다. 제목은 옆 텍스트가 이미 말하는데
+            포스터가 덮고 있든 아니든 자모 한 글자가 그 앞에서 읽히면 같은 말을 두 번 한다
+            (`CoverFill` 의 `alt=""` 와 같은 판정). */}
+        <span aria-hidden="true" className={s.framedInitial}>
+          {initial}
+        </span>
         {cover ?? <CoverFill src={posterUrl} />}
         {matchLabel ? (
           <span className={s.framedMatch}>
@@ -284,8 +290,11 @@ function BareCard({
   return (
     <article className={cx(s.bareRoot, className)} {...rest}>
       <CoverBlock className={cx(s.bareCover, s.bareCoverRatio[coverRatio])}>
-        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다. */}
-        <span className={s.bareInitial}>{initial}</span>
+        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다.
+            `aria-hidden` 근거는 `framed` 쪽과 같다(장식이다). */}
+        <span aria-hidden="true" className={s.bareInitial}>
+          {initial}
+        </span>
         {cover ?? <CoverFill src={posterUrl} />}
         {coverAction ? <div className={s.bareCoverAction}>{coverAction}</div> : null}
       </CoverBlock>
@@ -305,7 +314,7 @@ function BareCard({
  *
  * ⚠️ **`initial` 이 없다.** 평평한 `ConcertCardProps` 에서는 계약상 필수라 `variant="cover"`
  * 소비처가 안 그려질 자모를 지어내야 했는데, 이 문으로 들어오면 타입이 그 자리를 아예 안 연다.
- * 커버 축은 `CoverSourceWithoutInitialProps` — `cover` 냐 `posterUrl` 이냐 둘 중 하나다.
+ * 포스터 층은 `posterUrl` 이나 `cover` 로 채운다 — 둘 다 없으면 `note` 면만 남는다.
  *
  * ⚠️ **`footer` 도 없다.** `full` 커버는 커버 밖에 메타 한 줄만 두는 섀시라 그 슬롯을
  * 아무 데도 안 그린다 — `initial` 과 같은 병이다. 공연장 줄이 필요하면 문이 다르다
@@ -370,7 +379,7 @@ type CoverCardProps = CoverCompactConcertCardProps & Pick<ConcertCardProps, 'siz
  * 없어도 담기 버튼은 제자리(우)를 지킨다 — 자리를 채우려고 빈 노드를 넣지 않는다.
  * `compact` 가 eyebrow 없이 담기만 두는 것도 그래서 공짜다.
  *
- * ⚠️ 이 섀시엔 `initial` 자리가 없다. 포스터가 없으면 tone 색면만 남는다 —
+ * ⚠️ 이 섀시엔 `initial` 자리가 없다. 포스터가 없으면 `note` 면만 남는다 —
  * 세로 커버에 이니셜 한 자를 띄우면 mock 티가 나고, 이 지면은 실데이터 면이다.
  * 이 문으로 들어오면 그걸 주석이 아니라 **타입이** 말한다(`CoverConcertCardProps` 에 그
  * 이름이 없다). 평평한 `ConcertCardProps` 는 계약상 필수라 못 그러고, 그래서 `variant="cover"`
@@ -420,8 +429,8 @@ function CoverCard({
  * 커버 섀시 · 큰 칸 — 세로 커버 한 장(430/500)에 eyebrow·담기·제목을 얹고 메타는 커버 **밖**
  * 1줄. 문은 `ConcertCard.Cover`(= `<ConcertCard variant="cover" />`, `size` 기본값).
  *
- * **받는 것**: `eyebrow` + 공통분(`tone`·`posterUrl`·`title`·`meta`·`coverAction`).
- * **안 받는 것**: `initial`(이 섀시는 포스터 없으면 tone 색면만) · `footer`(이 섀시가 안
+ * **받는 것**: `eyebrow` + 공통분(`posterUrl`·`title`·`meta`·`coverAction`).
+ * **안 받는 것**: `initial`(이 섀시는 포스터 없으면 `note` 면만) · `footer`(이 섀시가 안
  * 그린다) · `size`(문이 이미 골랐다) · `matchLabel`(framed 전용) ·
  * `coverRatio`·`reserveTitleLines`(bare 전용).
  *
