@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import type { ConcertCardBareProps, ConcertCardCoverRatio, ConcertCardVariant } from '../contract'
 import { CoverBlock, cx } from '../primitives'
 import * as s from './ConcertCard.css'
@@ -38,6 +38,23 @@ export type ConcertCardSize = 'full' | 'compact' | 'large'
 type CardDomProps = Omit<HTMLAttributes<HTMLElement>, 'title'>
 
 export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
+  /**
+   * 커버를 채우는 것. 주면 `posterUrl`·`initial` 대신 **이게 선다**(바닥 `tone` 은 그대로).
+   *
+   * 로드 실패 폴백처럼 **상태가 필요한 커버**를 위한 자리다. 이 엔트리는 훅도 `'use client'`
+   * 도 없는 서버 안전 모듈이라 그 상태를 여기서 들 수 없다 — 들기 시작하면 `cards` 가 통째로
+   * 클라이언트 전용이 되고, `primitives` 배럴이 `Toast` 로 겪은 RSC 사고를 그대로 반복한다.
+   * 그래서 자리만 카드가 정하고 내용물은 소비처가 준다(`coverAction` 과 같은 규율).
+   *
+   * ⚠️ 이건 **관대한 문**(`variant`)의 모양이라 `initial` 과 같이 열려 있다 — 계약상 그게
+   * 필수라서다. 정확한 문(정적 프로퍼티)에선 둘이 **유니온**이라 `cover` 를 주면 안 그려질
+   * 자모를 지어낼 필요가 없다(`CoverSourceProps`).
+   *
+   * ⚠️ 공유 계약(`ConcertCardBareProps`)이 아니라 **웹 props 에만** 있다. native 는 이 자리를
+   * 안 그리므로 공유로 올리면 「있는데 안 먹는 prop」이 하나 더 생긴다(`initial`·`footer` 가
+   * 이미 앓은 병).
+   */
+  cover?: ReactNode
   /** 취향 매치 라벨 — `96% 취향`. 없으면 미노출. **`framed` 전용** (시안의 `bare` 엔 자리가 없다). */
   matchLabel?: string
   /** 커버 좌상단 라벨 — 시안의 장르 자리(`INDIE ROCK`). 없으면 미노출. **`cover` 전용**. */
@@ -74,8 +91,9 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * 공연 카드 — 시안 라이브 표면(Figma 585-126). 커버(포스터 or tone·이니셜) + 본문(title·meta·footer).
  * router 비의존 — 클릭은 소비처가 `Link` 로 감싼다. 높이는 내용 기준(고정 없음).
  *
- * 커버는 두 모드다: `posterUrl` 이 있으면 실제 포스터를 채우고(실데이터 표면),
- * 없으면 tone 색면 + 대형 이니셜(시안 mock). 실 이벤트에는 포스터를, 데모엔 이니셜을.
+ * 커버 바닥은 언제나 `tone` 색면(`CoverBlock`)이고, 그 위에 서는 것이 셋 중 하나다:
+ * `cover` 슬롯을 주면 그것, 아니면 `posterUrl` 의 포스터, 그것도 없으면 대형 이니셜.
+ * 실 이벤트에는 포스터를, 데모엔 이니셜을, **로드 실패까지 다뤄야 하면 `cover` 를** 쓴다.
  *
  * `footer` = 시안의 MatchWhy 슬롯 — 매칭 근거(아티스트명 + 장르 태그) 를 카드 body 안(meta 아래)에.
  *
@@ -123,22 +141,68 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * 커버 문만 플래그를 되받으면 규율이 반쪽이 되기 때문이다 — 소비처가 「커버는 문으로 고른다」
  * 하나만 외우면 되게 둔다.
  */
-export function ConcertCard({ variant = 'framed', ...props }: ConcertCardProps) {
-  if (variant === 'cover') return <CoverCard {...props} />
-  if (variant === 'bare') return <BareCard {...props} />
-  return <FramedCard {...props} />
+export function ConcertCard({
+  variant = 'framed',
+  cover,
+  posterUrl,
+  initial,
+  ...rest
+}: ConcertCardProps) {
+  // 관대한 문은 커버 축 셋을 다 받는다(계약상 `initial` 이 필수라 닫을 수가 없다). 안쪽 섀시는
+  // 정확한 문의 유니온(`CoverSourceProps`)을 받으므로 여기서 한 번 갈라 넘긴다 — 판정은
+  // `CoverFill` 과 같다. `cover` 가 있으면 그것, 없으면 포스터 축.
+  const source: CoverSourceProps = cover ? { cover } : { posterUrl, initial }
+
+  if (variant === 'cover') return <CoverCard {...rest} {...source} />
+  if (variant === 'bare') return <BareCard {...rest} {...source} />
+  return <FramedCard {...rest} {...source} />
 }
 
 /**
- * 커버를 채우는 실제 포스터. 세 섀시가 글자 그대로 같은 한 장을 쓴다 —
+ * 커버 한 장 — 포스터가 있으면 포스터, 없으면 폴백. 세 섀시가 글자 그대로 같은 한 장을 쓴다 —
  * 채우기(`objectFit: cover`)와 지연 로딩이 섀시별로 달라질 축이 아니다.
+ *
+ * **「포스터가 있는가」를 읽는 자리는 여기 하나다.** 예전엔 셋이 같은 질문에 다르게 답했다 —
+ * `framed` 는 이 함수 밖에서 한 번 더 읽었고(`posterUrl ? null : initial`), `bare` 는 바깥
+ * 삼항이 먼저 갈라서 여기 빈 갈래가 죽은 코드였다. 한쪽만 고치면 조용히 갈라지는 모양이다.
+ *
+ * 로드 **실패**는 여기서 안 잡는다 — 상태가 필요하고 이 엔트리는 무상태다. 그 처리가 필요한
+ * 소비처는 `cover` 슬롯에 자기 컴포넌트를 꽂는다(`ConcertCardProps.cover`).
  *
  * `alt=""` 는 장식이라는 선언이다. 공연 정보는 옆 텍스트가 이미 말하므로 포스터를 한 번 더
  * 읽히면 같은 말을 두 번 한다.
  */
-function CoverImage({ src }: { src?: string | null }) {
-  return src ? <img src={src} alt="" loading="lazy" className={s.coverImage} /> : null
+function CoverFill({ src, fallback }: { src?: string | null; fallback?: ReactNode }) {
+  if (!src) return <>{fallback}</>
+  return <img src={src} alt="" loading="lazy" className={s.coverImage} />
 }
+
+/**
+ * 커버를 채우는 축 — **둘 중 하나만 선다.** 정확한 문(정적 프로퍼티)이 쓰는 모양이다.
+ *
+ * `cover` 를 주면 포스터 축(`posterUrl`·`initial`)이 타입에서 **닫힌다**. 안 주면 예전 그대로 —
+ * 포스터가 있으면 포스터, 없으면 이니셜.
+ *
+ * 합집합으로 두면 `cover` 를 꽂은 소비처가 계약상 필수인 `initial` 을 **여전히 지어내야 한다** —
+ * 이 파일이 `variant="cover"` 에 대해 고발하던 「있는데 안 먹는 prop」이 슬롯 자리에 그대로
+ * 재현된다. 유니온이면 타입이 그걸 막고, `cover` 와 `posterUrl` 을 같이 줘서 어느 쪽이 이기는지
+ * 를 소비처가 외워야 하는 일도 같이 사라진다.
+ *
+ * ⚠️ **관대한 문(`variant`)은 이 모양을 안 쓴다.** 거기선 셋이 다 열려 있다 — 계약(`initial`)을
+ * 바꾸면 native 레인이 따라와야 하고 그건 이 변경의 범위가 아니다. 두 체계가 공존한다는 말의
+ * 타입 쪽 면이고, 그 문으로 들어온 props 는 `ConcertCard` 가 여기 모양으로 갈라 넘긴다.
+ */
+type CoverSourceProps =
+  | { cover: ReactNode; posterUrl?: never; initial?: never }
+  | { cover?: never; posterUrl?: string | null; initial: string }
+
+/**
+ * 이니셜 축이 없는 섀시(`cover`)용 — 폴백이 tone 색면뿐이라 자모 자리가 애초에 없다.
+ * 나머지는 `CoverSourceProps` 와 같다.
+ */
+type CoverSourceWithoutInitialProps =
+  | { cover: ReactNode; posterUrl?: never }
+  | { cover?: never; posterUrl?: string | null }
 
 /**
  * `ConcertCard.Framed` 가 받는 것의 전부.
@@ -150,16 +214,9 @@ function CoverImage({ src }: { src?: string | null }) {
  */
 export type FramedConcertCardProps = Pick<
   ConcertCardProps,
-  | 'tone'
-  | 'initial'
-  | 'posterUrl'
-  | 'matchLabel'
-  | 'title'
-  | 'meta'
-  | 'footer'
-  | 'coverAction'
-  | 'className'
+  'tone' | 'matchLabel' | 'title' | 'meta' | 'footer' | 'coverAction' | 'className'
 > &
+  CoverSourceProps &
   HTMLAttributes<HTMLElement>
 
 /**
@@ -180,6 +237,7 @@ function FramedCard({
   tone,
   initial,
   posterUrl,
+  cover,
   matchLabel,
   title,
   meta,
@@ -191,14 +249,18 @@ function FramedCard({
   return (
     <article className={cx(s.framedRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={s.framedCover}>
-        <CoverImage src={posterUrl} />
+        {cover ?? (
+          <CoverFill
+            src={posterUrl}
+            fallback={<span className={s.framedInitial}>{initial}</span>}
+          />
+        )}
         {matchLabel ? (
           <span className={s.framedMatch}>
             <span className={s.framedMatchDot} />
             {matchLabel}
           </span>
         ) : null}
-        {posterUrl ? null : <span className={s.framedInitial}>{initial}</span>}
         {coverAction ? <div className={s.framedCoverAction}>{coverAction}</div> : null}
       </CoverBlock>
       <div className={s.framedBody}>
@@ -217,8 +279,6 @@ function FramedCard({
 export type BareConcertCardProps = Pick<
   ConcertCardProps,
   | 'tone'
-  | 'initial'
-  | 'posterUrl'
   | 'title'
   | 'meta'
   | 'footer'
@@ -227,6 +287,7 @@ export type BareConcertCardProps = Pick<
   | 'reserveTitleLines'
   | 'className'
 > &
+  CoverSourceProps &
   HTMLAttributes<HTMLElement>
 
 /**
@@ -242,6 +303,7 @@ function BareCard({
   tone,
   initial,
   posterUrl,
+  cover,
   title,
   meta,
   footer,
@@ -254,10 +316,8 @@ function BareCard({
   return (
     <article className={cx(s.bareRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={cx(s.bareCover, s.bareCoverRatio[coverRatio])}>
-        {posterUrl ? (
-          <CoverImage src={posterUrl} />
-        ) : (
-          <span className={s.bareInitial}>{initial}</span>
+        {cover ?? (
+          <CoverFill src={posterUrl} fallback={<span className={s.bareInitial}>{initial}</span>} />
         )}
         {coverAction ? <div className={s.bareCoverAction}>{coverAction}</div> : null}
       </CoverBlock>
@@ -277,6 +337,7 @@ function BareCard({
  *
  * ⚠️ **`initial` 이 없다.** 평평한 `ConcertCardProps` 에서는 계약상 필수라 `variant="cover"`
  * 소비처가 안 그려질 자모를 지어내야 했는데, 이 문으로 들어오면 타입이 그 자리를 아예 안 연다.
+ * 커버 축은 `CoverSourceWithoutInitialProps` — `cover` 냐 `posterUrl` 이냐 둘 중 하나다.
  *
  * ⚠️ **`footer` 도 없다.** `full` 커버는 커버 밖에 메타 한 줄만 두는 섀시라 그 슬롯을
  * 아무 데도 안 그린다 — `initial` 과 같은 병이다. 공연장 줄이 필요하면 문이 다르다
@@ -286,8 +347,9 @@ function BareCard({
  */
 export type CoverConcertCardProps = Pick<
   ConcertCardProps,
-  'tone' | 'posterUrl' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
+  'tone' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
 > &
+  CoverSourceWithoutInitialProps &
   HTMLAttributes<HTMLElement>
 
 /**
@@ -350,6 +412,7 @@ type CoverCardProps = CoverCompactConcertCardProps & Pick<ConcertCardProps, 'siz
 function CoverCard({
   tone,
   posterUrl,
+  cover,
   eyebrow,
   title,
   meta,
@@ -366,7 +429,7 @@ function CoverCard({
   return (
     <article className={cx(s.coverRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={s.coverCover({ size })}>
-        <CoverImage src={posterUrl} />
+        {cover ?? <CoverFill src={posterUrl} />}
         <div className={s.coverScrim({ size })} />
         <div className={s.coverTopRow}>
           {eyebrow ? <span className={s.coverEyebrow}>{eyebrow}</span> : null}
