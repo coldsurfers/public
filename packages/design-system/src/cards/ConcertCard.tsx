@@ -50,6 +50,9 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
    * 공연장(`footer`). 스크림이 카드 전체 높이에 걸려 글이 포스터 위에서 읽힌다.
    *
    * ⚠️ `compact` 에서만 `footer` 가 그려진다 — `full` 은 커버 아래에 메타 한 줄만 두는 섀시다.
+   * 그 비대칭이 **이 문에만 남아 있다.** 정적 프로퍼티 문에는 이 축이 없다 — 크기가 문 이름
+   * (`ConcertCard.Cover` · `ConcertCard.CoverCompact`)에 박혀 있고, `full` 쪽은 `footer` 를
+   * 타입에서 아예 안 연다. 여기 남긴 건 `variant` 문이 쓰던 축이라서다(빼면 major).
    */
   size?: ConcertCardSize
   /**
@@ -81,9 +84,12 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * 주석만 말하게 된다(`matchLabel` 은 `framed` 전용, `eyebrow` 는 `cover` 전용이었다).
  * 나누면 그걸 `Pick` 이 말한다 — 타입이 곧 그 섀시가 받는 것의 전부다.
  *
- * ## 문은 둘이고 같은 것이다
+ * ## 문은 둘, 하나는 관대하고 하나는 정확하다
  *
- * 그 셋을 정적 프로퍼티로도 낸다 — `ConcertCard.Framed` · `ConcertCard.Bare` · `ConcertCard.Cover`.
+ * 그 섀시들을 정적 프로퍼티로도 낸다 — `ConcertCard.Framed` · `ConcertCard.Bare` ·
+ * `ConcertCard.Cover` · `ConcertCard.CoverCompact`. **문이 넷인데 섀시는 셋**인 건 커버만
+ * 크기로 갈라 냈기 때문이다(아래).
+ *
  * 평평한 `ConcertCardProps` 는 세 섀시의 축을 합집합으로 들고 있어서, 어느 문으로 들어오든
  * 타입이 **안 먹는 prop 을 통과시킨다**(`cover` 에 `matchLabel`, `framed` 에 `size`). 그중
  * 하나는 거짓말이 더 짙다 — `initial` 은 `cover` 섀시가 아무 데도 안 그리는데 계약상 **필수**라,
@@ -93,12 +99,23 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * **`variant` 는 그대로 산다 — 지우지 않는다.** 이 축은 `contract/concert-card.ts` 의
  * `ConcertCardVariant` 이고 native 레인이 같은 계약을 읽는다. 발행 중인 패키지라 문 이름을
  * 바꾸면 그 순간 major 다 — 안쪽 구조는 계약이 아니지만 문은 계약이다. 그래서 문을 **바꾸지
- * 않고 옆에 하나 더 단다**(순수 additive). 둘은 같은 컴포넌트를 가리키므로 렌더 결과가 같다.
+ * 않고 옆에 하나 더 단다**(순수 additive). 두 문 다 같은 컴포넌트를 가리켜 렌더 결과가 같다.
+ *
+ * 그래서 두 체계가 **공존한다.** `variant` 문은 관대하다 — 합집합 props 를 다 받고 안 먹는 건
+ * 조용히 무시한다. 정적 프로퍼티 문은 정확하다 — 그 섀시가 그리는 것만 받고 나머지는 컴파일
+ * 에러다. 기존 코드는 그대로 두고, **새 코드는 정확한 쪽으로 온다.**
  *
  * ```tsx
- * <ConcertCard variant="cover" … />  // 그대로 산다
- * <ConcertCard.Cover … />            // 새 코드는 이쪽 — `initial` 이 타입에서 사라진다
+ * <ConcertCard variant="cover" size="compact" … />  // 그대로 산다 (관대한 문)
+ * <ConcertCard.CoverCompact … />                    // 새 코드는 이쪽 (정확한 문)
  * ```
+ *
+ * ### 커버만 문이 둘인 이유
+ *
+ * `size` 는 크기 플래그처럼 생겼지만 **슬롯이 갈리는 축**이다 — `compact` 에서만 `footer` 가
+ * 그려지고 `meta` 가 커버 밖에서 안으로 옮겨 간다. 한 문에 플래그로 두면 `full` 쪽에서
+ * `footer` 가 `initial` 과 똑같은 병(있는데 안 먹는 prop)에 걸린다. 크기를 **문 이름에 박으면**
+ * 플래그가 바깥에서 사라져 그 병이 성립하지 않는다.
  */
 export function ConcertCard({ variant = 'framed', ...props }: ConcertCardProps) {
   if (variant === 'cover') return <CoverCard {...props} />
@@ -254,28 +271,40 @@ function BareCard({
  *
  * ⚠️ **`initial` 이 없다.** 평평한 `ConcertCardProps` 에서는 계약상 필수라 `variant="cover"`
  * 소비처가 안 그려질 자모를 지어내야 했는데, 이 문으로 들어오면 타입이 그 자리를 아예 안 연다.
+ *
+ * ⚠️ **`footer` 도 없다.** `full` 커버는 커버 밖에 메타 한 줄만 두는 섀시라 그 슬롯을
+ * 아무 데도 안 그린다 — `initial` 과 같은 병이다. 공연장 줄이 필요하면 문이 다르다
+ * (`ConcertCard.CoverCompact`).
+ *
+ * ⚠️ **`size` 도 없다.** 크기를 문이 이미 골랐다 — 아래 「문 둘, 플래그 0」.
  */
 export type CoverConcertCardProps = Pick<
   ConcertCardProps,
-  | 'tone'
-  | 'posterUrl'
-  | 'eyebrow'
-  | 'title'
-  | 'meta'
-  | 'footer'
-  | 'coverAction'
-  | 'size'
-  | 'className'
+  'tone' | 'posterUrl' | 'eyebrow' | 'title' | 'meta' | 'coverAction' | 'className'
 > &
   HTMLAttributes<HTMLElement>
 
 /**
- * 커버 섀시 — 세로 커버 한 장에 글을 얹는다. 문은 `ConcertCard.Cover`
- * (= `<ConcertCard variant="cover" />`).
+ * `ConcertCard.CoverCompact` 가 받는 것의 전부 — **`Cover` 와 같고 `footer` 하나가 더 있다.**
  *
- * **받는 것**: `eyebrow`·`size` + 공통분.
- * **안 받는 것**: `initial`(아래 ⚠️) · `matchLabel`(framed 전용) ·
- * `coverRatio`·`reserveTitleLines`(bare 전용).
+ * 키 목록을 두 번 적지 않고 위 타입에 얹는다. 두 벌로 적으면 커버 축이 하나 늘 때 한쪽만
+ * 따라오는 날이 온다 — 이 파일이 `CONCERT_CARD_BARE_SPEC` 에 대해 하는 말과 같은 이유다.
+ *
+ * 이름이 문(`CoverCompact`)과 1:1 인 것도 의도다. `CompactCover…` 로 뒤집으면 자동완성에서
+ * `Cover…` 두 줄이 안 붙어 선다.
+ */
+export type CoverCompactConcertCardProps = CoverConcertCardProps & Pick<ConcertCardProps, 'footer'>
+
+/**
+ * 안쪽 구현이 받는 것 — 바깥 두 문의 합집합 + `size`. **export 하지 않는다.**
+ * 이게 밖으로 나가면 방금 닫은 문(`size` 플래그)이 다시 열린다.
+ */
+type CoverCardProps = CoverCompactConcertCardProps & Pick<ConcertCardProps, 'size'>
+
+/**
+ * 커버 섀시의 **안쪽 구현** — 세로 커버 한 장에 글을 얹는다. 밖으로 나가는 건 이 함수가
+ * 아니라 크기를 고정한 두 문(`ConcertCard.Cover` · `ConcertCard.CoverCompact`)이다.
+ * `variant="cover"` 문만 `size` 를 그대로 받아 여기로 흘린다.
  *
  * 크기 축(`size`)이 **글이 어디까지 커버 안인가**를 가른다:
  *
@@ -283,9 +312,10 @@ export type CoverConcertCardProps = Pick<
  * - `compact` — 날짜(`meta`) → 제목 → 공연장(`footer`) 셋을 다 커버 **안** 하단에. 작은 칸이라
  *   커버 밖에 한 줄을 더 두면 카드가 두 덩어리로 갈라져 보인다.
  *
- * 둘로 컴포넌트를 나누지 않은 이유: 커버 셸(`CoverBlock`·포스터·스크림)과 위 줄이 **글자
+ * **마크업을 둘로 나누지 않은 이유**: 커버 셸(`CoverBlock`·포스터·스크림)과 위 줄이 **글자
  * 그대로 같다.** 나누면 그 넷이 두 벌이 되고, 담기 버튼 자리를 한쪽에서만 고치는 날이 온다.
- * 갈리는 건 아래 블록 하나뿐이라 그 하나만 분기한다.
+ * 갈리는 건 아래 블록 하나뿐이라 그 하나만 분기한다. 바깥 문이 둘인 것과 어긋나지 않는다 —
+ * **타입만 둘이고 그림은 하나다.**
  *
  * 위 줄의 좌우 배치는 `coverTopAction` 의 `marginInlineStart: auto` 가 만든다. eyebrow 가
  * 없어도 담기 버튼은 제자리(우)를 지킨다 — 자리를 채우려고 빈 노드를 넣지 않는다.
@@ -308,7 +338,7 @@ function CoverCard({
   size = 'full',
   className,
   ...rest
-}: CoverConcertCardProps) {
+}: CoverCardProps) {
   const compact = size === 'compact'
 
   return (
@@ -336,9 +366,44 @@ function CoverCard({
 }
 
 /**
- * 섀시별 문 — `variant` 문과 **같은 컴포넌트**를 가리킨다(순수 additive).
+ * 커버 섀시 · 큰 칸 — 세로 커버 한 장(430/500)에 eyebrow·담기·제목을 얹고 메타는 커버 **밖**
+ * 1줄. 문은 `ConcertCard.Cover`(= `<ConcertCard variant="cover" />`, `size` 기본값).
  *
- * 각 문이 받는 것/안 받는 것은 위 세 컴포넌트의 JSDoc 이 정본이다. 여기 적으면 `d.ts` 로
+ * **받는 것**: `eyebrow` + 공통분(`tone`·`posterUrl`·`title`·`meta`·`coverAction`).
+ * **안 받는 것**: `initial`(이 섀시는 포스터 없으면 tone 색면만) · `footer`(이 섀시가 안
+ * 그린다) · `size`(문이 이미 골랐다) · `matchLabel`(framed 전용) ·
+ * `coverRatio`·`reserveTitleLines`(bare 전용).
+ *
+ * 공연장 줄을 얹고 싶으면 문이 다르다 — `ConcertCard.CoverCompact`.
+ */
+function CoverFullCard(props: CoverConcertCardProps) {
+  return <CoverCard {...props} size="full" />
+}
+
+/**
+ * 커버 섀시 · 작은 칸 — 작은 칸(290/300)이라 날짜(`meta`) → 제목 → 공연장(`footer`) 셋을 다
+ * 커버 **안** 하단에 넣는다. 문은 `ConcertCard.CoverCompact`
+ * (= `<ConcertCard variant="cover" size="compact" />`).
+ *
+ * **받는 것**: `ConcertCard.Cover` 와 같고 **`footer` 하나가 더** 있다.
+ * **안 받는 것**: `initial` · `size` · `matchLabel` · `coverRatio`·`reserveTitleLines`.
+ */
+function CoverCompactCard(props: CoverCompactConcertCardProps) {
+  return <CoverCard {...props} size="compact" />
+}
+
+/**
+ * 섀시별 문 — `variant` 문과 **같은 그림**을 가리킨다(순수 additive).
+ *
+ * 문이 넷인데 섀시는 셋이다. 커버만 둘로 쪼갠 건 `size` 가 크기 플래그가 아니라 **슬롯이
+ * 갈리는 축**이기 때문이다 — `full` 은 `footer` 를 아무 데도 안 그린다. 한 문에 플래그로 두면
+ * 이 PR 이 `initial` 에서 고친 병(있는데 안 먹는 prop)을 `footer` 자리에 새로 만든다.
+ * 문으로 쪼개면 플래그가 **바깥에서 사라져** 크기가 문 이름에 박힌다.
+ *
+ * **평평한 `ConcertCardProps.size` 는 남는다.** `variant` 문이 쓰는 축이라 빼면 major 이고,
+ * 애초에 그 문은 관대한 쪽이다 — 두 체계가 공존한다. 정확한 쪽이 필요하면 정적 프로퍼티로 온다.
+ *
+ * 각 문이 받는 것/안 받는 것은 위 컴포넌트들의 JSDoc 이 정본이다. 여기 적으면 `d.ts` 로
  * 안 따라간다 — 선언 병합이 `var Framed: typeof FramedCard` 한 줄로 떨어져서, 소비처 hover 가
  * 읽는 건 **가리켜진 컴포넌트의 JSDoc** 이다. 한 줄 적어 두는 대신 그쪽에 적는다.
  *
@@ -346,4 +411,5 @@ function CoverCard({
  */
 ConcertCard.Framed = FramedCard
 ConcertCard.Bare = BareCard
-ConcertCard.Cover = CoverCard
+ConcertCard.Cover = CoverFullCard
+ConcertCard.CoverCompact = CoverCompactCard

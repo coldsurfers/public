@@ -21,12 +21,15 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 | --- | --- | --- | --- |
 | `ConcertCard.Framed` | `framed`(기본) | 테두리 · 배경이 있는 액자 | 목록 표면 |
 | `ConcertCard.Bare` | `bare` | 섀시 없이 4:3 포스터 + 아래 3줄 | 트렌딩 레일 · 담은 공연 그리드 |
-| `ConcertCard.Cover` | `cover` | 세로 커버 한 장에 eyebrow · 제목을 얹고 아래 메타 1줄 | 날짜 피드 · 랜딩 그리드 |
+| `ConcertCard.Cover` | `cover` | 세로 커버 한 장에 eyebrow · 제목을 얹고 아래 메타 1줄 | 날짜 피드 |
+| `ConcertCard.CoverCompact` | `cover` + `size="compact"` | 같은 커버, 날짜 · 제목 · 공연장 셋 다 커버 안 | 랜딩 · 그리드 |
+
+**문은 넷인데 섀시는 셋입니다.** 커버만 크기로 갈라 냈습니다 — 이유는 [아래](#커버만-문이-둘인-이유).
 
 `framed` 전용 축(`matchLabel`) 과 `cover` 전용 축(`eyebrow` · `size`)이 갈리는 건 시안에 그
 자리가 없어서입니다.
 
-### 문은 둘이고 같은 것입니다
+### 문은 둘, 하나는 관대하고 하나는 정확합니다
 
 한 줄이 두 가지로 써집니다. 가리키는 컴포넌트가 같아서 렌더 결과도 같습니다.
 
@@ -35,32 +38,48 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 <ConcertCard.Cover tone="navy" title="Parannoul" meta="7.30 수" />
 ```
 
-**새 코드는 정적 프로퍼티 쪽을 씁니다.** 평평한 `ConcertCardProps` 는 세 섀시의 축을 합집합으로
-들고 있어서, `variant` 문으로 들어오면 **안 먹는 prop 이 타입을 통과합니다** — `cover` 에
-`matchLabel` 을 주거나 `framed` 에 `size` 를 줘도 조용히 무시될 뿐입니다. 그중 `initial` 은
-반대로 걸립니다. `cover` 섀시는 그 자모를 아무 데도 안 그리는데 타입상 **필수**라, 위 첫 줄의
-`initial="ㅍ"` 처럼 쓰지도 않을 글자를 지어내야 합니다.
+`variant` 문은 **관대합니다.** 평평한 `ConcertCardProps` 가 세 섀시의 축을 합집합으로 들고
+있어서 안 먹는 prop 이 타입을 통과합니다 — `cover` 에 `matchLabel` 을 주거나 `framed` 에
+`size` 를 줘도 조용히 무시될 뿐입니다. 그중 `initial` 은 반대로 걸립니다. `cover` 섀시는 그
+자모를 아무 데도 안 그리는데 타입상 **필수**라, 위 첫 줄처럼 쓰지도 않을 글자를 지어내야 합니다.
 
-섀시별 문으로 들어오면 그 자리에서 타입이 좁아집니다 — `FramedConcertCardProps` ·
-`BareConcertCardProps` · `CoverConcertCardProps` 가 각 섀시가 받는 것의 전부이고, 자동완성도
-그만큼만 제안합니다. `ConcertCard.Cover` 에는 `initial` 자리가 아예 없습니다.
+정적 프로퍼티 문은 **정확합니다.** 그 섀시가 그리는 것만 받고 나머지는 컴파일 에러입니다 —
+`FramedConcertCardProps` · `BareConcertCardProps` · `CoverConcertCardProps` ·
+`CoverCompactConcertCardProps` 가 각 문이 받는 것의 전부이고 자동완성도 그만큼만 제안합니다.
+`ConcertCard.Cover` 에는 `initial` 자리도 `footer` 자리도 없습니다.
 
-`variant` 문은 없어지지 않습니다. 그 축은 native 레인이 같이 읽는 계약(`ConcertCardVariant`)
-이고, 문 이름을 바꾸면 발행된 패키지에서 major 입니다. 새 문은 옆에 하나 더 단 것뿐입니다.
+**둘은 공존합니다.** `variant` 문은 없어지지 않습니다 — 그 축은 native 레인이 같이 읽는
+계약(`ConcertCardVariant`)이고, 문 이름을 바꾸면 발행된 패키지에서 major 입니다. 기존 코드는
+그대로 두고, **새 코드는 정확한 쪽으로 옵니다.**
+
+### 커버만 문이 둘인 이유
+
+`size` 는 크기 플래그처럼 생겼지만 **슬롯이 갈리는 축**입니다 — `compact` 에서만 `footer` 가
+그려지고, `meta` 가 커버 밖에서 안으로 옮겨 갑니다. 한 문에 플래그로 두면 `full` 쪽에서
+`footer` 가 `initial` 과 똑같은 병에 걸립니다. **넘길 수 있는데 아무것도 안 그리는 prop** 이요.
+
+크기를 문 이름에 박으면 그 병이 성립하지 않습니다. 플래그가 바깥에서 사라지기 때문입니다.
+
+```tsx
+<ConcertCard.Cover footer="예스24 라이브홀" … />         // 컴파일 에러 — 이 섀시는 안 그린다
+<ConcertCard.CoverCompact footer="예스24 라이브홀" … />  // 이쪽이 그린다
+```
 
 ### `cover` 의 크기 축
 
-`size` 는 `ConcertCard.Cover` 안에서만 사는 축입니다.
+정적 프로퍼티 문에는 이 축이 **없습니다** — 크기가 문 이름에 박혀 있습니다. 아래 표는
+`variant="cover"` 문이 쓰는 `size` prop 이고, 오른쪽 열이 그 짝인 문입니다.
 
-| `size` | 높이 | 글이 서는 자리 |
-| --- | --- | --- |
-| `full`(기본) | 430 / 500 | 제목만 커버 위. 메타는 **커버 밖** 한 줄 |
-| `compact` | 290 / 300 | 날짜(`meta`) → 제목 → 공연장(`footer`) **셋 다 커버 안** 하단 |
+| `size` | 문 | 높이 | 글이 서는 자리 |
+| --- | --- | --- | --- |
+| `full`(기본) | `ConcertCard.Cover` | 430 / 500 | 제목만 커버 위. 메타는 **커버 밖** 한 줄 |
+| `compact` | `ConcertCard.CoverCompact` | 290 / 300 | 날짜(`meta`) → 제목 → 공연장(`footer`) **셋 다 커버 안** 하단 |
 
 `compact` 는 스크림이 카드 전체 높이에 걸립니다. 받쳐줄 글이 세 줄이고 우상단 담기 버튼까지
 얹히기 때문입니다. `full` 은 제목 한 줄만 받치면 되므로 하단에만 깝니다.
 
 `footer` 는 `compact` 에서만 그려집니다 — `full` 은 커버 아래에 메타 한 줄만 두는 섀시입니다.
+`variant` 문에서는 그게 조용한 무시로 끝나고, `ConcertCard.Cover` 에서는 컴파일 에러입니다.
 
 <Callout tone="info">
 높이 290 / 300 은 기본값이지 상한이 아닙니다. 더 큰 칸이 필요한 그리드는 축을 하나 더 여는
@@ -75,6 +94,11 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 
 `footer` 는 meta 아래(매칭 근거 줄 등), `coverAction` 은 커버 위 담기 버튼 자리입니다. 자리와
 정렬만 카드가 정하고 내용물은 소비처가 줍니다.
+
+그래서 **서식도 소비처가 줍니다.** 위 예시의 `footer` 는 `sprinkles({ color: 'muted' })` 로
+색을 읽습니다 — `var(--muted)` 를 인라인 `style` 에 손으로 박으면 토큰이 바뀌는 날 그 자리가
+안 따라옵니다. `compact` 커버만은 카드가 `coverVenue` 래퍼로 서식을 주는데, 그 비대칭은
+아직 남아 있습니다.
 
 <Callout tone="warning">
 카드 전체가 `Link` 안에 있으면 `coverAction` 의 버튼이 `preventDefault` 로 내비게이션을
@@ -105,11 +129,16 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 | --- | --- | --- |
 | `ConcertCard.Framed` | `FramedConcertCardProps` | `eyebrow` · `size` · `coverRatio` · `reserveTitleLines` |
 | `ConcertCard.Bare` | `BareConcertCardProps` | `matchLabel` · `eyebrow` · `size` |
-| `ConcertCard.Cover` | `CoverConcertCardProps` | `initial` · `matchLabel` · `coverRatio` · `reserveTitleLines` |
+| `ConcertCard.Cover` | `CoverConcertCardProps` | `initial` · `footer` · `size` · `matchLabel` · `coverRatio` · `reserveTitleLines` |
+| `ConcertCard.CoverCompact` | `CoverCompactConcertCardProps` | `initial` · `size` · `matchLabel` · `coverRatio` · `reserveTitleLines` |
 
-세 타입 다 `cards` 진입점에서 함께 나갑니다. 이름을 `ConcertCardBareProps` 로 못 둔 건 그
-이름이 계약(`contract/concert-card.ts`)에서 *두 구현이 공유하는 props* 라는 다른 뜻으로 이미
-쓰이고 있어서입니다 — 셋을 통째로 형용사 먼저로 뒀습니다.
+넷 다 `cards` 진입점에서 함께 나갑니다. `CoverCompactConcertCardProps` 는 키 목록을 다시
+적지 않고 `CoverConcertCardProps` 에 `footer` 를 얹은 것입니다 — 두 벌로 적으면 커버 축이
+하나 늘 때 한쪽만 따라옵니다.
+
+이름을 `ConcertCardBareProps` 로 못 둔 건 그 이름이 계약(`contract/concert-card.ts`)에서
+*두 구현이 공유하는 props* 라는 다른 뜻으로 이미 쓰이고 있어서입니다 — 넷을 통째로 형용사
+먼저로 뒀습니다.
 
 <Props of="ConcertCard" dir="cards" />
 

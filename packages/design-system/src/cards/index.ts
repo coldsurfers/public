@@ -19,6 +19,7 @@ export {
   type ConcertCardProps,
   type ConcertCardSize,
   type ConcertCardVariant,
+  type CoverCompactConcertCardProps,
   type CoverConcertCardProps,
   type FramedConcertCardProps,
 } from './ConcertCard'
