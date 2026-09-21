@@ -24,5 +24,10 @@ export {
   type CoverLargeConcertCardProps,
   type FramedConcertCardProps,
 } from './ConcertCard'
-export { ConcertCardSkeleton, type ConcertCardSkeletonProps } from './ConcertCardSkeleton'
+export {
+  type BareConcertCardSkeletonProps,
+  ConcertCardSkeleton,
+  type ConcertCardSkeletonProps,
+  type ConcertCardSkeletonSlotProps,
+} from './ConcertCardSkeleton'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
