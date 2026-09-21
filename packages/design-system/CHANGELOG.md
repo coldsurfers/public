@@ -1,5 +1,283 @@
 # @coldsurfers/design-system
 
+## 1.0.0
+
+### Major Changes
+
+- [#196](https://github.com/coldsurfers/public/pull/196) [`5c28769`](https://github.com/coldsurfers/public/commit/5c28769743c6c192cae7cfe2bed81e6e4e30acf6) Thanks [@yungblud](https://github.com/yungblud)! - 커버 면을 `note` 하나로 접는다 — 공연 카드에서 `tone` 축을 걷어낸다.
+
+  `Skeleton`(API 대기)은 `#eef2f7` 로 밝은데 `CoverBlock`(이미지 대기·부재·실패)은 `cover.steel`
+  `#1e2a44` 로 어두웠다. 둘 다 **「아직 그림이 없다」**인데 밝기가 정반대라, 기다림이 두 밝기로
+  갈려 화면이 무거웠다. 한 밝기로 접는다.
+
+  ## 깨지는 것
+
+  `ConcertCard` · `ConcertCardSkeleton` · native `ConcertCard` 에서 **`tone` 이 사라진다.**
+  공유 계약(`ConcertCardBareProps`)에서도 빠지므로 두 레인이 같이 움직인다.
+
+  ```diff
+  - <ConcertCard.Framed tone={coverToneFor(event.id)} initial="ㅅ" … />
+  + <ConcertCard.Framed initial="ㅅ" … />
+
+  - <ConcertCardSkeleton.CoverLarge tone="plum" />
+  + <ConcertCardSkeleton.CoverLarge />
+  ```
+
+  `CoverBlock` 의 `tone` 은 **optional 이 되고 기본이 `note`** 다 — 지향점이 그쪽이라 기본값이
+  그쪽이다. 값은 `Skeleton` 이 읽는 `color.surfaceHover` 와 같은 소스다.
+
+  ## 남는 것
+
+  **팔레트 6톤과 `coverToneFor` 는 그대로 산다.** 편집 표지(`ArticleCard`·`LeadFeature`)가
+  그걸로 사는 자리이고, 거긴 로딩 면이 아니라 색 다양성이 곧 편집 디자인이다. 걷어낸 건
+  **공연 카드의 면 축**뿐이다.
+
+  ## 같이 바뀐 것
+
+  - **면이 글자색도 정한다.** 어두운 6톤 위에선 종이, `note` 위에선 잉크를 `currentColor` 로
+    흘린다. 커버 안 대형 이니셜이 톤을 한 번 더 받지 않아도 면을 따라 뒤집힌다.
+    이니셜 투명도는 두 섀시가 한 값을 쓴다 — 예전엔 `framed` 만 흰색 85% 라, 면이 밝아지면
+    그 값이 잉크 85% 가 되어 워터마크가 아니라 드롭캡이 된다.
+  - **`cover` 슬롯이 「포스터 층」으로 좁아진다.** 바닥(`note` 면 + 이니셜)은 언제나 카드가
+    그리고, 슬롯은 그 위를 덮는다. 덮을 게 없으면 바닥이 드러난다 — 그래서 `cover` 와
+    `initial` 을 **같이** 준다(0.31.0 의 배타 유니온은 풀린다). 활자를 패키지 밖으로 내보내지
+    않고도 로드 실패 폴백이 제자리를 찾는다.
+
+  ```tsx
+  <ConcertCard.Framed
+    initial={title.charAt(0)}
+    cover={<PosterImage src={url} />} // 실패하면 아무것도 안 그린다 → 바닥이 드러남
+    title={title}
+    meta={meta}
+  />
+  ```
+
+## 0.31.0
+
+### Minor Changes
+
+- [#194](https://github.com/coldsurfers/public/pull/194) [`26dce32`](https://github.com/coldsurfers/public/commit/26dce32c0e7d8129a6a93d753c543735e61e52bb) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCard` 에 `cover` 슬롯을 연다 — 커버를 채우는 것을 소비처가 정할 수 있다.
+
+  로드 실패 폴백처럼 **상태가 필요한 커버**가 들어갈 자리가 없었다. `cards` 는 훅도 `'use client'`
+  도 없는 서버 안전 모듈이라 그 상태를 패키지 안에서 들 수 없다 — 들면 엔트리가 통째로 클라이언트
+  전용이 되고, `primitives` 배럴이 `Toast` 로 겪은 RSC 사고를 반복한다. 그래서 자리만 카드가 정하고
+  내용물은 소비처가 준다(`coverAction` 과 같은 규율).
+
+  같이 정리한 것: **「포스터가 있는가」를 읽는 자리를 하나로 모았다.** 세 섀시가 같은 질문에 다르게
+  답하고 있었다 — `framed` 는 `CoverImage` 밖에서 한 번 더 읽었고(`posterUrl ? null : initial`),
+  `bare` 는 바깥 삼항이 먼저 갈라서 `CoverImage` 의 빈 갈래가 죽은 코드였다. `CoverImage` 를
+  `CoverFill(src, fallback)` 로 바꿔 판정 주인을 하나로 뒀다(무상태 유지).
+
+  정확한 문(`ConcertCard.Framed`·`.Bare`·`.Cover*`)에선 커버 축이 **유니온**이다 — `cover` 를
+  주면 `posterUrl`·`initial` 이 타입에서 닫힌다. 합집합으로 두면 슬롯을 쓰는 소비처가 아무 데도
+  안 그려질 자모 한 글자를 여전히 지어내야 했다(이 파일이 `variant="cover"` 에 대해 고발하던
+  그 병). 덤으로 `cover` 와 `posterUrl` 을 같이 줬을 때 누가 이기는지 외울 일도 없어진다.
+
+  기존 `posterUrl`·`initial` 은 그대로 산다 — `cover` 를 안 주면 동작도 타입도 같다.
+
+  ```tsx
+  // 그대로 (변화 없음)
+  <ConcertCard.CoverCompact tone={tone} posterUrl={url} title={…} meta={…} />
+
+  // 상태가 필요한 커버 — 소비처가 꽂는다
+  <ConcertCard.CoverCompact tone={tone} cover={<PosterImage src={url} />} title={…} meta={…} />
+  ```
+
+  ⚠️ `cover` 는 웹 `ConcertCardProps` 에만 있다. 공유 계약(`ConcertCardBareProps`)에 올리면 native
+  가 안 그리는 prop 이 하나 더 생긴다 — `initial`·`footer` 가 이미 앓은 「있는데 안 먹는 prop」이다.
+
+## 0.30.0
+
+### Minor Changes
+
+- [#192](https://github.com/coldsurfers/public/pull/192) [`5af1f9a`](https://github.com/coldsurfers/public/commit/5af1f9ac7c3fdcff6eb6189288e74d09d8a7a937) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCardSkeleton` 에 실카드와 **1:1 짝인 문 다섯**을 낸다 — `.Framed` · `.Bare` · `.Cover` ·
+  `.CoverCompact` · `.CoverLarge`. 커버 쪽은 `size` 축(`ConcertCardSize`)도 함께 받는다.
+
+  축을 플래그로 넘기던 동안엔 짝을 **소비처가 기억해야** 했다. 카드만 `size="large"` 로 바꾸고
+  스켈레톤을 `framed` 에 두면 타입은 통과하고 화면이 로드 순간에 280 → 460 으로 튄다. 실제로 그
+  일이 났다. 문 이름이 짝을 말하면 그 사고가 성립하지 않는다.
+
+  커버 스켈레톤이 치수를 **옮겨 적지 않고 실카드의 `coverCover` recipe 를 그대로 가리킨다.** 원래
+  430/500 을 손으로 적어 둬서, 실카드에 크기가 둘 더 붙는 동안 스켈레톤만 `full` 에 남아 있었다.
+  이제 크기가 또 붙어도 자동으로 따라온다.
+
+  `variant`·`size`·`reserveTitleLines` prop 은 그대로 산다. 기존 소비처는 안 깨진다.
+
+## 0.29.0
+
+### Minor Changes
+
+- [#190](https://github.com/coldsurfers/public/pull/190) [`be8e9b9`](https://github.com/coldsurfers/public/commit/be8e9b925367c044024283dd4a5d8d255cf95d49) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCard` 의 커버 섀시에 크기 하나를 더 낸다 — `ConcertCard.CoverLarge`(= `size="large"`,
+  420/460 · 여백 24). `CoverCompact` 와 **같은 그림**이고 치수만 다르다.
+
+  여는 자리는 **여러 열 그리드**다. 칸이 420px 폭쯤 되면 `CoverCompact` 높이(300)로는 칸이 가로로
+  누워 세로 포스터의 상하단이 크게 잘린다. 레일처럼 칸이 좁은 자리는 `CoverCompact` 가 맞다.
+
+  문이 다섯인데 섀시는 여전히 셋이다. `CoverCompact` 와 `CoverLarge` 사이는 슬롯이 같아 진짜
+  크기 축이라 플래그로 둬도 거짓말을 안 하지만, 그러면 커버 문만 플래그를 되받아 규율이 반쪽이
+  된다 — 소비처가 「커버는 문으로 고른다」 하나만 외우면 되게 둔다.
+
+  `CoverLargeConcertCardProps` 도 `cards` 진입점에서 함께 나간다(`CoverCompact` 쪽 별칭).
+  기존 `full`·`compact` 의 렌더 결과는 바뀌지 않는다.
+
+## 0.28.0
+
+### Minor Changes
+
+- [#188](https://github.com/coldsurfers/public/pull/188) [`ce4f9e2`](https://github.com/coldsurfers/public/commit/ce4f9e237ed4ab22cb6c7f035c2921dabd3d24bd) Thanks [@yungblud](https://github.com/yungblud)! - `ConcertCard` 의 `cover` 섀시에 크기 축(`size`) 추가 — `full`(기본, 현행) · `compact`.
+  그리고 섀시들을 정적 프로퍼티로 냈다 — `ConcertCard.Framed` · `ConcertCard.Bare` ·
+  `ConcertCard.Cover` · `ConcertCard.CoverCompact`.
+
+  `compact` 는 날짜 · 제목 · 공연장 셋을 다 커버 안 하단에 넣고 스크림을 카드 전체 높이에 건다.
+  작은 칸(랜딩 · 그리드)에서 커버 밖에 메타 한 줄을 더 두면 카드가 두 덩어리로 갈라져 보인다.
+
+  정적 프로퍼티는 평평한 `ConcertCardProps` 가 세 섀시의 축을 합집합으로 들고 있는 걸 푼다.
+  `cover` 에 `matchLabel` 을 줘도 타입이 통과했고, 반대로 `initial` 은 그 섀시가 아무 데도 안
+  그리는데 **필수**라 소비처가 안 쓰일 자모를 지어내야 했다. 섀시별 문으로 들어오면 `Pick` 이
+  소비처까지 닿는다 — 네 props 타입(`FramedConcertCardProps` · `BareConcertCardProps` ·
+  `CoverConcertCardProps` · `CoverCompactConcertCardProps`)도 `cards` 진입점에서 같이 나간다.
+
+  **문은 넷인데 섀시는 셋이다.** 커버만 크기로 갈라 냈다 — `size` 는 크기 플래그처럼 생겼지만
+  `compact` 에서만 `footer` 가 그려지는 **슬롯 축**이라, 한 문에 플래그로 두면 `full` 쪽 `footer`
+  가 `initial` 과 같은 병(있는데 안 먹는 prop)에 걸린다. 크기를 문 이름에 박으면 플래그가 바깥에서
+  사라져 그 병이 성립하지 않는다 — `ConcertCard.Cover` 에 `footer` 를 넘기면 컴파일 에러다.
+
+  `variant` 는 그대로다 — 새 축은 `cover` 섀시 안의 prop 이고 정적 프로퍼티는 옆에 문을 더 단
+  것이라 문 이름이 안 바뀐다. `ConcertCardProps.size` 도 남는다. 두 체계가 공존한다: `variant`
+  문은 관대하고(합집합·조용한 무시) 정적 프로퍼티 문은 정확하다(그 섀시가 그리는 것만).
+  기본값이 `full` 이라 기존 `cover` 소비처의 렌더 결과는 그대로다.
+
+## 0.27.0
+
+### Minor Changes
+
+- [#186](https://github.com/coldsurfers/public/pull/186) [`1a07f20`](https://github.com/coldsurfers/public/commit/1a07f209b15ed324f6ce5dcf8f30effd3f24a49b) Thanks [@yungblud](https://github.com/yungblud)! - `Note` 프리미티브 · `fontFamily.geist` 추가
+
+  **`Note`** — 메타 한 줄 + 헤드라인 한 줄. 메타 10/11px ↔ 헤드라인 14/15px, 무게는 둘 다 500 하나. 위계를 크기가 아니라 여백과 순서로 만드는 규율의 압축형이다.
+
+  값은 `apps/im-coldsurf` 랜딩의 `NotePanel` **그대로**다. 그 표면이 이 톤의 정본이고 나머지가 그쪽으로 옮겨 가는 중이라 정본이 픽셀 하나도 움직이면 안 된다 — 브레이크포인트도 정본의 축(`desktop` 1024)을 따른다(정본이 "태블릿 시안이 없으므로 중간 단을 만들지 않는다"고 못박아 뒀다).
+
+  **`fontFamily.geist`** — 앱 셋(`im-coldsurf` · `web-next` · `beam-web`)이 같은 문자열을 각자 들고 있었다. 앞의 둘은 `theme.css.ts` 의 같은 줄 번호까지 같다. 원색층(`--cs-*`)을 올린 것과 같은 근거다. `sans` 와 역할이 갈린다 — 저쪽이 읽는 글이고 이쪽은 세는 글(수치·워드마크·메타).
+
+  추가만이라 기존 API 는 그대로다. 근거: coldsurfers/paul-rockstar#452 Phase 3.
+
+## 0.26.0
+
+### Minor Changes
+
+- [#184](https://github.com/coldsurfers/public/pull/184) [`db15673`](https://github.com/coldsurfers/public/commit/db156733e54f4f291375e4e4fab437069a2a2e18) Thanks [@yungblud](https://github.com/yungblud)! - 인디케이터 3색 · 아티스트 노드 톤 8색 · 인쇄 스킴 추가
+
+  세 자리 모두 소비 앱(`apps/web-next`)이 리터럴로 들고 있던 값이다. 원색층이 세운 원칙("앱이 각자 파던 층을 DS 가 진다") 그대로 올린다.
+
+  **① `palette` 에 인디케이터 셋** — `lagoon`(시안) · `pine`(틸그린) · `iris`(바이올렛). 레일·상태 색점용 **채도 있는** 색이다. `cover` 6톤을 못 쓰는 이유는 면적 — 그쪽은 색면용 어두운 톤이라 8px 점으로 줄이면 전부 같은 검정으로 뭉친다. 넷 중 첫 자리는 `surfBlue` 가 겸하므로 셋만 는다.
+
+  **② `nodeTone` 8색 + `NODE_TONES` · `nodeToneFor`** — taste engine 노드가 이름 해시로 고르는 색면. `cover` 와 별개 축인 이유 셋: 중성 다크 셋을 포함하고(노드가 여럿 붙는 화면이라 전부 틴트면 알록달록해진다), 목적이 *여덟이 서로 갈리는 것*이라 6으로 못 줄이며, `cover` 는 이벤트 표지 축이다. `coverToneFor` 와 **해시가 다르다** — 원본 구현을 그대로 옮겼고, 바꾸면 이미 노출된 화면의 색 배치가 통째로 달라진다.
+
+  **③ `printThemeVars`** — 종이 위의 `ColorScheme`. 화면 스킴에서 파생되지 않는다(`bg` #f5f7fa 를 그대로 인쇄하면 잉크만 먹는다). ⚠️ **DS 는 전역으로 발행하지 않는다** — `@media print` 를 `theme.css.ts` 에 넣으면 인쇄를 안 쓰는 소비 앱의 인쇄까지 바뀐다. 값만 내고 주입은 필요한 앱이 한다.
+
+  이름이 하나도 안 없어지므로 minor 다.
+
+## 0.25.0
+
+### Minor Changes
+
+- [`397ab8c`](https://github.com/coldsurfers/public/commit/397ab8cf557dfa53cbe37b771cd0f08c547ed3be) Thanks [@yungblud](https://github.com/yungblud)! - 원색층 `--cs-*` 추가 · `ink` RN 노출 수정 · shadow/gradient 축 신설
+
+  **의미이름(`--bg`·`--text`·…)은 하나도 바뀌지 않았다.** 값도 전부 그대로다 — 소비처 수정이 필요 없다.
+
+  - **`palette` 그룹 신설** — COLDSURF 원색 19색을 `--cs-*` 로 발행한다(`--cs-deep-night` 등).
+    `light` 와 `ink` 가 이제 전부 여기서 파생하므로 hex 정본이 한 군데다.
+    역할 이름이 안 붙는 자리(그라디언트 정지색·타일 바닥·내비 글자)의 탈출구이고,
+    **의미이름이 있는 자리에 쓰는 것이 아니다.** 설계 근거는 `docs/palette-layer.md`.
+  - **`ink` 배선 수정** — `tokens` 집계 객체에 빠져 있어 `tokens/native.ts` 에 안 실렸다.
+    그래서 **RN 이 다크 밴드 색 넷을 읽을 수 없었다.** 값 추가 없이 배선만 고쳤고,
+    `native.ts` 가 `ink` 와 `palette` 를 재수출한다.
+  - **`shadow` 그룹 신설** — `Popover`·`Modal`·`Toast` 가 각자 들고 있던 boxShadow 리터럴 셋을
+    깊이 축 하나로 접고 `shadow.accent` 를 더했다. **값은 정규화하지 않았다**(시각 회귀 0).
+    `Checkbox` 의 포커스 링은 깊이가 아니라 포커스 축이라 그대로 뒀다.
+  - **`gradient` 그룹 신설** — 표면 그라디언트 6종. 데이터로 정해지는 `cover` 와 다른 축이다.
+  - **`radius` 에 `2xl`(16px)·`3xl`(24px)** — 천장이 12px 이라 큰 카드·패널이 리터럴로 새고 있었다.
+    눈금이 이어지는 둘만 넣었다. 반응형 짝(14→16·20→24·24→28)은 합성 슬롯이라 P3 으로 넘긴다.
+
+  `@coldsurfers/tailwind4-theme` 는 그룹을 명시적으로 호출하므로 새 그룹이 자동 노출되지 않는다 —
+  Tailwind 에 뚫을지는 별도 결정이다.
+
+## 0.24.0
+
+### Minor Changes
+
+- [#181](https://github.com/coldsurfers/public/pull/181) [`8afaae0`](https://github.com/coldsurfers/public/commit/8afaae090b4190a783fc9b4636a8ba486376e4fb) Thanks [@yungblud](https://github.com/yungblud)! - 메타 라벨을 mono 에서 sans 로 옮기고, `PageBanner` 데스크톱 세로 여백을 시안 값으로 맞춘다.
+
+  **메타 라벨 mono → sans** (`Eyebrow` · `Badge` solid · `ArticleCard.meta` ·
+  `ConcertCard.coverEyebrow` · `LeadFeature.byline`)
+
+  mono(JetBrains Mono)는 매거진 콜로폰 톤을 노린 선택이었다. 그런데 이 라벨들은 한국어가
+  절반을 차지한다(`GENRE · 장르`). JetBrains Mono 에 한글이 없어 Latin 만 mono 로 서고 한글은
+  fallback 으로 떨어져, **한 줄 안에서 두 폰트가 보였다.** 라벨은 본문과 같은 얼굴로 간다.
+
+  `ConcertCard` 의 날짜 스탬프(`CONCERT_CARD_BARE_SPEC.metaFontFamily`)는 **mono 로 남긴다.**
+  그건 라벨이 아니라 수치고, 제목 옆에서 서체가 갈려야 두 줄이 다른 일을 한다는 게 보인다.
+  자간(`letterSpacing.none`)도 고정폭 전제로 잡혀 있어 같이 움직여야 한다.
+
+  sprinkles 의 `fontFamily: 'mono'` 유틸은 그대로다 — 소비자가 쓰는 축이다.
+
+  **`PageBanner` 데스크톱 `padding-block` 72 → 88px**
+
+  시안 실측값이다(Figma `3363:1188` — 프레임 435 · 첫 요소 y=88 · 마지막 요소 하단 347).
+  spacing 스케일이 80(`20`) 다음 96(`24`) 이라 88 은 리터럴로 남는다(72 도 그랬다).
+  소비처는 `SigninBand` 와 `DailyCaptureBand` 둘이고 양쪽 다 두꺼워진다.
+
+## 0.23.0
+
+### Minor Changes
+
+- [#179](https://github.com/coldsurfers/public/pull/179) [`be32c77`](https://github.com/coldsurfers/public/commit/be32c776d6403a26e3f24c10eebbb0e25e3955a0) Thanks [@yungblud](https://github.com/yungblud)! - `Button variant="outline"` 의 바탕을 `white` 리터럴에서 `surface` 토큰으로 옮긴다.
+
+  라이트 스킴에서 `surface` 는 `#ffffff` 라 **기존 표면의 시각 변화는 없다.** 달라지는 건
+  스킴을 스코프로 뒤집은 서브트리다 — 라이트 페이지 안에서 한 구간만 어둡게 눕는 잉크 밴드
+  (랜딩 헤더·히어로)에서 outline 버튼이 흰 알약으로 남고, `label: 'text'` 는 제대로 뒤집혀
+  흰 글자가 되어 **흰 바탕에 흰 글자**가 됐다.
+
+  `white` 리터럴은 `accent`·`danger` 의 *라벨*에만 남는다. 그 둘은 자기 바탕을 리터럴로 깔고
+  앉으므로 글자도 같이 고정되는 게 맞다. 계약이 웹·네이티브 공용이라 RN `Button` 도 같이 따른다.
+
+## 0.22.0
+
+### Minor Changes
+
+- [#177](https://github.com/coldsurfers/public/pull/177) [`c1ddc59`](https://github.com/coldsurfers/public/commit/c1ddc59413fd2982719be285fed1139dd4577e0c) Thanks [@yungblud](https://github.com/yungblud)! - 브랜드 색을 warm-paper 에서 **쿨 계열로 확정한다.** 액센트가 blood orange `#d6451f` 에서
+  surf blue `#2563ff` 로 바뀌는 것이 이 변경의 축이고, 나머지 색은 그 축에 맞춰 따라간다.
+
+  근거는 Figma Page 16 시안 셋(입장권 14화면 · Persona Landing 데스크톱/모바일 · 이벤트 상세)이다.
+  warm 계열 회갈색과 쿨 계열 표면이 한 화면에서 같이 서지 않았다 — 특히 `cover` 팔레트의
+  초록·황토·와인이 유일한 warm 잔재로 남아 튀었다.
+
+  **대비는 깨지 않는다.** `muted` 는 읽는 글자의 하한선이라는 규율(coldsurfers/public#106)을
+  그대로 두고 값만 옮겼다 — surface 위 5.6:1 → **5.98:1** 로 올라간다. `accent` 도 4.3:1 →
+  **4.88:1** 로 올라 본문 크기에서 AA 를 넘는다. `subtle` 은 2.34:1 → 2.54:1 로 여전히
+  _읽히지 않아도 되는 것_ 전용이다.
+
+  **`cover` 키 이름은 바꾸지 않았다.** `forest` 에 틸, `moss` 에 인디고가 들어가 이름이 값을
+  설명하지 못하게 되지만, `coverToneFor` 가 `Object.keys(cover)` **순서**로 결정적 분산을 하므로
+  키를 건드리면 이미 발행된 모든 이벤트의 커버색이 재배치된다. 이름은 색이 아니라 슬롯이고,
+  그 사실을 주석에 적었다.
+
+  `paper.warm` 도 같은 이유로 키를 유지한다(값은 `#fafaf7` → `#f9fbfd`). 브랜드 정본 paper
+  (`light.bg`)와 **다른 값**이라는 이름 사전의 규칙은 그대로다 — 둘은 여전히 구별 대상이다.
+
+  ### `ink` 스케일 신설
+
+  라이트 표면 안에서 **한 구간만 눕는 다크 밴드**(헤더·히어로·캡처 밴드)가 쓰는 색 넷을
+  `cover`·`paper` 와 같은 성격의 스킴 불변 scale 로 낸다 — `--ink-base` · `--ink-surface` ·
+  `--ink-border` · `--ink-accent`.
+
+  ink(dark) **스킴**을 되살리는 것이 아니다. 전역으로 색을 뒤집는 축은 여전히 없고
+  (paul-rockstar [#299](https://github.com/coldsurfers/public/issues/299) 는 그대로), 그 구간이 쓰는 상수만 시스템 안으로 들인다. 지금은 소비처가
+  같은 hex 를 자기 파일에 적고 있다.
+
+  `ink.base` 는 `light.text` 와, `ink.border` 는 `light.body` 와 같은 hex 다. 이름이 겹치는 게
+  아니라 **역할이 둘인 값**이라 양쪽에 둔다.
+
 ## 0.21.0
 
 ### Minor Changes

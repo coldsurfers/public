@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { CoverTone, fontFamily } from '../tokens'
+import type { fontFamily } from '../tokens'
 
 type FontFamilyKey = keyof typeof fontFamily
 
@@ -58,10 +58,15 @@ export type ConcertCardCoverRatio = 'landscape' | 'square'
  *   native — 없다
  */
 export interface ConcertCardBareProps {
-  tone: CoverTone
-  /** 커버 대형 이니셜(자모). `posterUrl` 없을 때만 노출. */
+  /**
+   * 커버 대형 이니셜(자모) — 포스터가 **없거나 실패했을 때** 드러나는 워터마크.
+   *
+   * 커버 바닥은 언제나 `note` 면 하나다(기다림의 면). 그 위에 이니셜이 옅게 앉고, 포스터가
+   * 도착하면 그 위를 덮는다. 예전엔 바닥이 `tone` 6톤이었는데 그 축을 걷어냈다 —
+   * 「아직 그림이 없다」가 `Skeleton` 과 다른 밝기로 서면 화면이 무거워진다.
+   */
   initial: string
-  /** 실제 포스터 URL. 있으면 tone·이니셜 대신 포스터가 커버를 채운다. */
+  /** 실제 포스터 URL. 있으면 이니셜 위를 포스터가 덮는다. */
   posterUrl?: string | null
   title: string
   /** `롤링홀 · 서울 · 7.24 금`. */

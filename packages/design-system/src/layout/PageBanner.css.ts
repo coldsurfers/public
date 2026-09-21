@@ -17,11 +17,16 @@ import { media } from '../css/media'
 
 export const banner = style(inComponentsLayer({ background: vars.color.strong }))
 
-/** 세로 여백만. 가로는 `Container` 가 든다. 64 → 72px, `Container` 와 같은 tablet 에서 갈린다. */
+/**
+ * 세로 여백만. 가로는 `Container` 가 든다. 64 → 88px, `Container` 와 같은 tablet 에서 갈린다.
+ *
+ * 데스크톱 88px 은 시안 실측값이다(Figma `3363:1188` — 프레임 435 · 첫 요소 y=88 · 마지막
+ * 요소 하단 347). spacing 스케일은 80(`20`) 다음이 96(`24`) 이라 88 은 리터럴로 남는다.
+ */
 export const bannerShell = style(
   inComponentsLayer({
     paddingBlock: vars.space['16'],
-    '@media': { [media.tablet]: { paddingBlock: '72px' } },
+    '@media': { [media.tablet]: { paddingBlock: '88px' } },
   }),
 )
 

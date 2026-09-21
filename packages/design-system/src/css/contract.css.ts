@@ -4,10 +4,14 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
+  gradient,
+  ink,
   letterSpacing,
   lineHeight,
+  palette,
   paper,
   radius,
+  shadow,
   spacing,
   type TokenScaleGroup,
   tokens,
@@ -44,6 +48,14 @@ const shape = {
   cover,
   /** `paper.warm` 은 `color.bg` 와 **다른 표면**이다. 통일 대상이 아니라 구별 대상. */
   paper,
+  /** 라이트 표면 안에 한 구간만 눕는 다크 밴드 넷. 전역 스킴이 아니다. */
+  ink,
+  /** 원색층. 역할 이름이 안 붙는 자리(그라디언트 정지색·타일 바닥)의 탈출구. */
+  palette,
+  /** 깊이 축 하나. 컴포넌트 이름으로 칸을 만들지 않는다. */
+  shadow,
+  /** 고정 표면 그라디언트. 데이터로 정해지는 `cover` 와 다른 축. */
+  gradient,
 }
 
 /**
@@ -61,6 +73,10 @@ const TOKEN_GROUP: Record<keyof typeof shape, TokenScaleGroup> = {
   radius: 'radius',
   cover: 'cover',
   paper: 'paper',
+  ink: 'ink',
+  palette: 'palette',
+  shadow: 'shadow',
+  gradient: 'gradient',
 }
 
 export const vars = createGlobalThemeContract(shape, (_value, path) => {

@@ -8,15 +8,27 @@ description: 카드 커버의 지형(terrain) 색면.
 높이는 소비처가 정합니다(ConcertCard 190/160 · ArticleCard 200/150). 여기가 책임지는 건
 색면뿐입니다.
 
+## 기본은 `note` 입니다
+
+`tone` 을 안 주면 **기다림의 면**(`note`)이 섭니다 — 「아직 그림이 없다」는 상태의 면이고,
+`Skeleton`(API 대기)과 같은 값(`color.surfaceHover`)을 읽습니다. 이미지가 오는 중이든, 없든,
+실패했든 한 밝기로 서게 하려는 것입니다. 공연 카드(`ConcertCard`)는 이 면 하나만 씁니다.
+
+`note` 위에 서는 것들은 `currentColor` 로 잉크를 물고, 어두운 6톤 위에서는 종이를 뭅니다 —
+면이 글자색까지 정하므로 소비처가 톤을 한 번 더 받을 일이 없습니다.
+
+## 팔레트 6톤은 편집 표지가 씁니다
+
 커버 팔레트는 **스킴을 타지 않는 불변 scale** 입니다. 항상 어두운 필 위에 paper 텍스트가
-올라가는 에디토리얼 커버의 바닥색이라, 다크 스킴이 살아 있던 때에도 뒤집지 않았습니다.
+올라가는 에디토리얼 커버(`ArticleCard` · `LeadFeature`)의 바닥색이라, 다크 스킴이 살아 있던
+때에도 뒤집지 않았습니다. 거긴 색 다양성이 곧 편집 디자인인 자리입니다.
 
 색면이 아닌 다른 표면(아바타 원 등)도 같은 팔레트를 쓰므로 `coverTone` 을 재수출합니다.
 
 ```ts
 import { coverToneFor } from '@coldsurfers/design-system/tokens'
 
-const tone = coverToneFor(concert.id) // 같은 id 는 항상 같은 색
+const tone = coverToneFor(issue.slug) // 같은 id 는 항상 같은 색
 ```
 
 ## Props

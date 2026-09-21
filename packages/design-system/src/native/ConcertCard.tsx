@@ -5,14 +5,13 @@ import {
   type ConcertCardBareProps,
   type ConcertCardCoverRatio,
 } from '../contract'
-import type { CoverTone } from '../tokens'
-import { cover, nativeFontFamily, paper } from '../tokens/native'
+import { ink, nativeColor, nativeFontFamily } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
 /**
  * 공연 카드 — 웹 `cards/ConcertCard` 의 **`bare` 섀시**를 RN 으로 옮긴 것.
- * 커버(포스터 or tone·이니셜) 4:3 한 장 + 그 아래 3줄 텍스트(제목 · 메타 · footer).
+ * 커버(`note` 면 + 이니셜, 그 위 포스터) 4:3 한 장 + 그 아래 3줄 텍스트(제목 · 메타 · footer).
  *
  * ## 웹과 무엇이 같고 무엇이 다른가
  *
@@ -47,16 +46,20 @@ const Root = styled.View({
   gap: bare.gap,
 })
 
-const Cover = styled.View<{ $tone: CoverTone; $ratio: ConcertCardCoverRatio }>(
-  ({ $tone, $ratio }) => ({
-    position: 'relative',
-    width: '100%',
-    aspectRatio: bare.coverAspectRatio[$ratio],
-    borderRadius: bare.coverRadius,
-    overflow: 'hidden',
-    backgroundColor: cover[$tone],
-  }),
-)
+/**
+ * 커버 바닥 — **면이 하나다.** 웹 `CoverBlock` 의 기본 톤(`note`)과 같은 자리고, 값은 각자
+ * 자기 축에서 읽는다(웹 `vars.color.surfaceHover` · 여기 `nativeColor.light.surfaceHover`).
+ * `cover` 6톤 축은 걷어냈다 — 이 면이 뜻하는 건 「아직 그림이 없다」라서 `Skeleton`(API 대기)과
+ * 밝기가 갈리면 안 된다.
+ */
+const Cover = styled.View<{ $ratio: ConcertCardCoverRatio }>(({ $ratio }) => ({
+  position: 'relative',
+  width: '100%',
+  aspectRatio: bare.coverAspectRatio[$ratio],
+  borderRadius: bare.coverRadius,
+  overflow: 'hidden',
+  backgroundColor: nativeColor.light.surfaceHover,
+}))
 
 /** 커버를 채우는 것들(포스터 · 이니셜 판)이 공유하는 자리. 웹의 `inset: 0` 자리다. */
 const Fill = styled.View({
@@ -81,7 +84,6 @@ const Meta = styled.View({
 })
 
 export function ConcertCard({
-  tone,
   initial,
   posterUrl,
   title,
@@ -95,28 +97,35 @@ export function ConcertCard({
 
   return (
     <Root>
-      <Cover $tone={tone} $ratio={coverRatio}>
+      <Cover $ratio={coverRatio}>
+        {/* 바닥 — 포스터가 덮지 못하면 이게 드러난다. 순서가 곧 층이다(웹과 같다).
+            접근성 트리에서 빼는 건 이게 **장식**이라서다 — 제목은 아래 텍스트가 이미 말하는데
+            자모 한 글자가 그 앞에서 읽히면 같은 말을 두 번 한다. `pointerEvents` 는 터치만
+            막지 리더에선 안 빠지므로 두 플랫폼 플래그를 같이 단다(웹 `aria-hidden` 짝). */}
+        <Fill
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <Text
+            style={{
+              fontSize: bare.initialFontSize,
+              lineHeight: bare.initialFontSize,
+              fontWeight: bare.titleFontWeight,
+              color: ink.base,
+              opacity: bare.initialOpacity,
+            }}
+          >
+            {initial}
+          </Text>
+        </Fill>
         {posterUrl ? (
           <Image
             source={{ uri: posterUrl }}
             resizeMode="cover"
             style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
           />
-        ) : (
-          <Fill pointerEvents="none">
-            <Text
-              style={{
-                fontSize: bare.initialFontSize,
-                lineHeight: bare.initialFontSize,
-                fontWeight: bare.titleFontWeight,
-                color: paper.warm,
-                opacity: bare.initialOpacity,
-              }}
-            >
-              {initial}
-            </Text>
-          </Fill>
-        )}
+        ) : null}
         {coverAction ? <CoverAction>{coverAction}</CoverAction> : null}
       </Cover>
 

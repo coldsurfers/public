@@ -55,7 +55,7 @@ export const modalPanel = style(
     maxHeight: '100%',
     border: `1px solid ${vars.color.border}`,
     background: vars.color.surface,
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+    boxShadow: vars.shadow.xl,
   }),
 )
 

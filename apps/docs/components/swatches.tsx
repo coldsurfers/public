@@ -7,7 +7,7 @@ import { TOKEN_SCALES, type TokenGroup } from '@/lib/token-scales'
  */
 export function Swatches({ group }: { group: TokenGroup }) {
   const scale = TOKEN_SCALES[group]
-  const isColor = group === 'color' || group === 'cover' || group === 'paper'
+  const isColor = group === 'color' || group === 'palette' || group === 'cover' || group === 'paper'
 
   return (
     <div className="not-prose my-6 grid gap-2 sm:grid-cols-2">

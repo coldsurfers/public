@@ -58,7 +58,12 @@ export const bareCoverRatio = styleVariants(bare.coverAspectRatio, (aspectRatio)
   inComponentsLayer({ aspectRatio: String(aspectRatio) }),
 )
 
-/** 포스터가 없을 때의 대형 이니셜 — 색면 위에 아주 옅게. */
+/**
+ * 포스터가 없을 때의 대형 이니셜 — 면 위에 아주 옅게.
+ *
+ * 색을 직접 안 정한다. `CoverBlock` 이 톤으로 정한 `currentColor` 를 물고 투명도만 얹는다 —
+ * 어두운 6톤에선 종이, `note` 에선 잉크가 되어 면이 밝아져도 글자가 따라 뒤집힌다.
+ */
 export const bareInitial = style(
   inComponentsLayer({
     position: 'absolute',
@@ -69,7 +74,8 @@ export const bareInitial = style(
     fontWeight: bare.titleFontWeight,
     fontSize: bare.initialFontSize,
     lineHeight: 1,
-    color: alpha(vars.paper.warm, bare.initialOpacity * 100),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
     '@media': { [media.tablet]: { fontSize: 76 } },
   }),
 )
@@ -135,7 +141,19 @@ export const bareLine = style(
 )
 
 /* ── cover — 시안 날짜 피드 리스킨(1093:171 데스크탑 · 1093:576 모바일).
-      섀시 없이 세로 커버 한 장 + 그 위 오버레이 텍스트, 커버 아래 메타 1줄 ── */
+      섀시 없이 세로 커버 한 장 + 그 위 오버레이 텍스트 ──
+ *
+ * 크기 축 둘(`size`) — 슬롯 셋(`coverCover`·`coverScrim`·`coverTitle`)이 같은 이름의 variant 로
+ * 갈린다. 세 슬롯을 recipe 로 연 이유는 **`base` 가 비지 않기 때문**이다: 커버는 어느 크기든
+ * `position:relative` + `space-between` 이고, 갈리는 건 높이·라운드·여백·타입뿐이다.
+ * (`base` 가 비고 variant 가 전부를 다시 선언하면 그건 recipe 가 아니라 두 스타일을 한 이름에
+ * 욱여넣은 것이다 — 파일 머리 주석.)
+ *
+ * - `full` — 날짜 피드(`/live-events/new`). 텍스트 둘만 커버에 얹고 **메타는 커버 밖** 1줄.
+ *   하단 고정 높이 스크림이 제목만 받쳐준다.
+ * - `compact` — 랜딩·그리드의 작은 칸. **셋 다 커버 안**(날짜 → 제목 → 공연장)이라 스크림이
+ *   카드 전체 높이에 걸린다. 글이 커버 아래로 내려가지 않으므로 카드 높이가 곧 커버 높이다.
+ */
 
 export const coverRoot = style(
   inComponentsLayer({
@@ -147,38 +165,102 @@ export const coverRoot = style(
 )
 
 /**
- * 커버가 곧 카드다 — 위(eyebrow·담기)와 아래(제목)를 `space-between` 으로 밀어 붙인다.
+ * 커버가 곧 카드다 — 위(eyebrow·담기)와 아래(제목 or 텍스트 셋)를 `space-between` 으로 밀어
+ * 붙인다. 위가 비어도 아래는 바닥을 지킨다.
  *
- * 시안의 제목 하단 여백은 32 인데 여기선 padding 과 같은 20/24 다. 시안엔 제목 아래 부제
- * (`단독공연 : SxWxCxL`)가 한 줄 더 있었고 그 슬롯을 실데이터가 못 채워 뺐다 — 남은 한 줄을
+ * `full` 의 제목 하단 여백은 시안이 32 인데 여기선 padding 과 같은 20/24 다. 시안엔 제목 아래
+ * 부제(`단독공연 : SxWxCxL`)가 한 줄 더 있었고 그 슬롯을 실데이터가 못 채워 뺐다 — 남은 한 줄을
  * 부제 자리까지 내리면 아래가 허전해진다.
+ *
+ * ⚠️ `compact` 의 290/300 은 **기본값이지 상한이 아니다.** 소비처 그리드는 같은 섀시로 더 큰
+ * 칸(460/420 · 여백 24)도 쓰는데, 그건 축을 하나 더 여는 대신 `className` 으로 덮는다 —
+ * 칸 크기는 그리드의 사정이지 카드의 축이 아니다.
  */
-export const coverCover = style(
-  inComponentsLayer({
+export const coverCover = recipe({
+  base: inComponentsLayer({
     position: 'relative',
     display: 'flex',
-    height: 430,
     flexDirection: 'column',
     justifyContent: 'space-between',
     overflow: 'hidden',
-    borderRadius: vars.radius.xl,
-    padding: 20,
-    '@media': { [media.tablet]: { height: 500, padding: 24 } },
   }),
-)
 
-/** 커버 하단 그라디언트 — 포스터가 밝아도 제목이 읽힌다. */
-export const coverScrim = style(
-  inComponentsLayer({
+  variants: {
+    size: {
+      full: inComponentsLayer({
+        height: 430,
+        borderRadius: vars.radius.xl,
+        padding: 20,
+        '@media': { [media.tablet]: { height: 500, padding: 24 } },
+      }),
+      compact: inComponentsLayer({
+        height: 290,
+        borderRadius: vars.radius['3xl'],
+        padding: 18,
+        '@media': { [media.tablet]: { height: 300 } },
+      }),
+      /**
+       * `compact` 과 **같은 레이아웃, 더 큰 칸**이다 — 글은 똑같이 커버 안에 있고 치수만 다르다.
+       *
+       * 여는 자리 = **여러 열 그리드**. 칸이 420px 폭쯤 되는데 `compact` 높이(300)를 그대로
+       * 쓰면 가로로 누운 칸에 세로 포스터가 들어가 상하단이 크게 잘린다. 높이를 키우면 칸이
+       * 세로로 서서 포스터가 원래 비율에 가깝게 들어온다.
+       */
+      large: inComponentsLayer({
+        height: 420,
+        borderRadius: vars.radius['3xl'],
+        padding: 24,
+        '@media': { [media.tablet]: { height: 460 } },
+      }),
+    },
+  },
+
+  defaultVariants: { size: 'full' },
+})
+
+/**
+ * 글이 커버 **안**에 있는 두 크기(`compact`·`large`)가 함께 쓰는 스크림 — 카드 전체 높이.
+ *
+ * 한 벌로 두는 이유는 값이 우연히 같아서가 아니라 **같아야 해서**다. 한쪽만 손보면 같은
+ * 레이아웃의 두 칸이 서로 다른 밝기로 읽힌다.
+ */
+const insideScrim = {
+  top: 0,
+  background: `linear-gradient(180deg, ${alpha(vars.palette.deepNight, 0)} 0%, ${alpha(
+    vars.palette.deepNight,
+    72,
+  )} 55%, ${alpha(vars.palette.deepNight, 92)} 100%)`,
+} as const
+
+/**
+ * 커버 그라디언트 — 포스터가 밝아도 글이 읽힌다.
+ *
+ * `full` 은 **하단 고정 높이**(210/240)다. 받쳐줄 게 제목 한 줄뿐이라 위쪽까지 덮으면 포스터를
+ * 필요 이상으로 어둡게 만든다. `compact` 는 **전체 높이**에 걸린다 — 날짜·제목·공연장 셋이
+ * 커버 안에 있고 우상단 담기 버튼까지 얹히므로 덮을 면이 카드 전체다.
+ */
+export const coverScrim = recipe({
+  base: inComponentsLayer({
     position: 'absolute',
     right: 0,
     bottom: 0,
     left: 0,
-    height: 210,
-    background: 'linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.62))',
-    '@media': { [media.tablet]: { height: 240 } },
   }),
-)
+
+  variants: {
+    size: {
+      full: inComponentsLayer({
+        height: 210,
+        background: 'linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.62))',
+        '@media': { [media.tablet]: { height: 240 } },
+      }),
+      compact: inComponentsLayer(insideScrim),
+      large: inComponentsLayer(insideScrim),
+    },
+  },
+
+  defaultVariants: { size: 'full' },
+})
 
 /** eyebrow(좌) · 담기(우). `flex-start` 라 11px 텍스트가 42px 버튼에 눌리지 않는다. */
 export const coverTopRow = style(
@@ -195,13 +277,14 @@ export const coverTopRow = style(
  *
  * `coverTopRow` 에 `space-between` 을 주면 **두 자리가 다 찼을 때만** 맞는다 — eyebrow 가
  * 없으면 담기가 왼쪽으로 붙으므로 자리를 채우는 빈 노드가 필요해진다. `auto` 여백은 이웃의
- * 유무를 묻지 않으므로 그 빈 노드가 사라진다.
+ * 유무를 묻지 않으므로 그 빈 노드가 사라진다. `compact` 가 eyebrow 없이도 담기를 우상단에
+ * 두는 건 이 규칙을 그대로 물려받은 것이다.
  */
 export const coverTopAction = style(inComponentsLayer({ marginInlineStart: 'auto' }))
 
 export const coverEyebrow = style(
   inComponentsLayer({
-    fontFamily: vars.font.mono,
+    fontFamily: vars.font.sans,
     fontSize: 11,
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '1px',
@@ -210,19 +293,45 @@ export const coverEyebrow = style(
   }),
 )
 
-export const coverTitle = style(
-  inComponentsLayer({
+/**
+ * 글이 커버 안에 있는 두 크기가 함께 쓰는 제목 — `full` 보다 한 단 낮다.
+ * 제목이 포스터를 가리지 않아야 해서고, 흰색은 이 크기에서 대비를 든다.
+ */
+const insideTitle = {
+  fontSize: 17,
+  lineHeight: '24px',
+  color: vars.palette.white,
+} as const
+
+export const coverTitle = recipe({
+  base: inComponentsLayer({
     ...lineClamp(2),
     position: 'relative',
-    fontSize: 26,
     fontWeight: 700,
-    letterSpacing: '-0.4px',
-    lineHeight: 1.25,
-    color: vars.paper.warm,
-    '@media': { [media.tablet]: { fontSize: 30, letterSpacing: '-0.5px' } },
   }),
-)
 
+  variants: {
+    size: {
+      full: inComponentsLayer({
+        fontSize: 26,
+        letterSpacing: '-0.4px',
+        lineHeight: 1.25,
+        color: vars.paper.warm,
+        '@media': { [media.tablet]: { fontSize: 30, letterSpacing: '-0.5px' } },
+      }),
+      compact: inComponentsLayer(insideTitle),
+      /**
+       * `large` 가 칸은 커도 제목은 `compact` 와 **같은 한 단**이다. 커지는 건 포스터가 보일
+       * 면적이지 글의 몫이 아니다 — 여기서 제목까지 키우면 큰 칸일수록 포스터가 더 가려진다.
+       */
+      large: inComponentsLayer(insideTitle),
+    },
+  },
+
+  defaultVariants: { size: 'full' },
+})
+
+/** `full` 전용 — 커버 **밖** 메타 1줄. */
 export const coverMeta = style(
   inComponentsLayer({
     ...lineClamp(1),
@@ -230,6 +339,54 @@ export const coverMeta = style(
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '0.1px',
     color: vars.color.muted,
+  }),
+)
+
+/**
+ * `compact` 전용 — 커버 안 하단에 앉는 텍스트 셋(날짜 · 제목 · 공연장).
+ *
+ * `position: relative` 가 필요하다 — 스크림이 `absolute` 라 배치되지 않은 형제 위에 얹힌다.
+ * (`coverTitle` 이 `full` 에서 같은 이유로 `relative` 를 든다.)
+ */
+export const coverStack = style(
+  inComponentsLayer({
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  }),
+)
+
+/**
+ * `compact` 전용 날짜 스탬프 — mono.
+ *
+ * 서체가 갈리는 근거는 `bareLine` 과 같다: 날짜는 문장이 아니라 **수치**라, sans 로 쓰면 제목의
+ * 작은 판처럼 읽힌다. 색만 다르다 — 잉크 위라 라이트 표면의 `muted` 가 안 먹고,
+ * `ink.accent`(밴드 위 인디케이터 자리)가 그 자리다.
+ */
+export const coverStamp = style(
+  inComponentsLayer({
+    ...lineClamp(1),
+    fontFamily: vars.font.mono,
+    fontSize: 11,
+    fontWeight: vars.fontWeight.medium,
+    letterSpacing: '0.04em',
+    color: vars.ink.accent,
+  }),
+)
+
+/**
+ * `compact` 전용 공연장 줄 — `footer` 슬롯이 들어앉는 자리.
+ *
+ * 내용물은 소비처가 주지만 **타입·색은 카드가 정한다.** 잉크 위 글자색을 소비처에 맡기면
+ * 그 자리에서 `#c3cbd6` 이 손으로 다시 적힌다.
+ */
+export const coverVenue = style(
+  inComponentsLayer({
+    position: 'relative',
+    fontSize: 13,
+    lineHeight: '20px',
+    color: vars.palette.haze,
   }),
 )
 
@@ -247,9 +404,11 @@ export const framedRoot = style(
 )
 
 /**
- * 매치 라벨(위) · 이니셜(아래). 세로 배치는 `space-between` 이 아니라 `framedInitial` 의
- * `marginTop: auto` 가 만든다 — 둘은 서로 독립적으로 없을 수 있고(포스터가 있으면 이니셜이,
- * 매치 근거가 없으면 라벨이), `space-between` 은 한쪽이 비면 남은 하나를 위로 끌어올린다.
+ * 커버 셸. **흐름에 서는 건 매치 라벨 하나뿐**이고, 나머지(이니셜·포스터·담기)는 전부 층이다.
+ *
+ * 예전엔 이니셜도 흐름에 서서 `marginTop: auto` 로 세로 배치를 만들었다. 그건 포스터가 이
+ * 자리를 *대신* 채우던 시절의 모양이라, 바닥이 항상 깔리는 지금은 그 auto 여백이 라벨까지
+ * 끌어내린다. 층을 층으로 두면 라벨은 포스터가 있든 없든 제자리(상단)에 선다.
  */
 export const framedCover = style(
   inComponentsLayer({
@@ -294,15 +453,30 @@ export const framedMatchDot = style(
   }),
 )
 
-/** 커버 바닥에 앉는다 — 위에 매치 라벨이 있든 없든 `auto` 여백이 같은 자리를 만든다. */
+/**
+ * 커버 좌하단에 앉는다 — **흐름 밖**이다(`bareInitial` 과 같다).
+ *
+ * 예전엔 `marginTop: auto` 로 흐름 안에 있었는데, 그건 포스터가 이 자리를 *대신* 채울 때만
+ * 성립했다. 이제 바닥은 포스터가 있든 없든 **항상** 깔리므로, 흐름에 두면 그 auto 여백이
+ * 뒤따르는 매치 라벨까지 같이 끌어내린다. 층은 층으로 둔다 — 그래야 「매치 라벨과 이니셜은
+ * 서로를 필요로 하지 않는다」가 말뿐이 아니라 실제로 참이 된다.
+ *
+ * `left`·`bottom` 은 커버의 `padding`(16)과 같은 값이다 — 흐름에 있던 시절의 자리를 그대로 딴다.
+ *
+ * 색·투명도는 `bareInitial` 과 **같은 규율**이다(면이 정한 `currentColor` + 워터마크 한 값).
+ * 예전엔 흰색 85% 라 민짜 쪽(22%)보다 훨씬 짙었는데, 면이 `note` 로 밝아지면 그 값이 잉크
+ * 85% 가 되어 워터마크가 아니라 드롭캡이 된다. 두 섀시가 같은 것을 그리므로 값도 하나다.
+ */
 export const framedInitial = style(
   inComponentsLayer({
-    position: 'relative',
-    marginTop: 'auto',
+    position: 'absolute',
+    left: 16,
+    bottom: 16,
     fontFamily: vars.font.serif,
     fontSize: vars.fontSize['5xl'],
     lineHeight: 1,
-    color: alpha('white', 85),
+    color: 'currentColor',
+    opacity: bare.initialOpacity,
   }),
 )
 
