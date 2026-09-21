@@ -96,22 +96,20 @@ export const lineBarLong = style(
 
 /* ── cover ── */
 
-export const coverRoot = style(
-  inComponentsLayer({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 14,
-    '@media': { [media.tablet]: { gap: 16 } },
-  }),
-)
-
-export const coverCover = style(
-  inComponentsLayer({
-    height: 430,
-    borderRadius: vars.radius.xl,
-    '@media': { [media.tablet]: { height: 500 } },
-  }),
-)
+/**
+ * 커버 섀시의 껍데기·커버 블록은 **실카드의 것을 그대로 쓴다.**
+ *
+ * 머리말의 「겹치는 값은 읽어온다」를 이 자리에서만 안 지키고 있었다 — 430/500·radius 를 손으로
+ * 옮겨 적어 뒀는데, 그 사이 실카드에 크기가 둘 더 붙어(`compact`·`large`) 스켈레톤만 `full`
+ * 치수에 남았다. 이 컴포넌트가 막으려던 바로 그 점프가 났다.
+ *
+ * 값을 맞추는 대신 **같은 recipe 를 가리킨다.** 이러면 치수가 어긋날 자리가 아예 없다 —
+ * 실카드에 크기가 또 붙어도 스켈레톤이 자동으로 따라온다.
+ *
+ * 빈 블록이라 recipe 가 함께 주는 `padding`·`flex` 는 겉보기에 영향이 없다(`box-sizing` 이
+ * `border-box` 라 padding 이 높이 안에 든다).
+ */
+export { coverCover, coverRoot } from './ConcertCard.css'
 
 export const coverBar = style(inComponentsLayer({ ...barBase, height: 16, width: '70%' }))
 
