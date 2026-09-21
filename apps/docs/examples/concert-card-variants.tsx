@@ -12,7 +12,7 @@ export default function Example() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
       }}
     >
-      <ConcertCard
+      <ConcertCard.Framed
         tone="forest"
         initial="ㅅ"
         matchLabel="96% 취향"
@@ -23,8 +23,7 @@ export default function Example() {
         }
         coverAction={<Button size="sm">담기</Button>}
       />
-      <ConcertCard
-        variant="bare"
+      <ConcertCard.Bare
         tone="wine"
         initial="ㅁ"
         title="Mid-Air Thief"
@@ -32,19 +31,17 @@ export default function Example() {
         footer={<p style={{ margin: 0, color: 'var(--muted)' }}>무신사 개러지</p>}
         reserveTitleLines
       />
-      <ConcertCard
-        variant="cover"
+      {/* `initial` 이 없다 — 이 섀시는 포스터가 없으면 tone 색면만 남긴다. 평평한
+          `ConcertCardProps` 에서는 필수라 안 그려질 자모를 지어내야 했다. */}
+      <ConcertCard.Cover
         tone="navy"
-        initial="ㅍ"
         eyebrow="INDIE ROCK"
         title="Parannoul"
         meta="7.30 수 · 무신사 개러지"
       />
-      <ConcertCard
-        variant="cover"
+      <ConcertCard.Cover
         size="compact"
         tone="plum"
-        initial="ㅇ"
         title="Oohyo"
         meta="8.02 토"
         footer="예스24 라이브홀"

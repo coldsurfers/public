@@ -81,9 +81,24 @@ export interface ConcertCardProps extends ConcertCardBareProps, CardDomProps {
  * 주석만 말하게 된다(`matchLabel` 은 `framed` 전용, `eyebrow` 는 `cover` 전용이었다).
  * 나누면 그걸 `Pick` 이 말한다 — 타입이 곧 그 섀시가 받는 것의 전부다.
  *
- * **`variant` 를 `ConcertCard.Bare` 같은 정적 프로퍼티로 바꾸지 않은 이유**: 이 축은
- * `contract/concert-card.ts` 의 `ConcertCardVariant` 이고 native 레인이 같은 계약을 읽는다.
- * 발행 중인 패키지라 문 이름을 바꾸면 그 순간 major 다 — 안쪽 구조는 계약이 아니지만 문은 계약이다.
+ * ## 문은 둘이고 같은 것이다
+ *
+ * 그 셋을 정적 프로퍼티로도 낸다 — `ConcertCard.Framed` · `ConcertCard.Bare` · `ConcertCard.Cover`.
+ * 평평한 `ConcertCardProps` 는 세 섀시의 축을 합집합으로 들고 있어서, 어느 문으로 들어오든
+ * 타입이 **안 먹는 prop 을 통과시킨다**(`cover` 에 `matchLabel`, `framed` 에 `size`). 그중
+ * 하나는 거짓말이 더 짙다 — `initial` 은 `cover` 섀시가 아무 데도 안 그리는데 계약상 **필수**라,
+ * `variant="cover"` 를 쓰는 사람이 반드시 안 쓰이는 자모 한 글자를 지어내야 했다.
+ * 섀시별 문으로 들어오면 그 자리에서 `Pick` 이 소비처까지 닿는다.
+ *
+ * **`variant` 는 그대로 산다 — 지우지 않는다.** 이 축은 `contract/concert-card.ts` 의
+ * `ConcertCardVariant` 이고 native 레인이 같은 계약을 읽는다. 발행 중인 패키지라 문 이름을
+ * 바꾸면 그 순간 major 다 — 안쪽 구조는 계약이 아니지만 문은 계약이다. 그래서 문을 **바꾸지
+ * 않고 옆에 하나 더 단다**(순수 additive). 둘은 같은 컴포넌트를 가리키므로 렌더 결과가 같다.
+ *
+ * ```tsx
+ * <ConcertCard variant="cover" … />  // 그대로 산다
+ * <ConcertCard.Cover … />            // 새 코드는 이쪽 — `initial` 이 타입에서 사라진다
+ * ```
  */
 export function ConcertCard({ variant = 'framed', ...props }: ConcertCardProps) {
   if (variant === 'cover') return <CoverCard {...props} />
@@ -102,7 +117,15 @@ function CoverImage({ src }: { src?: string | null }) {
   return src ? <img src={src} alt="" loading="lazy" className={s.coverImage} /> : null
 }
 
-type FramedCardProps = Pick<
+/**
+ * `ConcertCard.Framed` 가 받는 것의 전부.
+ *
+ * ⚠️ **이름이 `ConcertCardFramedProps` 가 아닌 이유**: 짝인 민짜 쪽이 `ConcertCardBareProps`
+ * 가 되는데 그 이름은 `contract/concert-card.ts` 가 이미 **다른 뜻**(두 구현이 공유하는 props)
+ * 으로 쓰고 있다. 셋만 어순을 뒤집으면 갈라지므로 트리오를 통째로 형용사 먼저로 둔다 —
+ * 안쪽 컴포넌트 이름(`FramedCard`·`BareCard`·`CoverCard`)과도 어순이 같아진다.
+ */
+export type FramedConcertCardProps = Pick<
   ConcertCardProps,
   | 'tone'
   | 'initial'
@@ -117,7 +140,12 @@ type FramedCardProps = Pick<
   HTMLAttributes<HTMLElement>
 
 /**
- * 액자 섀시 — 테두리·배경이 있는 기본 카드.
+ * 액자 섀시 — 테두리·배경이 있는 기본 카드. 문은 `ConcertCard.Framed`
+ * (= `<ConcertCard variant="framed" />`, 기본값).
+ *
+ * **받는 것**: `matchLabel`(취향 라벨) + 공통분(`tone`·`initial`·`posterUrl`·`title`·`meta`·
+ * `footer`·`coverAction`).
+ * **안 받는 것**: `eyebrow`·`size`(cover 전용) · `coverRatio`·`reserveTitleLines`(bare 전용).
  *
  * 커버 안의 세로 배치는 `framedInitial` 의 `marginTop: auto` 가 만든다. 매치 라벨과 이니셜은
  * 서로를 필요로 하지 않으므로 둘 다 자기 자리를 스스로 잡는다.
@@ -136,7 +164,7 @@ function FramedCard({
   coverAction,
   className,
   ...rest
-}: FramedCardProps) {
+}: FramedConcertCardProps) {
   return (
     <article className={cx(s.framedRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={s.framedCover}>
@@ -159,7 +187,11 @@ function FramedCard({
   )
 }
 
-type BareCardProps = Pick<
+/**
+ * `ConcertCard.Bare` 가 받는 것의 전부. 어순 근거는 `FramedConcertCardProps` 의 ⚠️ —
+ * `ConcertCardBareProps`(계약)는 *두 구현이 공유하는 props* 라는 다른 뜻으로 이미 쓰인다.
+ */
+export type BareConcertCardProps = Pick<
   ConcertCardProps,
   | 'tone'
   | 'initial'
@@ -176,6 +208,11 @@ type BareCardProps = Pick<
 
 /**
  * 민짜 섀시 — 섀시 없이 포스터 블록 + 그 아래 3줄 텍스트(제목 / 날짜 / 공연장).
+ * 문은 `ConcertCard.Bare`(= `<ConcertCard variant="bare" />`).
+ *
+ * **받는 것**: `coverRatio`·`reserveTitleLines` + 공통분.
+ * **안 받는 것**: `matchLabel`(framed 전용) · `eyebrow`·`size`(cover 전용).
+ *
  * 치수는 `CONCERT_CARD_BARE_SPEC` 이 정본이고 native 구현이 같은 표를 읽는다.
  */
 function BareCard({
@@ -190,7 +227,7 @@ function BareCard({
   reserveTitleLines = false,
   className,
   ...rest
-}: BareCardProps) {
+}: BareConcertCardProps) {
   return (
     <article className={cx(s.bareRoot, className)} {...rest}>
       <CoverBlock tone={tone} className={cx(s.bareCover, s.bareCoverRatio[coverRatio])}>
@@ -212,7 +249,13 @@ function BareCard({
   )
 }
 
-type CoverCardProps = Pick<
+/**
+ * `ConcertCard.Cover` 가 받는 것의 전부. 어순 근거는 `FramedConcertCardProps` 의 ⚠️.
+ *
+ * ⚠️ **`initial` 이 없다.** 평평한 `ConcertCardProps` 에서는 계약상 필수라 `variant="cover"`
+ * 소비처가 안 그려질 자모를 지어내야 했는데, 이 문으로 들어오면 타입이 그 자리를 아예 안 연다.
+ */
+export type CoverConcertCardProps = Pick<
   ConcertCardProps,
   | 'tone'
   | 'posterUrl'
@@ -227,8 +270,14 @@ type CoverCardProps = Pick<
   HTMLAttributes<HTMLElement>
 
 /**
- * 커버 섀시 — 세로 커버 한 장에 글을 얹는다. 크기 축(`size`)이 **글이 어디까지 커버 안인가**를
- * 가른다:
+ * 커버 섀시 — 세로 커버 한 장에 글을 얹는다. 문은 `ConcertCard.Cover`
+ * (= `<ConcertCard variant="cover" />`).
+ *
+ * **받는 것**: `eyebrow`·`size` + 공통분.
+ * **안 받는 것**: `initial`(아래 ⚠️) · `matchLabel`(framed 전용) ·
+ * `coverRatio`·`reserveTitleLines`(bare 전용).
+ *
+ * 크기 축(`size`)이 **글이 어디까지 커버 안인가**를 가른다:
  *
  * - `full`(기본) — eyebrow·담기·제목만 얹고 메타는 커버 **밖** 1줄. 날짜 피드가 쓴다.
  * - `compact` — 날짜(`meta`) → 제목 → 공연장(`footer`) 셋을 다 커버 **안** 하단에. 작은 칸이라
@@ -244,6 +293,9 @@ type CoverCardProps = Pick<
  *
  * ⚠️ 이 섀시엔 `initial` 자리가 없다. 포스터가 없으면 tone 색면만 남는다 —
  * 세로 커버에 이니셜 한 자를 띄우면 mock 티가 나고, 이 지면은 실데이터 면이다.
+ * 이 문으로 들어오면 그걸 주석이 아니라 **타입이** 말한다(`CoverConcertCardProps` 에 그
+ * 이름이 없다). 평평한 `ConcertCardProps` 는 계약상 필수라 못 그러고, 그래서 `variant="cover"`
+ * 소비처는 안 그려질 자모를 지어내야 했다.
  */
 function CoverCard({
   tone,
@@ -256,7 +308,7 @@ function CoverCard({
   size = 'full',
   className,
   ...rest
-}: CoverCardProps) {
+}: CoverConcertCardProps) {
   const compact = size === 'compact'
 
   return (
@@ -282,3 +334,16 @@ function CoverCard({
     </article>
   )
 }
+
+/**
+ * 섀시별 문 — `variant` 문과 **같은 컴포넌트**를 가리킨다(순수 additive).
+ *
+ * 각 문이 받는 것/안 받는 것은 위 세 컴포넌트의 JSDoc 이 정본이다. 여기 적으면 `d.ts` 로
+ * 안 따라간다 — 선언 병합이 `var Framed: typeof FramedCard` 한 줄로 떨어져서, 소비처 hover 가
+ * 읽는 건 **가리켜진 컴포넌트의 JSDoc** 이다. 한 줄 적어 두는 대신 그쪽에 적는다.
+ *
+ * `Chip.Label` 과 같은 관용구다(`primitives/Chip.tsx`) — `export function` 에 직접 대입.
+ */
+ConcertCard.Framed = FramedCard
+ConcertCard.Bare = BareCard
+ConcertCard.Cover = CoverCard

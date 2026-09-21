@@ -17,16 +17,40 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 
 ## 섀시 세 벌
 
-| `variant` | 모양 | 쓰는 자리 |
-| --- | --- | --- |
-| `framed`(기본) | 테두리 · 배경이 있는 액자 | 목록 표면 |
-| `bare` | 섀시 없이 4:3 포스터 + 아래 3줄 | 트렌딩 레일 · 담은 공연 그리드 |
-| `cover` | 세로 커버 한 장에 eyebrow · 제목을 얹고 아래 메타 1줄 | 날짜 피드 · 랜딩 그리드 |
+| 문 | `variant` | 모양 | 쓰는 자리 |
+| --- | --- | --- | --- |
+| `ConcertCard.Framed` | `framed`(기본) | 테두리 · 배경이 있는 액자 | 목록 표면 |
+| `ConcertCard.Bare` | `bare` | 섀시 없이 4:3 포스터 + 아래 3줄 | 트렌딩 레일 · 담은 공연 그리드 |
+| `ConcertCard.Cover` | `cover` | 세로 커버 한 장에 eyebrow · 제목을 얹고 아래 메타 1줄 | 날짜 피드 · 랜딩 그리드 |
 
 `framed` 전용 축(`matchLabel`) 과 `cover` 전용 축(`eyebrow` · `size`)이 갈리는 건 시안에 그
-자리가 없어서입니다. 없는 자리에 값을 넣으면 조용히 무시됩니다.
+자리가 없어서입니다.
+
+### 문은 둘이고 같은 것입니다
+
+한 줄이 두 가지로 써집니다. 가리키는 컴포넌트가 같아서 렌더 결과도 같습니다.
+
+```tsx
+<ConcertCard variant="cover" tone="navy" initial="ㅍ" title="Parannoul" meta="7.30 수" />
+<ConcertCard.Cover tone="navy" title="Parannoul" meta="7.30 수" />
+```
+
+**새 코드는 정적 프로퍼티 쪽을 씁니다.** 평평한 `ConcertCardProps` 는 세 섀시의 축을 합집합으로
+들고 있어서, `variant` 문으로 들어오면 **안 먹는 prop 이 타입을 통과합니다** — `cover` 에
+`matchLabel` 을 주거나 `framed` 에 `size` 를 줘도 조용히 무시될 뿐입니다. 그중 `initial` 은
+반대로 걸립니다. `cover` 섀시는 그 자모를 아무 데도 안 그리는데 타입상 **필수**라, 위 첫 줄의
+`initial="ㅍ"` 처럼 쓰지도 않을 글자를 지어내야 합니다.
+
+섀시별 문으로 들어오면 그 자리에서 타입이 좁아집니다 — `FramedConcertCardProps` ·
+`BareConcertCardProps` · `CoverConcertCardProps` 가 각 섀시가 받는 것의 전부이고, 자동완성도
+그만큼만 제안합니다. `ConcertCard.Cover` 에는 `initial` 자리가 아예 없습니다.
+
+`variant` 문은 없어지지 않습니다. 그 축은 native 레인이 같이 읽는 계약(`ConcertCardVariant`)
+이고, 문 이름을 바꾸면 발행된 패키지에서 major 입니다. 새 문은 옆에 하나 더 단 것뿐입니다.
 
 ### `cover` 의 크기 축
+
+`size` 는 `ConcertCard.Cover` 안에서만 사는 축입니다.
 
 | `size` | 높이 | 글이 서는 자리 |
 | --- | --- | --- |
@@ -73,6 +97,19 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 잡습니다.
 
 ## Props
+
+아래 표는 `variant` 문 — **세 섀시의 축을 합친 목록**입니다. 어느 섀시가 무엇을 보는지는
+「섀시 세 벌」 이 말하고, 정적 프로퍼티로 들어가면 타입이 그만큼만 남깁니다.
+
+| 문 | props 타입 | 합집합에서 빠지는 것 |
+| --- | --- | --- |
+| `ConcertCard.Framed` | `FramedConcertCardProps` | `eyebrow` · `size` · `coverRatio` · `reserveTitleLines` |
+| `ConcertCard.Bare` | `BareConcertCardProps` | `matchLabel` · `eyebrow` · `size` |
+| `ConcertCard.Cover` | `CoverConcertCardProps` | `initial` · `matchLabel` · `coverRatio` · `reserveTitleLines` |
+
+세 타입 다 `cards` 진입점에서 함께 나갑니다. 이름을 `ConcertCardBareProps` 로 못 둔 건 그
+이름이 계약(`contract/concert-card.ts`)에서 *두 구현이 공유하는 props* 라는 다른 뜻으로 이미
+쓰이고 있어서입니다 — 셋을 통째로 형용사 먼저로 뒀습니다.
 
 <Props of="ConcertCard" dir="cards" />
 
