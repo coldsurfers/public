@@ -13,10 +13,15 @@
  */
 export { ArticleCard, type ArticleCardProps } from './ArticleCard'
 export {
+  type BareConcertCardProps,
   ConcertCard,
   type ConcertCardCoverRatio,
   type ConcertCardProps,
+  type ConcertCardSize,
   type ConcertCardVariant,
+  type CoverCompactConcertCardProps,
+  type CoverConcertCardProps,
+  type FramedConcertCardProps,
 } from './ConcertCard'
 export { ConcertCardSkeleton, type ConcertCardSkeletonProps } from './ConcertCardSkeleton'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
