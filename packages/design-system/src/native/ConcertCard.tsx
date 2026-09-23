@@ -111,7 +111,7 @@ export function ConcertCard({
             style={{
               fontSize: bare.initialFontSize,
               lineHeight: bare.initialFontSize,
-              fontWeight: bare.titleFontWeight,
+              fontWeight: bare.initialFontWeight,
               color: ink.base,
               opacity: bare.initialOpacity,
             }}
@@ -137,7 +137,9 @@ export function ConcertCard({
             fontSize: bare.titleFontSize,
             lineHeight: bare.titleLineHeight,
             fontWeight: bare.titleFontWeight,
-            color: scheme.strong,
+            // 웹 `bareTitle` 과 같은 판정 — 세 줄이 `text`·`muted`·`muted` 로 갈리는데
+            // 제목만 `strong` 이면 사다리가 위에서 한 칸 빈다.
+            color: scheme.text,
             ...(reserveTitleLines ? { minHeight: bare.titleReservedHeight } : null),
           }}
         >

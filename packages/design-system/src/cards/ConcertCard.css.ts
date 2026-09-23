@@ -71,7 +71,7 @@ export const bareInitial = style(
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: bare.titleFontWeight,
+    fontWeight: bare.initialFontWeight,
     fontSize: bare.initialFontSize,
     lineHeight: 1,
     color: 'currentColor',
@@ -101,6 +101,11 @@ export const bareMeta = style(
 /**
  * 제목은 항상 2줄에서 자르고, 2줄 *예약*은 `reserve` 로 켠다.
  * `leading` 을 px 로 못박은 덕에 minHeight(2줄 = 2×leading)가 정확히 맞아떨어진다.
+ *
+ * ⚠️ **태블릿 확대(16/23)를 걷어냈다.** 스탬프 줄(`bareLine`)이 같은 이유로 먼저 걷힌 자리다 —
+ * 카드 제목은 화면이 넓어졌다고 커지는 글이 아니고, 넓어진 건 칸이지 위계가 아니다. 시안
+ * 라이브 목록(Page 16 ①)도 데스크톱에서 15 다. 걷어낸 덕에 웹과 native 가 **같은 숫자 하나**를
+ * 쓴다(RN 엔 미디어 쿼리가 없어 저쪽은 처음부터 15 였다).
  */
 export const bareTitle = recipe({
   base: inComponentsLayer({
@@ -108,16 +113,16 @@ export const bareTitle = recipe({
     fontWeight: bare.titleFontWeight,
     fontSize: bare.titleFontSize,
     lineHeight: `${bare.titleLineHeight}px`,
-    color: vars.color.strong,
-    '@media': { [media.tablet]: { fontSize: 16, lineHeight: '23px' } },
+    // `strong` 이 아니라 `text` 다 — 카드 세 줄은 제목/날짜/공연장이 `text`·`muted`·`subtle`
+    // 로 이미 명도 3단이고, 제목만 한 단 더 검으면 그 사다리가 위에서 한 칸 비어 보인다.
+    // `strong`(#05090f)은 표면에서 **가장 강한 전경** 자리라 목록 카드가 가져갈 값이 아니다.
+    color: vars.color.text,
   }),
 
   variants: {
+    // 예약 높이도 태블릿 갈래가 사라졌다 — 2 × `titleLineHeight` 라 한 값이면 충분하다.
     reserve: {
-      true: inComponentsLayer({
-        minHeight: bare.titleReservedHeight,
-        '@media': { [media.tablet]: { minHeight: 46 } },
-      }),
+      true: inComponentsLayer({ minHeight: bare.titleReservedHeight }),
       false: {},
     },
   },

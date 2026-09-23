@@ -11,8 +11,9 @@ import { popoverAnchor, popoverMenu } from './Popover.css'
  * 어떤 `overflow`/`transform` 조상 안에서도 클립되지 않는다(칩 바처럼 `overflow` 클립된 곳 포함).
  * 트리거는 `inline-flex span` 앵커로 감싸 측정하므로 트리거 컴포넌트에 `forwardRef` 를 강제하지 않는다.
  *
- * dismiss: 바깥 mousedown · Escape · 바깥 스크롤(capture) · resize(재측정). `fixed` 좌표가 스크롤에
- * 어긋나므로 바깥 스크롤에선 닫되, **메뉴 내부 스크롤(긴 옵션 목록)은 무시**한다.
+ * dismiss: 바깥 mousedown · Escape · **앵커를 품은 스크롤러**의 스크롤(capture) · resize(재측정).
+ * `fixed` 좌표는 앵커가 움직여야 어긋나므로, 앵커와 무관한 스크롤러(메뉴 내부의 긴 옵션 목록 ·
+ * 옆에 놓인 가로 칩 줄)는 무시한다.
  */
 export interface PopoverProps {
   /** 트리거 — `open`/`toggle` 을 받아 칩·버튼 등을 렌더. */
@@ -84,8 +85,20 @@ export function Popover({
       if (e.key === 'Escape') setOpen(false)
     }
     const onScroll = (e: Event) => {
-      // 메뉴 내부 스크롤(긴 목록)은 유지, 바깥 스크롤만 닫는다(fixed 좌표 어긋남 방지).
-      if (menuRef.current?.contains(e.target as Node)) return
+      // 닫는 근거는 「스크롤했다」가 아니라 **「앵커가 움직였다」**다 — 메뉴는 `fixed` 라
+      // 앵커 rect 로 잡은 좌표가 어긋나야 닫을 이유가 생긴다.
+      //
+      // 그래서 판정은 한 줄이다: **이 스크롤러가 앵커를 품고 있나.**
+      //   - 페이지 스크롤 → target 은 `document` 고 `document.contains(anchor)` 는 참 → 닫는다
+      //   - 앵커를 감싼 패널이 스크롤 → 참 → 닫는다
+      //   - 메뉴 안쪽(긴 옵션 목록) → 메뉴는 body 로 portal 되어 앵커를 안 품는다 → 유지
+      //   - **앵커와 무관한 스크롤러**(칩 줄 같은 가로 스크롤러) → 유지
+      //
+      // 마지막 줄이 이 판정을 좁힌 이유다. 예전엔 「메뉴 밖에서 난 스크롤」이면 전부 닫았는데,
+      // 그러면 팝오버 아래에 있는 가로 칩 줄이 관성으로 굴러가는 중에 트리거를 누를 때
+      // **열리자마자 닫혔다.** 그 줄은 앵커를 한 픽셀도 안 움직인다.
+      const scroller = e.target
+      if (scroller instanceof Node && !scroller.contains(anchor)) return
       setOpen(false)
     }
     document.addEventListener('mousedown', onDown)

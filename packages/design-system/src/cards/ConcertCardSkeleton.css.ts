@@ -54,22 +54,19 @@ const barBase = {
 } as const
 
 /**
- * 첫 바 = 실카드의 제목 자리. 예약을 켰으면 2줄(42/46), 아니면 1줄(21/23) —
+ * 첫 바 = 실카드의 제목 자리. 예약을 켰으면 2줄(42), 아니면 1줄(21) —
  * 로드 전후 높이가 안 튀도록 `reserve` 를 실카드와 **같은 값으로** 넘겨야 한다.
+ *
+ * 태블릿 갈래(46/23)는 실카드 `bareTitle` 에서 제목 확대가 걷히면서 같이 사라졌다. 여기 값이
+ * 저쪽을 따라가는 게 아니라 **같은 상수를 읽는다** — 한쪽만 남으면 로드 순간 바가 튄다.
  */
 export const titleBar = recipe({
   base: inComponentsLayer({ ...barBase, width: '100%' }),
 
   variants: {
     reserve: {
-      true: inComponentsLayer({
-        height: bare.titleReservedHeight,
-        '@media': { [media.tablet]: { height: 46 } },
-      }),
-      false: inComponentsLayer({
-        height: bare.titleLineHeight,
-        '@media': { [media.tablet]: { height: 23 } },
-      }),
+      true: inComponentsLayer({ height: bare.titleReservedHeight }),
+      false: inComponentsLayer({ height: bare.titleLineHeight }),
     },
   },
 

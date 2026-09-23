@@ -15,9 +15,13 @@ type FontFamilyKey = keyof typeof fontFamily
  *
  * 있는 것은 **두 구현이 같은 숫자를 써야 하는 것**뿐이다. 없는 것 둘:
  *
- * - **웹 `@media(tablet)` 값** — gap 13 · 제목 16/23 · 메타 15/23 · 예약 46 · 이니셜 76.
+ * - **웹 `@media(tablet)` 값** — gap 13 · 이니셜 76.
  *   RN 엔 미디어 쿼리가 없어 **상대가 없다.** 갈라질 짝이 없으면 계약이 아니므로
  *   웹 `ConcertCard.css.ts` 에 그대로 남는다. 여기 값은 전부 **모바일 기준**이다.
+ *
+ *   ⚠️ 이 목록이 짧아지는 게 좋은 방향이다. 메타(15/23)에 이어 **제목(16/23)·예약(46)도
+ *   걷었다** — 글자 크기는 칸이 넓어졌다고 커지는 축이 아니고, 걷을 때마다 두 레인이 같은
+ *   숫자 하나로 수렴한다.
  * - **색** — `vars.color.strong` ↔ `scheme.strong` 으로 양쪽이 자기 토큰 맵에서 읽는다.
  *   `tokens/` 가 정본이고 여기로 올리지 않는다(`./index.ts` 불변식).
  */
@@ -32,15 +36,20 @@ type FontFamilyKey = keyof typeof fontFamily
 export type ConcertCardVariant = 'framed' | 'bare' | 'cover'
 
 /**
- * 커버 비율 축 — `bare` 섀시가 사는 두 지면.
+ * 커버 비율 축 — `bare` 섀시가 사는 세 지면.
  *
  * `landscape`(4:3) 는 dice.fm 리스킨 원본(`931:32`)이고, `square`(1:1) 는 billets-app 홈 레일
- * 시안(`2852:1217`)이 요구한다. 임의 비율을 prop 으로 받지 않고 축으로 가두는 이유: 커버는
- * 카드 정체성이라 지면마다 다른 비율이 생기면 **같은 카드로 안 보인다.**
+ * 시안이 요구한다. `portrait`(3:4) 는 **포스터 본래 비율**이다 — 공연 포스터는 세로로 인쇄되고,
+ * 가로·정사각 칸에 넣으면 `object-fit: cover` 가 위아래를 잘라 제목 줄이나 출연자 이름이
+ * 사라진다. 여러 열 그리드처럼 칸이 세로로 설 수 있는 자리가 그 값을 쓴다.
+ *
+ * 임의 비율을 prop 으로 받지 않고 축으로 가두는 이유: 커버는 카드 정체성이라 지면마다 다른
+ * 비율이 생기면 **같은 카드로 안 보인다.** 값을 늘릴 땐 늘 그 질문을 먼저 한다 — 새 지면이
+ * 생겼나, 아니면 한 자리가 취향으로 다르고 싶은 건가.
  *
  * ⚠️ `framed`·`cover` 섀시는 이 축을 보지 않는다 — 둘은 자기 비율을 갖는다.
  */
-export type ConcertCardCoverRatio = 'landscape' | 'square'
+export type ConcertCardCoverRatio = 'landscape' | 'square' | 'portrait'
 
 /**
  * `bare` 섀시가 받는 props — **두 구현이 글자 그대로 같은 것.**
@@ -81,8 +90,10 @@ export interface ConcertCardBareProps {
   /**
    * 커버 비율. 기본 `landscape`(4:3).
    *
-   * 레일처럼 카드 폭이 좁은 자리는 `square` 가 포스터를 덜 자른다 — billets-app 홈 시안이
-   * 그 경우다. 축과 값은 `ConcertCardCoverRatio` · `CONCERT_CARD_BARE_SPEC.coverAspectRatio`.
+   * 자를수록 포스터가 말을 잃는다 — 잘리는 순서대로 `landscape` → `square` → `portrait` 다.
+   * 레일처럼 카드 폭이 좁으면 `square`(billets-app 홈 시안), 여러 열 그리드처럼 칸이 세로로
+   * 설 수 있으면 `portrait`(포스터 본래 비율이라 아무것도 안 잘린다).
+   * 축과 값은 `ConcertCardCoverRatio` · `CONCERT_CARD_BARE_SPEC.coverAspectRatio`.
    */
   coverRatio?: ConcertCardCoverRatio
   /**
@@ -111,10 +122,19 @@ export const CONCERT_CARD_BARE_SPEC = {
    * 나눗셈 결과로 둔다. **이 표를 늘리면 축도 같이 늘어야 한다** — 한쪽만 늘리면 웹 recipe 에
    * 죽은 클래스가 생기거나 RN 이 `undefined` 를 비율로 받는다.
    */
-  coverAspectRatio: { landscape: 4 / 3, square: 1 },
+  coverAspectRatio: { landscape: 4 / 3, square: 1, portrait: 3 / 4 },
   coverRadius: 8,
   /** 포스터가 없을 때 색면 위에 얹는 대형 이니셜. */
   initialFontSize: 62,
+  /**
+   * 워터마크는 **굵게** 둔다 — `initialOpacity` 0.2 에서 가는 획은 면에 묻혀 글자가 아니라
+   * 얼룩으로 읽힌다.
+   *
+   * ⚠️ 예전엔 이 자리가 `titleFontWeight` 를 빌려 썼는데, 둘이 같은 값이었던 건 **우연**이다.
+   * 제목이 시안대로 Medium 으로 내려오면서 워터마크까지 같이 얇아지는 걸로 그게 드러났다 —
+   * 한 상수를 두 뜻으로 쓰면 한쪽만 바꾸고 싶은 날 방법이 없다.
+   */
+  initialFontWeight: '700',
   /** 웹은 `color-mix` 로, RN 은 노드 투명도로 낸다 — 비율 하나로 둘 다 표현된다. */
   initialOpacity: 0.2,
   /** `coverAction` 슬롯이 커버 우하단에서 떨어지는 거리. */
@@ -126,10 +146,14 @@ export const CONCERT_CARD_BARE_SPEC = {
   titleFontSize: 15,
   titleLineHeight: 21,
   /**
-   * 토큰 스케일 밖 리터럴이다 — `fontWeight` 축은 300·400·500·600 넷이고 카드 제목만 700 을
-   * 쓴다. 스케일을 이 한 자리 때문에 늘리지 않는다(`Button` 의 `cta: 15px` 과 같은 예외).
+   * `medium`(500) — 시안 라이브 목록(Page 16 ①) 실측값.
+   *
+   * 예전엔 700 이었고, 그때 주석은 「토큰 스케일 밖 리터럴」이라 적어 두었다. 스케일 밖으로
+   * 나간 이유가 없어졌다 — **위계를 굵기가 아니라 명도로 낸다.** 카드 세 줄은 제목 `text` /
+   * 날짜 `muted` / 공연장 `subtle` 로 이미 세 단이라, 제목이 한 번 더 굵어지면 같은 말을 두 번
+   * 하고 카드가 목록보다 무거워진다. 700 을 쓰는 자리는 이제 워터마크(`initialFontWeight`)뿐이다.
    */
-  titleFontWeight: '700',
+  titleFontWeight: '500',
   /** 2줄 예약 높이 = 2 × `titleLineHeight`. `reserveTitleLines` 가 켜졌을 때만 쓴다. */
   titleReservedHeight: 42,
   /**
