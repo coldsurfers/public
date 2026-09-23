@@ -129,7 +129,8 @@ export function ConcertCard({
         {coverAction ? <CoverAction>{coverAction}</CoverAction> : null}
       </Cover>
 
-      {/* 시안 meta — 제목(strong) / 날짜(mono·muted) / 공연장(footer, muted) 3줄. */}
+      {/* 시안 meta — 제목(`text`) / 날짜(mono·`muted`) / 공연장(`footer` 슬롯) 3줄.
+          셋째 줄 색은 DS 가 안 정한다 — 슬롯이라 소비처가 준 노드를 그대로 그린다. */}
       <Meta>
         <Text
           numberOfLines={bare.titleLines}
@@ -137,8 +138,8 @@ export function ConcertCard({
             fontSize: bare.titleFontSize,
             lineHeight: bare.titleLineHeight,
             fontWeight: bare.titleFontWeight,
-            // 웹 `bareTitle` 과 같은 판정 — 세 줄이 `text`·`muted`·`muted` 로 갈리는데
-            // 제목만 `strong` 이면 사다리가 위에서 한 칸 빈다.
+            // 웹 `bareTitle` 과 같은 판정 — 제목이 `strong` 이면 명도 사다리가 위에서
+            // 한 칸 빈다(사다리 전체는 계약 `titleFontWeight` 주석에).
             color: scheme.text,
             ...(reserveTitleLines ? { minHeight: bare.titleReservedHeight } : null),
           }}

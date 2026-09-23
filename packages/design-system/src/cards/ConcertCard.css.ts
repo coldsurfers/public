@@ -113,8 +113,8 @@ export const bareTitle = recipe({
     fontWeight: bare.titleFontWeight,
     fontSize: bare.titleFontSize,
     lineHeight: `${bare.titleLineHeight}px`,
-    // `strong` 이 아니라 `text` 다 — 카드 세 줄은 제목/날짜/공연장이 `text`·`muted`·`subtle`
-    // 로 이미 명도 3단이고, 제목만 한 단 더 검으면 그 사다리가 위에서 한 칸 비어 보인다.
+    // `strong` 이 아니라 `text` 다 — 제목만 한 단 더 검으면 명도 사다리가 위에서 한 칸 비어
+    // 보인다. 사다리 전체는 계약(`CONCERT_CARD_BARE_SPEC.titleFontWeight`) 주석에 적혀 있다.
     // `strong`(#05090f)은 표면에서 **가장 강한 전경** 자리라 목록 카드가 가져갈 값이 아니다.
     color: vars.color.text,
   }),

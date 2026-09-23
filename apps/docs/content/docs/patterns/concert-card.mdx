@@ -158,8 +158,15 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 카드만 `size="large"` 로 바꾸고 스켈레톤을 `framed` 에 두면 타입은 통과하고 화면이 로드
 순간에 280 → 460 으로 튑니다. 새 코드는 문으로 오는 편이 낫습니다.
 
-`reserveTitleLines` 는 `bare` 섀시만 봅니다 — 그래서 `ConcertCardSkeleton.Bare` 에만 열려
-있습니다.
+`reserveTitleLines` 와 `coverRatio` 는 `bare` 섀시만 봅니다 — 그래서 `ConcertCardSkeleton.Bare`
+에만 열려 있습니다. **둘 다 실카드와 같은 값을 넘겨야 합니다.** 커버 비율이 어긋나면 같은 폭에서
+높이가 크게 달라지는데(`landscape` 4:3 ↔ `portrait` 3:4 는 약 1.78배), 그러면 로드되는 순간
+그리드가 통째로 밀립니다 — 이 컴포넌트가 막으려던 바로 그 점프입니다.
+
+```tsx
+<ConcertCardSkeleton.Bare coverRatio="portrait" reserveTitleLines />  // 로딩
+<ConcertCard.Bare coverRatio="portrait" reserveTitleLines … />        // 로드 완료 — 같은 3:4
+```
 
 커버 스켈레톤은 치수를 옮겨 적지 않고 **실카드의 `coverCover` recipe 를 그대로 가리킵니다.**
 실카드에 크기가 또 붙어도 자동으로 따라옵니다.

@@ -29,14 +29,18 @@ export const bareRoot = style(
   }),
 )
 
-export const bareCover = style(
-  inComponentsLayer({
-    // `String()` 인 이유는 `ConcertCard.css.ts` 의 `bareCoverRatio` 위에 적혀 있다.
-    aspectRatio: String(bare.coverAspectRatio.landscape),
-    width: '100%',
-    borderRadius: bare.coverRadius,
-  }),
-)
+/**
+ * 커버 껍데기와 **비율 축**은 실카드의 것을 그대로 쓴다 — 아래 `cover` 섀시가 `coverCover` 를
+ * 가리키는 것과 같은 수법이고, 머리말의 「겹치는 값은 읽어온다」가 원래 가리키던 자리다.
+ *
+ * ⚠️ 여기가 `landscape` 로 **박혀 있었다.** `square` 때부터 있던 빈틈인데 `portrait`(3:4)에서
+ * 드러났다 — 같은 폭에서 스켈레톤(4:3)과 실카드(3:4)의 커버 높이가 약 **1.78배** 차이 나서,
+ * 그 비율을 쓰는 여러 열 그리드는 로드되는 순간 통째로 아래로 밀린다. 이 컴포넌트가 막으려던
+ * 바로 그 점프다.
+ *
+ * 값을 맞추는 대신 같은 recipe 를 가리키므로, 비율 축이 또 늘어도 스켈레톤이 자동으로 따라온다.
+ */
+export { bareCover, bareCoverRatio } from './ConcertCard.css'
 
 export const bareMeta = style(
   inComponentsLayer({
