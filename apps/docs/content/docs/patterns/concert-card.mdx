@@ -25,7 +25,7 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 | 문 | `variant` | 모양 | 쓰는 자리 |
 | --- | --- | --- | --- |
 | `ConcertCard.Framed` | `framed`(기본) | 테두리 · 배경이 있는 액자 | 목록 표면 |
-| `ConcertCard.Bare` | `bare` | 섀시 없이 4:3 포스터 + 아래 3줄 | 트렌딩 레일 · 담은 공연 그리드 |
+| `ConcertCard.Bare` | `bare` | 섀시 없이 포스터 + 아래 3줄. 비율은 `coverRatio` | 트렌딩 레일 · 담은 공연 그리드 · 목록 그리드 |
 | `ConcertCard.Cover` | `cover` | 세로 커버 한 장에 eyebrow · 제목을 얹고 아래 메타 1줄 | 날짜 피드 |
 | `ConcertCard.CoverCompact` | `cover` + `size="compact"` | 같은 커버, 날짜 · 제목 · 공연장 셋 다 커버 안 | 레일 |
 | `ConcertCard.CoverLarge` | `cover` + `size="large"` | `CoverCompact` 와 같은 그림, 더 큰 칸 | 여러 열 그리드 |
@@ -101,6 +101,24 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 이웃끼리 날짜 · 공연장 줄이 어긋나기 때문입니다. 레일에서는 시안이 1줄 제목 기준이라 켜면 제목
 아래 빈 줄이 생깁니다. `framed` 는 자체 `minHeight` 로 항상 예약하므로 이 prop 을 보지 않습니다.
 
+### `bare` 의 커버 비율 축
+
+`coverRatio` 는 `bare` 섀시만 봅니다 — `framed` · `cover` 는 자기 비율을 갖습니다.
+
+| `coverRatio` | 비율 | 포스터가 잘리는 정도 | 쓰는 자리 |
+| --- | --- | --- | --- |
+| `landscape`(기본) | 4:3 | 가장 많이 | 트렌딩 레일 |
+| `square` | 1:1 | 중간 | 폭이 좁은 레일 |
+| `portrait` | 3:4 | **안 잘린다** | 여러 열 목록 그리드 |
+
+공연 포스터는 세로로 인쇄됩니다. 가로 · 정사각 칸에 넣으면 `object-fit: cover` 가 위아래를
+잘라 제목 줄이나 출연자 이름이 사라집니다 — 칸이 세로로 설 수 있는 자리라면 `portrait` 이
+원본을 그대로 보여 줍니다.
+
+임의 비율을 받지 않고 **축으로 가둡니다.** 커버는 카드 정체성이라 지면마다 다른 비율이
+생기면 같은 카드로 안 보입니다. 값을 늘리기 전에 묻습니다 — 새 지면이 생겼나, 아니면 한
+자리가 취향으로 다르고 싶은 건가.
+
 ## 슬롯 둘
 
 `footer` 는 meta 아래(매칭 근거 줄 등), `coverAction` 은 커버 위 담기 버튼 자리입니다. 자리와
@@ -140,8 +158,15 @@ import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/car
 카드만 `size="large"` 로 바꾸고 스켈레톤을 `framed` 에 두면 타입은 통과하고 화면이 로드
 순간에 280 → 460 으로 튑니다. 새 코드는 문으로 오는 편이 낫습니다.
 
-`reserveTitleLines` 는 `bare` 섀시만 봅니다 — 그래서 `ConcertCardSkeleton.Bare` 에만 열려
-있습니다.
+`reserveTitleLines` 와 `coverRatio` 는 `bare` 섀시만 봅니다 — 그래서 `ConcertCardSkeleton.Bare`
+에만 열려 있습니다. **둘 다 실카드와 같은 값을 넘겨야 합니다.** 커버 비율이 어긋나면 같은 폭에서
+높이가 크게 달라지는데(`landscape` 4:3 ↔ `portrait` 3:4 는 약 1.78배), 그러면 로드되는 순간
+그리드가 통째로 밀립니다 — 이 컴포넌트가 막으려던 바로 그 점프입니다.
+
+```tsx
+<ConcertCardSkeleton.Bare coverRatio="portrait" reserveTitleLines />  // 로딩
+<ConcertCard.Bare coverRatio="portrait" reserveTitleLines … />        // 로드 완료 — 같은 3:4
+```
 
 커버 스켈레톤은 치수를 옮겨 적지 않고 **실카드의 `coverCover` recipe 를 그대로 가리킵니다.**
 실카드에 크기가 또 붙어도 자동으로 따라옵니다.

@@ -34,6 +34,17 @@ export default function Example() {
         footer={<p className={sprinkles({ margin: '0', color: 'muted' })}>무신사 개러지</p>}
         reserveTitleLines
       />
+      {/* 같은 섀시, 비율만 다르다. 공연 포스터는 세로로 인쇄되므로 칸이 세로로 설 수 있는
+          자리에서는 `portrait` 이 위아래를 안 자른다 — 기본 `landscape` 와 나란히 두면
+          잘리는 정도가 바로 보인다. */}
+      <ConcertCard.Bare
+        initial="ㅎ"
+        coverRatio="portrait"
+        title="HYUKOH"
+        meta="8.15 금"
+        footer={<p className={sprinkles({ margin: '0', color: 'muted' })}>올림픽홀</p>}
+        reserveTitleLines
+      />
       {/* `initial` 도 `footer` 도 없다 — 이 섀시는 포스터가 없으면 note 면만 남기고,
           공연장 줄을 아무 데도 안 그린다. 평평한 `ConcertCardProps` 에서는 둘 다 통과했다. */}
       <ConcertCard.Cover eyebrow="INDIE ROCK" title="Parannoul" meta="7.30 수 · 무신사 개러지" />

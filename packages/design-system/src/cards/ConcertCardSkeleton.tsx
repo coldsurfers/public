@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import type { ConcertCardVariant } from '../contract'
+import type { ConcertCardCoverRatio, ConcertCardVariant } from '../contract'
 import { pulse } from '../css/motion.css'
 import { CoverBlock, cx } from '../primitives'
 import type { ConcertCardSize } from './ConcertCard'
@@ -20,6 +20,14 @@ export interface ConcertCardSkeletonProps extends HTMLAttributes<HTMLDivElement>
   size?: ConcertCardSize
   /** `ConcertCard` 의 같은 이름 prop 과 짝 — 제목 자리 높이를 실카드와 맞춘다. */
   reserveTitleLines?: boolean
+  /**
+   * `ConcertCard` 의 같은 이름 prop 과 짝 — **`bare` 전용**. 어긋나면 커버 높이가 튄다.
+   *
+   * 실카드와 **같은 값을 넘겨야 한다.** `portrait`(3:4) 카드 자리에 기본값 `landscape`(4:3)
+   * 스켈레톤을 깔면 같은 폭에서 커버 높이가 약 1.78배 달라져, 로드되는 순간 그리드가 통째로
+   * 아래로 밀린다.
+   */
+  coverRatio?: ConcertCardCoverRatio
 }
 
 /**
@@ -30,17 +38,21 @@ export interface ConcertCardSkeletonProps extends HTMLAttributes<HTMLDivElement>
  */
 export type ConcertCardSkeletonSlotProps = Omit<
   ConcertCardSkeletonProps,
-  'variant' | 'size' | 'reserveTitleLines'
+  'variant' | 'size' | 'reserveTitleLines' | 'coverRatio'
 >
 
-/** `ConcertCardSkeleton.Bare` 가 받는 것 — 위와 같고 `reserveTitleLines` 하나가 더 있다. */
+/**
+ * `ConcertCardSkeleton.Bare` 가 받는 것 — 위와 같고 `reserveTitleLines` · `coverRatio` 둘이
+ * 더 있다. 실카드 `BareConcertCardProps` 가 그 둘을 여는 것과 짝이다.
+ */
 export type BareConcertCardSkeletonProps = ConcertCardSkeletonSlotProps &
-  Pick<ConcertCardSkeletonProps, 'reserveTitleLines'>
+  Pick<ConcertCardSkeletonProps, 'reserveTitleLines' | 'coverRatio'>
 
 export function ConcertCardSkeleton({
   variant = 'framed',
   size = 'full',
   reserveTitleLines = false,
+  coverRatio = 'landscape',
   className,
   ...rest
 }: ConcertCardSkeletonProps) {
@@ -58,7 +70,7 @@ export function ConcertCardSkeleton({
   if (variant === 'bare') {
     return (
       <div aria-hidden="true" className={cx(s.bareRoot, className)} {...rest}>
-        <CoverBlock className={cx(s.bareCover, pulse)} />
+        <CoverBlock className={cx(s.bareCover, s.bareCoverRatio[coverRatio], pulse)} />
         <div className={s.bareMeta}>
           <div className={cx(s.titleBar({ reserve: reserveTitleLines }), pulse)} />
           <div className={cx(s.lineBarShort, pulse)} />
@@ -93,8 +105,17 @@ export function ConcertCardSkeleton({
 ConcertCardSkeleton.Framed = (props: ConcertCardSkeletonSlotProps) => (
   <ConcertCardSkeleton {...props} variant="framed" />
 )
-ConcertCardSkeleton.Bare = ({ reserveTitleLines, ...props }: BareConcertCardSkeletonProps) => (
-  <ConcertCardSkeleton {...props} variant="bare" reserveTitleLines={reserveTitleLines} />
+ConcertCardSkeleton.Bare = ({
+  reserveTitleLines,
+  coverRatio,
+  ...props
+}: BareConcertCardSkeletonProps) => (
+  <ConcertCardSkeleton
+    {...props}
+    variant="bare"
+    reserveTitleLines={reserveTitleLines}
+    coverRatio={coverRatio}
+  />
 )
 ConcertCardSkeleton.Cover = (props: ConcertCardSkeletonSlotProps) => (
   <ConcertCardSkeleton {...props} variant="cover" size="full" />
