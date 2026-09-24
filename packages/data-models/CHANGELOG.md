@@ -1,5 +1,13 @@
 # @coldsurfers/data-models
 
+## 0.13.0
+
+### Minor Changes
+
+- [#201](https://github.com/coldsurfers/public/pull/201) [`1ca4c2d`](https://github.com/coldsurfers/public/commit/1ca4c2d872cbb0f7a95ba2370de7b09fbc305b19) Thanks [@yungblud](https://github.com/yungblud)! - `/daily` 시리즈 축에 `features` 를 연다. 형제 셋(`new-shows`·`weekend`·`popular`)은 상류가
+  달력이나 조회수라 자동으로 서는데, 명절·연휴처럼 그때만 서는 편은 붙일 자리가 없었다.
+  키만 늘리고 라벨·리드는 `@paul-rockstar/daily` 의 `DAILY_SERIES` 가 든다.
+
 ## 0.12.2
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @coldsurfers/api-sdk
 
+## 4.4.0
+
+### Minor Changes
+
+- [#201](https://github.com/coldsurfers/public/pull/201) [`1ca4c2d`](https://github.com/coldsurfers/public/commit/1ca4c2d872cbb0f7a95ba2370de7b09fbc305b19) Thanks [@yungblud](https://github.com/yungblud)! - `DailyEditionSeriesSchema` 에 `features` 가 열린 것을 생성 타입에 반영한다. 서버 OpenAPI 재생성
+  전까지 소비자가 이 키를 좁은 union 으로 읽지 않게 하는 외과 삽입이다.
+
 ## 4.3.0
 
 ### Minor Changes
