@@ -22,8 +22,12 @@ import { ConcertDTOSchema } from './concert.dto'
  *
  * 라벨·리드·케이던스는 `@paul-rockstar/daily` 의 `DAILY_SERIES` 가 들고, 여기는 **키만** 든다.
  * 그쪽이 이 enum 과 어긋나면 그 패키지의 tsc 가 잡는다.
+ *
+ * `features` 만 상류가 달력이 아니라 **사건**이다 — 형제 셋은 각자 자동 상류(신규 등록·주말·
+ * 조회수)에서 나오는데, 이쪽은 명절·연휴처럼 그때만 서는 축이라 사람이 범위를 정한다.
+ * 그래서 케이던스를 약속하지 않는다.
  */
-export const DailyEditionSeriesSchema = z.enum(['new-shows', 'weekend', 'popular'])
+export const DailyEditionSeriesSchema = z.enum(['new-shows', 'weekend', 'popular', 'features'])
 export type DailyEditionSeries = z.infer<typeof DailyEditionSeriesSchema>
 
 /** 공연장 — 좌측 레일의 주인이자 알림받기의 대상. `id` 는 구독 `targetId`(`Venue.id`). */

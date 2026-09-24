@@ -7964,12 +7964,12 @@ export interface components {
                 title: string;
             }[];
             /** @enum {string} */
-            series: "new-shows" | "weekend" | "popular";
+            series: "new-shows" | "weekend" | "popular" | "features";
             slug: string;
             title?: string;
         };
         /** @enum {string} */
-        DailyEditionSeriesSchema: "new-shows" | "weekend" | "popular";
+        DailyEditionSeriesSchema: "new-shows" | "weekend" | "popular" | "features";
         DailyEditionSummaryDTOSchema: {
             concertCount: number;
             intro: string;
@@ -7977,7 +7977,7 @@ export interface components {
             publishedAt: string;
             sectionCount: number;
             /** @enum {string} */
-            series: "new-shows" | "weekend" | "popular";
+            series: "new-shows" | "weekend" | "popular" | "features";
             slug: string;
             title: string | null;
         };
