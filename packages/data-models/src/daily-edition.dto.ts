@@ -216,14 +216,27 @@ export type DailyProseEdition = z.infer<typeof DailyProseEditionSchema>
  *
  * shim 은 영구물이 아니다. 저장된 편에 `kind: 'digest'` 를 한 번 백필하면 뗄 수 있다.
  */
-export const DailyEditionDataSchema = z.preprocess(
+export type DailyEditionData = DailyDigestEdition | DailyProseEdition
+
+/**
+ * ⚠️ **타입을 손으로 적는다** — 여기만 `z.infer` 를 안 쓴다.
+ *
+ * 추론에 맡기면 발행본 `.d.ts` 가 `z.ZodPreprocess<…, unknown>` 을 그대로 적어 내보내는데,
+ * 그 인터페이스의 **인자 수가 zod 버전마다 다르다**(4.4.3 은 `<B>` 하나, 4.5.4 는 `<B, I>` 둘).
+ * 우리가 4.5.x 로 빌드하고 소비자가 4.4.x 를 물면 그 줄이 TS2558 로 떨어지고, `skipLibCheck`
+ * 아래에서는 조용히 **`any`** 가 된다 — 실제로 `@paul-rockstar/daily` 에서 `DailyEditionData` 와
+ * `DailyEditionFeedPayload['edition']` 이 둘 다 any 로 풀렸다(0.14.0).
+ *
+ * `z.ZodType<Output, Input>` 은 두 버전에서 인자 수가 같아 그 틈을 안 만든다. 런타임 스키마는
+ * 그대로고, 여기서 좁혀지는 건 타입 표면뿐이다.
+ */
+export const DailyEditionDataSchema: z.ZodType<DailyEditionData, unknown> = z.preprocess(
   (value) =>
     typeof value === 'object' && value !== null && !('kind' in value)
       ? { kind: 'digest', ...value }
       : value,
   z.discriminatedUnion('kind', [DailyDigestEditionSchema, DailyProseEditionSchema]),
 )
-export type DailyEditionData = z.infer<typeof DailyEditionDataSchema>
 
 /**
  * `Feed.payload` 에 실제로 저장되는 것 — **한 벌에 두 렌즈**.
