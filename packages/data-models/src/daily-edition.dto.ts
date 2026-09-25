@@ -202,6 +202,19 @@ export const DailyProseEditionSchema = z.object({
    * 그 자리의 맥락에 붙은 것이라 축이 다르다.
    */
   cover: z.string().nullable().optional(),
+  /**
+   * (선택) 글쓴이 — **핸들 문자열 하나**. 다이제스트에는 없는 칸이다(기계가 굽고 사람은 문장만
+   * 얹어서 바이라인이 설 자리가 없다). 없으면 표면이 그 칸을 접는다.
+   *
+   * **왜 union 이 아니라 `string` 인가.** 진용의 정본은 소비처 레포의 `@paul-rockstar/persona`
+   * (`EditorialHandle`)이고, 그걸 여기서 물면 계약 패키지가 소비처를 아는 거꾸로가 된다. 대신
+   * 아는 쪽이 좁힌다 — 발행 파이프가 진용에 없는 핸들을 거부하고, 표면은 `personaByHandle` 로 푼다.
+   * 저쪽 `Pick.author` 가 이미 같은 꼴이다.
+   *
+   * URL 슬러그를 겸한다 — 글쓴이 지면(`/daily/contributors/<핸들>`)이 이 값으로 선다. 그래서
+   * 표시 이름(`윤슬`)이 아니라 핸들(`yoonseul`)을 든다: 이름은 바뀌어도 주소는 안 바뀌어야 한다.
+   */
+  author: z.string().optional(),
 })
 export type DailyProseEdition = z.infer<typeof DailyProseEditionSchema>
 
