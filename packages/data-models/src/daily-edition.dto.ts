@@ -109,14 +109,20 @@ export const DailyBlockSchema = z.discriminatedUnion('type', [
   /**
    * 본문 위치에 꽂히는 공연 — 레퍼런스의 `PLAYER` 자리.
    *
-   * **slug 만 든다.** 실물은 렌더 시점에 조회로 채운다 — 레퍼런스도 body 에는
-   * `playerMap["t<id>"]` 의 id 만 두고 실물을 별도 JSON 에서 준다. 편을 굽는 쪽엔 그 조회가
-   * 이미 있다(`pickSummary`).
-   *
    * 이것이 끝에 모으는 `relatedConcerts[]` 를 **대체한다**. 글이 공연을 가리키는 자리는 본문
    * 안이고, 끝에 모으면 문맥이 끊긴다.
+   *
+   * **사실을 통째로 든다** — 픽(`DailyPickSchema`)과 같은 축이다. 처음엔 slug 하나만 뒀다.
+   * 레퍼런스가 body 에 `playerMap["t<id>"]` 의 id 만 두고 실물을 별도 JSON 으로 주길래 그 꼴을
+   * 따랐는데, 우리 읽기 면에는 그 *별도 JSON* 에 해당하는 두 번째 응답이 없다. 그래서 표면이
+   * 티켓을 못 그리고 slug 를 글자 그대로 뱉었다(paul-rockstar#484 리뷰).
+   *
+   * ⚠️ 그래서 사실도 **발행 시점에 얼어붙는다.** 파일 상단 ⚠️ 와 같은 규약이고, 근거도 같다 —
+   * 렌더마다 DB 를 다시 읽으면 `ended` 가 장기 상연작을 첫날 지나자마자 끝난 것으로 찍는다.
+   * 채우는 건 사람이 아니라 발행 파이프다(`publish-prose.ts` 가 매니페스트의 slug 를 조회로
+   * 치환한다) — 매니페스트는 가리키고, 실물은 파이프가 채운다.
    */
-  z.object({ type: z.literal('concert'), slug: z.string() }),
+  z.object({ type: z.literal('concert'), concert: DailyConcertSchema }),
   /**
    * 본문 사진 — 레퍼런스의 `IMG` 자리(한 기사에 6장 썼다).
    *
