@@ -1,4 +1,5 @@
-
+---
+'@coldsurfers/data-models': minor
 ---
 
 산문 편에 `author` 를 연다 — 글쓴이 핸들 문자열 하나(`'yoonseul'`). 없으면 표면이 그 칸을 접는다.
