@@ -94,8 +94,51 @@ export const DailySectionSchema = z.object({
 })
 export type DailySection = z.infer<typeof DailySectionSchema>
 
-/** 편 한 호의 본문 전부. */
-export const DailyEditionDataSchema = z.object({
+/**
+ * 산문 편의 본문 블록.
+ *
+ * 레퍼런스(Bandcamp Daily `/features`)의 55블록짜리 기사를 DOM 으로 뜯어 나온 것이 **4종뿐**이다 —
+ * `P` · `PLAYER` · `IMG` · `HR`. 소제목(h2/h3)과 인용구는 **0개**였다. 그래서 그 넷만 연다.
+ *
+ * ⚠️ `quote`·`heading` 을 미리 열지 않는다. 첫 편이 실제로 쓸 때 연다 — 쓰지 않는 종류를
+ * 열어두면 렌더러가 쓰이지 않는 분기를 지고 간다.
+ */
+export const DailyBlockSchema = z.discriminatedUnion('type', [
+  /** 한 문단. 인라인 markdown 은 **링크·강조만** 허용한다(블록 문법은 블록이 든다). */
+  z.object({ type: z.literal('paragraph'), text: z.string() }),
+  /**
+   * 본문 위치에 꽂히는 공연 — 레퍼런스의 `PLAYER` 자리.
+   *
+   * **slug 만 든다.** 실물은 렌더 시점에 조회로 채운다 — 레퍼런스도 body 에는
+   * `playerMap["t<id>"]` 의 id 만 두고 실물을 별도 JSON 에서 준다. 편을 굽는 쪽엔 그 조회가
+   * 이미 있다(`pickSummary`).
+   *
+   * 이것이 끝에 모으는 `relatedConcerts[]` 를 **대체한다**. 글이 공연을 가리키는 자리는 본문
+   * 안이고, 끝에 모으면 문맥이 끊긴다.
+   */
+  z.object({ type: z.literal('concert'), slug: z.string() }),
+  /**
+   * 본문 사진 — 레퍼런스의 `IMG` 자리(한 기사에 6장 썼다).
+   *
+   * ⚠️ `url` 은 **발행 시점에 얼어붙는다.** 편 payload 는 구워진 날의 값을 그대로 들고, 원천을
+   * 고쳐도 소급되지 않는다 — 죽은 이미지 호스트가 편 안에 남아 SQL 로 직접 친 전례가 있다
+   * (paul-rockstar#483). 호스트를 여기서 막지는 않되, 수명을 통제하는 곳에 올려 쓴다.
+   */
+  z.object({
+    type: z.literal('image'),
+    url: z.string(),
+    /** 대체 텍스트. 비울 수 없다 — 읽기 지면의 사진은 장식이 아니다. */
+    alt: z.string(),
+    /** (선택) 사진 아래 한 줄. 출처 표기가 필요하면 여기다. */
+    caption: z.string().optional(),
+  }),
+  /** 구분선 — 레퍼런스가 산문과 Q&A 를 가른 자리. */
+  z.object({ type: z.literal('divider') }),
+])
+export type DailyBlock = z.infer<typeof DailyBlockSchema>
+
+/** 두 갈래가 공유하는 편의 **신원** — URL 과 발행일. 본문만 갈린다. */
+const editionIdentity = {
   series: DailyEditionSeriesSchema,
   /**
    * URL slug. ⚠️ 유일성은 **시리즈 안에서만** 요구한다 — 같은 날 인기호와 신규공연호가 함께
@@ -104,12 +147,82 @@ export const DailyEditionDataSchema = z.object({
   slug: z.string(),
   /** 발행일 `YYYY-MM-DD` (KST). 제목·커버 숫자·정렬이 전부 여기서 파생된다. */
   publishedAt: z.string(),
+}
+
+/**
+ * 다이제스트 편 — 공연 묶음이 본문인 지금까지의 편 전부.
+ *
+ * 신규공연호·주말호·인기호가 이 모양이고, **필드가 하나도 바뀌지 않았다**(`kind` 만 얹혔다).
+ */
+export const DailyDigestEditionSchema = z.object({
+  ...editionIdentity,
+  kind: z.literal('digest'),
   /** (선택) 편 고유 제목. 없으면 발행일 + `새로 올라온 공연 가이드`. 주말호가 이 필드를 쓴다. */
   title: z.string().optional(),
   /** 편집 총평 — 편의 리드이자 목록 카드의 본문. */
   intro: z.string(),
   sections: DailySectionSchema.array(),
 })
+export type DailyDigestEdition = z.infer<typeof DailyDigestEditionSchema>
+
+/**
+ * 산문 편 — **글이 본문인** 편. `features` 안에 선다.
+ *
+ * 다이제스트와 갈리는 지점이 셋이다.
+ * - `title` 이 **필수**다. 글에 제목이 없을 수 없다(다이제스트는 발행일로 만들어 쓴다).
+ * - `intro` 가 아니라 `lead` 다. 역할이 다르다 — 저쪽은 *총평*, 이쪽은 *도입부*다.
+ * - 본문이 `sections[]` 가 아니라 `body: Block[]` 다.
+ */
+export const DailyProseEditionSchema = z.object({
+  ...editionIdentity,
+  kind: z.literal('prose'),
+  title: z.string(),
+  /** 도입부 — 제목 아래 한 단락. 목록 카드의 본문도 이것을 쓴다. */
+  lead: z.string(),
+  /**
+   * 본문.
+   *
+   * ⚠️ `concert` 블록이 **최소 하나** 있어야 한다. 없으면 알림 카드가 빈손이고(`payload.data` 를
+   * 이 블록들에서 모은다), 산문 편도 결국 공연으로 보내는 글이라 이 강제가 제품과도 맞다.
+   */
+  body: DailyBlockSchema.array().refine(
+    (blocks) => blocks.some((block) => block.type === 'concert'),
+    { message: 'concert 블록 최소 1개' },
+  ),
+  /**
+   * (선택) 편의 얼굴 — 목록 카드의 커버. 다이제스트가 `sections[0].pick.poster` 로 세우는 자리다.
+   *
+   * 본문 첫 사진을 자동으로 쓰지 않는다. 목록에 걸리는 한 장은 편집 선택이고, 글 안의 사진은
+   * 그 자리의 맥락에 붙은 것이라 축이 다르다.
+   */
+  cover: z.string().nullable().optional(),
+})
+export type DailyProseEdition = z.infer<typeof DailyProseEditionSchema>
+
+/**
+ * 편 한 호의 본문 전부 — `kind` 로 갈리는 두 갈래.
+ *
+ * ⚠️ **`z.preprocess` 가 앞에 있는 이유.** 이미 발행된 편들의 payload 에는 `kind` 가 없다.
+ * 판별자가 없으면 `discriminatedUnion` 은 어느 가지로 갈지 못 정하고 그 자리에서 떨어지는데,
+ * 읽는 쪽(`/v1/daily/*`)은 파싱에 실패한 편을 **조용히 `null` 로 버린다**. 즉 그냥 얹으면
+ * 아카이브가 통째로 사라진다.
+ *
+ * `kind: z.literal('digest').default('digest')` 로는 안 구해진다 — 기본값은 **디스패치 이후에**
+ * 적용된다. 그래서 정규화를 스키마 바깥 경계에서 한 번 한다.
+ *
+ * ⚠️ **`z.union` 으로 도망가지 않는다.** 통과는 하지만 실패 진단이 무너진다 — 두 가지를 다 훑고
+ * 최상위에서 `"": Invalid input` 하나만 뱉어 경로도 이유도 없다. 편이 상하면 읽는 쪽이 콘솔에만
+ * 찍고 버리므로 **그 콘솔 한 줄이 유일한 단서다.**
+ *
+ * shim 은 영구물이 아니다. 저장된 편에 `kind: 'digest'` 를 한 번 백필하면 뗄 수 있다.
+ */
+export const DailyEditionDataSchema = z.preprocess(
+  (value) =>
+    typeof value === 'object' && value !== null && !('kind' in value)
+      ? { kind: 'digest', ...value }
+      : value,
+  z.discriminatedUnion('kind', [DailyDigestEditionSchema, DailyProseEditionSchema]),
+)
 export type DailyEditionData = z.infer<typeof DailyEditionDataSchema>
 
 /**
@@ -118,6 +231,9 @@ export type DailyEditionData = z.infer<typeof DailyEditionDataSchema>
  * 앞의 넷(`title`·`description`·`data`·`createdAt`)은 기존 `FeedConcertListDTOSchema` 와 같은
  * 모양이다. 편 Feed 가 `entityType: 'CONCERT_LIST'` 를 그대로 쓰기 때문에(결정 14) 알림 카드가
  * 이 넷만 보고 기존 경로로 그려진다 — web-next 무수정.
+ *
+ * ⚠️ 산문 편은 `entityType` 이 `EDITORIAL` 로 갈리지만 **payload 모양은 같다.** `data` 는 본문의
+ * `concert` 블록에서 모은다 — 그래서 그 블록이 최소 하나 강제된다(`DailyProseEditionSchema`).
  *
  * `edition` 은 그 위에 얹힌 편 본문이고 `/v1/daily/*` 만 읽는다. zod 는 모르는 키를 버리므로
  * 알림 응답(`FeedDailyEditionDTOSchema`)에서는 조용히 떨어진다 — 30KB 짜리 본문이 알림 목록에
