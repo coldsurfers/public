@@ -143,7 +143,7 @@ export const DailyBlockSchema = z.discriminatedUnion('type', [
 ])
 export type DailyBlock = z.infer<typeof DailyBlockSchema>
 
-/** 두 갈래가 공유하는 편의 **신원** — URL 과 발행일. 본문만 갈린다. */
+/** 두 갈래가 공유하는 편의 **신원** — URL·발행일·글쓴이. 본문만 갈린다. */
 const editionIdentity = {
   series: DailyEditionSeriesSchema,
   /**
@@ -153,12 +153,30 @@ const editionIdentity = {
   slug: z.string(),
   /** 발행일 `YYYY-MM-DD` (KST). 제목·커버 숫자·정렬이 전부 여기서 파생된다. */
   publishedAt: z.string(),
+  /**
+   * (선택) 글쓴이 — **핸들 문자열 하나**. 없으면 표면이 그 칸을 접는다.
+   *
+   * **다이제스트도 이 칸을 든다.** 처음엔 산문 전용으로 열었다 — 기계가 굽는 편에 바이라인이
+   * 설 자리가 없다고 봤다. 그런데 다이제스트의 `intro` 는 사람이 쓰는 총평이고, 그 총평이
+   * 화자의 말투를 갖게 되면(소비처가 2026-09-26 에 반말로 내렸다) 누가 말하는지가 빈다.
+   * **말하는 칸이 있으면 화자도 있다.**
+   *
+   * **왜 union 이 아니라 `string` 인가.** 진용의 정본은 소비처 레포의 `@paul-rockstar/persona`
+   * (`EditorialHandle`)이고, 그걸 여기서 물면 계약 패키지가 소비처를 아는 거꾸로가 된다. 대신
+   * 아는 쪽이 좁힌다 — 발행 파이프가 진용에 없는 핸들을 거부하고, 표면은 `personaByHandle` 로 푼다.
+   * 저쪽 `Pick.author` 가 이미 같은 꼴이다.
+   *
+   * URL 슬러그를 겸한다 — 글쓴이 지면(`/daily/contributors/<핸들>`)이 이 값으로 선다. 그래서
+   * 표시 이름(`윤슬`)이 아니라 핸들(`yoonseul`)을 든다: 이름은 바뀌어도 주소는 안 바뀌어야 한다.
+   */
+  author: z.string().optional(),
 }
 
 /**
  * 다이제스트 편 — 공연 묶음이 본문인 지금까지의 편 전부.
  *
- * 신규공연호·주말호·인기호가 이 모양이고, **필드가 하나도 바뀌지 않았다**(`kind` 만 얹혔다).
+ * 신규공연호·주말호·인기호가 이 모양이다. 얹힌 건 둘뿐이다 — 판별자 `kind`, 그리고 총평이
+ * 화자의 말투를 갖게 되면서 따라온 `author`(`editionIdentity`).
  */
 export const DailyDigestEditionSchema = z.object({
   ...editionIdentity,
@@ -202,19 +220,6 @@ export const DailyProseEditionSchema = z.object({
    * 그 자리의 맥락에 붙은 것이라 축이 다르다.
    */
   cover: z.string().nullable().optional(),
-  /**
-   * (선택) 글쓴이 — **핸들 문자열 하나**. 다이제스트에는 없는 칸이다(기계가 굽고 사람은 문장만
-   * 얹어서 바이라인이 설 자리가 없다). 없으면 표면이 그 칸을 접는다.
-   *
-   * **왜 union 이 아니라 `string` 인가.** 진용의 정본은 소비처 레포의 `@paul-rockstar/persona`
-   * (`EditorialHandle`)이고, 그걸 여기서 물면 계약 패키지가 소비처를 아는 거꾸로가 된다. 대신
-   * 아는 쪽이 좁힌다 — 발행 파이프가 진용에 없는 핸들을 거부하고, 표면은 `personaByHandle` 로 푼다.
-   * 저쪽 `Pick.author` 가 이미 같은 꼴이다.
-   *
-   * URL 슬러그를 겸한다 — 글쓴이 지면(`/daily/contributors/<핸들>`)이 이 값으로 선다. 그래서
-   * 표시 이름(`윤슬`)이 아니라 핸들(`yoonseul`)을 든다: 이름은 바뀌어도 주소는 안 바뀌어야 한다.
-   */
-  author: z.string().optional(),
 })
 export type DailyProseEdition = z.infer<typeof DailyProseEditionSchema>
 
