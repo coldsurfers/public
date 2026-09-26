@@ -1,5 +1,15 @@
 # @coldsurfers/data-models
 
+## 0.17.0
+
+### Minor Changes
+
+- [`794edc7`](https://github.com/coldsurfers/public/commit/794edc7942c4fd53b83dede933186369f5fac1d1) Thanks [@yungblud](https://github.com/yungblud)! - 다이제스트 편도 `author` 를 든다 — 글쓴이 칸을 `editionIdentity` 로 올려 두 갈래가 같이 쓴다.
+
+  0.16.0 에서 이 칸을 산문 전용으로 열 때의 근거는 _기계가 굽는 편에 바이라인이 설 자리가 없다_ 였다. 그런데 다이제스트의 `intro` 는 사람이 쓰는 총평이고, 소비처가 그 총평을 화자의 말투로 내리면서(paul-rockstar, 2026-09-26) 누가 말하는지가 비었다. 말하는 칸이 있으면 화자도 있다.
+
+  옵셔널이라 이미 발행된 편은 그대로 파싱된다. 산문 편의 `author` 는 모양·의미가 그대로고 정의 위치만 옮겼다.
+
 ## 0.16.0
 
 ### Minor Changes
