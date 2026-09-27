@@ -98,10 +98,11 @@ export type DailySection = z.infer<typeof DailySectionSchema>
  * 산문 편의 본문 블록.
  *
  * 레퍼런스(Bandcamp Daily `/features`)의 55블록짜리 기사를 DOM 으로 뜯어 나온 것이 **4종뿐**이다 —
- * `P` · `PLAYER` · `IMG` · `HR`. 소제목(h2/h3)과 인용구는 **0개**였다. 그래서 그 넷만 연다.
+ * `P` · `PLAYER` · `IMG` · `HR`. 소제목(h2/h3)과 인용구는 **0개**였다. 그래서 그 넷으로 열었다.
  *
- * ⚠️ `quote`·`heading` 을 미리 열지 않는다. 첫 편이 실제로 쓸 때 연다 — 쓰지 않는 종류를
- * 열어두면 렌더러가 쓰이지 않는 분기를 지고 간다.
+ * `heading`·`quote` 는 *쓸 편이 생기면 연다* 고 미뤄뒀던 둘이다. personal-site 에서 옮겨오는
+ * 산문 9편 중 5편이 소제목을, 6편이 인용을 쓴다(paul-rockstar#495). 목록·표·코드는 여전히
+ * 열지 않는다 — 편작에서 문단으로 풀거나 걷어낸다.
  */
 export const DailyBlockSchema = z.discriminatedUnion('type', [
   /** 한 문단. 인라인 markdown 은 **링크·강조만** 허용한다(블록 문법은 블록이 든다). */
@@ -140,6 +141,25 @@ export const DailyBlockSchema = z.discriminatedUnion('type', [
   }),
   /** 구분선 — 레퍼런스가 산문과 Q&A 를 가른 자리. */
   z.object({ type: z.literal('divider') }),
+  /**
+   * 소제목. `level` 은 둘뿐이다 — 편 제목이 h1 을 쓰므로 본문은 h2 부터, 그보다 깊은 단계는
+   * 옮겨올 글에 없다. 인라인 markdown 은 받지 않는다(제목은 평문이다).
+   */
+  z.object({
+    type: z.literal('heading'),
+    level: z.union([z.literal(2), z.literal(3)]),
+    text: z.string(),
+  }),
+  /**
+   * 인용 — 남의 말이나 가사를 본문과 떼어 싣는 자리. `text` 는 `paragraph` 와 같은 인라인 규약
+   * (링크·강조만)이고, 여러 줄이면 `\n` 으로 잇는다.
+   */
+  z.object({
+    type: z.literal('quote'),
+    text: z.string(),
+    /** (선택) 누구의 말인지 한 줄. 비우면 출처 줄을 그리지 않는다. */
+    cite: z.string().optional(),
+  }),
 ])
 export type DailyBlock = z.infer<typeof DailyBlockSchema>
 
