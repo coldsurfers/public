@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 1.2.0
+
+### Minor Changes
+
+- [#215](https://github.com/coldsurfers/public/pull/215) [`222f8ca`](https://github.com/coldsurfers/public/commit/222f8cabea838c1a52d2aa9d9869cfd7eee8ff4a) Thanks [@yungblud](https://github.com/yungblud)! - `Ticket` 의 종이를 문으로 연다 — `Ticket.Raised`(흰 종이 · `2xl` · 그림자 `sm`) · `Ticket.Muted`(회색 종이 · 테두리 없음 · `xl`). 노치를 걷어냈다. `ticketGround` 는 export 만 남기고 효과가 없어졌다(deprecated, 다음 major 에서 삭제). 천공선과 스텁은 그대로다.
+
 ## 1.1.0
 
 ### Minor Changes
