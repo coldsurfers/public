@@ -329,5 +329,10 @@ export const DailyEditionSummaryDTOSchema = z.object({
   /** 픽과 행을 합친 공연 수. */
   concertCount: z.number().int(),
   sectionCount: z.number().int(),
+  /**
+   * (선택) 글쓴이 핸들 — 편 본문의 `author` 를 그대로 옮긴다. 목록 카드가 바이라인을 그리려고 연다.
+   * 없으면 카드는 바이라인을 접는다. 편 본문과 같은 이유로 `string` 이다(좁히는 건 아는 쪽의 몫).
+   */
+  author: z.string().optional(),
 })
 export type DailyEditionSummaryDTO = z.infer<typeof DailyEditionSummaryDTOSchema>
