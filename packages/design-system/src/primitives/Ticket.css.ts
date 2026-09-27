@@ -1,4 +1,4 @@
-import { style, styleVariants } from '@vanilla-extract/css'
+import { createVar, style, styleVariants } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
@@ -13,6 +13,11 @@ import { media } from '../css/media'
  * 여기서 그리는 건 **종이·천공선까지**다. 날짜 펀치·일련번호·포스터 돌출은 내용이라
  * 소비처가 얹는다. 시안 `1418:8`(데스크탑 행) · `1423:17`(모바일).
  */
+
+/**
+ * @deprecated 노치를 걷어내면서 칠할 곳이 없어졌다 — 값을 넣어도 아무 효과가 없다. 다음 major 에서 지운다.
+ */
+export const ticketGround = createVar()
 
 export const ticket = style(inComponentsLayer({ position: 'relative', display: 'flex' }))
 

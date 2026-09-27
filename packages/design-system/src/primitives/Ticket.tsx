@@ -2,6 +2,8 @@ import type { HTMLAttributes, ReactNode } from 'react'
 import { cx } from './cx'
 import { stubOrientation, ticket, ticketOrientation, ticketPaper, ticketStub } from './Ticket.css'
 
+export { ticketGround } from './Ticket.css'
+
 export type TicketOrientation = 'row' | 'stacked' | 'responsive'
 
 export interface TicketProps extends HTMLAttributes<HTMLDivElement> {

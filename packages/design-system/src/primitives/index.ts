@@ -37,7 +37,7 @@ export {
   type TextTone,
 } from './Text'
 export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
-export { Ticket, type TicketOrientation, type TicketProps } from './Ticket'
+export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'
 export { TypewriterText, type TypewriterTextProps } from './TypewriterText'
 export {
