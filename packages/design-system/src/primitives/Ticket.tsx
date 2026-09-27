@@ -1,14 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cx } from './cx'
-import { stubNotch, stubOrientation, ticket, ticketOrientation, ticketStub } from './Ticket.css'
-
-/**
- * 종이를 바꿔 끼우는 손잡이 — 지면색(노치)·종이 색·가장자리·모서리·그림자.
- *
- * DS 가 선언하지 않는 변수라 소비처는 자기 클래스의 `vars` 에서든 조상에서든 넣으면 이긴다.
- * `Ticket` 내부 엘리먼트로 뻗는 규칙을 쓰지 않아도 된다.
- */
-export { ticketEdge, ticketGround, ticketPaper, ticketRadius, ticketShadow } from './Ticket.css'
+import { stubOrientation, ticket, ticketOrientation, ticketPaper, ticketStub } from './Ticket.css'
 
 export type TicketOrientation = 'row' | 'stacked' | 'responsive'
 
@@ -19,46 +11,56 @@ export interface TicketProps extends HTMLAttributes<HTMLDivElement> {
    */
   orientation?: TicketOrientation
   /**
-   * 뜯어내는 쪽의 내용. 천공선·노치는 `Ticket` 이 그린다 — 소비처가 빠뜨릴 수 없게.
+   * 뜯어내는 쪽의 내용. 천공선은 `Ticket` 이 그린다 — 소비처가 빠뜨릴 수 없게.
    * 없으면 티켓은 그냥 종이 한 장이 된다.
    */
   stub?: ReactNode
-  /** 천공선 양 끝의 노치. 기본은 켠다 — 천공선과 스텁만으로 티켓이 읽히는 지면에서 끈다. */
-  notch?: boolean
   /** 스텁 치수(폭·패딩·정렬)는 소비처가 정한다. */
   stubClassName?: string
+}
+
+function TicketPaper({
+  paper,
+  orientation = 'responsive',
+  stub,
+  stubClassName,
+  className,
+  children,
+  ...rest
+}: TicketProps & { paper: keyof typeof ticketPaper }) {
+  return (
+    <div
+      className={cx(ticket, ticketPaper[paper], ticketOrientation[orientation], className)}
+      {...rest}
+    >
+      {children}
+      {stub ? (
+        <div className={cx(ticketStub, stubOrientation[orientation], stubClassName)}>{stub}</div>
+      ) : null}
+    </div>
+  )
 }
 
 /**
  * 실물 티켓 형태의 종이 — 본체 + 뜯어내는 스텁.
  *
- * 치수·타이포·내용은 전부 소비처의 몫이고, 여기가 책임지는 건 **형태**(종이·천공선·노치)뿐이다.
- * 자세한 배경은 `Ticket.css.ts` 머리 주석.
+ * 치수·타이포·내용은 전부 소비처의 몫이고, 여기가 책임지는 건 **형태**(종이·천공선)뿐이다.
+ * 종이가 달라야 하면 `Ticket.Raised` · `Ticket.Muted` 로 온다. 자세한 배경은 `Ticket.css.ts` 머리 주석.
  */
-export function Ticket({
-  orientation = 'responsive',
-  stub,
-  notch = true,
-  stubClassName,
-  className,
-  children,
-  ...rest
-}: TicketProps) {
-  return (
-    <div className={cx(ticket, ticketOrientation[orientation], className)} {...rest}>
-      {children}
-      {stub ? (
-        <div
-          className={cx(
-            ticketStub,
-            notch && stubNotch,
-            stubOrientation[orientation],
-            stubClassName,
-          )}
-        >
-          {stub}
-        </div>
-      ) : null}
-    </div>
-  )
+export function Ticket(props: TicketProps) {
+  return <TicketPaper paper="plain" {...props} />
 }
+
+/** 바닥에서 떠오른 흰 종이 — 모서리 `2xl` · 그림자 `sm`. 묶음의 얼굴(픽)처럼 한 장이 먼저 읽혀야 할 때. */
+function RaisedTicket(props: TicketProps) {
+  return <TicketPaper paper="raised" {...props} />
+}
+
+/** 흰 바닥에 가라앉은 회색 종이 — 모서리 `xl` · 테두리 없음. 떠오른 종이 옆에서 한 단 물러선다. */
+function MutedTicket(props: TicketProps) {
+  return <TicketPaper paper="muted" {...props} />
+}
+
+/** 종이별 문 — `ConcertCard.Framed` 와 같은 관용구. 각 문의 설명은 가리켜진 컴포넌트의 JSDoc 이 정본. */
+Ticket.Raised = RaisedTicket
+Ticket.Muted = MutedTicket
