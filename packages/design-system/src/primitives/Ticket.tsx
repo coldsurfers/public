@@ -1,12 +1,14 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cx } from './cx'
-import { stubOrientation, ticket, ticketGround, ticketOrientation, ticketStub } from './Ticket.css'
+import { stubNotch, stubOrientation, ticket, ticketOrientation, ticketStub } from './Ticket.css'
 
 /**
- * 지면색을 바꿔 끼우는 자리 — 노치가 파여 드러나는 색. 기본은 warm-paper 캔버스라
- * 그 위에서는 손댈 일이 없다. 다른 바닥에 앉힐 때만 `style` 로 덮는다.
+ * 종이를 바꿔 끼우는 손잡이 — 지면색(노치)·종이 색·가장자리·모서리·그림자.
+ *
+ * DS 가 선언하지 않는 변수라 소비처는 자기 클래스의 `vars` 에서든 조상에서든 넣으면 이긴다.
+ * `Ticket` 내부 엘리먼트로 뻗는 규칙을 쓰지 않아도 된다.
  */
-export { ticketGround }
+export { ticketEdge, ticketGround, ticketPaper, ticketRadius, ticketShadow } from './Ticket.css'
 
 export type TicketOrientation = 'row' | 'stacked' | 'responsive'
 
@@ -21,6 +23,8 @@ export interface TicketProps extends HTMLAttributes<HTMLDivElement> {
    * 없으면 티켓은 그냥 종이 한 장이 된다.
    */
   stub?: ReactNode
+  /** 천공선 양 끝의 노치. 기본은 켠다 — 천공선과 스텁만으로 티켓이 읽히는 지면에서 끈다. */
+  notch?: boolean
   /** 스텁 치수(폭·패딩·정렬)는 소비처가 정한다. */
   stubClassName?: string
 }
@@ -34,6 +38,7 @@ export interface TicketProps extends HTMLAttributes<HTMLDivElement> {
 export function Ticket({
   orientation = 'responsive',
   stub,
+  notch = true,
   stubClassName,
   className,
   children,
@@ -43,7 +48,16 @@ export function Ticket({
     <div className={cx(ticket, ticketOrientation[orientation], className)} {...rest}>
       {children}
       {stub ? (
-        <div className={cx(ticketStub, stubOrientation[orientation], stubClassName)}>{stub}</div>
+        <div
+          className={cx(
+            ticketStub,
+            notch && stubNotch,
+            stubOrientation[orientation],
+            stubClassName,
+          )}
+        >
+          {stub}
+        </div>
       ) : null}
     </div>
   )

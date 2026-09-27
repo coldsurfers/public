@@ -1,4 +1,4 @@
-import { createVar, style, styleVariants } from '@vanilla-extract/css'
+import { createVar, fallbackVar, style, styleVariants } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
@@ -14,6 +14,12 @@ import { media } from '../css/media'
  * 소비처가 얹는다. 시안 `1418:8`(데스크탑 행) · `1423:17`(모바일).
  */
 
+/*
+ * 소비처가 바꾸는 손잡이는 전부 CSS 변수다. DS 는 변수를 **선언하지 않고** `fallbackVar` 로
+ * 기본값을 읽기만 한다 — 루트에 선언하면 소비처가 같은 레이어(`ds-components`)에서 덮을 때
+ * 승자가 모듈 순서로 넘어가서다. 선언이 없으니 소비처는 자기 클래스든 조상이든 어디서 넣어도 이긴다.
+ */
+
 /**
  * 노치가 파여 드러나는 바닥색 — 티켓이 앉은 지면.
  *
@@ -23,6 +29,18 @@ import { media } from '../css/media'
  */
 export const ticketGround = createVar()
 
+/** 종이 색. 기본은 `surface`(흰 종이). */
+export const ticketPaper = createVar()
+
+/** 종이 가장자리 색 — 테두리와 노치 테두리가 같이 쓴다. 기본은 `border`. */
+export const ticketEdge = createVar()
+
+/** 종이 모서리. 기본은 `radius.md`. */
+export const ticketRadius = createVar()
+
+/** 종이 그림자(elevation). 기본은 없음. */
+export const ticketShadow = createVar()
+
 /** 노치 지름. 천공선이 종이 테두리와 만나는 자리를 이만큼 베어 문다. */
 const NOTCH = '16px'
 
@@ -30,10 +48,10 @@ export const ticket = style(
   inComponentsLayer({
     position: 'relative',
     display: 'flex',
-    background: vars.color.surface,
-    border: `1px solid ${vars.color.border}`,
-    borderRadius: vars.radius.md,
-    vars: { [ticketGround]: vars.paper.warm },
+    background: fallbackVar(ticketPaper, vars.color.surface),
+    border: `1px solid ${fallbackVar(ticketEdge, vars.color.border)}`,
+    borderRadius: fallbackVar(ticketRadius, vars.radius.md),
+    boxShadow: fallbackVar(ticketShadow, 'none'),
   }),
 )
 
@@ -67,8 +85,8 @@ const notch = {
   width: NOTCH,
   height: NOTCH,
   borderRadius: vars.radius.full,
-  background: ticketGround,
-  border: `1px solid ${vars.color.border}`,
+  background: fallbackVar(ticketGround, vars.paper.warm),
+  border: `1px solid ${fallbackVar(ticketEdge, vars.color.border)}`,
 } as const
 
 /** 천공선 위에 중심을 놓을 때 — 천공선은 스텁의 테두리라 스텁 변이 곧 선이다. */
@@ -81,10 +99,14 @@ export const ticketStub = style(
     position: 'relative',
     display: 'flex',
     flexShrink: 0,
-    '::before': notch,
-    '::after': notch,
   }),
 )
+
+/**
+ * 노치 두 짝. `notch={false}` 면 이 클래스가 빠진다 — 자리(`stubOrientation` 의 좌표)는 남아도
+ * `content` 가 없으니 그려지지 않는다.
+ */
+export const stubNotch = style(inComponentsLayer({ '::before': notch, '::after': notch }))
 
 /** 천공선(스텁의 앞 테두리)과 그 선이 종이 테두리와 만나는 두 자리의 노치. */
 export const stubOrientation = styleVariants({
