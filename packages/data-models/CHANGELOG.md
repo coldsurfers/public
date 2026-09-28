@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.19.2
+
+### Patch Changes
+
+- [#221](https://github.com/coldsurfers/public/pull/221) [`d84d52e`](https://github.com/coldsurfers/public/commit/d84d52ede73c45e744e53ab9ea29cce20571b269) Thanks [@yungblud](https://github.com/yungblud)! - 에러 코드 AREA_NOT_FOUND 추가 — 동네(Area) 조회·저장 대상이 없을 때
+
 ## 0.19.1
 
 ### Patch Changes
