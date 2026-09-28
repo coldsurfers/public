@@ -1,5 +1,11 @@
 # @coldsurfers/api-sdk
 
+## 4.5.0
+
+### Minor Changes
+
+- [#223](https://github.com/coldsurfers/public/pull/223) [`971f630`](https://github.com/coldsurfers/public/commit/971f63026a7d1edb7fdc1055bb7f4ea0a8647f7d) Thanks [@yungblud](https://github.com/yungblud)! - 동네(Area) 경로 4개 추가(`/v2/areas` · `/v2/areas/slug/{slug}` · `/v2/areas/requests` · `/v2/users/me/area`)와 billets-server 계약 전체 재동기화. 서버에서 [#427](https://github.com/coldsurfers/public/issues/427) 로 폐기된 `/v1/survey/count` 와 `survey.voteColdsurfTicket` 래퍼를 제거한다 — 이미 404 라 깨질 호출이 없다.
+
 ## 4.4.0
 
 ### Minor Changes
