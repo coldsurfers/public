@@ -1718,19 +1718,6 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
     },
-    survey: {
-      voteColdsurfTicket: async (
-        body: components['schemas']['SurveyActionColdsurfTicketDTOSchema'],
-      ) => {
-        const response = await baseFetchClient.POST('/v1/survey/count', {
-          body,
-        })
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-    },
     newsletter: {
       unsubscribe: async ({ actionToken }: { actionToken: string }) => {
         const response = await baseFetchClient.GET('/v1/newsletter/unsubscribe', {
