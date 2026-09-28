@@ -33,8 +33,10 @@ variant 는 다섯입니다. `primary` 는 ink 필, `accent` 는 러스트 필(�
 섞지 않습니다. `leadingIcon` 은 라벨 앞, `trailingIcon` 은 라벨 뒤 슬롯입니다.
 
 `disabled` 는 모든 variant 에서 흐려지고(`opacity: 0.4`) hover 가 걸리지 않습니다. **"이미 됐다"를
-보여주는 자리에 `disabled` 를 쓰지 않습니다** — 저장됨 같은 상태는 흐리지 않고 선명하게 서야 하니
-그 자리는 `aria-disabled` 로 누름만 막습니다.
+보여주는 자리에 `disabled` 를 쓰지 않습니다** — 저장됨 같은 상태는 흐리지 않고 선명하게 서야 합니다.
+
+그 자리의 누름 가드는 **소비처가 합니다.** `Button` 은 `aria-disabled` 를 따로 읽지 않아서, 붙여도
+클릭이 그대로 들어오고 hover 도 걸립니다. `onClick` 을 넘기지 않거나 핸들러 안에서 막습니다.
 
 ## 라우팅 CTA 는 `asChild`
 
