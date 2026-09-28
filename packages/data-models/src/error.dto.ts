@@ -61,6 +61,8 @@ export const ErrorCodeSchema = z.union([
   z.literal('RATE_LIMITED'),
   // `/v1/daily/{series}/{slug}` — 그 시리즈에 그 slug 의 편이 없다.
   z.literal('DAILY_EDITION_NOT_FOUND'),
+  // `/v2/areas/slug/{slug}` · `PUT /v2/users/me/area` — 그 권역이 없다.
+  z.literal('AREA_NOT_FOUND'),
 ])
 
 export const ErrorResponseDTOSchema = z.object({
