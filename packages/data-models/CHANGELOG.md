@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.19.1
+
+### Patch Changes
+
+- [#219](https://github.com/coldsurfers/public/pull/219) [`922fac6`](https://github.com/coldsurfers/public/commit/922fac67ec856c746c4b53623690326cd9f963e6) Thanks [@yungblud](https://github.com/yungblud)! - 동네(Area) DTO 추가 — 권역 목록·상세, 내 동네 조회·저장, 목록 밖 동네 요청
+
 ## 0.19.0
 
 ### Minor Changes
