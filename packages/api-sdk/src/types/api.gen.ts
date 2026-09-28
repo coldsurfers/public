@@ -204,7 +204,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 편 목록 — 요약만(본문 없음) · 발행일 내림차순 */
+        /** 편 목록 — 요약만(본문 없음) · 올라간 시각 내림차순 */
         get: {
             parameters: {
                 query?: {
@@ -912,7 +912,7 @@ export interface paths {
                     cursor?: string;
                     direction: "next" | "prev";
                     size?: number | null;
-                    type?: "CONCERT_LIST" | "APP_FEATURE" | "EDITORIAL" | "USER" | "USER_POST";
+                    type?: "CONCERT_LIST" | "APP_FEATURE" | "EDITORIAL" | "USER" | "USER_POST" | "BLOG_ARTICLE";
                     unread?: "true" | "false";
                 };
                 header?: never;
@@ -2817,55 +2817,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/survey/count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 콜드서프 티켓 설문 카운트 증가 — 무인증 공개 · 201 */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["SurveyActionColdsurfTicketDTOSchema"];
-                };
-            };
-            responses: {
-                /** @description survey counters */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["SurveyDTOSchema"];
-                    };
-                };
-                /** @description error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/terms-version": {
         parameters: {
             query?: never;
@@ -3597,6 +3548,167 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/v2/areas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 동네(권역) 목록 — 예정 공연 수 포함 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description areas */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AreaDTOSchema"][];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/areas/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 목록 밖 동네 요청(인증 필수) — 자유 입력, 권역 매칭은 사람이 한다 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["CreateAreaRequestBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                        };
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/areas/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 동네 상세 — 예정 공연이 있는 공연장 + 날짜순 예정 공연 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description area detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AreaDetailDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v2/artists/{artistId}/profile-images": {
@@ -5679,6 +5791,15 @@ export interface paths {
                         "application/json": components["schemas"]["EventDetailDTOSchema"];
                     };
                 };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
                 /** @description not found */
                 404: {
                     headers: {
@@ -6725,6 +6846,149 @@ export interface paths {
         };
         trace?: never;
     };
+    "/v2/users/me/area": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 동네(인증 필수) — 없으면 area: null */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description my area */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyAreaDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        /** 내 동네 저장(인증 필수) — 덮어쓴다 */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PutMyAreaBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description saved */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyAreaDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** 내 동네 해제(인증 필수) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description cleared */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyAreaDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/users/me/consents/required": {
         parameters: {
             query?: never;
@@ -7742,6 +8006,65 @@ export interface components {
                 updateType: "native" | "ota";
             };
         };
+        AreaDetailDTOSchema: {
+            id: string;
+            name: string;
+            slug: string;
+            tagline: string | null;
+            upcomingEventCount: number;
+            upcomingEvents: {
+                data: {
+                    category?: {
+                        id: string;
+                        name: string;
+                    };
+                    /** Format: date-time */
+                    createdAt?: string;
+                    /** Format: date-time */
+                    date: string;
+                    entryTicketCapacity?: number | null;
+                    /** Format: uuid */
+                    id: string;
+                    isSubscribed?: boolean;
+                    mainPoster: {
+                        copyright: {
+                            id: string;
+                            license: string;
+                            licenseURL: string;
+                            owner: string;
+                        } | null;
+                        url: string | null;
+                    } | null;
+                    mainVenue: {
+                        name: string;
+                    } | null;
+                    plainVenueText: string | null;
+                    slug: string | null;
+                    status: "DRAFT" | "PUBLISHED" | unknown;
+                    title: string;
+                    viewCount?: number;
+                };
+                /** @enum {string} */
+                type: "concert";
+            }[];
+            venues: {
+                address: string;
+                id: string;
+                lat: number;
+                lng: number;
+                memo: string | null;
+                name: string;
+                slug: string | null;
+                thumbnailUrl: string | null;
+            }[];
+        };
+        AreaDTOSchema: {
+            id: string;
+            name: string;
+            slug: string;
+            tagline: string | null;
+            upcomingEventCount: number;
+        };
         ArtistDetailDTOSchema: {
             id: string;
             name: string;
@@ -7880,6 +8203,11 @@ export interface components {
             title: string;
             viewCount?: number;
         };
+        CreateAreaRequestBodyDTOSchema: {
+            lat?: number;
+            lng?: number;
+            text: string;
+        };
         CreateCommentBodyDTOSchema: {
             body: string;
             threadKey: string;
@@ -7917,7 +8245,10 @@ export interface components {
             size?: number | null;
         };
         DailyEditionDataSchema: {
+            author?: string;
             intro: string;
+            /** @enum {string} */
+            kind: "digest";
             publishedAt: string;
             sections: {
                 pick: {
@@ -7967,10 +8298,68 @@ export interface components {
             series: "new-shows" | "weekend" | "popular" | "features";
             slug: string;
             title?: string;
+        } | {
+            author?: string;
+            body: ({
+                text: string;
+                /** @enum {string} */
+                type: "paragraph";
+            } | {
+                concert: {
+                    ended?: boolean;
+                    genre: string;
+                    poster: string | null;
+                    slug: string;
+                    /** Format: date-time */
+                    startsAt: string;
+                    ticket: {
+                        seller: string;
+                        url: string;
+                    } | null;
+                    title: string;
+                    venue: {
+                        id: string;
+                        name: string;
+                        region: string;
+                        slug: string;
+                    };
+                };
+                /** @enum {string} */
+                type: "concert";
+            } | {
+                alt: string;
+                caption?: string;
+                /** @enum {string} */
+                type: "image";
+                url: string;
+            } | {
+                /** @enum {string} */
+                type: "divider";
+            } | {
+                level: 2 | 3;
+                text: string;
+                /** @enum {string} */
+                type: "heading";
+            } | {
+                cite?: string;
+                text: string;
+                /** @enum {string} */
+                type: "quote";
+            })[];
+            cover?: string | null;
+            /** @enum {string} */
+            kind: "prose";
+            lead: string;
+            publishedAt: string;
+            /** @enum {string} */
+            series: "new-shows" | "weekend" | "popular" | "features";
+            slug: string;
+            title: string;
         };
         /** @enum {string} */
         DailyEditionSeriesSchema: "new-shows" | "weekend" | "popular" | "features";
         DailyEditionSummaryDTOSchema: {
+            author?: string;
             concertCount: number;
             intro: string;
             poster: string | null;
@@ -8007,7 +8396,6 @@ export interface components {
             detailImageIds?: string[];
             /** Format: uuid */
             eventCategoryId?: string;
-            /** Format: uuid */
             locationCityId?: string;
             noticeText?: string;
             posterImageId?: string;
@@ -8060,7 +8448,7 @@ export interface components {
             used: number;
         } | null;
         ErrorResponseDTOSchema: {
-            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED" | "DAILY_EDITION_NOT_FOUND";
+            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED" | "DAILY_EDITION_NOT_FOUND" | "AREA_NOT_FOUND";
             message: string;
         };
         EventCategoryDTOSchema: {
@@ -8343,7 +8731,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** @enum {string} */
-            key: "KOPIS_EVENTS_RELEASE" | "WEEKEND_EVENTS_NOTIFICATION" | "NEW_FEATURE_RELEASE" | "NEW_EDITORIAL_RELEASE" | "NEW_USER" | "NEW_USER_POST" | "DAILY_EDITION_RELEASE";
+            key: "KOPIS_EVENTS_RELEASE" | "WEEKEND_EVENTS_NOTIFICATION" | "NEW_FEATURE_RELEASE" | "NEW_EDITORIAL_RELEASE" | "NEW_USER" | "NEW_USER_POST" | "DAILY_EDITION_RELEASE" | "NEW_BLOG_ARTICLE_RELEASE";
             name: string;
         };
         FeedDTOSchema: {
@@ -8650,6 +9038,15 @@ export interface components {
             optedIn: boolean;
             userId: string;
         };
+        MyAreaDTOSchema: {
+            area: {
+                id: string;
+                name: string;
+                slug: string;
+                tagline: string | null;
+                upcomingEventCount: number;
+            } | null;
+        };
         MyReviewDTOSchema: {
             review: {
                 author: {
@@ -8707,6 +9104,9 @@ export interface components {
             id: string;
             name: string;
             price: number;
+        };
+        PutMyAreaBodyDTOSchema: {
+            areaId: string;
         };
         RecentlyViewedEventDTOSchema: {
             category?: {
@@ -8802,7 +9202,7 @@ export interface components {
         SearchDTOSchema: {
             id: string;
             name: string;
-            profileImgUrl: string;
+            profileImgUrl: string | null;
             /** @enum {string} */
             type: "artist";
         } | {
@@ -8864,21 +9264,6 @@ export interface components {
             targetId: string;
             /** @enum {string} */
             targetType: "venue" | "event" | "daily";
-        };
-        SurveyActionColdsurfTicketDTOSchema: {
-            /** @enum {string} */
-            action: "GOOD" | "MAYBE" | "BAD";
-            /** @enum {string} */
-            type: "COLDSURF_TICKET";
-        };
-        SurveyDTOSchema: {
-            counters: {
-                BAD?: number;
-                GOOD?: number;
-                MAYBE?: number;
-            };
-            /** @enum {string} */
-            type: "COLDSURF_TICKET";
         };
         TermsAgreementDTOSchema: {
             /** Format: date-time */

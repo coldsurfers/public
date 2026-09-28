@@ -479,6 +479,12 @@
                 "enum": [
                   "DAILY_EDITION_NOT_FOUND"
                 ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "AREA_NOT_FOUND"
+                ]
               }
             ]
           },
@@ -2377,6 +2383,331 @@
           "subscribedAt"
         ]
       },
+      "AreaDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tagline": {
+            "type": "string",
+            "nullable": true
+          },
+          "upcomingEventCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "tagline",
+          "upcomingEventCount"
+        ]
+      },
+      "AreaDetailDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tagline": {
+            "type": "string",
+            "nullable": true
+          },
+          "upcomingEventCount": {
+            "type": "integer"
+          },
+          "venues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "lat": {
+                  "type": "number"
+                },
+                "lng": {
+                  "type": "number"
+                },
+                "slug": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "memo": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "thumbnailUrl": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "address",
+                "lat",
+                "lng",
+                "slug",
+                "memo",
+                "thumbnailUrl"
+              ]
+            }
+          },
+          "upcomingEvents": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "concert"
+                      ]
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "mainPoster": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "copyright": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "owner": {
+                                  "type": "string"
+                                },
+                                "license": {
+                                  "type": "string"
+                                },
+                                "licenseURL": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
+                        },
+                        "mainVenue": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "plainVenueText": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "DRAFT"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "PUBLISHED"
+                              ]
+                            },
+                            {
+                              "nullable": true
+                            }
+                          ]
+                        },
+                        "viewCount": {
+                          "type": "number"
+                        },
+                        "isSubscribed": {
+                          "type": "boolean"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name"
+                          ]
+                        },
+                        "entryTicketCapacity": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "date",
+                        "mainPoster",
+                        "mainVenue",
+                        "slug",
+                        "plainVenueText",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "data"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "tagline",
+          "upcomingEventCount",
+          "venues",
+          "upcomingEvents"
+        ]
+      },
+      "CreateAreaRequestBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "MyAreaDTOSchema": {
+        "type": "object",
+        "properties": {
+          "area": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "tagline": {
+                "type": "string",
+                "nullable": true
+              },
+              "upcomingEventCount": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name",
+              "tagline",
+              "upcomingEventCount"
+            ]
+          }
+        },
+        "required": [
+          "area"
+        ]
+      },
+      "PutMyAreaBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "areaId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "areaId"
+        ]
+      },
       "ArtistDetailDTOSchema": {
         "type": "object",
         "properties": {
@@ -3428,7 +3759,8 @@
               "NEW_EDITORIAL_RELEASE",
               "NEW_USER",
               "NEW_USER_POST",
-              "DAILY_EDITION_RELEASE"
+              "DAILY_EDITION_RELEASE",
+              "NEW_BLOG_ARTICLE_RELEASE"
             ]
           },
           "name": {
@@ -3449,7 +3781,8 @@
             "enum": [
               "new-shows",
               "weekend",
-              "popular"
+              "popular",
+              "features"
             ]
           },
           "slug": {
@@ -3474,6 +3807,9 @@
           },
           "sectionCount": {
             "type": "integer"
+          },
+          "author": {
+            "type": "string"
           }
         },
         "required": [
@@ -3492,218 +3828,490 @@
         "enum": [
           "new-shows",
           "weekend",
-          "popular"
+          "popular",
+          "features"
         ]
       },
       "DailyEditionDataSchema": {
-        "type": "object",
-        "properties": {
-          "series": {
-            "type": "string",
-            "enum": [
-              "new-shows",
-              "weekend",
-              "popular"
-            ]
-          },
-          "slug": {
-            "type": "string"
-          },
-          "publishedAt": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "intro": {
-            "type": "string"
-          },
-          "sections": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "type": "string"
-                },
-                "pick": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "series": {
+                "type": "string",
+                "enum": [
+                  "new-shows",
+                  "weekend",
+                  "popular",
+                  "features"
+                ]
+              },
+              "slug": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "digest"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "intro": {
+                "type": "string"
+              },
+              "sections": {
+                "type": "array",
+                "items": {
                   "type": "object",
                   "properties": {
-                    "slug": {
-                      "type": "string"
-                    },
                     "title": {
                       "type": "string"
                     },
-                    "genre": {
-                      "type": "string"
-                    },
-                    "venue": {
+                    "pick": {
                       "type": "object",
                       "properties": {
-                        "id": {
-                          "type": "string"
-                        },
                         "slug": {
                           "type": "string"
                         },
-                        "name": {
+                        "title": {
                           "type": "string"
                         },
-                        "region": {
+                        "genre": {
                           "type": "string"
+                        },
+                        "venue": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "slug": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "region": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "slug",
+                            "name",
+                            "region"
+                          ]
+                        },
+                        "startsAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "ended": {
+                          "type": "boolean"
+                        },
+                        "ticket": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "seller": {
+                              "type": "string"
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "seller",
+                            "url"
+                          ]
+                        },
+                        "poster": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "headline": {
+                          "type": "string"
+                        },
+                        "body": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
                         }
                       },
                       "required": [
-                        "id",
                         "slug",
-                        "name",
-                        "region"
+                        "title",
+                        "genre",
+                        "venue",
+                        "startsAt",
+                        "ticket",
+                        "poster",
+                        "headline",
+                        "body"
                       ]
                     },
-                    "startsAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "ended": {
-                      "type": "boolean"
-                    },
-                    "ticket": {
-                      "type": "object",
-                      "nullable": true,
-                      "properties": {
-                        "seller": {
-                          "type": "string"
-                        },
-                        "url": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "seller",
-                        "url"
-                      ]
-                    },
-                    "poster": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "headline": {
-                      "type": "string"
-                    },
-                    "body": {
+                    "rows": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                          "slug": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "genre": {
+                            "type": "string"
+                          },
+                          "venue": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "slug": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "region": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "slug",
+                              "name",
+                              "region"
+                            ]
+                          },
+                          "startsAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "ended": {
+                            "type": "boolean"
+                          },
+                          "ticket": {
+                            "type": "object",
+                            "nullable": true,
+                            "properties": {
+                              "seller": {
+                                "type": "string"
+                              },
+                              "url": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "seller",
+                              "url"
+                            ]
+                          },
+                          "poster": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "reason": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "slug",
+                          "title",
+                          "genre",
+                          "venue",
+                          "startsAt",
+                          "ticket",
+                          "poster"
+                        ]
                       }
                     }
                   },
                   "required": [
-                    "slug",
                     "title",
-                    "genre",
-                    "venue",
-                    "startsAt",
-                    "ticket",
-                    "poster",
-                    "headline",
-                    "body"
+                    "pick",
+                    "rows"
                   ]
-                },
-                "rows": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "slug": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "genre": {
-                        "type": "string"
-                      },
-                      "venue": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "region": {
-                            "type": "string"
-                          }
+                }
+              }
+            },
+            "required": [
+              "series",
+              "slug",
+              "publishedAt",
+              "kind",
+              "intro",
+              "sections"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "series": {
+                "type": "string",
+                "enum": [
+                  "new-shows",
+                  "weekend",
+                  "popular",
+                  "features"
+                ]
+              },
+              "slug": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "prose"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "lead": {
+                "type": "string"
+              },
+              "body": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "paragraph"
+                          ]
                         },
-                        "required": [
-                          "id",
-                          "slug",
-                          "name",
-                          "region"
-                        ]
+                        "text": {
+                          "type": "string"
+                        }
                       },
-                      "startsAt": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "ended": {
-                        "type": "boolean"
-                      },
-                      "ticket": {
-                        "type": "object",
-                        "nullable": true,
-                        "properties": {
-                          "seller": {
-                            "type": "string"
-                          },
-                          "url": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "seller",
-                          "url"
-                        ]
-                      },
-                      "poster": {
-                        "type": "string",
-                        "nullable": true
-                      },
-                      "reason": {
-                        "type": "string"
-                      }
+                      "required": [
+                        "type",
+                        "text"
+                      ]
                     },
-                    "required": [
-                      "slug",
-                      "title",
-                      "genre",
-                      "venue",
-                      "startsAt",
-                      "ticket",
-                      "poster"
-                    ]
-                  }
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "concert"
+                          ]
+                        },
+                        "concert": {
+                          "type": "object",
+                          "properties": {
+                            "slug": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "genre": {
+                              "type": "string"
+                            },
+                            "venue": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "slug": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "region": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "slug",
+                                "name",
+                                "region"
+                              ]
+                            },
+                            "startsAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "ended": {
+                              "type": "boolean"
+                            },
+                            "ticket": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "seller": {
+                                  "type": "string"
+                                },
+                                "url": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "seller",
+                                "url"
+                              ]
+                            },
+                            "poster": {
+                              "type": "string",
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "slug",
+                            "title",
+                            "genre",
+                            "venue",
+                            "startsAt",
+                            "ticket",
+                            "poster"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "concert"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "image"
+                          ]
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "alt": {
+                          "type": "string"
+                        },
+                        "caption": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "url",
+                        "alt"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "divider"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "heading"
+                          ]
+                        },
+                        "level": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "enum": [
+                                2
+                              ]
+                            },
+                            {
+                              "type": "number",
+                              "enum": [
+                                3
+                              ]
+                            }
+                          ]
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "level",
+                        "text"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "quote"
+                          ]
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "cite": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "text"
+                      ]
+                    }
+                  ]
                 }
               },
-              "required": [
-                "title",
-                "pick",
-                "rows"
-              ]
-            }
+              "cover": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "series",
+              "slug",
+              "publishedAt",
+              "kind",
+              "title",
+              "lead",
+              "body"
+            ]
           }
-        },
-        "required": [
-          "series",
-          "slug",
-          "publishedAt",
-          "intro",
-          "sections"
         ]
       },
       "PriceDTOSchema": {
@@ -5474,8 +6082,7 @@
             "format": "uuid"
           },
           "locationCityId": {
-            "type": "string",
-            "format": "uuid"
+            "type": "string"
           }
         }
       },
@@ -7304,62 +7911,6 @@
           "action"
         ]
       },
-      "SurveyDTOSchema": {
-        "oneOf": [
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "COLDSURF_TICKET"
-                ]
-              },
-              "counters": {
-                "type": "object",
-                "properties": {
-                  "GOOD": {
-                    "type": "number"
-                  },
-                  "MAYBE": {
-                    "type": "number"
-                  },
-                  "BAD": {
-                    "type": "number"
-                  }
-                }
-              }
-            },
-            "required": [
-              "type",
-              "counters"
-            ]
-          }
-        ]
-      },
-      "SurveyActionColdsurfTicketDTOSchema": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "COLDSURF_TICKET"
-            ]
-          },
-          "action": {
-            "type": "string",
-            "enum": [
-              "GOOD",
-              "MAYBE",
-              "BAD"
-            ]
-          }
-        },
-        "required": [
-          "type",
-          "action"
-        ]
-      },
       "NewsletterSubscribeBodyDTOSchema": {
         "type": "object",
         "properties": {
@@ -7722,7 +8273,8 @@
                 "type": "string"
               },
               "profileImgUrl": {
-                "type": "string"
+                "type": "string",
+                "nullable": true
               },
               "id": {
                 "type": "string"
@@ -8620,8 +9172,7 @@
           },
           {
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "required": false,
             "name": "locationCityId",
@@ -8822,6 +9373,16 @@
               }
             }
           },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
           "404": {
             "description": "not found",
             "content": {
@@ -8855,8 +9416,7 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             },
             "required": false,
             "name": "locationCityId",
@@ -9937,6 +10497,307 @@
         }
       }
     },
+    "/v2/areas": {
+      "get": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "동네(권역) 목록 — 예정 공연 수 포함",
+        "responses": {
+          "200": {
+            "description": "areas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AreaDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/areas/slug/{slug}": {
+      "get": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "동네 상세 — 예정 공연이 있는 공연장 + 날짜순 예정 공연",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "area detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaDetailDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/areas/requests": {
+      "post": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "목록 밖 동네 요청(인증 필수) — 자유 입력, 권역 매칭은 사람이 한다",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAreaRequestBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/area": {
+      "get": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "내 동네(인증 필수) — 없으면 area: null",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "my area",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAreaDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "내 동네 저장(인증 필수) — 덮어쓴다",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutMyAreaBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAreaDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v2",
+          "areas"
+        ],
+        "summary": "내 동네 해제(인증 필수)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "cleared",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyAreaDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/artists/{id}": {
       "get": {
         "tags": [
@@ -10501,7 +11362,7 @@
           "v1",
           "daily"
         ],
-        "summary": "편 목록 — 요약만(본문 없음) · 발행일 내림차순",
+        "summary": "편 목록 — 요약만(본문 없음) · 올라간 시각 내림차순",
         "parameters": [
           {
             "schema": {
@@ -14583,7 +15444,8 @@
                 "APP_FEATURE",
                 "EDITORIAL",
                 "USER",
-                "USER_POST"
+                "USER_POST",
+                "BLOG_ARTICLE"
               ]
             },
             "required": false,
@@ -14978,46 +15840,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDTOSchema"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/survey/count": {
-      "post": {
-        "tags": [
-          "v1",
-          "survey"
-        ],
-        "summary": "콜드서프 티켓 설문 카운트 증가 — 무인증 공개 · 201",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SurveyActionColdsurfTicketDTOSchema"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "survey counters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SurveyDTOSchema"
                 }
               }
             }
