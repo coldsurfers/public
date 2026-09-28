@@ -50,7 +50,13 @@ const Pill = styled.View<{ $scheme: ColorScheme; $stacked: boolean }>(({ $scheme
   ...($stacked ? { alignSelf: 'stretch', marginHorizontal: nativeSpacing[4] } : null),
 }))
 
-const Copy = styled.View({ flex: 1, gap: 3, minWidth: 0 })
+// `flex: 1` 은 두 줄일 때만 — RN 에선 `flexBasis: 0` 까지 걸려서, 내용 폭만큼 잡히는 한 줄 pill
+// 안에선 이 칸이 0 으로 접히거나 끝까지 늘어난다.
+const Copy = styled.View<{ $stacked: boolean }>(({ $stacked }) => ({
+  gap: 3,
+  minWidth: 0,
+  ...($stacked ? { flex: 1 } : null),
+}))
 
 const Action = styled.TouchableOpacity({ flexShrink: 0 })
 
@@ -99,7 +105,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               </Text>
             ) : null}
             {toast.tone === 'error' ? <ErrorDot $scheme={scheme} /> : null}
-            <Copy>
+            <Copy $stacked={Boolean(toast.description)}>
               <Text size="sm" numberOfLines={1} style={{ color: scheme.bg }}>
                 {toast.message}
               </Text>
