@@ -31,4 +31,10 @@ export { useScheme } from './scheme'
 export { TabBar, type TabBarItemProps, type TabBarProps, useTabBarHeight } from './TabBar'
 export { Text, type TextProps, type TextStyleName, type TextTone } from './Text'
 export { TextInput, type TextInputProps } from './TextInput'
-export { type ToastApi, ToastProvider, type ToastTone, useToast } from './Toast'
+export {
+  type ToastApi,
+  type ToastOptions,
+  ToastProvider,
+  type ToastTone,
+  useToast,
+} from './Toast'

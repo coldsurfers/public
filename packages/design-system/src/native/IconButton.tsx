@@ -1,9 +1,9 @@
 import styled from '@emotion/native'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { TouchableOpacity } from 'react-native'
-import type { ButtonVariant } from '../contract'
+import { BUTTON_SPEC, type ButtonVariant } from '../contract'
 import { type ColorScheme, nativeRadius } from '../tokens/native'
-import { DISABLED_OPACITY, surfaceFor } from './button-style'
+import { surfaceFor } from './button-style'
 import { useScheme } from './scheme'
 
 /**
@@ -39,7 +39,7 @@ const Root = styled.TouchableOpacity<{
   width: SIDE[$size],
   height: SIDE[$size],
   borderRadius: nativeRadius.md,
-  opacity: $disabled ? DISABLED_OPACITY : 1,
+  opacity: $disabled ? BUTTON_SPEC.disabledOpacity : 1,
   ...surfaceFor($scheme, $variant),
 }))
 

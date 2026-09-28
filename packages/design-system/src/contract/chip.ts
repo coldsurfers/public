@@ -37,9 +37,12 @@ type ChipSizeSpec = {
  *
  * | 축 | 배경 | 테두리 | 글자 |
  * | --- | --- | --- | --- |
- * | `active` | `text` | 없음(transparent) | `bg` |
+ * | `active` | `accent` | 없음(transparent) | 흰색(리터럴) |
  * | `md` 비활성 | `surface` | `border` | `body` |
  * | `sm` 비활성 | `surface2` | 없음 | `muted` |
+ *
+ * `active` 글자가 토큰이 아니라 흰색 리터럴인 이유는 `Button` 의 `accent` 와 같다 — 스킴을 안 타는
+ * 바탕(Surf Blue) 위 글자라 바탕과 같이 고정된다(`contract/button.ts` 의 `ButtonColor`).
  *
  * 라벨 서식(크기·굵기·색)은 **필의 계약**이지 텍스트의 계약이 아니다 — 그래서 두 레인 다
  * `Chip.Label` 슬롯이 그걸 들고, 소비처는 서식을 쓰지 않는다. 웹은 상속이 이미 하던 일이라

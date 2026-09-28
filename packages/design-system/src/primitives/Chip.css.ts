@@ -54,8 +54,8 @@ export const chip = recipe({
     active: {
       true: inComponentsLayer({
         borderColor: 'transparent',
-        background: vars.color.text,
-        color: vars.color.bg,
+        background: vars.color.accent,
+        color: 'white',
       }),
       false: {},
     },

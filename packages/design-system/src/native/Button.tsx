@@ -1,16 +1,25 @@
 import styled from '@emotion/native'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { TouchableOpacity } from 'react-native'
-import { type ButtonSize, type ButtonVariant, BUTTON_SPEC as spec } from '../contract'
+import {
+  type ButtonShape,
+  type ButtonSize,
+  type ButtonVariant,
+  BUTTON_SPEC as spec,
+} from '../contract'
 import { type ColorScheme, fontWeight, nativeFontSize, nativeRadius } from '../tokens/native'
-import { colorFor, DISABLED_OPACITY, surfaceFor } from './button-style'
+import { colorFor, surfaceFor } from './button-style'
 import { useScheme } from './scheme'
 
-export type { ButtonSize, ButtonVariant }
+export type { ButtonShape, ButtonSize, ButtonVariant }
 
 export interface ButtonProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
   variant?: ButtonVariant
   size?: ButtonSize
+  /** 모서리 축. 웹 `Button` 과 같은 이름·같은 값. */
+  shape?: ButtonShape
+  /** 라벨 앞 아이콘 슬롯. 웹 `Button` 과 같은 이름·같은 자리. */
+  leadingIcon?: ReactNode
   /** 라벨 뒤 아이콘 슬롯. 웹 `Button` 과 같은 이름·같은 자리. */
   trailingIcon?: ReactNode
   children?: ReactNode
@@ -25,7 +34,8 @@ function fontSizeFor(size: ButtonSize): number {
   return typeof value === 'number' ? value : nativeFontSize[value]
 }
 
-function radiusFor(size: ButtonSize): number {
+function radiusFor(size: ButtonSize, shape: ButtonShape): number {
+  if (shape === 'pill') return nativeRadius[spec.pillRadius]
   const value = spec.size[size].radius
   return typeof value === 'number' ? value : nativeRadius[value]
 }
@@ -34,16 +44,17 @@ const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme
   $variant: ButtonVariant
   $size: ButtonSize
+  $shape: ButtonShape
   $disabled: boolean
-}>(({ $scheme, $variant, $size, $disabled }) => ({
+}>(({ $scheme, $variant, $size, $shape, $disabled }) => ({
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'center',
   gap: spec.gap,
   height: spec.size[$size].height,
   paddingHorizontal: spec.size[$size].paddingInline,
-  borderRadius: radiusFor($size),
-  opacity: $disabled ? DISABLED_OPACITY : 1,
+  borderRadius: radiusFor($size, $shape),
+  opacity: $disabled ? spec.disabledOpacity : 1,
   ...surfaceFor($scheme, $variant),
 }))
 
@@ -62,7 +73,7 @@ const Label = styled.Text<{ $color: string; $fontSize: number }>(({ $color, $fon
 }))
 
 /**
- * 액션 버튼 — **웹 `primitives/Button` 과 같은 축**이다(variant 5 · size 3).
+ * 액션 버튼 — **웹 `primitives/Button` 과 같은 축**이다(variant 5 · size 3 · shape 2).
  * 치수와 variant→색 배정은 `contract/button.ts` 의 `BUTTON_SPEC` 이 정본이라 여기 숫자를
  * 손으로 적지 않는다. 축을 늘려야 하면 웹부터 늘리고 그다음 계약에 올린다.
  *
@@ -76,6 +87,8 @@ const Label = styled.Text<{ $color: string; $fontSize: number }>(({ $color, $fon
 export function Button({
   variant = 'primary',
   size = 'md',
+  shape = 'rounded',
+  leadingIcon,
   trailingIcon,
   disabled,
   children,
@@ -87,11 +100,13 @@ export function Button({
       $scheme={scheme}
       $variant={variant}
       $size={size}
+      $shape={shape}
       $disabled={disabled ?? false}
       disabled={disabled}
       accessibilityRole="button"
       {...rest}
     >
+      {leadingIcon}
       {typeof children === 'string' ? (
         <Label $color={colorFor(scheme, spec.variant[variant].label)} $fontSize={fontSizeFor(size)}>
           {children}
