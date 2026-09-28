@@ -1,7 +1,7 @@
 import styled from '@emotion/native'
 import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from 'react'
-import type { ToastTone } from '../contract'
-import { type ColorScheme, nativeRadius, nativeSpacing } from '../tokens/native'
+import { TOAST_TIMING, type ToastOptions, type ToastTone } from '../contract'
+import { type ColorScheme, ink, nativeRadius, nativeSpacing, palette } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
@@ -14,17 +14,18 @@ import { Text } from './Text'
  *
  * provider 가 없으면 `show` 는 no-op — 컴포넌트를 격리 렌더해도 throw 하지 않는다(웹과 동일).
  */
-export type { ToastTone }
+export type { ToastOptions, ToastTone }
 
 export interface ToastApi {
-  /** 메시지를 띄우고 1.6s 뒤 자동으로 사라진다. 연속 호출 시 타이머 리셋. */
-  show: (message: string, tone?: ToastTone) => void
+  /**
+   * 메시지를 띄우고 1.6s(액션이 있으면 4s) 뒤 자동으로 사라진다. 연속 호출 시 타이머 리셋.
+   */
+  show: (message: string, tone?: ToastTone, options?: ToastOptions) => void
 }
 
-const ToastContext = createContext<ToastApi | null>(null)
+type ToastState = { message: string; tone: ToastTone } & ToastOptions
 
-/** 1.6s. 웹과 같은 시안 `DISMISS` 값. */
-const DISMISS_MS = 1600
+const ToastContext = createContext<ToastApi | null>(null)
 
 const Layer = styled.View({
   position: 'absolute',
@@ -32,19 +33,26 @@ const Layer = styled.View({
   right: 0,
   bottom: nativeSpacing[10],
   alignItems: 'center',
-  // 토스트는 알림이지 조작 대상이 아니다. 아래 화면의 탭을 가로막지 않는다.
-  pointerEvents: 'none',
+  // 토스트는 알림이지 조작 대상이 아니다. 아래 화면의 탭을 가로막지 않는다 — 액션만 예외라
+  // `box-none` 으로 자식의 터치는 살린다.
+  pointerEvents: 'box-none',
 })
 
-const Pill = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
+const Pill = styled.View<{ $scheme: ColorScheme; $stacked: boolean }>(({ $scheme, $stacked }) => ({
   flexDirection: 'row',
   alignItems: 'center',
-  gap: nativeSpacing[2],
+  gap: $stacked ? nativeSpacing[3] : nativeSpacing[2],
   paddingHorizontal: nativeSpacing[4],
   paddingVertical: nativeSpacing[3],
-  borderRadius: nativeRadius.full,
+  // 두 줄 높이에선 알약이 타원이 되므로 16 으로 접는다 — 웹 `stacked` 와 같은 값.
+  borderRadius: $stacked ? 16 : nativeRadius.full,
   backgroundColor: $scheme.text,
+  ...($stacked ? { alignSelf: 'stretch', marginHorizontal: nativeSpacing[4] } : null),
 }))
+
+const Copy = styled.View({ flex: 1, gap: 3, minWidth: 0 })
+
+const Action = styled.TouchableOpacity({ flexShrink: 0 })
 
 const ErrorDot = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
   width: 6,
@@ -56,33 +64,64 @@ const ErrorDot = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const scheme = useScheme()
-  const [toast, setToast] = useState<{ message: string; tone: ToastTone } | null>(null)
+  const [toast, setToast] = useState<ToastState | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const show = useCallback((message: string, tone: ToastTone = 'neutral') => {
-    setToast({ message, tone })
+  const hide = useCallback(() => {
     if (timerRef.current !== null) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setToast(null)
-      timerRef.current = null
-    }, DISMISS_MS)
+    timerRef.current = null
+    setToast(null)
   }, [])
+
+  const show = useCallback(
+    (message: string, tone: ToastTone = 'neutral', options?: ToastOptions) => {
+      setToast({ message, tone, ...options })
+      if (timerRef.current !== null) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(
+        hide,
+        options?.action ? TOAST_TIMING.actionDismissMs : TOAST_TIMING.dismissMs,
+      )
+    },
+    [hide],
+  )
+
+  const action = toast?.action
 
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
       {toast ? (
         <Layer accessibilityLiveRegion="polite">
-          <Pill $scheme={scheme}>
+          <Pill $scheme={scheme} $stacked={Boolean(toast.description)}>
             {toast.tone === 'success' ? (
               <Text size="sm" style={{ color: scheme.bg }}>
                 ✓
               </Text>
             ) : null}
             {toast.tone === 'error' ? <ErrorDot $scheme={scheme} /> : null}
-            <Text size="sm" style={{ color: scheme.bg }}>
-              {toast.message}
-            </Text>
+            <Copy>
+              <Text size="sm" numberOfLines={1} style={{ color: scheme.bg }}>
+                {toast.message}
+              </Text>
+              {toast.description ? (
+                <Text size="xs" numberOfLines={1} style={{ color: palette.haze }}>
+                  {toast.description}
+                </Text>
+              ) : null}
+            </Copy>
+            {toast.action ? (
+              <Action
+                accessibilityRole="button"
+                onPress={() => {
+                  hide()
+                  action?.onPress()
+                }}
+              >
+                <Text size="xs" weight="semibold" style={{ color: ink.accent }}>
+                  {toast.action.label}
+                </Text>
+              </Action>
+            ) : null}
           </Pill>
         </Layer>
       ) : null}

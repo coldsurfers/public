@@ -20,6 +20,13 @@ export type ButtonVariant = 'primary' | 'ghost' | 'accent' | 'outline' | 'danger
 /** *라벨이 있는* 컨트롤의 높이 축. 정사각 `IconButton` 은 이 축을 쓰지 않는다. */
 export type ButtonSize = 'sm' | 'md' | 'cta'
 
+/**
+ * 모서리 축. 기본 `rounded` 는 크기마다 정해진 모서리(`SIZE[*].radius`)를 쓰고, `pill` 은 크기와
+ * 상관없이 `radius.full` 이다. 크기 축에 섞지 않는 이유 — 높이와 모서리는 따로 움직인다
+ * (랜딩 히어로 CTA 는 46·10px, 동네 CTA 는 46·알약. Figma `1128:119` · `3743:1333`).
+ */
+export type ButtonShape = 'rounded' | 'pill'
+
 type RadiusKey = keyof typeof radius
 type FontSizeKey = keyof typeof fontSize
 type FontWeightKey = keyof typeof fontWeight
@@ -87,7 +94,7 @@ const SIZE = {
  *
  * 웹의 `:hover`(→`opacity`·`accentHover`·`strong`)와 `transition` 은 RN 에 짝이 없다 —
  * 누름 피드백은 `TouchableOpacity` 의 투명도가 이미 준다. 짝이 없으면 계약이 아니므로
- * 웹 `.css.ts` 에 남는다. `disabled` 투명도도 같다(지금은 RN 에만 있다).
+ * 웹 `.css.ts` 에 남는다. `disabled` 투명도는 두 레인에 다 있어서 `BUTTON_SPEC` 에 올린다.
  */
 const VARIANT = {
   primary: { background: 'text', label: 'bg' },
@@ -98,8 +105,15 @@ const VARIANT = {
 } satisfies Record<ButtonVariant, ButtonVariantSpec>
 
 export const BUTTON_SPEC = {
-  /** 라벨과 `trailingIcon` 사이. 아이콘이 없으면 붙을 상대가 없어 0 과 같다. */
+  /** 라벨과 `leadingIcon` · `trailingIcon` 사이. 아이콘이 없으면 붙을 상대가 없어 0 과 같다. */
   gap: 8,
+  /**
+   * 비활성 표시 — 모든 variant 공통. 한때 RN 에만 있어서 웹 `accent` 버튼은 잠겨도 활성과
+   * 모양이 같았다(소비처가 글자로 대신 알렸다).
+   */
+  disabledOpacity: 0.4,
+  /** `shape="pill"` 의 모서리. 크기 축의 `radius` 를 덮는다. */
+  pillRadius: 'full' satisfies RadiusKey,
   /** 세 크기 공통. */
   fontWeight: 'medium' satisfies FontWeightKey,
   size: SIZE,

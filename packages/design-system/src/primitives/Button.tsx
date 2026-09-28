@@ -6,7 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
-import type { ButtonSize, ButtonVariant } from '../contract'
+import type { ButtonShape, ButtonSize, ButtonVariant } from '../contract'
 import { button, buttonIcon } from './Button.css'
 import { cx } from './cx'
 
@@ -14,7 +14,7 @@ import { cx } from './cx'
  * 축 이름을 소비처가 부를 수 있게 낸다 — native 짝이 이미 하던 것(`native/Button`)이다.
  * 열지 않으면 소비처가 `Record<…>` 나 `useState<…>` 자리에서 유니온을 자기 쪽에 다시 적는다.
  */
-export type { ButtonSize, ButtonVariant }
+export type { ButtonShape, ButtonSize, ButtonVariant }
 
 /**
  * 액션 버튼.
@@ -23,38 +23,55 @@ export type { ButtonSize, ButtonVariant }
  *   variant="accent"  → 러스트 필 + 흰 텍스트. 랜딩 히어로 프라이머리 CTA
  *   variant="outline" → 흰 배경 + 테두리. 랜딩 히어로 세컨더리 CTA
  *   variant="danger"  → statusDanger 필 + 흰 텍스트. 되돌릴 수 없는 액션(탈퇴·영구 삭제)
- * `trailingIcon` 은 라벨 뒤 아이콘(화살표 등) 슬롯.
+ * `leadingIcon` 은 라벨 앞 아이콘(저장됨 ✓ 등), `trailingIcon` 은 라벨 뒤 아이콘(화살표 등) 슬롯.
+ * `shape="pill"` 이면 크기와 상관없이 알약 모서리다.
  * `asChild` 면 <button> 대신 자식 엘리먼트(예: 라우터 Link)에 스타일을 입혀 렌더한다 —
  * 라우팅 CTA 를 실제 <a> 로 내보낼 때. 자식은 단일 엘리먼트여야 하며 라벨은 그 children.
  */
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
+  shape?: ButtonShape
+  leadingIcon?: ReactNode
   trailingIcon?: ReactNode
   asChild?: boolean
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = 'primary', size = 'md', trailingIcon, className, children, type, asChild, ...rest },
+  {
+    variant = 'primary',
+    size = 'md',
+    shape = 'rounded',
+    leadingIcon,
+    trailingIcon,
+    className,
+    children,
+    type,
+    asChild,
+    ...rest
+  },
   ref,
 ) {
-  const cls = cx(button({ variant, size }), className)
-  const icon = trailingIcon ? <span className={buttonIcon}>{trailingIcon}</span> : null
+  const cls = cx(button({ variant, size, shape }), className)
+  const leading = leadingIcon ? <span className={buttonIcon}>{leadingIcon}</span> : null
+  const trailing = trailingIcon ? <span className={buttonIcon}>{trailingIcon}</span> : null
 
   if (asChild && isValidElement(children)) {
     const child = children as ReactElement<{ className?: string; children?: ReactNode }>
     return cloneElement(
       child,
       { className: cx(cls, child.props.className) },
+      leading,
       child.props.children,
-      icon,
+      trailing,
     )
   }
 
   return (
     <button ref={ref} type={type ?? 'button'} className={cls} {...rest}>
+      {leading}
       {children}
-      {icon}
+      {trailing}
     </button>
   )
 })

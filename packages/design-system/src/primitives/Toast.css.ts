@@ -43,9 +43,22 @@ export const toast = recipe({
       true: inComponentsLayer({ transform: 'translate(-50%, 0)', opacity: 1 }),
       false: inComponentsLayer({ transform: 'translate(-50%, 12px)', opacity: 0 }),
     },
+    /**
+     * 두 줄(`description`) 상자 — Figma `3743:1364`. 알약 모서리는 두 줄 높이에서 타원이 되므로
+     * 16 으로 접고, 폭을 상한까지 편다(액션이 오른쪽 끝에 붙는다).
+     */
+    stacked: {
+      true: inComponentsLayer({
+        width: 'min(92vw, 420px)',
+        gap: 12,
+        borderRadius: 16,
+        padding: '14px 18px',
+      }),
+      false: {},
+    },
   },
 
-  defaultVariants: { visible: false },
+  defaultVariants: { visible: false, stacked: false },
 })
 
 /** error 톤의 선행 점. */
@@ -59,10 +72,51 @@ export const toastErrorDot = style(
   }),
 )
 
+/** 메시지 + 둘째 줄 기둥. 액션이 옆에 서도 긴 메시지가 액션을 밀어내지 않게. */
+export const toastCopy = style(
+  inComponentsLayer({
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    gap: 3,
+    minWidth: 0,
+  }),
+)
+
 export const toastMessage = style(
   inComponentsLayer({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+  }),
+)
+
+/** 둘째 줄 — 색 축은 `contract/toast.ts` 의 표. */
+export const toastDescription = style(
+  inComponentsLayer({
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    color: vars.palette.haze,
+    fontWeight: vars.fontWeight.regular,
+    fontSize: 13,
+  }),
+)
+
+/**
+ * 액션 — 토스트에서 **유일하게 누를 수 있는 자리**다. 바탕은 `pointer-events: none` 이라 아래
+ * 화면을 가로막지 않고, 이 버튼만 되살린다.
+ */
+export const toastAction = style(
+  inComponentsLayer({
+    flexShrink: 0,
+    border: 'none',
+    background: 'transparent',
+    padding: 0,
+    color: vars.ink.accent,
+    fontWeight: vars.fontWeight.semibold,
+    fontSize: 13,
+    cursor: 'pointer',
+    pointerEvents: 'auto',
   }),
 )

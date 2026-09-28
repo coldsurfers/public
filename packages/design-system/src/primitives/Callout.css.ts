@@ -72,3 +72,24 @@ export const calloutBody = style(inComponentsLayer({ minWidth: 0 }))
 
 /** 액션 — 줄바꿈으로 눌리지 않는다. 좁아지면 `flex-wrap` 이 통째로 아래로 내린다. */
 export const calloutAction = style(inComponentsLayer({ flexShrink: 0 }))
+
+/** 아이콘 + 본문 — 한 덩어리로 접힌다. 아이콘은 첫 줄 옆(`flex-start`)에 선다. */
+export const calloutLead = style(
+  inComponentsLayer({
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '10px',
+    flex: 1,
+    minWidth: 0,
+  }),
+)
+
+/** 아이콘 칸 — 본문 첫 줄 높이에 맞춰 세로 가운데. 줄어들지 않는다. */
+export const calloutIcon = style(
+  inComponentsLayer({
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    height: '1.55em',
+  }),
+)

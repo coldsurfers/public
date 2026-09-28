@@ -20,21 +20,18 @@ export type { ChipSize }
  * Pill — 시안의 4 맥락을 한 어휘로 덮는다.
  *   size="md"  → rounded-full 필. quick chips(Boris…) · section chips(전체·Reviews) · filter(오늘·이번 주)
  *   size="sm"  → 소형 tag. genre 태그(드론·스토너·슈게이즈)
- *   active     → 선택 상태. ink 필 + paper 텍스트 (오늘·전체 등)
+ *   active     → 선택 상태. accent 필 + 흰 텍스트 (오늘·전체 등)
  * 상호작용이면 기본 `button`, 라벨이면 `as="span"`, 라우팅 링크면 `asChild`.
  *
- * ## `active` 의 시각 언어는 여기가 정본이다 (coldsurfers/public#39 D-2)
+ * ## `active` 의 시각 언어는 여기가 정본이다
  *
- * web-next 에 같은 "선택된 칩" 이 **네 가지 언어**로 흩어져 있었다(`accent` 바탕 / `accent`
- * 10% 틴트 / 테두리만 진해짐 / 반전). 반전을 정본으로 굳힌 이유 셋 —
+ * 2026-09-28 에 반전(ink 필 + paper 텍스트)에서 **accent 필**로 바꿨다. #39 D-2 는 반전을
+ * 정본으로 굳히면서 accent 를 "다중선택에서 화면을 지배한다"는 이유로 기각했는데, 동네 스위처
+ * 시안(Figma `3743:1318`)이 accent 로 선택을 말했고 그 결정을 사용자가 정본으로 올렸다.
  *
- * 1. 이미 여기 있고 소비처가 산다(`TasteWizard`). 바꾸면 멀쩡한 소비처가 시각적으로 깨진다
- * 2. `new-feed` 로컬 칩이 사실상 같은 언어였다 — 5벌 중 2벌이 이미 여기
- * 3. `accent` 계열 둘은 **다중선택에서 진다.** 필터 칩이 여러 개 켜지면 `accent` 바탕이 화면을
- *    지배하고, 10% 틴트는 `Callout tone="accent"`(14% 틴트)와 헷갈린다
- *
- * 그래서 #39 에서 이 파일의 스타일은 **한 줄도 안 바뀐다.** 그 축의 일은 새 언어를 정하는 게
- * 아니라 로컬 4벌을 이미 있는 것으로 걷어오는 것이다.
+ * 남은 위험은 그대로다 — 필터 칩이 여러 개 켜지면 파란 필이 화면을 채운다. 다중선택 자리가
+ * 그렇게 보이면 칩 수를 줄이거나 다른 컨트롤을 고른다. `Callout tone="accent"`(14% 틴트)와는
+ * 바탕 농도가 달라 헷갈리지 않는다.
  */
 type ChipBase = {
   active?: boolean

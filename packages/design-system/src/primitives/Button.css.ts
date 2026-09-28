@@ -25,6 +25,9 @@ import { vars } from '../css/contract.css'
  * `transition` 만 리터럴로 남는다: RN 엔 짝이 없어 **갈라질 상대가 없고**, 짝이 없으면
  * 계약이 아니다.
  *
+ * `:hover` 는 `:not(:disabled)` 에만 건다 — 잠긴 `accent` 에 올리면 `accentHover` 로 짙어져
+ * 눌릴 것처럼 보인다.
+ *
  * ## 높이는 `height` 로 박는다 — 컨트롤 공통 규율
  *
  * padding 만으로 높이를 만들면 높이가 **line box** 를 탄다. line box = 폰트 크기 × 상속
@@ -83,21 +86,24 @@ export const button = recipe({
     transitionProperty: 'color, background-color, border-color, opacity',
     transitionDuration: '150ms',
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    selectors: {
+      '&:disabled': { opacity: spec.disabledOpacity, cursor: 'not-allowed' },
+    },
   }),
 
   variants: {
     variant: {
       primary: inComponentsLayer({
         ...surfaceStyle('primary'),
-        selectors: { '&:hover': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
       }),
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
-        selectors: { '&:hover': { color: vars.color.accent } },
+        selectors: { '&:hover:not(:disabled)': { color: vars.color.accent } },
       }),
       accent: inComponentsLayer({
         ...surfaceStyle('accent'),
-        selectors: { '&:hover': { background: vars.color.accentHover } },
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover } },
       }),
       /**
        * 되돌릴 수 없는 액션. hover 는 `accentHover` 같은 짝 토큰이 없어 `primary` 와 같은
@@ -105,11 +111,11 @@ export const button = recipe({
        */
       danger: inComponentsLayer({
         ...surfaceStyle('danger'),
-        selectors: { '&:hover': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
       }),
       outline: inComponentsLayer({
         ...surfaceStyle('outline'),
-        selectors: { '&:hover': { borderColor: vars.color.strong } },
+        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.strong } },
       }),
     },
 
@@ -119,9 +125,19 @@ export const button = recipe({
       /** 랜딩 히어로 CTA — Figma `1128:119`·`1128:121`. 시안 일치의 전부는 `height` 다. */
       cta: inComponentsLayer(sizeStyle('cta')),
     },
+
+    /**
+     * `rounded` 는 빈 스타일이다 — 모서리는 `size` 가 이미 냈다. `pill` 만 그걸 덮는데, 같은
+     * 레이어 안이라 우선순위가 소스 순서에 걸린다. recipe 가 variant 를 선언 순서대로 내므로
+     * `shape` 를 `size` 뒤에 두는 것이 곧 규칙이다.
+     */
+    shape: {
+      rounded: {},
+      pill: inComponentsLayer({ borderRadius: vars.radius[spec.pillRadius] }),
+    },
   },
 
-  defaultVariants: { variant: 'primary', size: 'md' },
+  defaultVariants: { variant: 'primary', size: 'md', shape: 'rounded' },
 })
 
 /** 라벨 뒤 아이콘 슬롯 — 줄어들지 않게만 붙든다. */

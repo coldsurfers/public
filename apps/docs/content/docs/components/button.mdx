@@ -25,6 +25,17 @@ variant 는 다섯입니다. `primary` 는 ink 필, `accent` 는 러스트 필(�
 *이 축이 이 컴포넌트의 것인가* 를 먼저 묻습니다.
 </Callout>
 
+## 모서리 · 앞 아이콘 · 비활성
+
+<Preview name="button-shapes" />
+
+`shape="pill"` 은 크기와 상관없이 알약 모서리입니다. 높이와 모서리는 따로 움직이므로 `size` 에
+섞지 않습니다. `leadingIcon` 은 라벨 앞, `trailingIcon` 은 라벨 뒤 슬롯입니다.
+
+`disabled` 는 모든 variant 에서 흐려지고(`opacity: 0.4`) hover 가 걸리지 않습니다. **"이미 됐다"를
+보여주는 자리에 `disabled` 를 쓰지 않습니다** — 저장됨 같은 상태는 흐리지 않고 선명하게 서야 하니
+그 자리는 `aria-disabled` 로 누름만 막습니다.
+
 ## 라우팅 CTA 는 `asChild`
 
 버튼처럼 보이지만 실제로는 이동이면 `<button>` 이 아니라 `<a>` 여야 합니다.

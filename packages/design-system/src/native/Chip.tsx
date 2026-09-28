@@ -38,21 +38,21 @@ export type { ChipSize }
 
 export interface ChipProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
   size?: ChipSize
-  /** 선택 상태 — ink 필 + paper 텍스트(반전). 시안 언어의 정본은 웹 `Chip.tsx` 주석. */
+  /** 선택 상태 — accent 필 + 흰 텍스트. 시안 언어의 정본은 웹 `Chip.tsx` 주석. */
   active?: boolean
   children?: ReactNode
 }
 
 /** `CHIP_SPEC` 의 색 표와 1:1 — 비활성일 때만 size 로 갈린다. */
 const surfaceFor = (scheme: ColorScheme, size: ChipSize, active: boolean): ViewStyle => {
-  if (active) return { backgroundColor: scheme.text, borderColor: 'transparent' }
+  if (active) return { backgroundColor: scheme.accent, borderColor: 'transparent' }
   return size === 'md'
     ? { backgroundColor: scheme.surface, borderColor: scheme.border }
     : { backgroundColor: scheme.surface2, borderColor: 'transparent' }
 }
 
 const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): string => {
-  if (active) return scheme.bg
+  if (active) return 'white'
   return size === 'md' ? scheme.body : scheme.muted
 }
 

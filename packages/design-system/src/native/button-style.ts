@@ -14,16 +14,6 @@ import type { ColorScheme } from '../tokens/native'
  */
 
 /**
- * 비활성 표시. 웹엔 짝이 없어 `BUTTON_SPEC` 에 올리지 않는다 — 웹 recipe 에는 `:disabled`
- * 스타일이 아예 없다(`contract/button.ts` 의 "짝이 없으면 계약이 아니다").
- *
- * 컴포넌트의 **기본 스타일**로 넣는다. `style` prop 으로 얹으면 소비자가 `style` 을 넘기는
- * 순간 조용히 덮여서 **비활성이 활성처럼 보인다.** 기본 스타일이면 소비자 `style` 이 이기는
- * 것도 덮는 것도 명시적 선택이 된다.
- */
-export const DISABLED_OPACITY = 0.4
-
-/**
  * `ButtonColor` → 실제 색. 토큰 키는 스킴에서 읽고, 스킴을 안 타는 리터럴은 그대로 낸다.
  * 웹 `Button.css.ts` 의 `colorFor` 와 짝이다 — 같은 표를 각자의 토큰 맵으로 읽는다.
  */

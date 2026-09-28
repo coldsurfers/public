@@ -44,6 +44,7 @@
 export {
   BUTTON_SPEC,
   type ButtonColor,
+  type ButtonShape,
   type ButtonSize,
   type ButtonVariant,
 } from './button'
@@ -62,4 +63,4 @@ export {
   type TextStyleSpec,
   type TextTone,
 } from './text-style'
-export type { ToastTone } from './toast'
+export { TOAST_TIMING, type ToastOptions, type ToastTone } from './toast'

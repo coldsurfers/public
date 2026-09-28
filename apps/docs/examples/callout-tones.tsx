@@ -5,6 +5,10 @@ export default function Example() {
   return (
     <div style={{ display: 'grid', gap: 12, width: '100%' }}>
       <Callout action={<a href="#terms">현행 보기 →</a>}>지난 버전을 보고 있습니다.</Callout>
+      <Callout icon="📍">
+        대학로를 내 동네로 정하려면 로그인이 필요합니다. 로그인하면 대학로 페이지로 돌아와 바로
+        저장합니다.
+      </Callout>
       <Callout tone="success">저장했습니다.</Callout>
       <Callout tone="warning">예매 마감이 한 시간 남았습니다.</Callout>
       <Callout tone="danger" role="alert">

@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react'
-import { callout, calloutAction, calloutBody } from './Callout.css'
+import { callout, calloutAction, calloutBody, calloutIcon, calloutLead } from './Callout.css'
 import { cx } from './cx'
 
 /**
@@ -26,21 +26,43 @@ import { cx } from './cx'
  * 규율이고, `Auth` 가 `cx(error, errorBanner)` 로 `margin` 을 두 클래스에 겹쳐 선언하던
  * (같은 레이어 · 소스 순서로만 갈리던) 위반이 이걸로 사라진다.
  *
- * 아이콘 슬롯·닫기 버튼은 없다 — 실사용 0곳. 두 번째 소비처가 생기면 그때 연다.
+ * ## `icon` 은 본문 첫 줄에 붙는다
+ *
+ * 앞 아이콘(📍 등)은 본문과 한 덩어리라 액션과 따로 접히지 않는다. 본문이 두 줄로 넘어가도
+ * 아이콘은 첫 줄 옆에 선다(Figma `3743:1249`). 닫기 버튼은 없다 — 실사용 0곳.
  */
 export type CalloutTone = 'accent' | 'success' | 'warning' | 'danger'
 
 export interface CalloutProps extends HTMLAttributes<HTMLDivElement> {
   /** 기본 `accent`. status 3종은 글자까지 톤색이 되고 `accent` 만 중립 글자다(#34 D-4). */
   tone?: CalloutTone
+  /** 본문 앞 아이콘. 장식이라 스크린리더에서 숨긴다. */
+  icon?: ReactNode
   /** 오른쪽 끝 액션(링크·버튼). 폭이 모자라면 본문 아래로 접힌다. */
   action?: ReactNode
 }
 
-export function Callout({ tone = 'accent', action, className, children, ...rest }: CalloutProps) {
+export function Callout({
+  tone = 'accent',
+  icon,
+  action,
+  className,
+  children,
+  ...rest
+}: CalloutProps) {
+  const body = <div className={calloutBody}>{children}</div>
   return (
     <div className={cx(callout({ tone }), className)} {...rest}>
-      <div className={calloutBody}>{children}</div>
+      {icon ? (
+        <div className={calloutLead}>
+          <span aria-hidden className={calloutIcon}>
+            {icon}
+          </span>
+          {body}
+        </div>
+      ) : (
+        body
+      )}
       {action ? <div className={calloutAction}>{action}</div> : null}
     </div>
   )
