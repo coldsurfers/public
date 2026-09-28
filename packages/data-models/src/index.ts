@@ -1,5 +1,6 @@
 export * from './action-token.dto'
 export * from './app-update-info.dto'
+export * from './area.dto'
 export * from './artist.dto'
 export * from './artist-detail.dto'
 export * from './artist-profile-image.dto'
