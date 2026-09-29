@@ -26,12 +26,21 @@ export const fieldShell = recipe({
   }),
   variants: {
     tone: {
+      /**
+       * 포커스는 accent 1.5px — 파트너 등록 시안(`3759:4390`). 테두리를 1.5px 로 굵히면 셸이
+       * 0.5px 커져 옆 칸과 어긋나므로, 1px 테두리는 두고 안쪽 그림자 0.5px 로 두께를 채운다.
+       */
       light: inComponentsLayer({
         height: 52,
         borderRadius: vars.radius.lg,
         border: `1px solid ${vars.color.border}`,
         background: vars.color.surface,
-        selectors: { '&:focus-within': { borderColor: vars.color.text } },
+        selectors: {
+          '&:focus-within': {
+            borderColor: vars.color.accent,
+            boxShadow: `inset 0 0 0 0.5px ${vars.color.accent}`,
+          },
+        },
       }),
       /**
        * 다크 밴드 위 — `/daily` 구독 밴드 시안(`1434:572`·`1434:656`). 배경을 칠하지 않고
