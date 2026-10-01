@@ -63,6 +63,20 @@ export const ErrorCodeSchema = z.union([
   z.literal('DAILY_EDITION_NOT_FOUND'),
   // `/v2/areas/slug/{slug}` · `PUT /v2/users/me/area` — 그 권역이 없다.
   z.literal('AREA_NOT_FOUND'),
+  // 스팟 커뮤니티 — 글 · 댓글이 없다 / 그 스팟의 이웃이 아니다 / 내 것이 아니다 / 대댓글 규칙 위반
+  z.literal('AREA_POST_NOT_FOUND'),
+  z.literal('AREA_POST_COMMENT_NOT_FOUND'),
+  z.literal('NOT_AREA_NEIGHBOR'),
+  z.literal('AREA_POST_FORBIDDEN'),
+  z.literal('INVALID_PARENT_COMMENT'),
+  // 신고 대상이 없다 / 운영자(Staff.isAuthorized)만 쓰는 경로다
+  z.literal('REPORT_TARGET_NOT_FOUND'),
+  z.literal('STAFF_ONLY'),
+  // 스팟 열기 — 제안이 없다 / 이미 열렸다 / 그 slug 의 스팟이 이미 있다 / 그 도시가 없다
+  z.literal('AREA_PROPOSAL_NOT_FOUND'),
+  z.literal('AREA_PROPOSAL_ALREADY_OPENED'),
+  z.literal('AREA_SLUG_TAKEN'),
+  z.literal('LOCATION_CITY_NOT_FOUND'),
 ])
 
 export const ErrorResponseDTOSchema = z.object({
