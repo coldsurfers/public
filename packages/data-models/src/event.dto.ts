@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { LineupArtistDTOSchema } from './artist.dto'
 import { ConcertDetailDTOSchema, ConcertDTOSchema } from './concert.dto'
 import { OffsetPaginationDTOSchema } from './pagination.dto'
 import { TicketPromotionDTOSchema } from './ticket.dto'
@@ -16,6 +17,7 @@ export const EventDetailDTOSchema = z.discriminatedUnion('type', [
     type: z.literal('concert'),
     data: ConcertDetailDTOSchema.extend({
       ticketPromotion: TicketPromotionDTOSchema.nullable(),
+      artists: LineupArtistDTOSchema.array(),
     }),
   }),
 ])
