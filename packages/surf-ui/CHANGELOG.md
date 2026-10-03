@@ -1,5 +1,44 @@
 # @coldsurfers/design-system
 
+## 0.33.0
+
+### Minor Changes
+
+- [#239](https://github.com/coldsurfers/public/pull/239) [`02c5cfd`](https://github.com/coldsurfers/public/commit/02c5cfd6c12a0b6310ad400921141ad5047e6df2) Thanks [@yungblud](https://github.com/yungblud)! - 홈 시안(Figma `821:2`)의 부품 다섯을 더한다. 스펙: `docs/surf-ui-parts.md`.
+
+  - `primitives`: `RowAction` — 줄 행동 버튼(32 · r8 · 키커색 14% 면)
+  - `cards`: `PickCard` · `PickRow` · `PosterTile` · `ChipCard` · `ChipCardItem` · `FeatureCard`
+  - `fontWeight` 에 `bold`(700) · `black`(900) 추가
+
+- [#241](https://github.com/coldsurfers/public/pull/241) [`b423f11`](https://github.com/coldsurfers/public/commit/b423f11b27deba0527b7146dfad79a9d12228050) Thanks [@yungblud](https://github.com/yungblud)! - 홈 정본(Figma `831:2` · `838:2`)의 첫 화면 부품을 더한다. 스펙: `docs/surf-ui-photo-hero.md`.
+
+  - `primitives`: `CornerLabel` — 묶음 왼쪽 위 영문 대문자 + 짧은 선
+  - `cards`: `PhotoHero` — 사진 바닥 + 잉크 스크림 위 브랜드 칸(워드마크 · 세리프 카피 · 손글씨 슬롯) · 결정 칸(`aside`, 패널은 유리)
+
+- [#240](https://github.com/coldsurfers/public/pull/240) [`b79e13e`](https://github.com/coldsurfers/public/commit/b79e13e913cb646fa91ff240bff536704b2cfc66) Thanks [@yungblud](https://github.com/yungblud)! - 주 버튼(`Button variant="accent"`)을 깊은 파랑 그라데이션으로 바꾼다 — 단색 `#2563ff` 가 사진 바닥에서 원색으로 튀었다. Figma `surf-ui / color` 에 더한 네 역할을 따른다.
+
+  - 색 역할 추가: `actionPrimaryTop` · `actionPrimaryBottom` · `actionPrimaryLine` · `actionPrimaryShadow` (`--surf-action-primary-*`)
+  - 웹 `accent`: 위 → 아래 그라데이션 · 1px 테두리 · 그림자 `0 8px 24px`, hover 는 밝기 1.08
+  - native 는 그라데이션이 없어 `actionPrimary` 단색 그대로
+
+- [#237](https://github.com/coldsurfers/public/pull/237) [`313239d`](https://github.com/coldsurfers/public/commit/313239dd79183c911a47fa273bfbc211d2585465) Thanks [@yungblud](https://github.com/yungblud)! - `@coldsurfers/design-system` 을 `@coldsurfers/surf-ui` 로 바꾸고, 색 · layout · shape 토큰을 Figma `surf-ui` 변수 컬렉션(`3sIMxSgWyp7RYonfhAAZIc`)으로 통째로 교체한다. 스펙: `docs/surf-ui-migration.md`.
+
+  **breaking**
+
+  - 패키지 이름: `@coldsurfers/design-system` → `@coldsurfers/surf-ui`. 서브패스는 그대로다.
+  - 색 계약 이름이 Figma 이름을 따른다: `vars.color.text` → `vars.color.textPrimary`, `--text` → `--surf-text-primary`. 옛 키 30여 개와 `ColorScheme` 의 옛 모양이 사라진다(대응표는 스펙).
+  - 지운 것: `--cs-*` 원색층(`palette`) · `ink` · `paper` · `gradient` 스케일, `lightThemeVars`.
+  - 면은 두 벌이다: `:root` 는 light, `data-surface="ink"` 를 단 요소 안은 ink. OS 다크모드와 무관하다.
+  - `Button` 의 `color` 계열 키 · sprinkles `color` · `background` 값도 새 이름을 받는다.
+
+  **추가**
+
+  - `colorSchemes`(`ink` · `light`) · `inkSurfaceVars` · `lightSurfaceVars` · `Surface` 타입.
+  - `layout`(mobile · desktop ≥1024 — `--surf-layout-*`) · `shape`(`--surf-radius-*` · `--surf-size-*` · `--surf-type-*`).
+  - `TEXT_TONE_COLOR` — `Text` 의 `tone` 축 → 색 역할.
+
+  다른 패키지는 peer 이름이 `@coldsurfers/surf-ui` 로 바뀌고 새 색 이름을 읽는다. `paper` 의 인쇄 테마 값이 새 역할에서 다시 파생되어 일부 회색이 조금 바뀐다.
+
 ## 0.32.0
 
 ### Minor Changes

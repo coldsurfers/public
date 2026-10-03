@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/paper",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "COLDSURF markdown-to-PDF CLI — prints documents to paper with design system tokens.",
   "keywords": [
     "markdown",
