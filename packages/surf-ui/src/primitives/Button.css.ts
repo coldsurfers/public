@@ -83,7 +83,7 @@ export const button = recipe({
     fontWeight: vars.fontWeight[spec.fontWeight],
     border: 'none',
     cursor: 'pointer',
-    transitionProperty: 'color, background-color, border-color, opacity',
+    transitionProperty: 'color, background-color, border-color, opacity, filter',
     transitionDuration: '150ms',
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
@@ -101,9 +101,16 @@ export const button = recipe({
         ...surfaceStyle('ghost'),
         selectors: { '&:hover:not(:disabled)': { color: vars.color.actionPrimary } },
       }),
+      /**
+       * 주 행동 — 깊은 파랑 그라데이션 + 테두리 + 그림자(Figma `action/primary-top` · `-bottom` ·
+       * `-line` · `-shadow`). 계약의 `actionPrimary` 단색은 그라데이션이 없는 native 몫으로 남는다.
+       */
       accent: inComponentsLayer({
         ...surfaceStyle('accent'),
-        selectors: { '&:hover:not(:disabled)': { background: vars.color.actionPrimaryHover } },
+        background: `linear-gradient(180deg, ${vars.color.actionPrimaryTop}, ${vars.color.actionPrimaryBottom})`,
+        border: `1px solid ${vars.color.actionPrimaryLine}`,
+        boxShadow: `0 8px 24px ${vars.color.actionPrimaryShadow}`,
+        selectors: { '&:hover:not(:disabled)': { filter: 'brightness(1.08)' } },
       }),
       /**
        * 되돌릴 수 없는 액션. hover 는 `accentHover` 같은 짝 토큰이 없어 `primary` 와 같은
