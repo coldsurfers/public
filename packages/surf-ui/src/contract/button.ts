@@ -74,11 +74,11 @@ type ButtonVariantSpec = {
  */
 const SIZE = {
   /** 인라인 액션. */
-  sm: { height: 36, paddingInline: 16, fontSize: 'sm', radius: 'md' },
+  sm: { height: 36, paddingInline: 16, fontSize: 'sm', radius: 'full' },
   /** 기본 — 폼 제출 · 주 액션. */
-  md: { height: 52, paddingInline: 24, fontSize: 'base', radius: 'lg' },
+  md: { height: 52, paddingInline: 24, fontSize: 'sm', radius: 'full' },
   /** 랜딩 히어로 CTA. */
-  cta: { height: 46, paddingInline: 22, fontSize: 15, radius: 10 },
+  cta: { height: 46, paddingInline: 22, fontSize: 15, radius: 'full' },
 } satisfies Record<ButtonSize, ButtonSizeSpec>
 
 /**
@@ -86,21 +86,23 @@ const SIZE = {
  *
  * | 축 | 바탕 | 테두리 | 글자 |
  * | --- | --- | --- | --- |
- * | `primary` | `text` | 없음 | `bg` |
- * | `ghost` | 없음(transparent) | 없음 | `body` |
- * | `accent` | `accent` | 없음 | 흰색(리터럴) |
- * | `outline` | 흰색(리터럴) | `border` 1px | `text` |
+ * | `primary` | `accent` | 없음 | `onAccent` |
+ * | `ghost` | 없음(transparent) | 없음 | `text` |
+ * | `accent` | `accent` | 없음 | `onAccent` — `primary` 와 같다(호환용) |
+ * | `outline` | 없음(transparent) | `border` 1px | `text` |
  * | `danger` | `statusDanger` | 없음 | 흰색(리터럴) |
+ *
+ * surf 에서 파랑은 **주 행동 하나**다 — `primary` 가 그 자리다. 화면에 둘째 행동이 있으면 `outline`.
  *
  * 웹의 `:hover`(→`opacity`·`accentHover`·`strong`)와 `transition` 은 RN 에 짝이 없다 —
  * 누름 피드백은 `TouchableOpacity` 의 투명도가 이미 준다. 짝이 없으면 계약이 아니므로
  * 웹 `.css.ts` 에 남는다. `disabled` 투명도는 두 레인에 다 있어서 `BUTTON_SPEC` 에 올린다.
  */
 const VARIANT = {
-  primary: { background: 'text', label: 'bg' },
-  ghost: { background: 'transparent', label: 'body' },
-  accent: { background: 'accent', label: 'white' },
-  outline: { background: 'surface', label: 'text', border: { width: 1, color: 'border' } },
+  primary: { background: 'accent', label: 'onAccent' },
+  ghost: { background: 'transparent', label: 'text' },
+  accent: { background: 'accent', label: 'onAccent' },
+  outline: { background: 'transparent', label: 'text', border: { width: 1, color: 'border' } },
   danger: { background: 'statusDanger', label: 'white' },
 } satisfies Record<ButtonVariant, ButtonVariantSpec>
 
@@ -115,7 +117,7 @@ export const BUTTON_SPEC = {
   /** `shape="pill"` 의 모서리. 크기 축의 `radius` 를 덮는다. */
   pillRadius: 'full' satisfies RadiusKey,
   /** 세 크기 공통. */
-  fontWeight: 'medium' satisfies FontWeightKey,
+  fontWeight: 'semibold' satisfies FontWeightKey,
   size: SIZE,
   variant: VARIANT,
 } as const

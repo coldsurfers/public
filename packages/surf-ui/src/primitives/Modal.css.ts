@@ -53,7 +53,7 @@ export const modalPanel = style(
     flexDirection: 'column',
     width: '100%',
     maxHeight: '100%',
-    border: `1px solid ${vars.color.border}`,
+    border: `1px solid ${vars.color.borderSoft}`,
     background: vars.color.surface,
     boxShadow: vars.shadow.xl,
   }),

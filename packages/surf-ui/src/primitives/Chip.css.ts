@@ -54,8 +54,8 @@ export const chip = recipe({
     active: {
       true: inComponentsLayer({
         borderColor: 'transparent',
-        background: vars.color.accent,
-        color: 'white',
+        background: vars.color.text,
+        color: vars.color.bg,
       }),
       false: {},
     },
@@ -65,10 +65,10 @@ export const chip = recipe({
     {
       variants: { size: 'md', active: false },
       style: inComponentsLayer({
-        borderColor: vars.color.border,
-        background: vars.color.surface,
-        color: vars.color.body,
-        selectors: { '&:hover': { background: vars.color.surfaceHover } },
+        borderColor: 'transparent',
+        background: vars.color.surfaceGhost,
+        color: vars.color.text,
+        selectors: { '&:hover': { background: vars.color.surfaceGhostHover } },
       }),
     },
     {

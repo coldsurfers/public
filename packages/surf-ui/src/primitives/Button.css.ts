@@ -95,7 +95,7 @@ export const button = recipe({
     variant: {
       primary: inComponentsLayer({
         ...surfaceStyle('primary'),
-        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover } },
       }),
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
@@ -115,7 +115,7 @@ export const button = recipe({
       }),
       outline: inComponentsLayer({
         ...surfaceStyle('outline'),
-        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.strong } },
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.surfaceGhost } },
       }),
     },
 

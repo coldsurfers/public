@@ -42,6 +42,8 @@ export const eyebrow = recipe({
       muted: inComponentsLayer({ color: vars.color.muted }),
       subtle: inComponentsLayer({ color: vars.color.subtle }),
       accent: inComponentsLayer({ color: vars.color.accent }),
+      /** 포스터 색 — 화면의 첫 줄 하나에만 */
+      tint: inComponentsLayer({ color: vars.color.tint }),
     },
   },
 

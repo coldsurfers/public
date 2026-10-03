@@ -20,18 +20,14 @@ export type { ChipSize }
  * Pill — 시안의 4 맥락을 한 어휘로 덮는다.
  *   size="md"  → rounded-full 필. quick chips(Boris…) · section chips(전체·Reviews) · filter(오늘·이번 주)
  *   size="sm"  → 소형 tag. genre 태그(드론·스토너·슈게이즈)
- *   active     → 선택 상태. accent 필 + 흰 텍스트 (오늘·전체 등)
+ *   active     → 선택 상태. 글자색 필 + 바탕색 글자 (오늘·전체 등)
  * 상호작용이면 기본 `button`, 라벨이면 `as="span"`, 라우팅 링크면 `asChild`.
  *
  * ## `active` 의 시각 언어는 여기가 정본이다
  *
- * 2026-09-28 에 반전(ink 필 + paper 텍스트)에서 **accent 필**로 바꿨다. #39 D-2 는 반전을
- * 정본으로 굳히면서 accent 를 "다중선택에서 화면을 지배한다"는 이유로 기각했는데, 동네 스위처
- * 시안(Figma `3743:1318`)이 accent 로 선택을 말했고 그 결정을 사용자가 정본으로 올렸다.
- *
- * 남은 위험은 그대로다 — 필터 칩이 여러 개 켜지면 파란 필이 화면을 채운다. 다중선택 자리가
- * 그렇게 보이면 칩 수를 줄이거나 다른 컨트롤을 고른다. `Callout tone="accent"`(14% 틴트)와는
- * 바탕 농도가 달라 헷갈리지 않는다.
+ * surf-ui(2026-10-03)에서 **반전 필**로 돌아왔다 — 파랑은 화면의 주 행동 하나에만 쓴다.
+ * 2026-09-28 의 accent 필(Figma `3743:1318`)은 필터 칩이 여러 개 켜지면 파랑이 화면을 채운다는
+ * 위험을 안고 있었고, surf 의 「파랑은 하나」 원칙과 부딪힌다.
  */
 type ChipBase = {
   active?: boolean

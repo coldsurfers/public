@@ -9,7 +9,7 @@ import { eyebrow } from './Eyebrow.css'
  */
 export interface EyebrowProps extends HTMLAttributes<HTMLParagraphElement> {
   size?: 'xs' | 'sm' | 'md'
-  tone?: 'muted' | 'subtle' | 'accent'
+  tone?: 'muted' | 'subtle' | 'accent' | 'tint'
 }
 
 export function Eyebrow({ size = 'md', tone = 'muted', className, ...rest }: EyebrowProps) {
