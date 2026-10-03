@@ -51,7 +51,7 @@ const Panel = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
   maxWidth: 420,
   padding: nativeSpacing[6],
   borderRadius: nativeRadius.xl,
-  backgroundColor: $scheme.surface,
+  backgroundColor: $scheme.surfaceRaised,
 }))
 
 export function Modal({ open, onClose, label, dismissible = true, children }: ModalProps) {

@@ -20,17 +20,16 @@ import {
   cover,
   fontSize,
   fontWeight,
-  ink,
   letterSpacing,
   lineHeight,
-  palette,
-  paper,
+  nodeTone,
   radius,
+  shape,
   spacing,
   tokens,
 } from './tokens'
 
-export type { ColorScheme } from './tokens'
+export type { ColorScheme, Surface } from './tokens'
 
 /** 웹 토큰의 rem 기준. `tokens.ts` 의 타이포 스케일이 이 값을 전제로 서 있다. */
 const ROOT_FONT_SIZE = 16
@@ -116,17 +115,15 @@ export const letterSpacingFor = (
 }
 
 /**
- * 색은 hex 라 변환이 없다 — 이름만 다시 연다. RN 도 `'#f2efe8'` 를 그대로 먹는다.
- * 스킴은 `light` 하나뿐이고(`nativeColor.light`), `cover`·`paper` 는 스킴 불변 scale 이라
- * 웹과 같은 객체를 그대로 쓴다.
+ * 색은 변환이 없다 — 이름만 다시 연다. RN 도 hex · `rgba()` 문자열을 그대로 먹는다.
+ * 면은 웹과 같은 두 벌이다(`nativeColor.ink` · `nativeColor.light`). RN 엔 `data-surface` 가
+ * 없으므로 표면이 고른 스킴 객체를 props 로 내려보낸다.
  */
-export const nativeColor = tokens.color.semantic
-/**
- * `ink` 는 스킴이 아니라 **다크 밴드 표면색 넷**이다(`base`·`surface`·`border`·`accent`).
- * 웹에서 `--ink-*` 로 이미 발행되고 있었는데 RN 쪽에 노출이 빠져 있어 여기 추가한다 —
- * 값은 `tokens.ts` 것 그대로고 변환도 없다(색은 hex 문자열이라 RN 이 그대로 먹는다).
- */
-export { cover, ink, palette, paper }
+export const nativeColor = tokens.color
+/** `cover` · `nodeTone` 은 스킴 불변 scale 이라 웹과 같은 객체를 그대로 쓴다. */
+export { cover, nodeTone }
+/** shape 는 px 문자열이라 숫자로 바꾼다 — `radiusPanel` → 20. */
+export const nativeShape = toNumericScale(shape)
 
 /**
  * RN 에는 fallback 스택이 없다 — `fontFamily` 는 **등록된 폰트 하나**를 가리켜야 하고,

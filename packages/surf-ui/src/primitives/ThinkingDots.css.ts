@@ -24,7 +24,7 @@ export const dot = style(
     width: 6,
     height: 6,
     borderRadius: vars.radius.full,
-    background: vars.color.muted,
+    background: vars.color.textSecondary,
     animationName: blink,
     animationDuration: '1.2s',
     animationIterationCount: 'infinite',

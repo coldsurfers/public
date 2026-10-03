@@ -99,11 +99,11 @@ export const button = recipe({
       }),
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
-        selectors: { '&:hover:not(:disabled)': { color: vars.color.accent } },
+        selectors: { '&:hover:not(:disabled)': { color: vars.color.actionPrimary } },
       }),
       accent: inComponentsLayer({
         ...surfaceStyle('accent'),
-        selectors: { '&:hover:not(:disabled)': { background: vars.color.accentHover } },
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.actionPrimaryHover } },
       }),
       /**
        * 되돌릴 수 없는 액션. hover 는 `accentHover` 같은 짝 토큰이 없어 `primary` 와 같은
@@ -115,7 +115,7 @@ export const button = recipe({
       }),
       outline: inComponentsLayer({
         ...surfaceStyle('outline'),
-        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.strong } },
+        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.textPrimary } },
       }),
     },
 

@@ -25,8 +25,8 @@ export const skeletonRoot = style([pulse])
  * `onCover` 는 어두운 커버 위 텍스트 자리(20/25/30 중간값)라 바닥 톤과 명도가 반대다.
  */
 export const skeletonToneValue = {
-  neutral: vars.color.surfaceHover,
-  onCover: alpha(vars.paper.warm, spec.onCoverAlpha),
+  neutral: vars.color.stateHover,
+  onCover: alpha(vars.color.textOnMedia, spec.onCoverAlpha),
 } as const
 
 export const skeletonTone = styleVariants(skeletonToneValue, (background) =>

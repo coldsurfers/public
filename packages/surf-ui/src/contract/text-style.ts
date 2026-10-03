@@ -1,4 +1,4 @@
-import type { fontSize, letterSpacing, lineHeight } from '../tokens'
+import type { ColorScheme, fontSize, letterSpacing, lineHeight } from '../tokens'
 
 /**
  * 글자 한 덩어리의 **합성 슬롯**. 규율은 `./index.ts`.
@@ -76,7 +76,7 @@ export const TEXT_STYLE_SPEC: Record<TextStyleName, TextStyleSpec> = {
 
 /**
  * 글자색 축. **웹·RN 이 같은 이름을 쓴다** — 값은 각자 자기 토큰 맵에서 읽는다
- * (`vars.color.muted` ↔ `scheme.muted`). 원래 `native/Text.tsx` 가 들고 있던 것을
+ * (`vars.color.textSecondary` ↔ `scheme.muted`). 원래 `native/Text.tsx` 가 들고 있던 것을
  * 웹 `Text` 가 생기면서 이리로 올렸다.
  *
  * ⚠️ `subtle` · `faint` 는 **읽는 글자에 쓰지 않는다.** 대비가 WCAG AA 밖이라
@@ -84,3 +84,14 @@ export const TEXT_STYLE_SPEC: Record<TextStyleName, TextStyleSpec> = {
  * 축에 남겨 둔 이유는 그 자리들이 실재하기 때문이지, 본문에 써도 된다는 뜻이 아니다.
  */
 export type TextTone = 'text' | 'strong' | 'body' | 'muted' | 'subtle' | 'faint' | 'accent'
+
+/** 글자색 축 → 색 역할. 축 이름은 컴포넌트 API 라 그대로 두고, 값만 Figma 역할을 가리킨다. */
+export const TEXT_TONE_COLOR = {
+  text: 'textPrimary',
+  strong: 'textPrimary',
+  body: 'textPrimary',
+  muted: 'textSecondary',
+  subtle: 'textTertiary',
+  faint: 'textTertiary',
+  accent: 'kicker',
+} as const satisfies Record<TextTone, keyof ColorScheme>

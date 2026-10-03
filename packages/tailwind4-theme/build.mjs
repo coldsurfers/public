@@ -20,7 +20,6 @@ import {
   fontSize,
   fontWeight,
   lineHeight,
-  paper,
   radius,
   spacing,
   tokens,
@@ -37,8 +36,11 @@ const scaleBlock = (namespace, scale) =>
     .map(([key, value]) => `  --${namespace}-${key}: ${value};`)
     .join('\n')
 
-/** 시맨틱 색 → `bg-bg` · `text-heading` … 런타임에 바뀔 수 있는 축이라 `var()` 간접. */
-const themeColor = Object.keys(tokens.color.semantic.light)
+/**
+ * 색 역할 → `bg-surf-bg-base` · `text-surf-text-primary` … `data-surface` 로 면마다 값이 바뀌는
+ * 축이라 `var()` 간접이다. ink · light 는 같은 키를 갖는다.
+ */
+const themeColor = Object.keys(tokens.color.light)
   .map((key) => {
     const name = tokenVarName('color', key)
     return `  --color-${name}: var(--${name});`
@@ -51,11 +53,6 @@ const themeColor = Object.keys(tokens.color.semantic.light)
  */
 const themeCover = Object.keys(cover)
   .map((key) => `  --color-cover-${key}: var(--${tokenVarName('cover', key)});`)
-  .join('\n')
-
-/** warm paper → `bg-paper-warm`. cover 와 같은 이유로 var 참조. */
-const themePaper = Object.keys(paper)
-  .map((key) => `  --color-paper-${key}: var(--${tokenVarName('paper', key)});`)
   .join('\n')
 
 const themeFontFamily = Object.keys(fontFamily)
@@ -101,8 +98,6 @@ ${themeFontFamily}
 ${themeColor}
 
 ${themeCover}
-
-${themePaper}
 
 ${themeBreakpoints}
 

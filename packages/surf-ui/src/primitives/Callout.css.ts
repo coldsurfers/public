@@ -57,7 +57,7 @@ export const callout = recipe({
 
   variants: {
     tone: {
-      accent: tone(vars.color.accent, vars.color.body),
+      accent: tone(vars.color.actionPrimary, vars.color.textPrimary),
       success: tone(vars.color.statusSuccess, vars.color.statusSuccess),
       warning: tone(vars.color.statusWarning, vars.color.statusWarning),
       danger: tone(vars.color.statusDanger, vars.color.statusDanger),

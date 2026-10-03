@@ -9,11 +9,11 @@ import { vars } from '../css/contract.css'
  * `Text` 것이 아니기 때문이다. `text()` 를 직접 쓰는 표면도 같은 클래스를 문다.
  */
 export const textTone: Record<TextTone, string> = styleVariants({
-  text: inComponentsLayer({ color: vars.color.text }),
-  strong: inComponentsLayer({ color: vars.color.strong }),
-  body: inComponentsLayer({ color: vars.color.body }),
-  muted: inComponentsLayer({ color: vars.color.muted }),
-  subtle: inComponentsLayer({ color: vars.color.subtle }),
-  faint: inComponentsLayer({ color: vars.color.faint }),
-  accent: inComponentsLayer({ color: vars.color.accent }),
+  text: inComponentsLayer({ color: vars.color.textPrimary }),
+  strong: inComponentsLayer({ color: vars.color.textPrimary }),
+  body: inComponentsLayer({ color: vars.color.textPrimary }),
+  muted: inComponentsLayer({ color: vars.color.textSecondary }),
+  subtle: inComponentsLayer({ color: vars.color.textTertiary }),
+  faint: inComponentsLayer({ color: vars.color.textTertiary }),
+  accent: inComponentsLayer({ color: vars.color.actionPrimary }),
 })

@@ -14,8 +14,8 @@ export const badge = recipe({
   variants: {
     variant: {
       solid: inComponentsLayer({
-        background: vars.color.text,
-        color: vars.color.bg,
+        background: vars.color.textPrimary,
+        color: vars.color.bgBase,
         fontFamily: vars.font.sans,
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
@@ -24,7 +24,7 @@ export const badge = recipe({
         borderRadius: vars.radius.md,
       }),
       soft: inComponentsLayer({
-        color: vars.color.muted,
+        color: vars.color.textSecondary,
         fontSize: vars.fontSize.xs,
       }),
     },

@@ -411,7 +411,7 @@ function CoverCard({
           {coverAction ? <div className={s.coverTopAction}>{coverAction}</div> : null}
         </div>
         {textInside ? (
-          <div className={s.coverStack}>
+          <div data-surface="ink" className={s.coverStack}>
             <p className={s.coverStamp}>{meta}</p>
             <h3 className={s.coverTitle({ size })}>{title}</h3>
             {footer ? <div className={s.coverVenue}>{footer}</div> : null}

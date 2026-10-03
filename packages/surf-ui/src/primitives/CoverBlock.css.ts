@@ -21,7 +21,7 @@ export const coverBlock = style(
  * 커버 색면이 아닌 표면(예: `DemoCard` 아바타 원)도 같은 팔레트를 쓰므로 따로 export.
  *
  * `note` 는 팔레트가 아니라 **기다림의 면**이다(`CoverSurfaceTone`). 값을 `Skeleton` 과 같은
- * `vars.color.surfaceHover` 에서 읽는다 — API 대기와 이미지 대기가 한 밝기여야 한다.
+ * `vars.color.stateHover` 에서 읽는다 — API 대기와 이미지 대기가 한 밝기여야 한다.
  */
 export const coverTone: Record<CoverSurfaceTone, string> = styleVariants({
   forest: inComponentsLayer({ background: vars.cover.forest }),
@@ -30,7 +30,7 @@ export const coverTone: Record<CoverSurfaceTone, string> = styleVariants({
   moss: inComponentsLayer({ background: vars.cover.moss }),
   steel: inComponentsLayer({ background: vars.cover.steel }),
   plum: inComponentsLayer({ background: vars.cover.plum }),
-  note: inComponentsLayer({ background: vars.color.surfaceHover }),
+  note: inComponentsLayer({ background: vars.color.stateHover }),
 })
 
 /**
@@ -43,11 +43,11 @@ export const coverTone: Record<CoverSurfaceTone, string> = styleVariants({
  * 물리는 건 색을 안 정한 것들뿐이라 기존 표면은 안 움직인다.
  */
 export const coverForeground: Record<CoverSurfaceTone, string> = styleVariants({
-  forest: inComponentsLayer({ color: vars.paper.warm }),
-  wine: inComponentsLayer({ color: vars.paper.warm }),
-  navy: inComponentsLayer({ color: vars.paper.warm }),
-  moss: inComponentsLayer({ color: vars.paper.warm }),
-  steel: inComponentsLayer({ color: vars.paper.warm }),
-  plum: inComponentsLayer({ color: vars.paper.warm }),
-  note: inComponentsLayer({ color: vars.ink.base }),
+  forest: inComponentsLayer({ color: vars.color.textOnMedia }),
+  wine: inComponentsLayer({ color: vars.color.textOnMedia }),
+  navy: inComponentsLayer({ color: vars.color.textOnMedia }),
+  moss: inComponentsLayer({ color: vars.color.textOnMedia }),
+  steel: inComponentsLayer({ color: vars.color.textOnMedia }),
+  plum: inComponentsLayer({ color: vars.color.textOnMedia }),
+  note: inComponentsLayer({ color: vars.color.overlay }),
 })

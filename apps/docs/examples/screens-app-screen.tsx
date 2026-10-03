@@ -29,8 +29,8 @@ export default function Example() {
           style={{
             flex: 1,
             borderWidth: 1,
-            borderColor: scheme.accent,
-            backgroundColor: scheme.surface2,
+            borderColor: scheme.actionPrimary,
+            backgroundColor: scheme.panelFill,
             gap: 8,
             padding: 12,
           }}
@@ -49,8 +49,9 @@ export default function Example() {
                   borderRadius: 8,
                   paddingHorizontal: 10,
                   paddingVertical: 6,
-                  borderColor: candidate === offsetBottom ? scheme.accent : scheme.border,
-                  backgroundColor: candidate === offsetBottom ? scheme.surfaceActive : scheme.bg,
+                  borderColor:
+                    candidate === offsetBottom ? scheme.actionPrimary : scheme.lineDivider,
+                  backgroundColor: candidate === offsetBottom ? scheme.statePressed : scheme.bgBase,
                 }}
               >
                 <Text textStyle="labelSm">{candidate}</Text>

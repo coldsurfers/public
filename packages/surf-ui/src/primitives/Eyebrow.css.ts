@@ -39,9 +39,9 @@ export const eyebrow = recipe({
     },
 
     tone: {
-      muted: inComponentsLayer({ color: vars.color.muted }),
-      subtle: inComponentsLayer({ color: vars.color.subtle }),
-      accent: inComponentsLayer({ color: vars.color.accent }),
+      muted: inComponentsLayer({ color: vars.color.textSecondary }),
+      subtle: inComponentsLayer({ color: vars.color.textTertiary }),
+      accent: inComponentsLayer({ color: vars.color.actionPrimary }),
     },
   },
 

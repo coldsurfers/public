@@ -32,21 +32,21 @@ export const checkboxBox = style(
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
-    border: `1px solid ${vars.color.border}`,
-    background: vars.color.surface,
+    border: `1px solid ${vars.color.lineDivider}`,
+    background: vars.color.surfaceRaised,
     color: 'transparent',
     transitionProperty: 'color, background-color, border-color',
     transitionDuration: '150ms',
 
     selectors: {
       'input:checked + &': {
-        borderColor: vars.color.accent,
-        background: vars.color.accent,
+        borderColor: vars.color.actionPrimary,
+        background: vars.color.actionPrimary,
         color: 'white',
       },
       'input:focus-visible + &': {
         // ring-accent/60 등가. `var()` 에 알파를 먹이려면 color-mix 가 필요하다.
-        boxShadow: `0 0 0 2px color-mix(in srgb, ${vars.color.accent} 60%, transparent)`,
+        boxShadow: `0 0 0 2px color-mix(in srgb, ${vars.color.actionPrimary} 60%, transparent)`,
       },
       'input:disabled + &': { opacity: 0.5 },
     },

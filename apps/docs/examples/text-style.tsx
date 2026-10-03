@@ -14,14 +14,16 @@ export default function Example() {
       </p>
 
       {/* 램프는 색을 묶지 않는다 — 같은 역할이 표면에 따라 다른 색을 입는 건 정상이다. */}
-      <p className={`${text('bodySm')} ${sprinkles({ color: 'muted' })}`}>
+      <p className={`${text('bodySm')} ${sprinkles({ color: 'textSecondary' })}`}>
         보조 문장은 한 단 아래에서 같은 규칙을 따릅니다.
       </p>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', flexWrap: 'wrap' }}>
         <span className={text('label', { weight: 'medium' })}>라벨</span>
-        <span className={`${text('labelSm')} ${sprinkles({ color: 'muted' })}`}>21:00 입장</span>
-        <span className={`${text('micro')} ${sprinkles({ color: 'subtle' })}`}>ISSUE 07</span>
+        <span className={`${text('labelSm')} ${sprinkles({ color: 'textSecondary' })}`}>
+          21:00 입장
+        </span>
+        <span className={`${text('micro')} ${sprinkles({ color: 'textTertiary' })}`}>ISSUE 07</span>
       </div>
     </div>
   )

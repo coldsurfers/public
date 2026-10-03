@@ -31,9 +31,13 @@ const Root = styled.TextInput<{ $scheme: ColorScheme; $focused: boolean; $invali
     paddingHorizontal: nativeSpacing[4],
     borderWidth: 1,
     borderRadius: nativeRadius.md,
-    borderColor: $invalid ? $scheme.statusDanger : $focused ? $scheme.accent : $scheme.border,
-    backgroundColor: $scheme.surface,
-    color: $scheme.text,
+    borderColor: $invalid
+      ? $scheme.statusDanger
+      : $focused
+        ? $scheme.actionPrimary
+        : $scheme.lineDivider,
+    backgroundColor: $scheme.surfaceRaised,
+    color: $scheme.textPrimary,
     fontSize: nativeFontSize.base,
     includeFontPadding: false,
   }),
@@ -64,7 +68,7 @@ export function TextInput({ invalid = false, onFocus, onBlur, ...rest }: TextInp
       $scheme={scheme}
       $focused={focused}
       $invalid={invalid}
-      placeholderTextColor={scheme.subtle}
+      placeholderTextColor={scheme.textTertiary}
       onFocus={handleFocus}
       onBlur={handleBlur}
       {...rest}

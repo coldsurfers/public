@@ -26,7 +26,7 @@ import { useScheme } from './scheme'
  * ```tsx
  * <Chip onPress={…}>
  *   <Chip.Label>모든 장르</Chip.Label>
- *   <ChevronDown size={12} color={scheme.body} />
+ *   <ChevronDown size={12} color={scheme.textPrimary} />
  * </Chip>
  * ```
  *
@@ -45,15 +45,15 @@ export interface ChipProps extends ComponentPropsWithRef<typeof TouchableOpacity
 
 /** `CHIP_SPEC` 의 색 표와 1:1 — 비활성일 때만 size 로 갈린다. */
 const surfaceFor = (scheme: ColorScheme, size: ChipSize, active: boolean): ViewStyle => {
-  if (active) return { backgroundColor: scheme.accent, borderColor: 'transparent' }
+  if (active) return { backgroundColor: scheme.actionPrimary, borderColor: 'transparent' }
   return size === 'md'
-    ? { backgroundColor: scheme.surface, borderColor: scheme.border }
-    : { backgroundColor: scheme.surface2, borderColor: 'transparent' }
+    ? { backgroundColor: scheme.surfaceRaised, borderColor: scheme.lineDivider }
+    : { backgroundColor: scheme.panelFill, borderColor: 'transparent' }
 }
 
 const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): string => {
   if (active) return 'white'
-  return size === 'md' ? scheme.body : scheme.muted
+  return size === 'md' ? scheme.textPrimary : scheme.textSecondary
 }
 
 /** 라벨이 자기 서식을 어디서 읽는지 — 필이 정하고 슬롯이 받는다. */

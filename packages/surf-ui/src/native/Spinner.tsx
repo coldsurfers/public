@@ -79,7 +79,7 @@ export function Spinner({ size = SPINNER_SPEC.size, label, ...rest }: SpinnerPro
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke={scheme.border}
+            stroke={scheme.lineDivider}
             strokeWidth={SPINNER_SPEC.strokeWidth}
             fill="none"
           />
@@ -87,7 +87,7 @@ export function Spinner({ size = SPINNER_SPEC.size, label, ...rest }: SpinnerPro
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke={scheme.accent}
+            stroke={scheme.actionPrimary}
             strokeWidth={SPINNER_SPEC.strokeWidth}
             strokeLinecap="round"
             fill="none"

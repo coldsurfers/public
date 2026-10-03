@@ -52,7 +52,7 @@ export function PullToRefreshSpinner() {
           cx={SPINNER_SIZE / 2}
           cy={SPINNER_SIZE / 2}
           r={SPINNER_RADIUS}
-          stroke={scheme.border}
+          stroke={scheme.lineDivider}
           strokeWidth={SPINNER_STROKE_WIDTH}
           fill="none"
         />
@@ -61,7 +61,7 @@ export function PullToRefreshSpinner() {
           cx={SPINNER_SIZE / 2}
           cy={SPINNER_SIZE / 2}
           r={SPINNER_RADIUS}
-          stroke={scheme.accent}
+          stroke={scheme.actionPrimary}
           strokeWidth={SPINNER_STROKE_WIDTH}
           fill="none"
           strokeDasharray={`${SPINNER_ARC} ${SPINNER_CIRCUMFERENCE}`}

@@ -51,7 +51,7 @@ export const note = style(
     gap: SPEC.gap.mobile,
     padding: SPEC.padding.mobile,
     borderRadius: SPEC.radius.mobile,
-    background: vars.color.surface,
+    background: vars.color.surfaceRaised,
     boxShadow: vars.shadow.sm,
     '@media': {
       [media.desktop]: {
@@ -86,8 +86,8 @@ const metaBase = inComponentsLayer({
  * 자리를 근거로 적혀 있다. 읽는 글로 쓰는 노트는 `tone="muted"` 로 내린다.
  */
 export const noteMetaTone = styleVariants({
-  accent: [metaBase, inComponentsLayer({ color: vars.color.accent })],
-  muted: [metaBase, inComponentsLayer({ color: vars.color.muted })],
+  accent: [metaBase, inComponentsLayer({ color: vars.color.actionPrimary })],
+  muted: [metaBase, inComponentsLayer({ color: vars.color.textSecondary })],
 })
 
 /**
@@ -100,7 +100,7 @@ export const noteHeadline = style(
   inComponentsLayer({
     fontSize: SPEC.headline.mobile,
     fontWeight: vars.fontWeight.medium,
-    color: vars.color.text,
+    color: vars.color.textPrimary,
     '@media': { [media.desktop]: { fontSize: SPEC.headline.desktop } },
   }),
 )

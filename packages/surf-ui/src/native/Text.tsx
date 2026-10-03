@@ -1,6 +1,11 @@
 import styled from '@emotion/native'
 import type { TextProps as RNTextProps } from 'react-native'
-import { TEXT_STYLE_SPEC, type TextStyleName, type TextTone } from '../contract/text-style'
+import {
+  TEXT_STYLE_SPEC,
+  TEXT_TONE_COLOR,
+  type TextStyleName,
+  type TextTone,
+} from '../contract/text-style'
 import {
   type ColorScheme,
   type FontSizeKey,
@@ -63,7 +68,7 @@ const Root = styled.Text<{
   $track: LetterSpacingKey | undefined
   $tone: TextTone
 }>(({ $scheme, $size, $weight, $leading, $track, $tone }) => ({
-  color: $scheme[$tone],
+  color: $scheme[TEXT_TONE_COLOR[$tone]],
   fontFamily: nativeFontFamily.sans,
   fontSize: nativeFontSize[$size],
   fontWeight: fontWeight[$weight],

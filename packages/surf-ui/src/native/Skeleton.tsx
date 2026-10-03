@@ -7,7 +7,7 @@ import {
   type ViewProps,
 } from 'react-native'
 import { type SkeletonTone, SKELETON_SPEC as spec } from '../contract'
-import { nativeRadius, paper, type RadiusKey, withAlpha } from '../tokens/native'
+import { nativeColor, nativeRadius, type RadiusKey, withAlpha } from '../tokens/native'
 import { useScheme } from './scheme'
 
 /**
@@ -105,7 +105,9 @@ export function Skeleton({
   const scheme = useScheme()
   const opacity = usePulseOpacity()
   const backgroundColor =
-    tone === 'onCover' ? withAlpha(paper.warm, spec.onCoverAlpha) : scheme.surfaceHover
+    tone === 'onCover'
+      ? withAlpha(nativeColor.light.textOnMedia, spec.onCoverAlpha)
+      : scheme.stateHover
 
   return (
     <Animated.View

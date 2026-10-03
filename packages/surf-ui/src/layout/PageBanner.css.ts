@@ -15,7 +15,7 @@ import { media } from '../css/media'
  * (#19 D-7 · `Container.css.ts` 와 같은 판정).
  */
 
-export const banner = style(inComponentsLayer({ background: vars.color.strong }))
+export const banner = style(inComponentsLayer({ background: vars.color.textPrimary }))
 
 /**
  * 세로 여백만. 가로는 `Container` 가 든다. 64 → 88px, `Container` 와 같은 tablet 에서 갈린다.
@@ -42,7 +42,7 @@ export const bannerTitle = style(
     fontWeight: 700,
     lineHeight: '1.32',
     letterSpacing: '-0.015em',
-    color: vars.paper.warm,
+    color: vars.color.textOnMedia,
     '@media': { [media.tablet]: { fontSize: '34px' } },
   }),
 )
@@ -51,7 +51,7 @@ export const bannerTitle = style(
 export const bannerBody = style(
   inComponentsLayer({
     fontSize: '15px',
-    color: vars.color.subtle,
+    color: vars.color.textTertiary,
     '@media': { [media.tablet]: { fontSize: vars.fontSize.base } },
   }),
 )

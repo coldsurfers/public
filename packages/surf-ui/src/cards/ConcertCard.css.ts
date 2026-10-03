@@ -116,7 +116,7 @@ export const bareTitle = recipe({
     // `strong` 이 아니라 `text` 다 — 제목만 한 단 더 검으면 명도 사다리가 위에서 한 칸 비어
     // 보인다. 사다리 전체는 계약(`CONCERT_CARD_BARE_SPEC.titleFontWeight`) 주석에 적혀 있다.
     // `strong`(#05090f)은 표면에서 **가장 강한 전경** 자리라 목록 카드가 가져갈 값이 아니다.
-    color: vars.color.text,
+    color: vars.color.textPrimary,
   }),
 
   variants: {
@@ -141,7 +141,7 @@ export const bareLine = style(
     fontSize: bare.metaFontSize,
     lineHeight: `${bare.metaLineHeight}px`,
     letterSpacing: vars.letterSpacing.none,
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
   }),
 )
 
@@ -231,10 +231,10 @@ export const coverCover = recipe({
  */
 const insideScrim = {
   top: 0,
-  background: `linear-gradient(180deg, ${alpha(vars.palette.deepNight, 0)} 0%, ${alpha(
-    vars.palette.deepNight,
+  background: `linear-gradient(180deg, ${alpha(vars.color.overlay, 0)} 0%, ${alpha(
+    vars.color.overlay,
     72,
-  )} 55%, ${alpha(vars.palette.deepNight, 92)} 100%)`,
+  )} 55%, ${alpha(vars.color.overlay, 92)} 100%)`,
 } as const
 
 /**
@@ -294,7 +294,7 @@ export const coverEyebrow = style(
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '1px',
     textTransform: 'uppercase',
-    color: alpha(vars.paper.warm, 90),
+    color: alpha(vars.color.textOnMedia, 90),
   }),
 )
 
@@ -305,7 +305,7 @@ export const coverEyebrow = style(
 const insideTitle = {
   fontSize: 17,
   lineHeight: '24px',
-  color: vars.palette.white,
+  color: vars.color.textOnMedia,
 } as const
 
 export const coverTitle = recipe({
@@ -321,7 +321,7 @@ export const coverTitle = recipe({
         fontSize: 26,
         letterSpacing: '-0.4px',
         lineHeight: 1.25,
-        color: vars.paper.warm,
+        color: vars.color.textOnMedia,
         '@media': { [media.tablet]: { fontSize: 30, letterSpacing: '-0.5px' } },
       }),
       compact: inComponentsLayer(insideTitle),
@@ -343,7 +343,7 @@ export const coverMeta = style(
     fontSize: 13,
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '0.1px',
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
   }),
 )
 
@@ -367,7 +367,7 @@ export const coverStack = style(
  *
  * 서체가 갈리는 근거는 `bareLine` 과 같다: 날짜는 문장이 아니라 **수치**라, sans 로 쓰면 제목의
  * 작은 판처럼 읽힌다. 색만 다르다 — 잉크 위라 라이트 표면의 `muted` 가 안 먹고,
- * `ink.accent`(밴드 위 인디케이터 자리)가 그 자리다.
+ * `kicker` 가 그 자리다 — 부모가 `data-surface="ink"` 라 잉크 값(sky)을 받는다.
  */
 export const coverStamp = style(
   inComponentsLayer({
@@ -376,7 +376,7 @@ export const coverStamp = style(
     fontSize: 11,
     fontWeight: vars.fontWeight.medium,
     letterSpacing: '0.04em',
-    color: vars.ink.accent,
+    color: vars.color.kicker,
   }),
 )
 
@@ -391,7 +391,7 @@ export const coverVenue = style(
     position: 'relative',
     fontSize: 13,
     lineHeight: '20px',
-    color: vars.palette.haze,
+    color: vars.color.textSecondary,
   }),
 )
 
@@ -403,8 +403,8 @@ export const framedRoot = style(
     flexDirection: 'column',
     overflow: 'hidden',
     borderRadius: 16,
-    border: `1px solid ${vars.color.border}`,
-    background: vars.color.surface,
+    border: `1px solid ${vars.color.lineDivider}`,
+    background: vars.color.surfaceRaised,
   }),
 )
 
@@ -506,7 +506,7 @@ export const framedTitle = style(
     fontSize: 17,
     fontWeight: vars.fontWeight.semibold,
     lineHeight: 1.35,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
   }),
 )
 
@@ -514,6 +514,6 @@ export const framedMeta = style(
   inComponentsLayer({
     ...lineClamp(1),
     fontSize: 13,
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
   }),
 )

@@ -83,7 +83,7 @@ const staticProperties = defineProperties({
   '@layer': utilitiesLayer,
   properties: {
     color: vars.color,
-    background: { ...vars.color, ...vars.cover, ...vars.paper },
+    background: { ...vars.color, ...vars.cover },
     borderColor: vars.color,
     borderRadius: vars.radius,
     fontFamily: vars.font,

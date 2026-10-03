@@ -1,7 +1,7 @@
 import styled from '@emotion/native'
 import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { TOAST_TIMING, type ToastOptions, type ToastTone } from '../contract'
-import { type ColorScheme, ink, nativeRadius, nativeSpacing, palette } from '../tokens/native'
+import { type ColorScheme, nativeColor, nativeRadius, nativeSpacing } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
@@ -46,7 +46,7 @@ const Pill = styled.View<{ $scheme: ColorScheme; $stacked: boolean }>(({ $scheme
   paddingVertical: nativeSpacing[3],
   // 두 줄 높이에선 알약이 타원이 되므로 16 으로 접는다 — 웹 `stacked` 와 같은 값.
   borderRadius: $stacked ? 16 : nativeRadius.full,
-  backgroundColor: $scheme.text,
+  backgroundColor: $scheme.textPrimary,
   ...($stacked ? { alignSelf: 'stretch', marginHorizontal: nativeSpacing[4] } : null),
 }))
 
@@ -65,7 +65,7 @@ const ErrorDot = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
   height: 6,
   borderRadius: nativeRadius.full,
   // 상태색이 아니라 `accent` 인 이유는 ink pill 위 대비다 — `contract/toast.ts` 의 색 표.
-  backgroundColor: $scheme.accent,
+  backgroundColor: $scheme.actionPrimary,
 }))
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -100,17 +100,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         <Layer accessibilityLiveRegion="polite">
           <Pill $scheme={scheme} $stacked={Boolean(toast.description)}>
             {toast.tone === 'success' ? (
-              <Text size="sm" style={{ color: scheme.bg }}>
+              <Text size="sm" style={{ color: scheme.bgBase }}>
                 ✓
               </Text>
             ) : null}
             {toast.tone === 'error' ? <ErrorDot $scheme={scheme} /> : null}
             <Copy $stacked={Boolean(toast.description)}>
-              <Text size="sm" numberOfLines={1} style={{ color: scheme.bg }}>
+              <Text size="sm" numberOfLines={1} style={{ color: scheme.bgBase }}>
                 {toast.message}
               </Text>
               {toast.description ? (
-                <Text size="xs" numberOfLines={1} style={{ color: palette.haze }}>
+                <Text size="xs" numberOfLines={1} style={{ color: nativeColor.ink.textSecondary }}>
                   {toast.description}
                 </Text>
               ) : null}
@@ -123,7 +123,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   action?.onPress()
                 }}
               >
-                <Text size="xs" weight="semibold" style={{ color: ink.accent }}>
+                <Text size="xs" weight="semibold" style={{ color: nativeColor.ink.kicker }}>
                   {toast.action.label}
                 </Text>
               </Action>

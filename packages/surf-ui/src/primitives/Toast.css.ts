@@ -3,6 +3,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
+import { alpha } from '../css/style-utils'
 
 /**
  * 하단 중앙 pill 토스트 — Figma Page 7 `Toast — 규격·변형`(990:2).
@@ -23,8 +24,8 @@ export const toast = recipe({
     alignItems: 'center',
     gap: 8,
     borderRadius: vars.radius.full,
-    background: vars.color.text,
-    color: vars.color.bg,
+    background: vars.color.textPrimary,
+    color: vars.color.bgBase,
     padding: '11px 18px',
     fontWeight: vars.fontWeight.medium,
     fontSize: 13.5,
@@ -68,7 +69,7 @@ export const toastErrorDot = style(
     height: 7,
     flexShrink: 0,
     borderRadius: vars.radius.full,
-    background: vars.color.accent,
+    background: vars.color.actionPrimary,
   }),
 )
 
@@ -97,7 +98,7 @@ export const toastDescription = style(
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    color: vars.palette.haze,
+    color: alpha(vars.color.bgBase, 70),
     fontWeight: vars.fontWeight.regular,
     fontSize: 13,
   }),
@@ -113,7 +114,7 @@ export const toastAction = style(
     border: 'none',
     background: 'transparent',
     padding: 0,
-    color: vars.ink.accent,
+    color: vars.color.actionPrimary,
     fontWeight: vars.fontWeight.semibold,
     fontSize: 13,
     cursor: 'pointer',

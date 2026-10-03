@@ -11,7 +11,7 @@
 import { cpSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { fontFamily, letterSpacing, paper, radius, tokens } from '@coldsurfers/surf-ui/tokens'
+import { fontFamily, letterSpacing, radius, tokens } from '@coldsurfers/surf-ui/tokens'
 import { CONFIG_SCHEMA } from './dist/config.js'
 import { PRINT_VAR_NAMES } from './dist/contract.js'
 
@@ -19,13 +19,13 @@ const root = dirname(fileURLToPath(import.meta.url))
 const distDir = join(root, 'dist')
 const cssOutDir = join(distDir, 'css')
 
-const light = tokens.color.semantic.light
+const light = tokens.color.light
 
 /**
- * 인쇄에는 hover 가 없다. DS 는 `link` 를 잉크로 두고 `linkHover` 에서만 sweep 를 드러내는데,
+ * 인쇄에는 hover 가 없다. 화면은 링크를 잉크로 두고 hover 에서만 파랑을 드러내는데,
  * 지면에서 본문과 같은 색인 링크는 링크로 읽히지 않는다 — 그래서 hover 쪽 값을 정지 상태로 쓴다.
  */
-const PRINT_LINK = light.linkHover
+const PRINT_LINK = light.actionPrimary
 
 /**
  * DS `fontWeight` 는 semibold(600)가 상한이라 인쇄 볼드를 파생할 데가 없다.
@@ -35,35 +35,35 @@ const PRINT_LINK = light.linkHover
 const PRINT_WEIGHT_STRONG = '700'
 
 /** 인용면. 지어낸 hex 대신 accent 를 지면 바탕에 섞어 만든다 — 새 색 이름이 늘지 않는다. */
-const PRINT_TINT = `color-mix(in srgb, ${light.accent} 8%, #ffffff)`
+const PRINT_TINT = `color-mix(in srgb, ${light.actionPrimary} 8%, #ffffff)`
 
 const theme = {
-  '--print-canvas': light.surface,
-  '--print-surface': paper.warm,
-  '--print-surface-2': light.surface2,
+  '--print-canvas': light.surfaceRaised,
+  '--print-surface': light.bgAlt,
+  '--print-surface-2': light.panelFill,
   '--print-tint': PRINT_TINT,
 
-  '--print-border': light.border,
-  '--print-border-soft': light.borderSoft,
+  '--print-border': light.lineDivider,
+  '--print-border-soft': light.lineDivider,
 
-  '--print-ink': light.text,
-  '--print-ink-strong': light.strong,
-  '--print-ink-body': light.body,
-  '--print-ink-muted': light.muted,
-  '--print-ink-subtle': light.subtle,
+  '--print-ink': light.textPrimary,
+  '--print-ink-strong': light.textPrimary,
+  '--print-ink-body': light.textPrimary,
+  '--print-ink-muted': light.textSecondary,
+  '--print-ink-subtle': light.textTertiary,
 
-  '--print-accent': light.accent,
+  '--print-accent': light.actionPrimary,
   '--print-link': PRINT_LINK,
-  '--print-quote': light.blockquote,
-  '--print-code-bg': light.codeBg,
-  '--print-code-fg': light.codeFg,
+  '--print-quote': light.textSecondary,
+  '--print-code-bg': light.panelFill,
+  '--print-code-fg': light.kicker,
 
   // 표지는 잉크로 채운 면이다. DS 의 `cover` scale 은 카드 커버의 *지형색* 이라 자리가 다르다 —
   // 여섯 중 하나를 임의로 고르는 대신, 이미 이 문서의 색인 잉크를 쓴다.
-  '--print-cover': light.strong,
-  '--print-cover-ink': paper.warm,
+  '--print-cover': light.textPrimary,
+  '--print-cover-ink': light.textOnMedia,
   // 어두운 면 위에서는 대비가 반대로 성립해 subtle 이 읽힌다(DS tokens.ts 의 단서).
-  '--print-cover-ink-muted': light.subtle,
+  '--print-cover-ink-muted': light.textTertiary,
 
   '--print-radius': radius.md,
 

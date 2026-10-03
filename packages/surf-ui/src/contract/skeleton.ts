@@ -11,7 +11,7 @@
 
 /**
  * 바탕 두 톤. 값은 각자 토큰 맵에서 읽는다 — `neutral` 은 `surfaceHover`,
- * `onCover` 는 `paper.warm` 에 아래 알파를 먹인 것.
+ * `onCover` 는 `color.textOnMedia` 에 아래 알파를 먹인 것.
  *
  * `onCover` 가 따로 있는 이유: 어두운 커버 위의 텍스트 자리라 바닥 톤과 명도가 반대다.
  */

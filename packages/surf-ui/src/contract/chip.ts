@@ -7,7 +7,7 @@ import type { fontSize, fontWeight, radius } from '../tokens'
  * `HTMLAttributes`)를, RN 은 `TouchableOpacityProps` 를 extends 한다 — 공통 조상이 없어서
  * 억지로 묶으면 웹의 `asChild`·`as` 가 갈 곳을 잃는다. 그래서 여기 있는 건 축과 치수뿐이다.
  *
- * 색도 없다 — `vars.color.body` ↔ `scheme.body` 로 양쪽이 자기 토큰 맵에서 읽는다.
+ * 색도 없다 — `vars.color.textPrimary` ↔ `scheme.body` 로 양쪽이 자기 토큰 맵에서 읽는다.
  * 다만 **어느 축에서 어느 색을 읽는가**는 갈리면 안 되므로 그 표는 두 구현의 주석이 아니라
  * 아래 `CHIP_SPEC` 옆 표에 적어 둔다.
  */

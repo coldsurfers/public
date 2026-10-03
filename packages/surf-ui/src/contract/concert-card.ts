@@ -22,7 +22,7 @@ type FontFamilyKey = keyof typeof fontFamily
  *   ⚠️ 이 목록이 짧아지는 게 좋은 방향이다. 메타(15/23)에 이어 **제목(16/23)·예약(46)도
  *   걷었다** — 글자 크기는 칸이 넓어졌다고 커지는 축이 아니고, 걷을 때마다 두 레인이 같은
  *   숫자 하나로 수렴한다.
- * - **색** — 제목은 `vars.color.text` ↔ `scheme.text`, 날짜는 `muted` 로 양쪽이 자기 토큰
+ * - **색** — 제목은 `vars.color.textPrimary` ↔ `scheme.text`, 날짜는 `muted` 로 양쪽이 자기 토큰
  *   맵에서 읽는다. `tokens/` 가 정본이고 여기로 올리지 않는다(`./index.ts` 불변식).
  *   공연장 줄은 `footer` **슬롯**이라 DS 가 색을 안 정한다 — 소비처가 준 노드를 그대로 그린다.
  */

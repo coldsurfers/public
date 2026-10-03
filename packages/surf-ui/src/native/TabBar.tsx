@@ -82,8 +82,8 @@ const Bar = styled.View<{ $scheme: ColorScheme; $height: number; $bottomSpace: n
     height: $height,
     paddingBottom: $bottomSpace,
     borderTopWidth: StyleSheet.hairlineWidth,
-    backgroundColor: $scheme.surface,
-    borderTopColor: $scheme.border,
+    backgroundColor: $scheme.surfaceRaised,
+    borderTopColor: $scheme.lineDivider,
   }),
 )
 
@@ -114,7 +114,7 @@ export function TabBar({ children, ...rest }: TabBarProps) {
 
 function TabBarItem({ label, active = false, renderIcon, ...rest }: TabBarItemProps) {
   const scheme = useScheme()
-  const tint = active ? scheme.accent : scheme.muted
+  const tint = active ? scheme.actionPrimary : scheme.textSecondary
 
   return (
     <Item accessibilityRole="tab" accessibilityState={{ selected: active }} {...rest}>

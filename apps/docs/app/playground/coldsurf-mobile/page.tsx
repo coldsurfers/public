@@ -2,7 +2,7 @@
 
 import { Chip, Text } from '@coldsurfers/surf-ui/native'
 import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
-import { nativeSpacing, paper } from '@coldsurfers/surf-ui/tokens/native'
+import { nativeColor, nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
@@ -135,15 +135,11 @@ export default function BilletsFeedPage() {
        * 다크면 어두운 글자가 어두운 바닥에 얹혀 제목이 통째로 사라진다. RN 앱은 자기 루트를
        * 자기가 칠하므로 원래 자리이기도 하다.
        *
-       * ⚠️ 색이 `scheme.bg` 가 **아니다.** 둘은 다른 토큰이고 `tokens.ts` 가 이름을 갈라
-       * 놓았다 — `scheme.bg`(`#f2efe8`)는 브랜드 정본 paper 고, `paper.warm`(`#fafaf7`)이
-       * **시안의 라이트 고정 표면**이다. 시안(`2468:1264`) 픽셀을 세면 `#ffffff` 48.0% ·
-       * `#fafaf7` 38.9% 이고 `#f2efe8` 은 등장하지 않는다. 브랜드색을 깔면 바닥이
-       * 카드(`scheme.surface` = 흰색)와 붙어 **카드가 카드로 안 읽힌다** — 시안이 만드는
-       * 대비가 정확히 그 두 값의 차이다.
+       * ⚠️ 색이 `scheme.bgBase`(흰색)가 **아니라 `bgAlt`(`#f5f7fa`)다.** 바닥이 흰색이면
+       * 카드(`scheme.surfaceRaised` = 흰색)와 붙어 **카드가 카드로 안 읽힌다.**
        */}
       <ScrollView
-        style={{ flex: 1, backgroundColor: paper.warm }}
+        style={{ flex: 1, backgroundColor: nativeColor.light.bgAlt }}
         contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
         showsVerticalScrollIndicator={false}
       >
@@ -157,7 +153,7 @@ export default function BilletsFeedPage() {
          */}
         <View
           style={{
-            backgroundColor: paper.warm,
+            backgroundColor: nativeColor.light.bgAlt,
             paddingHorizontal: nativeSpacing[4],
             paddingTop: nativeSpacing[2],
             paddingBottom: nativeSpacing[3],
@@ -191,7 +187,7 @@ export default function BilletsFeedPage() {
               {/*
                * ⚠️ **라벨 색을 소비처가 다시 계산한다.** `Chip` 의 `labelColorFor` 는 children 이
                * 문자열일 때만 걸려서, 아이콘이 하나 붙는 순간 축이 정한 색이 끊긴다. 아래
-               * `scheme.body` 는 그 함수의 `md` 비활성 분기를 손으로 옮겨 적은 것이고, 축이 늘면
+               * `scheme.textPrimary` 는 그 함수의 `md` 비활성 분기를 손으로 옮겨 적은 것이고, 축이 늘면
                * 이 자리가 조용히 어긋난다 — `Button` 이 가진 것과 **같은 구멍**이라, 닫으려면
                * DS 가 leading 슬롯을 열거나 라벨 색을 context 로 내려야 한다.
                *
@@ -199,7 +195,7 @@ export default function BilletsFeedPage() {
                * native 에도 두지 않았다 — 축을 늘리는 순서는 웹부터다.
                */}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: nativeSpacing[2] }}>
-                <MapPin size={14} color={scheme.accent} aria-hidden />
+                <MapPin size={14} color={scheme.actionPrimary} aria-hidden />
                 <Text size="sm" tone="body">
                   {city}
                 </Text>

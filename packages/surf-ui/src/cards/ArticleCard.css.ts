@@ -7,8 +7,8 @@ export const card = style(
   inComponentsLayer({
     overflow: 'hidden',
     borderRadius: vars.radius.xl,
-    border: `1px solid ${vars.color.border}`,
-    background: vars.color.surface,
+    border: `1px solid ${vars.color.lineDivider}`,
+    background: vars.color.surfaceRaised,
   }),
 )
 
@@ -32,7 +32,7 @@ export const title = style(
     marginTop: 12,
     fontSize: vars.fontSize.lg,
     fontWeight: vars.fontWeight.medium,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
   }),
 )
 
@@ -40,7 +40,7 @@ export const excerpt = style(
   inComponentsLayer({
     marginTop: 8,
     fontSize: vars.fontSize.sm,
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
   }),
 )
 
@@ -49,6 +49,6 @@ export const meta = style(
     marginTop: 16,
     fontFamily: vars.font.sans,
     fontSize: vars.fontSize.xs,
-    color: vars.color.subtle,
+    color: vars.color.textTertiary,
   }),
 )

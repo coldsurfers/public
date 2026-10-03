@@ -72,7 +72,7 @@ export function FeedEventCard({ event, onToggleSave }: FeedEventCardProps) {
               // 담긴 상태만 accent — 시안이 accent 를 쓰는 세 자리 중 하나다.
               // 안 담긴 쪽이 토큰이 아닌 이유: 커버 색면 위에서 읽히려면 스킴 색이 아니라
               // *커버를 어둡게 덮는 판*이 필요하다. 스킴에는 그 어휘가 없다.
-              backgroundColor: event.saved ? scheme.accent : 'rgba(0, 0, 0, 0.45)',
+              backgroundColor: event.saved ? scheme.actionPrimary : 'rgba(0, 0, 0, 0.45)',
             }}
           >
             <Bookmark size={13} color="#fff" fill={event.saved ? '#fff' : 'none'} aria-hidden />

@@ -86,10 +86,10 @@ const SIZE = {
  *
  * | 축 | 바탕 | 테두리 | 글자 |
  * | --- | --- | --- | --- |
- * | `primary` | `text` | 없음 | `bg` |
- * | `ghost` | 없음(transparent) | 없음 | `body` |
- * | `accent` | `accent` | 없음 | 흰색(리터럴) |
- * | `outline` | 흰색(리터럴) | `border` 1px | `text` |
+ * | `primary` | `textPrimary` | 없음 | `bgBase` |
+ * | `ghost` | 없음(transparent) | 없음 | `textPrimary` |
+ * | `accent` | `actionPrimary` | 없음 | `actionOnPrimary` |
+ * | `outline` | `surfaceRaised` | `lineDivider` 1px | `textPrimary` |
  * | `danger` | `statusDanger` | 없음 | 흰색(리터럴) |
  *
  * 웹의 `:hover`(→`opacity`·`accentHover`·`strong`)와 `transition` 은 RN 에 짝이 없다 —
@@ -97,10 +97,14 @@ const SIZE = {
  * 웹 `.css.ts` 에 남는다. `disabled` 투명도는 두 레인에 다 있어서 `BUTTON_SPEC` 에 올린다.
  */
 const VARIANT = {
-  primary: { background: 'text', label: 'bg' },
-  ghost: { background: 'transparent', label: 'body' },
-  accent: { background: 'accent', label: 'white' },
-  outline: { background: 'surface', label: 'text', border: { width: 1, color: 'border' } },
+  primary: { background: 'textPrimary', label: 'bgBase' },
+  ghost: { background: 'transparent', label: 'textPrimary' },
+  accent: { background: 'actionPrimary', label: 'actionOnPrimary' },
+  outline: {
+    background: 'surfaceRaised',
+    label: 'textPrimary',
+    border: { width: 1, color: 'lineDivider' },
+  },
   danger: { background: 'statusDanger', label: 'white' },
 } satisfies Record<ButtonVariant, ButtonVariantSpec>
 

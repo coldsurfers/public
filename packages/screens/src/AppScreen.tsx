@@ -96,7 +96,12 @@ export function AppScreen({
     offsetBottom === 'tabBar' ? tabBarHeight : offsetBottom === 'safeArea' ? bottomInset : 0
 
   return (
-    <Root $bg={scheme.bg} $top={offsetTop === 'safeArea' ? topInset : 0} $bottom={bottom} {...rest}>
+    <Root
+      $bg={scheme.bgBase}
+      $top={offsetTop === 'safeArea' ? topInset : 0}
+      $bottom={bottom}
+      {...rest}
+    >
       <Suspense
         fallback={
           fallback ?? (

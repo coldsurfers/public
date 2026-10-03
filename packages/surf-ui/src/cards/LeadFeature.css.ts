@@ -9,8 +9,8 @@ export const root = style(
     display: 'grid',
     overflow: 'hidden',
     borderRadius: vars.radius.xl,
-    border: `1px solid ${vars.color.border}`,
-    background: vars.color.surface,
+    border: `1px solid ${vars.color.lineDivider}`,
+    background: vars.color.surfaceRaised,
     '@media': { [media.tablet]: { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' } },
   }),
 )
@@ -49,20 +49,20 @@ export const title = style(
     fontSize: vars.fontSize['3xl'],
     fontWeight: vars.fontWeight.medium,
     lineHeight: vars.lineHeight.tight,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
     '@media': { [media.tablet]: { fontSize: vars.fontSize['4xl'] } },
   }),
 )
 
 export const excerpt = style(
-  inComponentsLayer({ fontSize: vars.fontSize.base, color: vars.color.muted }),
+  inComponentsLayer({ fontSize: vars.fontSize.base, color: vars.color.textSecondary }),
 )
 
 export const byline = style(
   inComponentsLayer({
     fontFamily: vars.font.sans,
     fontSize: vars.fontSize.xs,
-    color: vars.color.subtle,
+    color: vars.color.textTertiary,
   }),
 )
 
@@ -70,6 +70,6 @@ export const cta = style(
   inComponentsLayer({
     fontSize: vars.fontSize.sm,
     fontWeight: vars.fontWeight.medium,
-    color: vars.color.accent,
+    color: vars.color.actionPrimary,
   }),
 )

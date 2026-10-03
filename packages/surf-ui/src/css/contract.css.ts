@@ -4,14 +4,12 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
-  gradient,
-  ink,
+  layout,
   letterSpacing,
   lineHeight,
-  palette,
-  paper,
   radius,
   shadow,
+  shape as shapeScale,
   spacing,
   type TokenScaleGroup,
   tokens,
@@ -35,8 +33,12 @@ import './layers.css'
  * 때마다 양쪽을 같이 고쳐야 했고, 한쪽만 고치면 타입은 통과한 채 런타임에 `var(--없는이름)` 이 됐다.
  */
 const shape = {
-  /** 계약엔 값이 아니라 키(`ColorScheme`)만 필요하다. 스킴은 `light` 하나뿐이다. */
-  color: tokens.color.semantic.light,
+  /** 계약엔 값이 아니라 키(`ColorScheme`)만 필요하다. ink · light 는 같은 키를 갖는다. */
+  color: tokens.color.light,
+  /** mobile · desktop 은 같은 키를 갖는다. 값은 폭에 따라 `theme.css.ts` 가 바꾼다. */
+  layout: layout.mobile,
+  /** 부품의 모서리 · 고정 크기 · 글자 크기. Figma `surf-ui / shape` */
+  shape: shapeScale,
   font: fontFamily,
   fontSize,
   lineHeight,
@@ -46,16 +48,8 @@ const shape = {
   radius,
   /** 이벤트 표지 6톤. 데이터로 정해지는 색이라 런타임 주입 대상 — `assignInlineVars` 와 짝. */
   cover,
-  /** `paper.warm` 은 `color.bg` 와 **다른 표면**이다. 통일 대상이 아니라 구별 대상. */
-  paper,
-  /** 라이트 표면 안에 한 구간만 눕는 다크 밴드 넷. 전역 스킴이 아니다. */
-  ink,
-  /** 원색층. 역할 이름이 안 붙는 자리(그라디언트 정지색·타일 바닥)의 탈출구. */
-  palette,
   /** 깊이 축 하나. 컴포넌트 이름으로 칸을 만들지 않는다. */
   shadow,
-  /** 고정 표면 그라디언트. 데이터로 정해지는 `cover` 와 다른 축. */
-  gradient,
 }
 
 /**
@@ -64,6 +58,8 @@ const shape = {
  */
 const TOKEN_GROUP: Record<keyof typeof shape, TokenScaleGroup> = {
   color: 'color',
+  layout: 'layout',
+  shape: 'shape',
   font: 'fontFamily',
   fontSize: 'fontSize',
   lineHeight: 'lineHeight',
@@ -72,11 +68,7 @@ const TOKEN_GROUP: Record<keyof typeof shape, TokenScaleGroup> = {
   space: 'spacing',
   radius: 'radius',
   cover: 'cover',
-  paper: 'paper',
-  ink: 'ink',
-  palette: 'palette',
   shadow: 'shadow',
-  gradient: 'gradient',
 }
 
 export const vars = createGlobalThemeContract(shape, (_value, path) => {

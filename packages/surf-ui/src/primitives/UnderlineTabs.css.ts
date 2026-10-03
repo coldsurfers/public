@@ -30,7 +30,7 @@ export const underlineTabs = style(
     display: 'flex',
     borderBottomWidth: '1px',
     borderBottomStyle: 'solid',
-    borderBottomColor: vars.color.border,
+    borderBottomColor: vars.color.lineDivider,
   }),
 )
 
@@ -54,15 +54,15 @@ export const underlineTab = recipe({
   variants: {
     active: {
       true: inComponentsLayer({
-        borderBottomColor: vars.color.strong,
-        color: vars.color.strong,
+        borderBottomColor: vars.color.textPrimary,
+        color: vars.color.textPrimary,
         fontWeight: 700,
       }),
       false: inComponentsLayer({
         borderBottomColor: 'transparent',
-        color: vars.color.muted,
+        color: vars.color.textSecondary,
         fontWeight: vars.fontWeight.medium,
-        ':hover': { color: vars.color.strong },
+        ':hover': { color: vars.color.textPrimary },
       }),
     },
   },

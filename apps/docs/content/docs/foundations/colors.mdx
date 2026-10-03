@@ -1,78 +1,60 @@
 ---
 title: 색
-description: 브랜드 팔레트와 시맨틱 색 — COLDSURF 고정 축.
+description: Figma surf-ui / color 27 역할 — 면 단위 ink · light 두 벌.
 ---
 
-## 스킴은 하나다
+## 정본은 Figma 다
 
-**light(paper) 하나뿐입니다.** ink(dark) 스킴은 폐기했습니다 — 색을 뒤집는 축이 없으므로
-`:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없습니다.
+값과 이름은 Figma `3sIMxSgWyp7RYonfhAAZIc` 의 변수 컬렉션 `surf-ui / color` 가 정본입니다.
+이름은 그대로 옮깁니다 — `bg/base` → `vars.color.bgBase` → `--surf-bg-base`.
 
 <Callout tone="warning">
-색은 **닫힌 축**입니다. spacing · radius · fontSize · lineHeight · letterSpacing · fontWeight ·
-fontFamily · breakpoints 는 소비자가 덮을 수 있지만, color · cover · paper 는 COLDSURF 고정값입니다.
-덮으면 브랜드가 아닌 다른 것이 됩니다.
+색은 **닫힌 축**입니다. spacing · radius · fontSize 같은 스케일은 소비자가 덮을 수 있지만,
+color · layout · shape · cover 는 COLDSURF 고정값입니다.
 </Callout>
 
-## 시맨틱 색
+## 면은 두 벌이다 — ink · light
+
+기본은 **light** 입니다. 어느 요소든 `data-surface="ink"` 를 달면 그 안은 **ink** 값이 됩니다.
+한 페이지 안에서 섞습니다 — 홈은 히어로가 ink, 아래 묶음이 light 입니다.
+ink 안에서 다시 밝은 면을 열 땐 `data-surface="light"` 입니다. OS 다크모드와는 무관합니다.
+
+```tsx
+<section data-surface="ink">…히어로…</section>
+<section>…아래 묶음 (light)…</section>
+```
+
+### light
 
 <Swatches group="color" />
 
-### 잉크 넷 중 어디까지가 "읽는 글자" 인가
+### ink
 
-글자색은 네 단계입니다 — `text`(본문 · 제목) · `body`(긴 본문) · `muted`(보조) · `subtle`.
+<Swatches group="colorInk" />
 
-**읽는 글자의 하한선은 `muted` 입니다.**
+### 읽는 글자의 하한
 
-<Callout tone="warning">
-  **`subtle` 로 읽는 글자를 찍지 않습니다.** WCAG AA 는 4.5:1 인데(18.66px bold · 24px 이상만 3:1)
-  `subtle` 의 실측은 `surface` 위 2.34:1 · `bg` 위 2.04:1 · `paper.warm` 위 2.24:1 입니다.
-  보조 문구 · 라벨 · 캡션까지 전부 `muted`(`surface` 위 5.6:1)가 하한이고, `subtle` 은
-  *읽히지 않아도 되는 것* — 구분선 · placeholder · 비활성 — 에만 씁니다.
-</Callout>
-
-cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하므로 그쪽은 예외입니다.
-
-값을 어둡게 옮기지 않는 이유: 구분선 · 비활성 자리에선 지금 값이 맞고, 소비처가 165곳이라
-값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직입니다. 근거 · 실측은
-[coldsurfers/public#106](https://github.com/coldsurfers/public/issues/106) 입니다.
-
-## palette — 원색층
-
-위 semantic color 가 *역할*(`--text` · `--border`)을 말한다면, 여기는 **색 자체**에 이름을 줍니다.
-CSS 변수는 `--cs-*` 로 나갑니다.
-
-역할 이름이 안 붙는 자리가 있기 때문입니다 — 그라디언트 정지색, 잉크 밴드 안의 타일 바닥,
-내비 글자처럼 "그 색이어서 그 색인" 자리입니다. 그런 자리를 `--surface` 로 부르면 거짓말이 되고,
-리터럴로 쓰면 팔레트가 움직일 때 혼자 뒤처집니다.
-
-<Callout type="warn">
-**의미이름이 있는 자리에 원색을 쓰지 마세요.** 본문 글자는 `palette.deepNight` 이 아니라
-`color.text` 입니다 — 둘은 지금 같은 값이지만 같은 뜻이 아니고, 역할이 움직일 때 갈립니다.
-원색은 *역할 이름이 없는 자리*의 탈출구이지 의미층의 대체재가 아닙니다.
-</Callout>
-
-앞 10색이 Figma 팔레트 보드이고, 뒤는 보드 밖 파생색입니다.
-semantic color 와 `ink` 는 전부 이 표에서 파생합니다 — hex 정본은 여기 하나입니다.
-
-<Swatches group="palette" />
+글자색은 `textPrimary` · `textSecondary` · `textTertiary` 셋입니다. **읽는 글자의 하한은
+`textSecondary`** 이고, `textTertiary` 는 플레이스홀더 · 비활성 — 읽히지 않아도 되는 것 — 에만 씁니다.
 
 ## cover — 지형 색면
 
-카드 커버의 바닥색입니다. semantic color 와 달리 **스킴을 타지 않는 불변 scale** 입니다.
+카드 커버의 바닥색입니다. 테마가 아니라 **데이터(id)로 고르는 색**이라 면을 타지 않습니다.
 
 <Swatches group="cover" />
 
-## paper — warm paper
+## shape — 부품 치수
 
-Figma 시안의 라이트 고정 표면 바닥색입니다.
+Figma `surf-ui / shape`. 부품의 모서리 · 고정 크기 · 글자 크기입니다.
 
-<Callout>
-`paper.warm`(`#fafaf7`)은 브랜드 정본 paper(`#f2efe8` = `color.bg`)와 **다른 값 · 다른 이름**입니다.
-통일 대상이 아니라 *구별* 대상입니다. 새 off-white 를 들일 땐 값을 재사용하기 전에 이름부터 짓습니다.
-</Callout>
+<Swatches group="shape" />
 
-<Swatches group="paper" />
+## layout — 폭 두 벌
+
+Figma `surf-ui / layout`. 기본은 mobile, `1024px` 이상은 desktop 값입니다.
+
+<Swatches group="layout" />
+<Swatches group="layoutDesktop" />
 
 ## radius
 

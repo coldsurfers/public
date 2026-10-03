@@ -33,12 +33,12 @@ export const fieldShell = recipe({
       light: inComponentsLayer({
         height: 52,
         borderRadius: vars.radius.lg,
-        border: `1px solid ${vars.color.border}`,
-        background: vars.color.surface,
+        border: `1px solid ${vars.color.lineDivider}`,
+        background: vars.color.surfaceRaised,
         selectors: {
           '&:focus-within': {
-            borderColor: vars.color.accent,
-            boxShadow: `inset 0 0 0 0.5px ${vars.color.accent}`,
+            borderColor: vars.color.actionPrimary,
+            boxShadow: `inset 0 0 0 0.5px ${vars.color.actionPrimary}`,
           },
         },
       }),
@@ -51,9 +51,9 @@ export const fieldShell = recipe({
       dark: inComponentsLayer({
         height: 52,
         borderRadius: '10px',
-        border: `1px solid ${vars.color.muted}`,
+        border: `1px solid ${vars.color.textSecondary}`,
         background: 'transparent',
-        selectors: { '&:focus-within': { borderColor: vars.paper.warm } },
+        selectors: { '&:focus-within': { borderColor: vars.color.textOnMedia } },
         '@media': { [media.desktop]: { height: 56 } },
       }),
     },
@@ -73,13 +73,13 @@ export const fieldInput = recipe({
     tone: {
       light: inComponentsLayer({
         fontSize: vars.fontSize.base,
-        color: vars.color.body,
-        '::placeholder': { color: vars.color.subtle },
+        color: vars.color.textPrimary,
+        '::placeholder': { color: vars.color.textTertiary },
       }),
       dark: inComponentsLayer({
         fontSize: '15px',
-        color: vars.paper.warm,
-        '::placeholder': { color: vars.color.subtle },
+        color: vars.color.textOnMedia,
+        '::placeholder': { color: vars.color.textTertiary },
       }),
     },
   },
@@ -87,4 +87,6 @@ export const fieldInput = recipe({
 })
 
 /** 우측 슬롯 — ↵ 힌트·버튼 등. `subtle` 은 두 tone 위에서 다 읽혀 변형이 없다. */
-export const fieldTrailing = style(inComponentsLayer({ flexShrink: 0, color: vars.color.subtle }))
+export const fieldTrailing = style(
+  inComponentsLayer({ flexShrink: 0, color: vars.color.textTertiary }),
+)

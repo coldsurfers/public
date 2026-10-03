@@ -18,13 +18,13 @@ export const selectTrigger = recipe({
     borderRadius: 10,
     borderWidth: 1,
     borderStyle: 'solid',
-    background: vars.color.surface,
+    background: vars.color.surfaceRaised,
     height: 39,
     paddingLeft: 14,
     paddingRight: 12,
     fontSize: vars.fontSize.sm,
     fontWeight: vars.fontWeight.medium,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
     cursor: 'pointer',
     transitionProperty: 'border-color, background-color, color',
     transitionDuration: '150ms',
@@ -32,8 +32,8 @@ export const selectTrigger = recipe({
 
   variants: {
     open: {
-      true: inComponentsLayer({ borderColor: vars.color.accent }),
-      false: inComponentsLayer({ borderColor: vars.color.border }),
+      true: inComponentsLayer({ borderColor: vars.color.actionPrimary }),
+      false: inComponentsLayer({ borderColor: vars.color.lineDivider }),
     },
   },
 
@@ -45,8 +45,8 @@ export const selectCaret = recipe({
   base: inComponentsLayer({ fontSize: 11 }),
   variants: {
     open: {
-      true: inComponentsLayer({ color: vars.color.accent }),
-      false: inComponentsLayer({ color: vars.color.muted }),
+      true: inComponentsLayer({ color: vars.color.actionPrimary }),
+      false: inComponentsLayer({ color: vars.color.textSecondary }),
     },
   },
   defaultVariants: { open: false },
@@ -65,7 +65,7 @@ export const selectOption = recipe({
     padding: '8px 14px',
     textAlign: 'left',
     fontSize: vars.fontSize.sm,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
     cursor: 'pointer',
     transitionProperty: 'background-color',
     transitionDuration: '150ms',
@@ -74,12 +74,12 @@ export const selectOption = recipe({
   variants: {
     selected: {
       true: inComponentsLayer({
-        background: vars.color.surface2,
+        background: vars.color.panelFill,
         fontWeight: vars.fontWeight.semibold,
       }),
       false: inComponentsLayer({
         fontWeight: vars.fontWeight.medium,
-        selectors: { '&:hover': { background: vars.color.surfaceHover } },
+        selectors: { '&:hover': { background: vars.color.stateHover } },
       }),
     },
   },

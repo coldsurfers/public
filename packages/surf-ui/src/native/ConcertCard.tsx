@@ -5,7 +5,7 @@ import {
   type ConcertCardBareProps,
   type ConcertCardCoverRatio,
 } from '../contract'
-import { ink, nativeColor, nativeFontFamily } from '../tokens/native'
+import { nativeColor, nativeFontFamily } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
 
@@ -48,7 +48,7 @@ const Root = styled.View({
 
 /**
  * 커버 바닥 — **면이 하나다.** 웹 `CoverBlock` 의 기본 톤(`note`)과 같은 자리고, 값은 각자
- * 자기 축에서 읽는다(웹 `vars.color.surfaceHover` · 여기 `nativeColor.light.surfaceHover`).
+ * 자기 축에서 읽는다(웹 `vars.color.stateHover` · 여기 `nativeColor.light.stateHover`).
  * `cover` 6톤 축은 걷어냈다 — 이 면이 뜻하는 건 「아직 그림이 없다」라서 `Skeleton`(API 대기)과
  * 밝기가 갈리면 안 된다.
  */
@@ -58,7 +58,7 @@ const Cover = styled.View<{ $ratio: ConcertCardCoverRatio }>(({ $ratio }) => ({
   aspectRatio: bare.coverAspectRatio[$ratio],
   borderRadius: bare.coverRadius,
   overflow: 'hidden',
-  backgroundColor: nativeColor.light.surfaceHover,
+  backgroundColor: nativeColor.light.stateHover,
 }))
 
 /** 커버를 채우는 것들(포스터 · 이니셜 판)이 공유하는 자리. 웹의 `inset: 0` 자리다. */
@@ -112,7 +112,7 @@ export function ConcertCard({
               fontSize: bare.initialFontSize,
               lineHeight: bare.initialFontSize,
               fontWeight: bare.initialFontWeight,
-              color: ink.base,
+              color: nativeColor.light.overlay,
               opacity: bare.initialOpacity,
             }}
           >
@@ -140,7 +140,7 @@ export function ConcertCard({
             fontWeight: bare.titleFontWeight,
             // 웹 `bareTitle` 과 같은 판정 — 제목이 `strong` 이면 명도 사다리가 위에서
             // 한 칸 빈다(사다리 전체는 계약 `titleFontWeight` 주석에).
-            color: scheme.text,
+            color: scheme.textPrimary,
             ...(reserveTitleLines ? { minHeight: bare.titleReservedHeight } : null),
           }}
         >
@@ -153,7 +153,7 @@ export function ConcertCard({
             fontFamily: nativeFontFamily[bare.metaFontFamily],
             fontSize: bare.metaFontSize,
             lineHeight: bare.metaLineHeight,
-            color: scheme.muted,
+            color: scheme.textSecondary,
           }}
         >
           {meta}

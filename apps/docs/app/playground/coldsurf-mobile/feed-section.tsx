@@ -112,7 +112,7 @@ export function FeedSection({ title, subTitle, onPressMore, children }: FeedSect
  */
 export function FeedSectionSkeleton({ children }: { children: ReactNode }) {
   const scheme = useScheme()
-  const block = { backgroundColor: scheme.border, borderRadius: nativeRadius.sm }
+  const block = { backgroundColor: scheme.lineDivider, borderRadius: nativeRadius.sm }
 
   return (
     <View style={{ paddingTop: nativeSpacing[6] }} accessibilityElementsHidden>

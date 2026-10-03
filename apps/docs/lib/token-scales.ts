@@ -2,20 +2,23 @@ import {
   cover,
   fontSize,
   fontWeight,
+  layout,
   letterSpacing,
   lineHeight,
-  palette,
-  paper,
   radius,
+  shape,
   spacing,
+  type TokenScaleGroup,
   tokens,
 } from '@coldsurfers/surf-ui/tokens'
 
 export type TokenGroup =
   | 'color'
-  | 'palette'
+  | 'colorInk'
+  | 'layout'
+  | 'layoutDesktop'
+  | 'shape'
   | 'cover'
-  | 'paper'
   | 'spacing'
   | 'radius'
   | 'fontSize'
@@ -30,10 +33,12 @@ export type TokenGroup =
  * 둘로 쪼개면 토큰이 바뀔 때 한쪽만 조용히 거짓말을 시작한다.
  */
 export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
-  color: tokens.color.semantic.light,
-  palette,
+  color: tokens.color.light,
+  colorInk: tokens.color.ink,
+  layout: layout.mobile,
+  layoutDesktop: layout.desktop,
+  shape,
   cover,
-  paper,
   spacing,
   radius,
   fontSize,
@@ -41,3 +46,22 @@ export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
   lineHeight,
   letterSpacing,
 }
+
+/** 문서 그룹 → CSS 변수 이름 그룹. 면 · 폭 두 벌은 같은 이름을 쓴다. */
+export const VAR_GROUP: Record<TokenGroup, TokenScaleGroup> = {
+  color: 'color',
+  colorInk: 'color',
+  layout: 'layout',
+  layoutDesktop: 'layout',
+  shape: 'shape',
+  cover: 'cover',
+  spacing: 'spacing',
+  radius: 'radius',
+  fontSize: 'fontSize',
+  fontWeight: 'fontWeight',
+  lineHeight: 'lineHeight',
+  letterSpacing: 'letterSpacing',
+}
+
+export const isColorGroup = (group: TokenGroup): boolean =>
+  group === 'color' || group === 'colorInk' || group === 'cover'

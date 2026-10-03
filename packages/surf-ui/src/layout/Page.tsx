@@ -4,8 +4,8 @@ import { content, page } from './Page.css'
 
 export interface PageProps extends HTMLAttributes<HTMLDivElement> {
   /**
-   * `data-surface` 마커로 그대로 나간다. **DS 는 이 값을 해석하지 않는다** — 해석하는 순간
-   * 표면 목록이 공개 API 가 된다.
+   * `data-surface` 마커로 그대로 나간다. DS 가 해석하는 값은 **`ink` · `light` 둘뿐**이다 —
+   * 그 안의 색 토큰이 해당 면 값으로 바뀐다(`css/theme.css.ts`). 그 밖의 값은 앱의 표식이다.
    *
    * 쓰임: `<body>` 는 React 트리 밖이라 컴포넌트가 스타일을 못 준다. 소비 앱이
    * `body:has([data-surface="…"]) { background: … }` 로 위로 올려쳐서 콘텐츠 밖(짧은 페이지

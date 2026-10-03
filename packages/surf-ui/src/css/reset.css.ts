@@ -33,8 +33,8 @@ globalStyle('body', {
   '@layer': {
     [resetLayer]: {
       margin: 0,
-      background: vars.color.bg,
-      color: vars.color.text,
+      background: vars.color.bgBase,
+      color: vars.color.textPrimary,
       fontFamily: vars.font.sans,
     },
   },

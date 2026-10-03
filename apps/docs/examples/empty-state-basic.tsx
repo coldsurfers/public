@@ -5,8 +5,8 @@ import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 export default function Example() {
   return (
     <EmptyState className={sprinkles({ paddingY: '12' })}>
-      <p className={sprinkles({ fontSize: 'xl', color: 'strong' })}>오늘 밤은 조용하네요.</p>
-      <p className={sprinkles({ fontSize: 'base', color: 'muted' })}>
+      <p className={sprinkles({ fontSize: 'xl', color: 'textPrimary' })}>오늘 밤은 조용하네요.</p>
+      <p className={sprinkles({ fontSize: 'base', color: 'textSecondary' })}>
         오늘 저녁 공연이 아직 없어요.
       </p>
       <Button variant="accent" size="cta">

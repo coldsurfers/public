@@ -67,16 +67,16 @@ function Body() {
       style={{
         flex: 1,
         borderWidth: 1,
-        borderColor: scheme.accent,
-        backgroundColor: scheme.surface2,
+        borderColor: scheme.actionPrimary,
+        backgroundColor: scheme.panelFill,
         justifyContent: 'space-between',
         padding: 12,
       }}
     >
-      <Text textStyle="labelSm" weight="medium" style={{ color: scheme.muted }}>
+      <Text textStyle="labelSm" weight="medium" style={{ color: scheme.textSecondary }}>
         콘텐츠 시작
       </Text>
-      <Text textStyle="labelSm" weight="medium" style={{ color: scheme.muted }}>
+      <Text textStyle="labelSm" weight="medium" style={{ color: scheme.textSecondary }}>
         콘텐츠 끝 — 이 선이 탭바에 닿으면 offsetBottom 이 모자란 것이다
       </Text>
     </View>

@@ -8,13 +8,17 @@ export default function Example() {
     <div style={{ display: 'grid', gap: 24, width: '100%' }}>
       {/* 본문 — 한글은 0 에 두면 헐렁하다. 같은 문장을 두 줄로 나란히 둬야 차이가 보인다. */}
       <div style={{ display: 'grid', gap: 6 }}>
-        <p className={sprinkles({ fontSize: 'base', color: 'body', letterSpacing: 'none' })}>
+        <p className={sprinkles({ fontSize: 'base', color: 'textPrimary', letterSpacing: 'none' })}>
           {SENTENCE}
         </p>
-        <p className={sprinkles({ fontSize: 'base', color: 'body', letterSpacing: 'normal' })}>
+        <p
+          className={sprinkles({ fontSize: 'base', color: 'textPrimary', letterSpacing: 'normal' })}
+        >
           {SENTENCE}
         </p>
-        <span className={sprinkles({ fontSize: '2xs', fontFamily: 'mono', color: 'muted' })}>
+        <span
+          className={sprinkles({ fontSize: '2xs', fontFamily: 'mono', color: 'textSecondary' })}
+        >
           위 none · 아래 normal
         </span>
       </div>
@@ -24,7 +28,7 @@ export default function Example() {
         className={sprinkles({
           fontSize: '3xl',
           fontWeight: 'semibold',
-          color: 'strong',
+          color: 'textPrimary',
           lineHeight: 'tight',
           letterSpacing: 'tight',
         })}

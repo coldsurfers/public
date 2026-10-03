@@ -14,14 +14,15 @@
  */
 import type { ColorScheme, TokenScaleGroup } from '../src/tokens'
 import {
+  breakpoints,
   cover,
   fontFamily,
   fontSize,
   fontWeight,
-  ink,
+  layout,
   lineHeight,
-  paper,
   radius,
+  shape,
   spacing,
   tokens,
   tokenVarName,
@@ -41,8 +42,8 @@ const colorBlock = (scheme: ColorScheme): string =>
     .join('\n')
 
 /**
- * 블록 하나다. 스킴이 light 하나뿐이라(ink 폐기) 색과 스케일을 나눌 축이 없다 —
- * 나누면 소비자의 `@import` 만 늘어난다.
+ * `:root` 에 스케일 + light 색 + mobile layout, 그 뒤로 desktop layout 미디어 블록과
+ * 면 블록 둘(`[data-surface="ink"]` · `[data-surface="light"]`). `theme.css.ts` 와 같은 순서다.
  */
 export const buildTokensCss = (): string => `${banner}:root {
   color-scheme: light;
@@ -61,10 +62,26 @@ ${varBlock('radius', radius)}
 
 ${varBlock('cover', cover)}
 
-${varBlock('paper', paper)}
+${varBlock('shape', shape)}
 
-${varBlock('ink', ink)}
+${varBlock('layout', layout.mobile)}
 
-${colorBlock(tokens.color.semantic.light)}
+${colorBlock(tokens.color.light)}
+}
+
+@media (min-width: ${breakpoints.desktop}) {
+  :root {
+${varBlock('layout', layout.desktop)}
+  }
+}
+
+[data-surface="ink"] {
+  color-scheme: dark;
+${colorBlock(tokens.color.ink)}
+}
+
+[data-surface="light"] {
+  color-scheme: light;
+${colorBlock(tokens.color.light)}
 }
 `

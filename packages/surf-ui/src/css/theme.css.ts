@@ -1,19 +1,18 @@
 import { assignVars, globalStyle } from '@vanilla-extract/css'
 import {
+  breakpoints,
+  colorSchemes,
   cover,
   fontFamily,
   fontSize,
   fontWeight,
-  gradient,
-  ink,
+  layout,
   letterSpacing,
   lineHeight,
-  palette,
-  paper,
   radius,
   shadow,
+  shape,
   spacing,
-  tokens,
 } from '../tokens'
 import { vars } from './contract.css'
 import { tokensLayer } from './layers'
@@ -26,8 +25,11 @@ import { declareLayerOrder } from './layers.css'
  * TS 값 → 생성 CSS → `@import` → 앱 이던 것이 TS 값 → `styles.css` → 앱 이 된다.
  * 소비자는 `.css` 진입점에 `@import` 를 한 줄도 두지 않는다.
  *
- * **스킴은 light 하나뿐이다.** ink(dark) 는 폐기했다(paul-rockstar #299) — 색을 뒤집는 축이
- * 없으므로 `:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없다.
+ * **색은 면 단위 두 벌이다.** `:root` 는 light, `[data-surface="ink"]` 를 단 요소 안은 ink.
+ * 한 페이지 안에서 섞는다(홈: 히어로 ink → 아래 묶음 light). `[data-surface="light"]` 는 ink 안에서
+ * 다시 밝은 면을 여는 자리다. OS 다크모드(`prefers-color-scheme`)와는 무관하다.
+ *
+ * **layout 은 폭 두 벌이다.** `:root` 는 mobile, `breakpoints.desktop` 이상은 desktop.
  *
  * `createGlobalTheme` 이 아니라 `assignVars` + `globalStyle` 인 이유: 전자는 계약 **전체**를
  * 한 번에 요구하는데, 여기는 `cover`·`paper` 처럼 성격이 다른 축을 같은 블록에 섞어 넣는
@@ -42,13 +44,24 @@ import { declareLayerOrder } from './layers.css'
 // 이 한 줄이 "가장 먼저 로드되는 CSS 의 맨 앞은 순서 선언"을 보장한다. 이유는 `layers.css.ts`.
 declareLayerOrder()
 
-/** 스케일 + light 색. 소비 레포의 `base.css` + `light.css` 에 대응. */
+const surfaceBlock = (surface: 'ink' | 'light') => ({
+  '@layer': {
+    [tokensLayer]: {
+      colorScheme: surface === 'ink' ? 'dark' : 'light',
+      vars: assignVars(vars.color, colorSchemes[surface]),
+    },
+  },
+})
+
+/** 스케일 + light 색 + mobile layout. */
 globalStyle(':root', {
   '@layer': {
     [tokensLayer]: {
       colorScheme: 'light',
       vars: {
-        ...assignVars(vars.color, tokens.color.semantic.light),
+        ...assignVars(vars.color, colorSchemes.light),
+        ...assignVars(vars.layout, layout.mobile),
+        ...assignVars(vars.shape, shape),
         ...assignVars(vars.font, fontFamily),
         ...assignVars(vars.fontSize, fontSize),
         ...assignVars(vars.lineHeight, lineHeight),
@@ -57,14 +70,17 @@ globalStyle(':root', {
         ...assignVars(vars.space, spacing),
         ...assignVars(vars.radius, radius),
         ...assignVars(vars.cover, cover),
-        ...assignVars(vars.paper, paper),
-        ...assignVars(vars.ink, ink),
-        // 원색층 `--cs-*`. 위 의미이름들과 **같은 값을 두 번 발행하는 게 아니다** —
-        // TS 쪽에서 `light`·`ink` 가 이미 `palette` 를 참조하므로 hex 정본은 하나다.
-        ...assignVars(vars.palette, palette),
         ...assignVars(vars.shadow, shadow),
-        ...assignVars(vars.gradient, gradient),
+      },
+      '@media': {
+        [`(min-width: ${breakpoints.desktop})`]: {
+          vars: assignVars(vars.layout, layout.desktop),
+        },
       },
     },
   },
 })
+
+// 면 단위 스킴. `:root` 블록보다 **뒤에** 발행해야 같은 상세도(0,1,0)에서 이긴다.
+globalStyle('[data-surface="ink"]', surfaceBlock('ink'))
+globalStyle('[data-surface="light"]', surfaceBlock('light'))

@@ -29,20 +29,20 @@ export const ticket = style(inComponentsLayer({ position: 'relative', display: '
  */
 export const ticketPaper = styleVariants({
   plain: inComponentsLayer({
-    background: vars.color.surface,
-    border: `1px solid ${vars.color.border}`,
+    background: vars.color.surfaceRaised,
+    border: `1px solid ${vars.color.lineDivider}`,
     borderRadius: vars.radius.md,
   }),
   /** 바닥에서 떠오른 흰 종이 — 묶음의 얼굴(픽)처럼 한 장이 먼저 읽혀야 할 때. */
   raised: inComponentsLayer({
-    background: vars.color.surface,
-    border: `1px solid ${vars.color.border}`,
+    background: vars.color.surfaceRaised,
+    border: `1px solid ${vars.color.lineDivider}`,
     borderRadius: vars.radius['2xl'],
     boxShadow: vars.shadow.sm,
   }),
   /** 흰 바닥에 가라앉은 회색 종이 — 떠오른 종이 옆에서 한 단 물러선다. 테두리 없이 면으로만. */
   muted: inComponentsLayer({
-    background: vars.color.bg,
+    background: vars.color.bgBase,
     border: '1px solid transparent',
     borderRadius: vars.radius.xl,
   }),
@@ -76,22 +76,22 @@ export const ticketStub = style(
 export const stubOrientation = styleVariants({
   row: inComponentsLayer({
     flexDirection: 'column',
-    borderLeft: `1.5px dashed ${vars.color.border}`,
+    borderLeft: `1.5px dashed ${vars.color.lineDivider}`,
   }),
   stacked: inComponentsLayer({
     flexDirection: 'row',
-    borderTop: `1.5px dashed ${vars.color.border}`,
+    borderTop: `1.5px dashed ${vars.color.lineDivider}`,
   }),
   /** 방향이 뒤집히면 천공선도 같이 눕는다. */
   responsive: inComponentsLayer({
     flexDirection: 'row',
-    borderTop: `1.5px dashed ${vars.color.border}`,
+    borderTop: `1.5px dashed ${vars.color.lineDivider}`,
     borderLeft: 'none',
     '@media': {
       [media.tablet]: {
         flexDirection: 'column',
         borderTop: 'none',
-        borderLeft: `1.5px dashed ${vars.color.border}`,
+        borderLeft: `1.5px dashed ${vars.color.lineDivider}`,
       },
     },
   }),

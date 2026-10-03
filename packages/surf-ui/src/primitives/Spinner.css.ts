@@ -27,16 +27,16 @@ export const spinnerSvg = style(
 )
 
 /** 배경 트랙 링. */
-export const spinnerTrack = style(inComponentsLayer({ stroke: vars.color.border }))
+export const spinnerTrack = style(inComponentsLayer({ stroke: vars.color.lineDivider }))
 
 /** 270° 아크 — blood-orange. */
-export const spinnerArc = style(inComponentsLayer({ stroke: vars.color.accent }))
+export const spinnerArc = style(inComponentsLayer({ stroke: vars.color.actionPrimary }))
 
 export const spinnerLabel = style(
   inComponentsLayer({
     fontWeight: vars.fontWeight.medium,
     fontSize: SPINNER_SPEC.labelFontSize,
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
   }),
 )
 
