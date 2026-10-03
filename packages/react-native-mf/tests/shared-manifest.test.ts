@@ -18,11 +18,8 @@ test('스코프 패키지의 서브패스는 두 번째 세그먼트까지가 �
   assert.equal(packageNameOf('react'), 'react')
   assert.equal(packageNameOf('react/jsx-runtime'), 'react')
   assert.equal(packageNameOf('react-native/Libraries/Text/Text'), 'react-native')
-  assert.equal(packageNameOf('@coldsurfers/design-system'), '@coldsurfers/design-system')
-  assert.equal(
-    packageNameOf('@coldsurfers/design-system/native/Text'),
-    '@coldsurfers/design-system',
-  )
+  assert.equal(packageNameOf('@coldsurfers/surf-ui'), '@coldsurfers/surf-ui')
+  assert.equal(packageNameOf('@coldsurfers/surf-ui/native/Text'), '@coldsurfers/surf-ui')
 })
 
 test('호스트 키에서 파생한 이름이 손으로 쓰던 목록과 같다', () => {
@@ -32,9 +29,9 @@ test('호스트 키에서 파생한 이름이 손으로 쓰던 목록과 같다'
     'react/jsx-runtime',
     'react-native',
     '@tanstack/react-query',
-    '@coldsurfers/design-system/native/Text',
-    '@coldsurfers/design-system/native/Button',
-    '@coldsurfers/design-system/tokens/native',
+    '@coldsurfers/surf-ui/native/Text',
+    '@coldsurfers/surf-ui/native/Button',
+    '@coldsurfers/surf-ui/tokens/native',
     '@coldsurfers/screens/AppScreen',
     '@coldsurfers/native-auth',
     '@coldsurfers/native-auth/client',
@@ -44,7 +41,7 @@ test('호스트 키에서 파생한 이름이 손으로 쓰던 목록과 같다'
     'react',
     'react-native',
     '@tanstack/react-query',
-    '@coldsurfers/design-system',
+    '@coldsurfers/surf-ui',
     '@coldsurfers/screens',
     '@coldsurfers/native-auth',
   ])

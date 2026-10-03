@@ -1,5 +1,5 @@
 'use client'
-import { ThinkingDots } from '@coldsurfers/design-system/primitives'
+import { ThinkingDots } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

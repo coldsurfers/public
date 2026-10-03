@@ -1,7 +1,7 @@
 {
-  "name": "@coldsurfers/design-system",
+  "name": "@coldsurfers/surf-ui",
   "version": "0.32.0",
-  "description": "COLDSURF design system — tokens, CSS contract, and React primitives.",
+  "description": "COLDSURF surf-ui — tokens, CSS contract, and React primitives.",
   "keywords": [
     "design-system",
     "vanilla-extract",
@@ -14,12 +14,12 @@
     "**/*.css",
     "**/*.css.ts"
   ],
-  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/design-system",
+  "homepage": "https://github.com/coldsurfers/public/tree/main/packages/surf-ui",
   "bugs": "https://github.com/coldsurfers/public/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/coldsurfers/public.git",
-    "directory": "packages/design-system"
+    "directory": "packages/surf-ui"
   },
   "publishConfig": {
     "access": "public",

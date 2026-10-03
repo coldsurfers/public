@@ -25,11 +25,11 @@ import {
   spacing,
   tokens,
   tokenVarName,
-} from '@coldsurfers/design-system/tokens'
+} from '@coldsurfers/surf-ui/tokens'
 
 const distDir = join(dirname(fileURLToPath(import.meta.url)), 'dist')
 
-const banner = '/* AUTO-GENERATED from @coldsurfers/design-system/tokens — do not edit. */\n'
+const banner = '/* AUTO-GENERATED from @coldsurfers/surf-ui/tokens — do not edit. */\n'
 
 /** Tailwind 네임스페이스 + 키 → 값. 스케일은 런타임에 안 바뀌므로 리터럴을 직접 박는다. */
 const scaleBlock = (namespace, scale) =>

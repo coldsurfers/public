@@ -1,5 +1,5 @@
 'use client'
-import { Page } from '@coldsurfers/design-system/layout'
+import { Page } from '@coldsurfers/surf-ui/layout'
 
 export default function Example() {
   return (

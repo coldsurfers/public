@@ -15,7 +15,7 @@ JS 는 없고, Tailwind 를 안 쓰는 소비자는 설치를 안 해 0 바이�
 pnpm add -D @coldsurfers/tailwind4-theme
 ```
 
-`tailwindcss@4` 와 `@coldsurfers/design-system` 이 peer 입니다. **값의 정본은 DS 쪽**이고 이
+`tailwindcss@4` 와 `@coldsurfers/surf-ui` 이 peer 입니다. **값의 정본은 DS 쪽**이고 이
 패키지는 그 값을 `var()` 로 참조만 하므로, 변수 시트를 반드시 같이 물어야 합니다.
 
 ## 배선
@@ -27,7 +27,7 @@ Tailwind 로 화면을 짜면서 색 · 간격만 우리 값으로 맞출 때입
 
 ```css title="app/global.css"
 @import "tailwindcss";
-@import "@coldsurfers/design-system/tokens.css";
+@import "@coldsurfers/surf-ui/tokens.css";
 @import "@coldsurfers/tailwind4-theme";
 ```
 
@@ -40,7 +40,7 @@ Tailwind 로 화면을 짜면서 색 · 간격만 우리 값으로 맞출 때입
 `Button` · `ConcertCard` 같은 primitives 를 같이 쓸 때입니다.
 
 ```css title="app/global.css"
-@import "@coldsurfers/design-system/styles.css";
+@import "@coldsurfers/surf-ui/styles.css";
 @import "tailwindcss";
 @import "@coldsurfers/tailwind4-theme";
 ```

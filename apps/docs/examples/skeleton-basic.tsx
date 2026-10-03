@@ -1,5 +1,5 @@
 'use client'
-import { Skeleton } from '@coldsurfers/design-system/primitives'
+import { Skeleton } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

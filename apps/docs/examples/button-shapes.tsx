@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '@coldsurfers/design-system/primitives'
+import { Button } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

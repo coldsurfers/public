@@ -1,5 +1,5 @@
 'use client'
-import { Container } from '@coldsurfers/design-system/layout'
+import { Container } from '@coldsurfers/surf-ui/layout'
 
 export default function Example() {
   return (

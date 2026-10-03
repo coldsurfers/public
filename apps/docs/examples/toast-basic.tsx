@@ -1,5 +1,5 @@
 'use client'
-import { Button, ToastProvider, useToast } from '@coldsurfers/design-system/primitives'
+import { Button, ToastProvider, useToast } from '@coldsurfers/surf-ui/primitives'
 
 function Trigger() {
   const toast = useToast()

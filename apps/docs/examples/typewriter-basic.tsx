@@ -1,5 +1,5 @@
 'use client'
-import { Button, TypewriterText } from '@coldsurfers/design-system/primitives'
+import { Button, TypewriterText } from '@coldsurfers/surf-ui/primitives'
 import { useState } from 'react'
 
 export default function Example() {

@@ -11,7 +11,7 @@
 import { cpSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { fontFamily, letterSpacing, paper, radius, tokens } from '@coldsurfers/design-system/tokens'
+import { fontFamily, letterSpacing, paper, radius, tokens } from '@coldsurfers/surf-ui/tokens'
 import { CONFIG_SCHEMA } from './dist/config.js'
 import { PRINT_VAR_NAMES } from './dist/contract.js'
 
@@ -89,7 +89,7 @@ if (extra.length > 0) {
 
 mkdirSync(join(cssOutDir, 'themes'), { recursive: true })
 
-const banner = '/* AUTO-GENERATED from @coldsurfers/design-system/tokens — do not edit. */\n'
+const banner = '/* AUTO-GENERATED from @coldsurfers/surf-ui/tokens — do not edit. */\n'
 const body = PRINT_VAR_NAMES.map((name) => `  ${name}: ${theme[name]};`).join('\n')
 writeFileSync(join(cssOutDir, 'themes', 'coldsurf.css'), `${banner}:root {\n${body}\n}\n`, 'utf8')
 

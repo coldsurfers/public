@@ -50,12 +50,12 @@ importers:
       '@coldsurfers/api-sdk':
         specifier: workspace:*
         version: link:../../packages/api-sdk
-      '@coldsurfers/design-system':
-        specifier: workspace:*
-        version: link:../../packages/design-system
       '@coldsurfers/screens':
         specifier: workspace:*
         version: link:../../packages/screens
+      '@coldsurfers/surf-ui':
+        specifier: workspace:*
+        version: link:../../packages/surf-ui
       cnfast:
         specifier: ^0.1.0
         version: 0.1.0
@@ -206,70 +206,6 @@ importers:
         specifier: ^4.4.3
         version: 4.5.4
 
-  packages/design-system:
-    dependencies:
-      '@vanilla-extract/css':
-        specifier: ^1.21.2
-        version: 1.21.2(babel-plugin-macros@3.1.0)
-      '@vanilla-extract/recipes':
-        specifier: ^0.5.7
-        version: 0.5.7(@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0))
-      '@vanilla-extract/sprinkles':
-        specifier: ^1.7.1
-        version: 1.7.1(@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0))
-    devDependencies:
-      '@arethetypeswrong/cli':
-        specifier: ^0.18.5
-        version: 0.18.5
-      '@emotion/native':
-        specifier: 11.11.0
-        version: 11.11.0(@emotion/react@11.10.6(@types/react@19.2.18)(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      '@emotion/react':
-        specifier: 11.10.6
-        version: 11.10.6(@types/react@19.2.18)(react@19.2.8)
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.2.4(@types/react@19.2.18)
-      '@vanilla-extract/vite-plugin':
-        specifier: ^5.1.1
-        version: 5.2.6(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.2)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))(yaml@2.9.0)
-      react:
-        specifier: 'catalog:'
-        version: 19.2.8
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.8(react@19.2.8)
-      react-native:
-        specifier: 0.87.0
-        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8)
-      react-native-gesture-handler:
-        specifier: 3.2.1
-        version: 3.2.1(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      react-native-reanimated:
-        specifier: 4.6.0
-        version: 4.6.0(react-native-worklets@0.12.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      react-native-safe-area-context:
-        specifier: 5.9.1
-        version: 5.9.1(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      react-native-svg:
-        specifier: 15.15.5
-        version: 15.15.5(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      react-native-worklets:
-        specifier: 0.12.1
-        version: 0.12.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^7.1.14
-        version: 7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0)
-      vite-plugin-dts:
-        specifier: ^4.5.4
-        version: 4.5.4(@types/node@24.13.3)(rollup@4.62.4)(typescript@5.9.3)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))
-
   packages/design-system-mcp:
     dependencies:
       '@modelcontextprotocol/server':
@@ -316,9 +252,9 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.18.5
         version: 0.18.5
-      '@coldsurfers/design-system':
+      '@coldsurfers/surf-ui':
         specifier: workspace:*
-        version: link:../design-system
+        version: link:../surf-ui
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.5
@@ -359,9 +295,9 @@ importers:
         specifier: ^25.10.0
         version: 25.10.0
     devDependencies:
-      '@coldsurfers/design-system':
+      '@coldsurfers/surf-ui':
         specifier: workspace:*
-        version: link:../design-system
+        version: link:../surf-ui
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.1
@@ -413,9 +349,9 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.18.5
         version: 0.18.5
-      '@coldsurfers/design-system':
+      '@coldsurfers/surf-ui':
         specifier: workspace:*
-        version: link:../design-system
+        version: link:../surf-ui
       '@emotion/native':
         specifier: 11.11.0
         version: 11.11.0(@emotion/react@11.10.6(@types/react@19.2.18)(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
@@ -481,15 +417,79 @@ importers:
         specifier: ^4.0.18
         version: 4.1.11(@types/node@24.13.3)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))
 
+  packages/surf-ui:
+    dependencies:
+      '@vanilla-extract/css':
+        specifier: ^1.21.2
+        version: 1.21.2(babel-plugin-macros@3.1.0)
+      '@vanilla-extract/recipes':
+        specifier: ^0.5.7
+        version: 0.5.7(@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0))
+      '@vanilla-extract/sprinkles':
+        specifier: ^1.7.1
+        version: 1.7.1(@vanilla-extract/css@1.21.2(babel-plugin-macros@3.1.0))
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.18.5
+        version: 0.18.5
+      '@emotion/native':
+        specifier: 11.11.0
+        version: 11.11.0(@emotion/react@11.10.6(@types/react@19.2.18)(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      '@emotion/react':
+        specifier: 11.10.6
+        version: 11.10.6(@types/react@19.2.18)(react@19.2.8)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.4(@types/react@19.2.18)
+      '@vanilla-extract/vite-plugin':
+        specifier: ^5.1.1
+        version: 5.2.6(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(esbuild@0.28.2)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))(yaml@2.9.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
+      react-native:
+        specifier: 0.87.0
+        version: 0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8)
+      react-native-gesture-handler:
+        specifier: 3.2.1
+        version: 3.2.1(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      react-native-reanimated:
+        specifier: 4.6.0
+        version: 4.6.0(react-native-worklets@0.12.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      react-native-safe-area-context:
+        specifier: 5.9.1
+        version: 5.9.1(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      react-native-svg:
+        specifier: 15.15.5
+        version: 15.15.5(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      react-native-worklets:
+        specifier: 0.12.1
+        version: 0.12.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(react-native@0.87.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.0(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^7.1.14
+        version: 7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0)
+      vite-plugin-dts:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/node@24.13.3)(rollup@4.62.4)(typescript@5.9.3)(vite@7.3.6(@types/node@24.13.3)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.51.0)(tsx@4.23.13)(yaml@2.9.0))
+
   packages/tailwind4-theme:
     dependencies:
       tailwindcss:
         specifier: ^4
         version: 4.3.3
     devDependencies:
-      '@coldsurfers/design-system':
+      '@coldsurfers/surf-ui':
         specifier: workspace:*
-        version: link:../design-system
+        version: link:../surf-ui
 
   packages/wbe-theme:
     dependencies:

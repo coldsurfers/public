@@ -1,6 +1,6 @@
 'use client'
-import { Button, EmptyState } from '@coldsurfers/design-system/primitives'
-import { sprinkles } from '@coldsurfers/design-system/sprinkles'
+import { Button, EmptyState } from '@coldsurfers/surf-ui/primitives'
+import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 
 export default function Example() {
   return (

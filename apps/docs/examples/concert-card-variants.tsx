@@ -1,7 +1,7 @@
 'use client'
-import { ConcertCard } from '@coldsurfers/design-system/cards'
-import { Button } from '@coldsurfers/design-system/primitives'
-import { sprinkles } from '@coldsurfers/design-system/sprinkles'
+import { ConcertCard } from '@coldsurfers/surf-ui/cards'
+import { Button } from '@coldsurfers/surf-ui/primitives'
+import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 
 export default function Example() {
   return (

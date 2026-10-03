@@ -1,5 +1,5 @@
 'use client'
-import { Callout } from '@coldsurfers/design-system/primitives'
+import { Callout } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

@@ -1,4 +1,4 @@
-import { tokenVarName } from '@coldsurfers/design-system/tokens'
+import { tokenVarName } from '@coldsurfers/surf-ui/tokens'
 import { readExampleSource } from './example-source'
 import { collectProps, type PropEntry, type PropsQuery } from './props-source'
 import type { source } from './source'

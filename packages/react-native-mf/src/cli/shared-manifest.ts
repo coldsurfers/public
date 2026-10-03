@@ -14,8 +14,8 @@
  *
  * | | 모양 | 예 |
  * | --- | --- | --- |
- * | 호스트 등록·조회 | **정확한 specifier** | `@coldsurfers/design-system/native/Text` |
- * | 빌드 치환 필터 | **패키지 이름**(서브패스를 덮는다) | `@coldsurfers/design-system` |
+ * | 호스트 등록·조회 | **정확한 specifier** | `@coldsurfers/surf-ui/native/Text` |
+ * | 빌드 치환 필터 | **패키지 이름**(서브패스를 덮는다) | `@coldsurfers/surf-ui` |
  *
  * 후자는 전자의 순수 함수다 — 실제로 billets-app 의 키 27개에서 파생한 18개가 손으로 쓰던
  * 목록과 정확히 일치했다. 그러니 파생을 소비처에 시키지 않는다. 시키면 그 단계가 또 손작업이다.

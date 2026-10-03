@@ -1,8 +1,8 @@
-import { inComponentsLayer, vars } from '@coldsurfers/design-system'
+import { inComponentsLayer, vars } from '@coldsurfers/surf-ui'
 import { style } from '@vanilla-extract/css'
 // 부수효과 — 레이어 순서 선언이 이 스타일시트의 맨 앞에 실려야 한다. 근거는 `layers.css.ts`.
 import '../layers.css'
-import { alpha } from '@coldsurfers/design-system/style-utils'
+import { alpha } from '@coldsurfers/surf-ui/style-utils'
 
 /**
  * 라이트박스는 **스킴과 무관하게 어둡다** — 이미지를 보여주는 암실이라 토큰 표면색을 따르지 않는다.

@@ -1,8 +1,8 @@
-import { inComponentsLayer, media, vars } from '@coldsurfers/design-system'
+import { inComponentsLayer, media, vars } from '@coldsurfers/surf-ui'
 import { style } from '@vanilla-extract/css'
 // 부수효과 — 레이어 순서 선언이 이 스타일시트의 맨 앞에 실려야 한다. 근거는 `layers.css.ts`.
 import '../layers.css'
-import { alpha, lineClamp } from '@coldsurfers/design-system/style-utils'
+import { alpha, lineClamp } from '@coldsurfers/surf-ui/style-utils'
 
 /**
  * 마크다운 본문 스킨 + 리치 임베드(YouTube·Bandcamp·Spotify·coldsurf 티켓·OG 카드)의 스타일 계약.

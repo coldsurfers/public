@@ -1,6 +1,6 @@
 'use client'
-import { TabBar } from '@coldsurfers/design-system/native/TabBar'
-import { Text } from '@coldsurfers/design-system/native/Text'
+import { TabBar } from '@coldsurfers/surf-ui/native/TabBar'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
 import { House, Search, Tickets, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { View } from 'react-native'

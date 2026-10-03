@@ -1,8 +1,8 @@
 'use client'
 
-import { Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeSpacing, paper } from '@coldsurfers/design-system/tokens/native'
+import { Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeSpacing, paper } from '@coldsurfers/surf-ui/tokens/native'
 import { Pressable, ScrollView } from 'react-native'
 import type { Genre } from './feed-data'
 

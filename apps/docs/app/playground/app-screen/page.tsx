@@ -1,13 +1,13 @@
 'use client'
 
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { TabBar, useTabBarHeight } from '@coldsurfers/design-system/native/TabBar'
-import { Text } from '@coldsurfers/design-system/native/Text'
 import {
   AppScreen,
   type AppScreenOffsetBottom,
   type AppScreenOffsetTop,
 } from '@coldsurfers/screens/AppScreen'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { TabBar, useTabBarHeight } from '@coldsurfers/surf-ui/native/TabBar'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
 import { House, Search, Tickets, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { View } from 'react-native'

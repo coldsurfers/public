@@ -13,7 +13,7 @@ COLDSURF 이 밖으로 내보내는 패키지들이 사는 곳. 열이다.
 
 | 패키지 | 무엇 |
 | --- | --- |
-| [`design-system`](packages/design-system) | 토큰 값 · CSS 계약(vanilla-extract) · React primitives · 카드 · 네이티브 레인 |
+| [`surf-ui`](packages/surf-ui) | 토큰 값 · CSS 계약(vanilla-extract) · React primitives · 카드 · 네이티브 레인 |
 | [`tailwind4-theme`](packages/tailwind4-theme) | 같은 토큰을 Tailwind v4 `@theme` 레이어로 |
 | [`markdown-renderer`](packages/markdown-renderer) | 마크다운 → 산문 표면(shiki 하이라이팅 · 미디어 임베드) |
 | [`design-system-mcp`](packages/design-system-mcp) | 디자인 시스템 문서를 물어보는 MCP 서버 (`coldsurf-ds-mcp`) |
@@ -43,13 +43,13 @@ GitHub Packages 라서 스코프를 먼저 물려준다. 토큰은 `read:package
 ```
 
 ```bash
-pnpm add @coldsurfers/design-system
+pnpm add @coldsurfers/surf-ui
 ```
 
 ```ts
-import { vars } from '@coldsurfers/design-system'
-import { spacing } from '@coldsurfers/design-system/tokens'
-import { Button } from '@coldsurfers/design-system/primitives'
+import { vars } from '@coldsurfers/surf-ui'
+import { spacing } from '@coldsurfers/surf-ui/tokens'
+import { Button } from '@coldsurfers/surf-ui/primitives'
 ```
 
 `.css.ts` 는 이 레포에서 컴파일해 내보낸다. 소비자 쪽에 vanilla-extract 번들러 플러그인은
