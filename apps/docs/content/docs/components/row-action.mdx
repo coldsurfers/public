@@ -1,0 +1,21 @@
+---
+title: RowAction
+description: 줄 · 타일 · 카드마다 붙는 작은 행동 버튼.
+---
+
+```ts
+import { RowAction } from '@coldsurfers/surf-ui/primitives'
+```
+
+<Preview name="row-action-basic" />
+
+높이 32 · r8 · 키커색 14% 면에 키커색 글자입니다. 잉크 면에선 sky, 밝은 면에선 blue 가 됩니다.
+
+화면의 **주 행동 하나**는 `Button variant="accent"` 로 두고, 반복되는 행동(`예매 ↗` · `알림` · `보기`)은
+이걸 씁니다. 진한 파랑이 여러 개면 무엇을 눌러야 할지 흐려집니다.
+
+링크면 `asChild` 로 자식 `<a>` · 라우터 `Link` 에 스타일을 입힙니다.
+
+## Props
+
+<Props of="RowAction" />

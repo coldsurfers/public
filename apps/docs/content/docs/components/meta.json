@@ -3,6 +3,7 @@
   "pages": [
     "button",
     "chip",
+    "row-action",
     "badge",
     "text",
     "eyebrow",

@@ -8,7 +8,7 @@
  * `ds-reset` 을 확실히 이긴다. DS 의 layer 순서 계약(`LAYER_ORDER`)은 건드리지 않는다.
  *
  * 미리보기 표면은 `.ds-surface` 안에서 다시 DS 값으로 돌린다 — 거기가 소비 앱을 흉내 내는 자리다.
- * DS 는 light 단일 스킴이므로(ink 폐기) 미리보기는 문서가 다크여도 항상 light 로 그린다.
+ * DS 의 기본 면은 light 라 미리보기는 문서가 다크여도 light 로 그린다. ink 는 예제가 `data-surface="ink"` 로 연다.
  */
 
 body {
@@ -23,8 +23,8 @@ body {
 
 .ds-surface {
   color-scheme: light;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--surf-bg-base);
+  color: var(--surf-text-primary);
   font-family: var(--font-family-sans);
 }
 
@@ -37,7 +37,7 @@ body {
  */
 .preview-modal-panel {
   width: min(360px, calc(100vw - 32px));
-  color: var(--text);
+  color: var(--surf-text-primary);
 }
 
 .preview-ticket-stub {

@@ -131,7 +131,7 @@ export default function BilletsFeedPage() {
     <PhoneFrame>
       {/*
        * 바닥을 **여기서** 칠한다 — 프레임(`../phone-frame.css`)이 아니라. `.pf-frame` 의
-       * `var(--bg)` 는 문서 사이트의 테마를 따르는데 native 스킴은 `light` 하나뿐이라, 사이트가
+       * `var(--surf-bg-base)` 는 문서 사이트의 테마를 따르는데 native 스킴은 `light` 하나뿐이라, 사이트가
        * 다크면 어두운 글자가 어두운 바닥에 얹혀 제목이 통째로 사라진다. RN 앱은 자기 루트를
        * 자기가 칠하므로 원래 자리이기도 하다.
        *

@@ -10,7 +10,7 @@ export default function Example() {
         gap: 8,
         padding: '10px 14px',
         borderRadius: 999,
-        background: 'var(--surface)',
+        background: 'var(--surf-surface-raised)',
       }}
     >
       취향을 고르는 중 <ThinkingDots />

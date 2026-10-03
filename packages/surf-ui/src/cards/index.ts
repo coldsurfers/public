@@ -12,6 +12,7 @@
  * 한 장에 함께 실린다.
  */
 export { ArticleCard, type ArticleCardProps } from './ArticleCard'
+export { ChipCard, ChipCardItem, type ChipCardItemProps, type ChipCardProps } from './ChipCard'
 export {
   type BareConcertCardProps,
   ConcertCard,
@@ -30,4 +31,7 @@ export {
   type ConcertCardSkeletonProps,
   type ConcertCardSkeletonSlotProps,
 } from './ConcertCardSkeleton'
+export { FeatureCard, type FeatureCardProps } from './FeatureCard'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
+export { PickCard, type PickCardProps, PickRow, type PickRowProps } from './PickCard'
+export { PosterTile, type PosterTileProps } from './PosterTile'

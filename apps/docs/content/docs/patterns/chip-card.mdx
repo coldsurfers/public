@@ -1,0 +1,23 @@
+---
+title: ChipCard
+description: 「~로 고르기」 패널 — 라벨 + 개수 칩.
+---
+
+```ts
+import { ChipCard, ChipCardItem } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="chip-card" />
+
+장르 · 지역으로 고르는 자리입니다(Figma `821:317`). 칩은 r8 낱장에 굵은 라벨과 Geist 개수가 붙습니다.
+
+`Chip` 과 다른 점 — 저쪽은 필터 **상태**(켜짐 · 꺼짐)를 말하고, 이쪽은 **갈 곳**을 말합니다. 그래서 `active` 가 없고,
+보통 `asChild` 로 링크를 씁니다. 자식의 내용은 라벨 · 개수로 바뀝니다.
+
+## Props
+
+<Props of="ChipCard" dir="cards" />
+
+### ChipCardItem
+
+<Props of="ChipCardItem" dir="cards" file="ChipCard.tsx" />

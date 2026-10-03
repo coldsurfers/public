@@ -21,6 +21,7 @@ export { Field, type FieldProps } from './Field'
 export { Modal, type ModalPlacement, type ModalProps } from './Modal'
 export { Note, type NoteProps, type NoteTone } from './Note'
 export { POPOVER_MENU_CLS, Popover, type PopoverProps } from './Popover'
+export { RowAction, type RowActionProps } from './RowAction'
 export { Select, type SelectOption, type SelectProps } from './Select'
 export {
   Skeleton,
