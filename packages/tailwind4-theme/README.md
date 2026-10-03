@@ -11,7 +11,7 @@ JS 는 없다 — `exports` 가 가리키는 건 CSS 파일 하나다.
 pnpm add -D @coldsurfers/tailwind4-theme
 ```
 
-`tailwindcss@4` 와 `@coldsurfers/surf-ui` 이 peer 다. 값의 정본은 DS 쪽이고
+`tailwindcss@4` 와 `@coldsurfers/surf-ui` 가 peer 다. 값의 정본은 DS 쪽이고
 이 패키지는 그 값을 **`var()` 로 참조**하므로, 변수 시트를 같이 물어야 한다.
 
 ```css

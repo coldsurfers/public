@@ -25,7 +25,8 @@ Figma `3sIMxSgWyp7RYonfhAAZIc` 의 `surf-ui · Foundations`(812:35) · `surf-ui 
 | `surface2` · `surfaceGhost` · `surfaceHover` | surface/sunken | 흰 6% | 검 5% |
 | `border` · `borderSoft` | line/strong · line/subtle | 흰 16% · 8% | 검 16% · 8% |
 | `text` · `strong` · `heading` · `link` | text/primary | `#ffffff` | `#111113` |
-| `body` · `muted` | text/secondary | `#a1a1aa` | `#6b6b73` |
+| `body` | text/primary 계열 | `#e4e4e7` | `#111113` |
+| `muted` | text/secondary | `#a1a1aa` | `#6b6b73` |
 | `subtle` · `faint` | text/tertiary | `#a1a1aa` 60% | `#6b6b73` 60% |
 | `accent` · `linkHover` | accent/blue | `#2563ff` | `#2563ff` |
 
@@ -38,17 +39,18 @@ Figma `3sIMxSgWyp7RYonfhAAZIc` 의 `surf-ui · Foundations`(812:35) · `surf-ui 
 
 | 컴포넌트 | 처리 |
 | --- | --- |
-| Button | API 유지(5 variant), 값만 surf. primary = 파랑 |
-| Chip · Eyebrow · Modal | API 유지, 값만 surf. Modal = Sheet(모바일 아래 · 데스크탑 가운데) |
+| Button | API 유지(5 variant). primary = 파랑 · accent = primary · outline = 투명 + 테두리 · 모서리 알약 |
+| Chip | API 유지. `active` = 반전 필(파랑 아님) |
+| Eyebrow · Modal | API 유지. Eyebrow 에 `tone="tint"` 추가 |
 | Pill · Row · ListCard · PosterCard · PosterStage | **새로** — `primitives` 배럴 + docs 페이지 |
 
 ## 순서 (스텝마다 biome · check:type · build · check:exports)
 
-- [ ] S1 이름 변경 — 폴더 · package.json · 내부 소비 6곳 · docs · 문서 링크
-- [ ] S2 토큰 — `ColorScheme` dark · light, theme.css 스킴 발행, native 반영
-- [ ] S3 기존 컴포넌트 값 점검 (Button · Chip · Eyebrow · Modal)
-- [ ] S4 새 컴포넌트 5 + docs 페이지 · examples
-- [ ] S5 changeset(major) · PR
+- [x] S1 이름 변경 — 폴더 · package.json · 내부 소비 6곳 · docs · 문서 링크
+- [x] S2 토큰 — `ColorScheme` dark · light, theme.css 스킴 발행, native 반영
+- [x] S3 기존 컴포넌트 값 점검 (Button · Chip · Eyebrow · Modal)
+- [x] S4 새 컴포넌트 5 + docs 페이지 · examples
+- [x] S5 changeset(minor — 0.x 의 깨지는 변경, #234) · PR
 
 ## 범위
 

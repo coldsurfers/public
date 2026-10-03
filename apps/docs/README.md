@@ -9,7 +9,7 @@ pnpm --filter @coldsurfers/docs dev
 
 ## 왜 이 사이트가 계약 검증인가
 
-문서의 미리보기는 `@coldsurfers/surf-ui` 을 **실제로 import 해서** 그린다. 워크스페이스
+문서의 미리보기는 `@coldsurfers/surf-ui` 를 **실제로 import 해서** 그린다. 워크스페이스
 링크지만 `exports` 맵이 가리키는 곳은 `dist` 라, **exports 에 없는 경로는 여기서도 안 열린다.**
 사이트가 빌드된다는 것 자체가 발행 계약이 살아 있다는 증거다.
 

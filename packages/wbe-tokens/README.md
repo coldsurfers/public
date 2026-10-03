@@ -13,7 +13,7 @@ themeVars              // { '--wbe-bg': '#0a0a0a', … } — 루트나 서브트
 
 ## 왜 design-system 의 테마가 아닌가
 
-`@coldsurfers/surf-ui` 은 `color` 축을 COLDSURF 고정값으로 못박는다
+`@coldsurfers/surf-ui` 는 `color` 축을 COLDSURF 고정값으로 못박는다
 (`docs/p1-boundary.md` 결정 1 — 소비자가 덮을 수 없다). warm-paper(라이트 고정)와
 WBE(다크 고정)는 같은 계약 안에 못 들어간다. 그래서 별도 패키지다.
 
