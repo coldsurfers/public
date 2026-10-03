@@ -23,7 +23,7 @@ export async function Preview({ name, padded = true }: { name: string; padded?: 
   return (
     <div className="my-6 overflow-hidden rounded-xl border border-fd-border">
       <div
-        className={`ds-surface flex flex-wrap items-center gap-4 ${padded ? 'p-8' : ''}`}
+        className={`not-prose ds-surface flex flex-wrap items-center gap-4 ${padded ? 'p-8' : ''}`}
         data-preview={name}
       >
         <Demo />

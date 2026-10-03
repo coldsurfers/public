@@ -4,7 +4,10 @@ import { Container } from '@coldsurfers/surf-ui/layout'
 export default function Example() {
   return (
     <div style={{ width: '100%', background: 'var(--surface-2)' }}>
-      <Container as="header" style={{ paddingBlock: 12, borderBottom: '1px dashed var(--border)' }}>
+      <Container
+        as="header"
+        style={{ paddingBlock: 12, borderBottom: '1px dashed var(--surf-line-divider)' }}
+      >
         COLDSURF
       </Container>
       <Container as="main" style={{ paddingBlock: 12 }}>

@@ -1,0 +1,25 @@
+---
+title: PickCard
+description: 공연 몇 개를 줄로 보여주고 줄마다 행동을 붙이는 패널.
+---
+
+```ts
+import { PickCard, PickRow } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="pick-card" />
+
+홈의 `오늘 저녁` · `이번 주말` 자리입니다(Figma `821:92`). 패널 안에 머리 한 줄, 줄 낱장, 꼬리 한 줄이 섭니다.
+
+색은 전부 역할 토큰이라 `data-surface="ink"` 안에 넣으면 잉크 면이 됩니다 — 위 두 번째 카드가 그 모습입니다.
+
+머리 오른쪽(`aside`) · 줄 둘째 줄(`meta`) · 행동(`action`)은 슬롯입니다. 스웰 미터 · 스웰 태그 같은 앱 부품은
+소비처가 넣습니다. 여러 장을 3단으로 놓는 그리드도 소비처 몫입니다.
+
+## Props
+
+<Props of="PickCard" dir="cards" />
+
+### PickRow
+
+<Props of="PickRow" dir="cards" file="PickCard.tsx" />

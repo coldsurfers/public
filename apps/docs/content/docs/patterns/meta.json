@@ -1,4 +1,12 @@
 {
   "title": "Patterns",
-  "pages": ["article-card", "concert-card", "lead-feature"]
+  "pages": [
+    "article-card",
+    "concert-card",
+    "lead-feature",
+    "pick-card",
+    "poster-tile",
+    "chip-card",
+    "feature-card"
+  ]
 }

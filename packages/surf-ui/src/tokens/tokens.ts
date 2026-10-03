@@ -331,6 +331,10 @@ export const fontWeight = {
   regular: '400',
   medium: '500',
   semibold: '600',
+  /** 700 — 카드 머리 · 줄 제목 · 줄 행동. */
+  bold: '700',
+  /** 900 — 타일 · 기능 카드 큰 제목. 자간을 −4% 로 함께 조인다. */
+  black: '900',
 } as const
 
 /**
