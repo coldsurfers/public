@@ -17,7 +17,7 @@
 export type Hex = string
 
 /**
- * 색 역할 — Figma `surf-ui / color` 27 변수와 1:1. 키는 Figma 이름의 camelCase 다.
+ * 색 역할 — Figma `surf-ui / color` 31 변수와 1:1. 키는 Figma 이름의 camelCase 다.
  *
  * 스킴은 **면 단위** 두 벌이다: 기본은 `light`, `data-surface="ink"` 를 단 요소 안은 `ink`.
  * 한 페이지 안에서 섞는다(홈: 히어로 ink → 아래 묶음 light). OS 다크모드와는 무관하다.
@@ -55,6 +55,13 @@ export type ColorScheme = {
   actionPrimary: string
   actionPrimaryHover: string
   actionOnPrimary: string
+  /** 주 버튼 면 — 위 → 아래 그라데이션. 단색이 사진 바닥에서 원색으로 튀어서 갈랐다 */
+  actionPrimaryTop: string
+  actionPrimaryBottom: string
+  /** 주 버튼 테두리 1px inside */
+  actionPrimaryLine: string
+  /** 주 버튼 그림자 — y8 · blur 24 */
+  actionPrimaryShadow: string
   /** 포스터 뒤 번짐 */
   glow: string
   /** 스크림 · 포스터 위 그라데이션. 알파를 먹여 쓴다 */
@@ -88,6 +95,10 @@ const ink: ColorScheme = {
   actionPrimary: '#2563ff',
   actionPrimaryHover: '#1d4fd8',
   actionOnPrimary: '#ffffff',
+  actionPrimaryTop: '#3a6dff',
+  actionPrimaryBottom: '#1a3a9e',
+  actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
+  actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
   glow: 'rgba(37, 99, 255, 0.28)',
   overlay: '#0a0f1a',
   statusSuccess: '#5fd08a',
@@ -119,6 +130,10 @@ const light: ColorScheme = {
   actionPrimary: '#2563ff',
   actionPrimaryHover: '#1d4fd8',
   actionOnPrimary: '#ffffff',
+  actionPrimaryTop: '#3a6dff',
+  actionPrimaryBottom: '#1a3a9e',
+  actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
+  actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
   glow: 'rgba(37, 99, 255, 0.28)',
   overlay: '#0a0f1a',
   statusSuccess: '#1f7a3a',
@@ -229,6 +244,10 @@ const print: ColorScheme = {
   actionTintText: '#1d4ed8',
   actionPrimary: '#1d4ed8',
   actionPrimaryHover: '#1d4ed8',
+  actionPrimaryTop: '#1d4ed8',
+  actionPrimaryBottom: '#1d4ed8',
+  actionPrimaryLine: 'transparent',
+  actionPrimaryShadow: 'transparent',
 }
 
 const toColorVars = (scheme: ColorScheme): Record<string, string> =>
