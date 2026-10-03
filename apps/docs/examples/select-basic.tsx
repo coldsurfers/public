@@ -1,5 +1,5 @@
 'use client'
-import { Select } from '@coldsurfers/design-system/primitives'
+import { Select } from '@coldsurfers/surf-ui/primitives'
 import { useState } from 'react'
 
 const CITIES = [

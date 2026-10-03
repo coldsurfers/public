@@ -1,6 +1,6 @@
 # @coldsurfers/screens
 
-React Native 화면의 **조립층**. `@coldsurfers/design-system` 위에 얹는다.
+React Native 화면의 **조립층**. `@coldsurfers/surf-ui` 위에 얹는다.
 
 ```
 design-system   무엇처럼 보이는가   토큰 · 프리미티브 · 단품

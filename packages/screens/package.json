@@ -1,7 +1,7 @@
 {
   "name": "@coldsurfers/screens",
   "version": "0.1.0",
-  "description": "React Native screen shell — safe-area · tab bar offsets · suspense boundary, built on @coldsurfers/design-system.",
+  "description": "React Native screen shell — safe-area · tab bar offsets · suspense boundary, built on @coldsurfers/surf-ui.",
   "keywords": [
     "react-native",
     "screen",
@@ -44,7 +44,7 @@
     "check:exports": "attw --pack . --profile esm-only"
   },
   "peerDependencies": {
-    "@coldsurfers/design-system": ">=0.20.0",
+    "@coldsurfers/surf-ui": ">=0.20.0",
     "@emotion/native": "^11",
     "@emotion/react": "^11",
     "react": "^19",
@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@coldsurfers/design-system": "workspace:*",
+    "@coldsurfers/surf-ui": "workspace:*",
     "@emotion/native": "11.11.0",
     "@emotion/react": "11.10.6",
     "@types/react": "catalog:",

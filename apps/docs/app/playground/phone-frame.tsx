@@ -1,7 +1,7 @@
 'use client'
 
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { paper } from '@coldsurfers/design-system/tokens/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { paper } from '@coldsurfers/surf-ui/tokens/native'
 import { BatteryFull, Signal, Wifi } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { View } from 'react-native'

@@ -1,8 +1,8 @@
 'use client'
 
-import { ConcertCard, Skeleton, Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { ConcertCard, Skeleton, Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { Bookmark } from 'lucide-react'
 import { Pressable, View } from 'react-native'
 import type { FeedEvent } from './feed-data'

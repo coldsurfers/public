@@ -131,5 +131,5 @@ jobs:
               echo "| \`$ref\` | [prerelease]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$ref) |"
             done < "$RUNNER_TEMP/published.txt"
             echo ""
-            echo "설치: pnpm add @coldsurfers/design-system@$TAG"
+            echo "설치: pnpm add @coldsurfers/surf-ui@$TAG"
           } >> "$GITHUB_STEP_SUMMARY"

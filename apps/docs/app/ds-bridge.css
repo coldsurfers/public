@@ -1,7 +1,7 @@
 /*
  * DS 를 문서 크롬에서 떼어내는 다리.
  *
- * `@coldsurfers/design-system/styles.css` 는 `ds-reset` 레이어에서 `body` 의 배경·글자색·글꼴을
+ * `@coldsurfers/surf-ui/styles.css` 는 `ds-reset` 레이어에서 `body` 의 배경·글자색·글꼴을
  * 잡는다. 그건 소비 앱에선 맞는 동작이지만 여기선 문서 크롬(다크 모드 포함)을 통째로 덮는다.
  *
  * 그래서 **레이어 밖 규칙**으로 되돌린다 — 레이어 없는 선언은 어떤 `@layer` 보다 강하므로

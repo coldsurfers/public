@@ -1,8 +1,8 @@
 'use client'
 
-import { Chip, Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeSpacing, paper } from '@coldsurfers/design-system/tokens/native'
+import { Chip, Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeSpacing, paper } from '@coldsurfers/surf-ui/tokens/native'
 import { MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'

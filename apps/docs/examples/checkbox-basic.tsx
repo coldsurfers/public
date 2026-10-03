@@ -1,5 +1,5 @@
 'use client'
-import { Checkbox } from '@coldsurfers/design-system/primitives'
+import { Checkbox } from '@coldsurfers/surf-ui/primitives'
 import { useState } from 'react'
 
 export default function Example() {

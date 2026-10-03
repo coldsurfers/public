@@ -1,5 +1,5 @@
 'use client'
-import { Chip, POPOVER_MENU_CLS, Popover } from '@coldsurfers/design-system/primitives'
+import { Chip, POPOVER_MENU_CLS, Popover } from '@coldsurfers/surf-ui/primitives'
 
 const LINKS = ['TAPE', 'MIND', 'DEV']
 

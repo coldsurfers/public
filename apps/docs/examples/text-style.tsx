@@ -1,6 +1,6 @@
 'use client'
-import { text } from '@coldsurfers/design-system'
-import { sprinkles } from '@coldsurfers/design-system/sprinkles'
+import { text } from '@coldsurfers/surf-ui'
+import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 
 export default function Example() {
   return (

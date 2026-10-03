@@ -28,7 +28,7 @@ export default defineConfig({
       external: [
         /^react($|\/)/,
         /^react-dom($|\/)/,
-        /^@coldsurfers\/design-system($|\/)/,
+        /^@coldsurfers\/surf-ui($|\/)/,
         /^shiki($|\/)/,
         /^@shikijs\//,
         'framer-motion',

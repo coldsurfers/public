@@ -1,5 +1,5 @@
 'use client'
-import { Eyebrow } from '@coldsurfers/design-system/primitives'
+import { Eyebrow } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

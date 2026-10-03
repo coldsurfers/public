@@ -80,7 +80,7 @@ export interface PropsTable {
 
 export async function collectProps({
   of,
-  pkg = 'design-system',
+  pkg = 'surf-ui',
   dir = 'primitives',
   file,
   name,

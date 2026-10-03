@@ -1,4 +1,4 @@
-import { tokenVarName } from '@coldsurfers/design-system/tokens'
+import { tokenVarName } from '@coldsurfers/surf-ui/tokens'
 import { TOKEN_SCALES, type TokenGroup } from '@/lib/token-scales'
 
 /**

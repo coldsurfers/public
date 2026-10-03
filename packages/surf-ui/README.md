@@ -1,4 +1,4 @@
-# @coldsurfers/design-system
+# @coldsurfers/surf-ui
 
 COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives 를 담은 **단일 정본 패키지**.
 
@@ -29,7 +29,7 @@ COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives �
 ## 설치
 
 ```bash
-pnpm add @coldsurfers/design-system
+pnpm add @coldsurfers/surf-ui
 ```
 
 `react` · `react-dom` 은 peer 다(`^19`). `./primitives` 를 안 쓰면 필요 없다.

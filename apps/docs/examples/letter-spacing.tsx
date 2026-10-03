@@ -1,5 +1,5 @@
 'use client'
-import { sprinkles } from '@coldsurfers/design-system/sprinkles'
+import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 
 const SENTENCE = '서울의 공연을 하나의 지면에서 발견합니다'
 

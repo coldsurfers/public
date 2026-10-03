@@ -5,7 +5,7 @@
 
 ## 왜 별도 패키지인가
 
-`@coldsurfers/design-system` 에 얹지 않은 이유는 **무게**다. 둘 다 실측이다.
+`@coldsurfers/surf-ui` 에 얹지 않은 이유는 **무게**다. 둘 다 실측이다.
 
 - **JS** — `MarkdownRenderer` 는 shiki(core + JS regex engine + 언어 9 + 테마 2)를 모듈
   최상단에서 정적으로 물고 `createHighlighterCoreSync()` 를 top-level 로 호출한다. 부수효과라
@@ -21,7 +21,7 @@
 pnpm add @coldsurfers/markdown-renderer
 ```
 
-peer 는 넷 — `@coldsurfers/design-system`(색·간격 계약) · `react` · `react-dom` ·
+peer 는 넷 — `@coldsurfers/surf-ui`(색·간격 계약) · `react` · `react-dom` ·
 `framer-motion`(라이트박스 전이).
 
 ## 쓰기

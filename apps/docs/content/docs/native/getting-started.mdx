@@ -3,7 +3,7 @@ title: Getting Started
 description: React Native 레인 — 같은 계약, 다른 구현.
 ---
 
-`@coldsurfers/design-system/native` 는 React Native 앱을 위한 별도 구현입니다.
+`@coldsurfers/surf-ui/native` 는 React Native 앱을 위한 별도 구현입니다.
 웹 `primitives` 와 **같은 prop 계약**을 따르지만 스타일 엔진이 다릅니다 — 웹은 vanilla-extract,
 이쪽은 `@emotion/native` 입니다.
 
@@ -19,7 +19,7 @@ description: React Native 레인 — 같은 계약, 다른 구현.
 ## 설치
 
 ```bash
-pnpm add @coldsurfers/design-system
+pnpm add @coldsurfers/surf-ui
 ```
 
 peer 는 쓰는 표면만큼만 필요합니다. 전부 optional 이라 웹만 쓰는 소비처는 하나도 안 깝니다.
@@ -37,8 +37,8 @@ peer 는 쓰는 표면만큼만 필요합니다. 전부 optional 이라 웹만 �
 배럴(`/native`)과 표면별 진입점(`/native/TabBar`) 둘 다 열려 있습니다.
 
 ```tsx
-import { Button, Text } from '@coldsurfers/design-system/native'
-import { TabBar } from '@coldsurfers/design-system/native/TabBar'
+import { Button, Text } from '@coldsurfers/surf-ui/native'
+import { TabBar } from '@coldsurfers/surf-ui/native/TabBar'
 ```
 
 무거운 peer 를 무는 표면은 **진입점으로 여는 편이 낫습니다.** 배럴은 `PullToRefresh` 까지

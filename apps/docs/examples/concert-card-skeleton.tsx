@@ -1,5 +1,5 @@
 'use client'
-import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/design-system/cards'
+import { ConcertCard, ConcertCardSkeleton } from '@coldsurfers/surf-ui/cards'
 
 export default function Example() {
   return (

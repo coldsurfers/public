@@ -1,4 +1,4 @@
-import { LAYER_ORDER } from '@coldsurfers/design-system'
+import { LAYER_ORDER } from '@coldsurfers/surf-ui'
 import { globalLayer } from '@vanilla-extract/css'
 
 /**

@@ -1,5 +1,5 @@
 'use client'
-import { Spinner } from '@coldsurfers/design-system/primitives'
+import { Spinner } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

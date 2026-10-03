@@ -1,5 +1,5 @@
 'use client'
-import { Button, Modal } from '@coldsurfers/design-system/primitives'
+import { Button, Modal } from '@coldsurfers/surf-ui/primitives'
 import { useRef, useState } from 'react'
 
 export default function Example() {

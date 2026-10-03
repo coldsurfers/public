@@ -67,7 +67,7 @@ const injectStylesImport = {
  *
  * 그래서 **배럴은 스플리팅과 원리적으로 양립하지 않는다** — `export { Button } from './Button'`
  * 아홉 줄은 최상단 `require()` 아홉 개가 되고, 그래프가 아홉을 전부 문다.
- * 아끼는 유일한 길은 소비처가 `@coldsurfers/design-system/native/Button` 을 직접 여는 것이다.
+ * 아끼는 유일한 길은 소비처가 `@coldsurfers/surf-ui/native/Button` 을 직접 여는 것이다.
  *
  * 웹 레인엔 이 진입점들이 필요 없다 — rollup 이 tree-shaking 을 하므로 배럴로 충분하다.
  * **RN 번들러의 한계를 메우는 배선이지 API 취향이 아니다.**

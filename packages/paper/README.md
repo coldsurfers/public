@@ -72,7 +72,7 @@ paper init --config docs/paper.config.json   # 다른 자리에
 손으로 베껴 박혀 있었다. 값을 베껴 심는 구조라 한쪽을 고쳐도 다른 쪽은 그대로 남는다 —
 실제로 인쇄 페이지 브레이크 규칙이 한쪽에만 있었다.
 
-`paper` 는 인쇄용 시맨틱 계약만 정의하고, 값은 `@coldsurfers/design-system/tokens` 에서 파생한다.
+`paper` 는 인쇄용 시맨틱 계약만 정의하고, 값은 `@coldsurfers/surf-ui/tokens` 에서 파생한다.
 
 ## 테마
 

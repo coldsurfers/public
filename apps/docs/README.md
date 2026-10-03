@@ -1,6 +1,6 @@
 # @coldsurfers/docs
 
-`@coldsurfers/design-system` 문서 사이트. Fumadocs(Next.js) + **정적 내보내기**.
+`@coldsurfers/surf-ui` 문서 사이트. Fumadocs(Next.js) + **정적 내보내기**.
 
 ```bash
 pnpm --filter @coldsurfers/docs... build   # design-system dist 먼저, 그다음 out/
@@ -9,7 +9,7 @@ pnpm --filter @coldsurfers/docs dev
 
 ## 왜 이 사이트가 계약 검증인가
 
-문서의 미리보기는 `@coldsurfers/design-system` 을 **실제로 import 해서** 그린다. 워크스페이스
+문서의 미리보기는 `@coldsurfers/surf-ui` 을 **실제로 import 해서** 그린다. 워크스페이스
 링크지만 `exports` 맵이 가리키는 곳은 `dist` 라, **exports 에 없는 경로는 여기서도 안 열린다.**
 사이트가 빌드된다는 것 자체가 발행 계약이 살아 있다는 증거다.
 
@@ -17,7 +17,7 @@ pnpm --filter @coldsurfers/docs dev
 화면이 어긋나려면 파일이 둘이어야 하는데, 하나다.
 
 props 표도 옮겨 적지 않는다. `Props` 가 DS 소스의 타입에서 뽑고, 토큰 표(`Swatches`)는
-`@coldsurfers/design-system/tokens` 에서 값을 읽는다.
+`@coldsurfers/surf-ui/tokens` 에서 값을 읽는다.
 
 ## 서버가 없다
 

@@ -3,7 +3,7 @@ title: 시작하기
 description: COLDSURF 의 색 · 타이포 · 컴포넌트를 import 두 줄로 쓰는 디자인 시스템.
 ---
 
-`@coldsurfers/design-system` 은 토큰 값 · 컴파일된 CSS · React 컴포넌트를 한 패키지에 담습니다.
+`@coldsurfers/surf-ui` 은 토큰 값 · 컴파일된 CSS · React 컴포넌트를 한 패키지에 담습니다.
 설치하고 import 두 줄이면 COLDSURF 의 색 · 타이포 · 컴포넌트가 그대로 붙습니다.
 
 **범용 UI 킷은 아닙니다.** 오픈소스로 공개하지만 COLDSURF 서비스에 맞춘 기본값(accent · paper ·
@@ -19,7 +19,7 @@ cover 톤)이 처음부터 들어 있습니다 — 그 결이 맞으면 그대�
 ```
 
 ```bash
-pnpm add @coldsurfers/design-system
+pnpm add @coldsurfers/surf-ui
 ```
 
 ## 쓰기
@@ -28,9 +28,9 @@ CSS 배선은 **없습니다**. 진입점이 `styles.css` 를 직접 물고 오�
 컴파일해 내보내므로 소비자 쪽에 vanilla-extract 번들러 플러그인도 필요 없습니다.
 
 ```ts title="app/entry.tsx"
-import { vars } from '@coldsurfers/design-system'
-import { spacing } from '@coldsurfers/design-system/tokens'
-import { Button } from '@coldsurfers/design-system/primitives'
+import { vars } from '@coldsurfers/surf-ui'
+import { spacing } from '@coldsurfers/surf-ui/tokens'
+import { Button } from '@coldsurfers/surf-ui/primitives'
 ```
 
 <Callout type="warn">
@@ -44,7 +44,7 @@ import { Button } from '@coldsurfers/design-system/primitives'
 
 | 진입점 | 무엇 |
 | --- | --- |
-| `@coldsurfers/design-system` | `vars` 계약 · `@layer` 이름과 순서 · `media` |
+| `@coldsurfers/surf-ui` | `vars` 계약 · `@layer` 이름과 순서 · `media` |
 | `.../tokens` | 토큰 **값**. React 도 CSS 도 물지 않는 순수 데이터 |
 | `.../primitives` | React 컴포넌트 — Button · Chip · Field · Modal · … |
 | `.../cards` | 카드 조립체 — ConcertCard · ArticleCard · LeadFeature |
