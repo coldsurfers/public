@@ -1,0 +1,23 @@
+---
+title: PhotoHero
+description: 홈 첫 화면 — 사진 바닥 위 브랜드 칸과 결정 칸.
+---
+
+```ts
+import { PhotoHero } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="photo-hero" padded={false} />
+
+홈 정본(Figma `831:2` · `838:2`)의 첫 화면입니다. 늘 잉크 면이고, 바닥 사진 위에 잉크 스크림을 깔아 글자를 읽히게 합니다.
+사진이 없으면 잉크 그라데이션과 번짐으로 섭니다.
+
+- **왼쪽 브랜드 칸** — 위 라벨 → 워드마크 → 세리프 카피 → 아래 손글씨 + 라벨. 워드마크 · 손글씨는 슬롯이라 디자이너 SVG 를 그대로 꽂습니다
+- **오른쪽 결정 칸**(`aside`) — 제목 · `PickCard` · 주 행동. 바로 아래 패널은 유리(패널색 72% · 뒤 흐림 24)가 됩니다
+- 모바일은 같은 순서로 쌓입니다
+
+헤더를 사진 위로 올리는 건 소비처 몫입니다 — 헤더 바닥을 비우고 히어로를 위로 당깁니다.
+
+## Props
+
+<Props of="PhotoHero" dir="cards" />

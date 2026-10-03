@@ -13,6 +13,7 @@ export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from '.
 export { Callout, type CalloutProps, type CalloutTone } from './Callout'
 export { Checkbox, type CheckboxProps } from './Checkbox'
 export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
+export { CornerLabel, type CornerLabelProps } from './CornerLabel'
 export { CoverBlock, type CoverBlockProps, coverTone } from './CoverBlock'
 export { cx } from './cx'
 export { EmptyState, type EmptyStateProps } from './EmptyState'

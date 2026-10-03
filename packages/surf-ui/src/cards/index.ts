@@ -33,5 +33,6 @@ export {
 } from './ConcertCardSkeleton'
 export { FeatureCard, type FeatureCardProps } from './FeatureCard'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
+export { PhotoHero, type PhotoHeroProps } from './PhotoHero'
 export { PickCard, type PickCardProps, PickRow, type PickRowProps } from './PickCard'
 export { PosterTile, type PosterTileProps } from './PosterTile'
