@@ -40,12 +40,9 @@ const colorBlock = (scheme: ColorScheme): string =>
     .map(([key, value]) => `  --${tokenVarName('color', key)}: ${value};`)
     .join('\n')
 
-/**
- * 블록 하나다. 스킴이 light 하나뿐이라(ink 폐기) 색과 스케일을 나눌 축이 없다 —
- * 나누면 소비자의 `@import` 만 늘어난다.
- */
+/** 스케일 + light 는 `:root` 한 블록, dark 는 `theme.css.ts` 와 같은 두 선택자로 덮는다. */
 export const buildTokensCss = (): string => `${banner}:root {
-  color-scheme: light;
+  color-scheme: light dark;
 
 ${varBlock('fontFamily', fontFamily)}
 
@@ -66,5 +63,21 @@ ${varBlock('paper', paper)}
 ${varBlock('ink', ink)}
 
 ${colorBlock(tokens.color.semantic.light)}
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+${colorBlock(tokens.color.semantic.dark).replace(/^/gm, '  ')}
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+${colorBlock(tokens.color.semantic.dark)}
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 `

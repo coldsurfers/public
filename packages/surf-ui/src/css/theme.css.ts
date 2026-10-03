@@ -26,8 +26,10 @@ import { declareLayerOrder } from './layers.css'
  * TS 값 → 생성 CSS → `@import` → 앱 이던 것이 TS 값 → `styles.css` → 앱 이 된다.
  * 소비자는 `.css` 진입점에 `@import` 를 한 줄도 두지 않는다.
  *
- * **스킴은 light 하나뿐이다.** ink(dark) 는 폐기했다(paul-rockstar #299) — 색을 뒤집는 축이
- * 없으므로 `:root` 한 블록이 곧 전부고, `[data-theme]` 오버라이드도 상세도 다툼도 없다.
+ * **스킴은 둘(light · dark)이다.** `:root` 가 light 이고, dark 는 두 길로 온다:
+ *   - 시스템 설정 — `prefers-color-scheme: dark` 이면서 `[data-theme="light"]` 가 아닐 때
+ *   - 앱이 강제 — `<html data-theme="dark">`
+ * 색만 뒤집고 스케일은 `:root` 한 블록에 둔다.
  *
  * `createGlobalTheme` 이 아니라 `assignVars` + `globalStyle` 인 이유: 전자는 계약 **전체**를
  * 한 번에 요구하는데, 여기는 `cover`·`paper` 처럼 성격이 다른 축을 같은 블록에 섞어 넣는
@@ -42,11 +44,11 @@ import { declareLayerOrder } from './layers.css'
 // 이 한 줄이 "가장 먼저 로드되는 CSS 의 맨 앞은 순서 선언"을 보장한다. 이유는 `layers.css.ts`.
 declareLayerOrder()
 
-/** 스케일 + light 색. 소비 레포의 `base.css` + `light.css` 에 대응. */
+/** 스케일 + light 색. */
 globalStyle(':root', {
   '@layer': {
     [tokensLayer]: {
-      colorScheme: 'light',
+      colorScheme: 'light dark',
       vars: {
         ...assignVars(vars.color, tokens.color.semantic.light),
         ...assignVars(vars.font, fontFamily),
@@ -67,4 +69,23 @@ globalStyle(':root', {
       },
     },
   },
+})
+
+const darkColor = {
+  colorScheme: 'dark',
+  vars: assignVars(vars.color, tokens.color.semantic.dark),
+} as const
+
+globalStyle(':root:not([data-theme="light"])', {
+  '@layer': {
+    [tokensLayer]: { '@media': { '(prefers-color-scheme: dark)': darkColor } },
+  },
+})
+
+globalStyle(':root[data-theme="dark"]', {
+  '@layer': { [tokensLayer]: darkColor },
+})
+
+globalStyle(':root[data-theme="light"]', {
+  '@layer': { [tokensLayer]: { colorScheme: 'light' } },
 })

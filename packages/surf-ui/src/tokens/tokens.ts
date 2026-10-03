@@ -56,6 +56,17 @@ export type ColorScheme = {
   statusWarningBg: string
   statusDanger: string
   statusDangerBg: string
+  // surf
+  /** 파란 버튼 위 글자 · 아이콘. 스킴과 무관하게 흰색 */
+  onAccent: string
+  /** 주 행동 옅은 면 — 선택된 행동 타일 */
+  accentSoft: string
+  /** 포스터에서 뽑는 색. 기본값은 무채색이고 앱이 화면 단위로 덮는다(`cover` 와 같은 런타임 주입) */
+  tint: string
+  /** 포스터 뒤 번짐 */
+  tintGlow: string
+  /** 첫 화면 바탕에 넓게 깔리는 색 */
+  tintWash: string
 }
 
 /**
@@ -83,6 +94,24 @@ export type ColorScheme = {
  * CSS 변수는 `--cs-*` 로 발행된다(`cssVarPrefix.palette`). RN 은 `./native.ts` 가 그대로 재수출한다.
  */
 export const palette = {
+  // ─── surf 무채색 (Figma surf-ui · primitives) ───
+  /** light 바닥 */
+  neutral50: '#f6f4ef',
+  /** light 가라앉은 면 */
+  neutral100: '#efece5',
+  /** dark 강조 글자 */
+  neutral200: '#e4e4e7',
+  /** dark 부 글자 */
+  neutral400: '#a1a1aa',
+  /** light 부 글자 */
+  neutral600: '#6b6b73',
+  /** dark 카드 */
+  neutral900: '#17171b',
+  /** light 글자 · dark 가라앉은 면 */
+  neutral950: '#111113',
+  /** dark 바닥 */
+  neutral975: '#0b0b0d',
+
   // ─── 보드 10색 ───
   /** Deep Night. 본문 글자이자 잉크 밴드 바닥 */
   deepNight: '#0a0f1a',
@@ -187,73 +216,40 @@ export const gradient = {
 } as const
 
 /**
- * COLDSURF brand palette — **스킴은 이 하나(paper)뿐이다.**
- * ink(dark) 스킴은 폐기했다(paul-rockstar #299). 색을 뒤집는 축이 없으므로 `light` 가 곧 `:root` 다.
- *   paper   #f5f7fa · paper-2 #eaf6ff · rule #d7dee7
- *   ink     #0a0f1a · ink-soft #263248
- *   muted   #5b6472 · subtle #9ca3af
- *   surf    #2563ff · surf-deep #1d4fd8
+ * surf 스킴 둘 — Figma `surf-ui / color` 의 dark · light 모드가 정본이다.
  *
- * surf blue 는 주 액션·링크 hover·코드 강조에 쓰는 브랜드 강조색이다.
- * 본문 link 는 ink 로 두고, hover 시에만 surf 를 노출한다.
+ * 바탕은 무채색이고 색은 콘텐츠(포스터)에서 온다. 파랑(`accent`)은 주 행동 **하나**에만 쓴다.
+ * 스킴 선택은 `theme.css.ts` — 시스템 설정을 따르고 `[data-theme]` 가 강제한다.
  *
- * ─── off-white 이름 사전 (하나의 이름은 하나의 값만 가리킨다) ───
- *   paper        #f5f7fa   위 브랜드 정본. `light.bg` 와 같은 값
- *   warm-paper   #f9fbfd   Figma 시안의 라이트 고정 표면. 아래 `paper.warm` 토큰
- *                          (키는 역사적 이름이다 — 값은 더 이상 warm 계열이 아니다)
- *
- * 둘은 다른 색이고 다른 표면이다 — 통일 대상이 아니라 *구별* 대상이다.
- * 새 off-white 를 들일 땐 값을 재사용하기 전에 여기에 이름부터 추가한다.
- *
- * ─── 잉크 넷 중 어디까지가 "읽는 글자" 인가 ───
- *   text    #0a0f1a   본문·제목
- *   body    #263248   긴 본문
- *   muted   #5b6472   보조. surface 위 5.98:1 — **읽는 글자의 하한선**
- *   subtle  #9ca3af   구분선·플레이스홀더·비활성. surface 위 2.54:1
- *
- * **`subtle` 로 읽는 글자를 찍지 않는다.** WCAG AA 는 4.5:1 인데(18.66px bold·24px 이상만 3:1)
- * 실측은 surface 위 2.54 · bg 위 2.36 · paper-warm 위 2.48 다. 보조 문구·라벨·캡션까지
- * 전부 `muted` 가 하한이고, `subtle` 은 *읽히지 않아도 되는 것*(구분선·placeholder·비활성)에만 쓴다.
- * cover scale 처럼 어두운 색면 위에서는 대비가 반대로 성립하므로 그쪽은 예외다.
- *
- * 값을 어둡게 옮기지 않는 이유: 구분선·비활성 자리에선 지금 값이 맞고, 소비처가 165곳
- * (public 35 · paul-rockstar 130)이라 값을 옮기면 읽는 글자가 아닌 자리까지 같이 움직인다.
- * 근거·실측: coldsurfers/public#106
- */
-/*
- * 값은 하나도 안 바뀌었다 — 리터럴이 `palette` 참조로 바뀐 것뿐이다(런타임엔 같은 hex 문자열).
- * 아직 리터럴인 자리는 **팔레트에 대응 색이 없는 자리**이고, 각각 사유를 달아 뒀다.
+ * 읽는 글자의 하한은 `muted` 다(light `#6b6b73` 은 bg 위 약 5.0:1). `subtle` · `faint` 는
+ * 구분선 · placeholder · 비활성 자리에만 쓴다.
  */
 const light: ColorScheme = {
-  bg: palette.paper,
+  bg: palette.neutral50,
   surface: palette.white,
-  surface2: palette.glacier,
-  /** ⚠️ `palette.paperSunk`(#edf1f6)와 1단위 차. 합칠지는 미결 ⓑ — 지금은 구별한다 */
-  surfaceHover: '#eef2f7',
-  surfaceGhost: 'rgba(10, 15, 26, 0.03)',
-  surfaceGhostHover: 'rgba(10, 15, 26, 0.06)',
-  surfaceActive: 'rgba(10, 15, 26, 0.08)',
-  border: palette.hairlineStrong,
-  /** ⚠️ `palette.hairline`(#dce3eb)과 다른 값. 미결 ⓑ */
-  borderSoft: '#e5ebf2',
+  surface2: palette.neutral100,
+  surfaceHover: 'rgba(17, 17, 19, 0.05)',
+  surfaceGhost: 'rgba(17, 17, 19, 0.05)',
+  surfaceGhostHover: 'rgba(17, 17, 19, 0.08)',
+  surfaceActive: 'rgba(17, 17, 19, 0.12)',
+  border: 'rgba(17, 17, 19, 0.16)',
+  borderSoft: 'rgba(17, 17, 19, 0.08)',
 
-  text: palette.deepNight,
-  /** 보드에 없는 값 — deepNight 보다 한 단 더 검다. 접을지는 미결 ⓔ */
-  strong: '#05090f',
-  body: palette.divider,
-  muted: palette.slate,
-  subtle: palette.mist,
-  faint: palette.haze,
+  text: palette.neutral950,
+  strong: palette.neutral950,
+  body: palette.neutral950,
+  muted: palette.neutral600,
+  subtle: 'rgba(107, 107, 115, 0.6)',
+  faint: 'rgba(107, 107, 115, 0.4)',
 
-  heading: palette.deepNight,
+  heading: palette.neutral950,
   accent: palette.surfBlue,
-  /** surf-deep. 보드에 없다 */
   accentHover: '#1d4fd8',
-  link: palette.deepNight,
+  link: palette.neutral950,
   linkHover: palette.surfBlue,
-  blockquote: '#3f4a5c',
+  blockquote: palette.neutral600,
 
-  codeBg: palette.glacier,
+  codeBg: palette.neutral100,
   codeFg: '#1d4fd8',
 
   statusSuccess: '#1f7a3a',
@@ -262,6 +258,54 @@ const light: ColorScheme = {
   statusWarningBg: 'rgba(154, 90, 18, 0.14)',
   statusDanger: '#b8221c',
   statusDangerBg: 'rgba(184, 34, 28, 0.14)',
+
+  onAccent: palette.white,
+  accentSoft: 'rgba(37, 99, 255, 0.12)',
+  tint: palette.neutral600,
+  tintGlow: 'rgba(17, 17, 19, 0.06)',
+  tintWash: 'transparent',
+}
+
+const dark: ColorScheme = {
+  bg: palette.neutral975,
+  surface: palette.neutral900,
+  surface2: palette.neutral950,
+  surfaceHover: 'rgba(255, 255, 255, 0.06)',
+  surfaceGhost: 'rgba(255, 255, 255, 0.06)',
+  surfaceGhostHover: 'rgba(255, 255, 255, 0.1)',
+  surfaceActive: 'rgba(255, 255, 255, 0.14)',
+  border: 'rgba(255, 255, 255, 0.16)',
+  borderSoft: 'rgba(255, 255, 255, 0.08)',
+
+  text: palette.white,
+  strong: palette.white,
+  body: palette.neutral200,
+  muted: palette.neutral400,
+  subtle: 'rgba(161, 161, 170, 0.6)',
+  faint: 'rgba(161, 161, 170, 0.4)',
+
+  heading: palette.white,
+  accent: palette.surfBlue,
+  accentHover: '#4f7dff',
+  link: palette.white,
+  linkHover: '#7ea0ff',
+  blockquote: palette.neutral400,
+
+  codeBg: palette.neutral900,
+  codeFg: '#9ec2ff',
+
+  statusSuccess: '#4ade80',
+  statusSuccessBg: 'rgba(74, 222, 128, 0.14)',
+  statusWarning: '#fbbf24',
+  statusWarningBg: 'rgba(251, 191, 36, 0.14)',
+  statusDanger: '#f87171',
+  statusDangerBg: 'rgba(248, 113, 113, 0.14)',
+
+  onAccent: palette.white,
+  accentSoft: 'rgba(37, 99, 255, 0.16)',
+  tint: palette.neutral400,
+  tintGlow: 'rgba(255, 255, 255, 0.04)',
+  tintWash: 'transparent',
 }
 
 /**
@@ -358,28 +402,29 @@ const print: ColorScheme = {
   codeFg: '#1d4ed8',
 }
 
+/** 스킴 → CSS 변수 레코드(`{ '--bg': '#f6f4ef', … }`). */
+const schemeVars = (scheme: ColorScheme): Record<string, string> =>
+  Object.fromEntries(
+    (Object.entries(scheme) as Array<[keyof ColorScheme, string]>).map(([k, v]) => [
+      `--${tokenVarName('color', k)}`,
+      v,
+    ]),
+  )
+
 /**
- * light(paper) 스킴을 CSS 변수 레코드로 — `{ '--bg': '#f2efe8', '--text': '#111111', … }`.
- * 전역 테마와 무관하게 특정 서브트리를 paper 로 고정할 때 컨테이너 `style` 로 주입한다.
- * MVP 랜딩 표면은 시안 기준 항상 light. SSR 인라인이라 플래시 없음.
+ * 서브트리 하나를 light 로 고정할 때 컨테이너 `style` 로 주입한다. SSR 인라인이라 플래시 없음.
+ * 문서 전체라면 `<html data-theme="light">` 가 더 짧다.
  */
-export const lightThemeVars: Record<string, string> = Object.fromEntries(
-  (Object.entries(light) as Array<[keyof ColorScheme, string]>).map(([k, v]) => [
-    `--${tokenVarName('color', k)}`,
-    v,
-  ]),
-)
+export const lightThemeVars: Record<string, string> = schemeVars(light)
+
+/** 서브트리 하나를 dark 로 고정할 때. 문서 전체라면 `<html data-theme="dark">`. */
+export const darkThemeVars: Record<string, string> = schemeVars(dark)
 
 /**
  * 인쇄 스킴을 CSS 변수 레코드로 — `@media print` 안에 그대로 붓는다.
  * VE 라면 `globalStyle(':root', { '@media': { print: { vars: printThemeVars } } })` 가 그 자리다.
  */
-export const printThemeVars: Record<string, string> = Object.fromEntries(
-  (Object.entries(print) as Array<[keyof ColorScheme, string]>).map(([k, v]) => [
-    `--${tokenVarName('color', k)}`,
-    v,
-  ]),
-)
+export const printThemeVars: Record<string, string> = schemeVars(print)
 
 export const fontFamily = {
   /** 본문·UI. 한국어 권위 + Latin 보조. */
@@ -673,7 +718,7 @@ export const breakpoints = {
 
 export const tokens = {
   color: {
-    semantic: { light },
+    semantic: { light, dark },
   },
   fontFamily,
   fontSize,
