@@ -3,6 +3,11 @@
   "pages": [
     "button",
     "chip",
+    "pill",
+    "row",
+    "list-card",
+    "poster-card",
+    "poster-stage",
     "badge",
     "text",
     "eyebrow",

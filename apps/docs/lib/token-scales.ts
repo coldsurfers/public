@@ -8,11 +8,13 @@ import {
   paper,
   radius,
   spacing,
+  type TokenScaleGroup,
   tokens,
 } from '@coldsurfers/surf-ui/tokens'
 
 export type TokenGroup =
   | 'color'
+  | 'colorDark'
   | 'palette'
   | 'cover'
   | 'paper'
@@ -31,6 +33,7 @@ export type TokenGroup =
  */
 export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
   color: tokens.color.semantic.light,
+  colorDark: tokens.color.semantic.dark,
   palette,
   cover,
   paper,
@@ -41,3 +44,7 @@ export const TOKEN_SCALES: Record<TokenGroup, Record<string, string>> = {
   lineHeight,
   letterSpacing,
 }
+
+/** 표 그룹 → CSS 변수 이름 그룹. dark 는 light 와 **같은 이름**에 다른 값을 넣는다. */
+export const varGroupOf = (group: TokenGroup): TokenScaleGroup =>
+  group === 'colorDark' ? 'color' : group

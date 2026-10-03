@@ -2,7 +2,7 @@ import { tokenVarName } from '@coldsurfers/surf-ui/tokens'
 import { readExampleSource } from './example-source'
 import { collectProps, type PropEntry, type PropsQuery } from './props-source'
 import type { source } from './source'
-import { TOKEN_SCALES, type TokenGroup } from './token-scales'
+import { TOKEN_SCALES, type TokenGroup, varGroupOf } from './token-scales'
 
 type Page = (typeof source)['$inferPage']
 
@@ -81,7 +81,7 @@ async function propsBlock(query: PropsQuery): Promise<string> {
 
 function swatchesBlock(group: TokenGroup): string {
   const rows = Object.entries(TOKEN_SCALES[group]).map(
-    ([key, value]) => `| \`--${tokenVarName(group, key)}\` | ${code(value)} |`,
+    ([key, value]) => `| \`--${tokenVarName(varGroupOf(group), key)}\` | ${code(value)} |`,
   )
 
   return `| 토큰 | 값 |\n| --- | --- |\n${rows.join('\n')}`
