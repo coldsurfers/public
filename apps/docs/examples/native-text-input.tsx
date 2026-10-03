@@ -1,8 +1,8 @@
 'use client'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { Text } from '@coldsurfers/design-system/native/Text'
-import { TextInput } from '@coldsurfers/design-system/native/TextInput'
-import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
+import { TextInput } from '@coldsurfers/surf-ui/native/TextInput'
+import { nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { useState } from 'react'
 import { View } from 'react-native'
 

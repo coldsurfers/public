@@ -34,7 +34,7 @@ export default defineConfig({
         'react-native-safe-area-context',
         '@emotion/native',
         '@emotion/react',
-        /^@coldsurfers\/design-system/,
+        /^@coldsurfers\/surf-ui/,
       ],
     },
   },

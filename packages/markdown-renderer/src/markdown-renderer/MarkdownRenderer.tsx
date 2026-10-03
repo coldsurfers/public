@@ -1,4 +1,4 @@
-import { cx } from '@coldsurfers/design-system/primitives'
+import { cx } from '@coldsurfers/surf-ui/primitives'
 import rehypeShikiFromHighlighter from '@shikijs/rehype/core'
 import type { ElementContent, Element as HastElement } from 'hast'
 import { createContext, memo, type ReactNode, useContext } from 'react'

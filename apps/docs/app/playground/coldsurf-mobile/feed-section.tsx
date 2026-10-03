@@ -1,8 +1,8 @@
 'use client'
 
-import { Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeRadius, nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeRadius, nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import type { ReactNode } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 
@@ -112,7 +112,7 @@ export function FeedSection({ title, subTitle, onPressMore, children }: FeedSect
  */
 export function FeedSectionSkeleton({ children }: { children: ReactNode }) {
   const scheme = useScheme()
-  const block = { backgroundColor: scheme.border, borderRadius: nativeRadius.sm }
+  const block = { backgroundColor: scheme.lineDivider, borderRadius: nativeRadius.sm }
 
   return (
     <View style={{ paddingTop: nativeSpacing[6] }} accessibilityElementsHidden>

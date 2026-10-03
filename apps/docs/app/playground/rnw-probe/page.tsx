@@ -1,13 +1,13 @@
 'use client'
 
-import { Button } from '@coldsurfers/design-system/native/Button'
-import { Text } from '@coldsurfers/design-system/native/Text'
+import { Button } from '@coldsurfers/surf-ui/native/Button'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
 import { View } from 'react-native'
 
 /**
  * RNW 배선 프로브 — **시안이 아니라 검증판**이다.
  *
- * 묻는 것 하나: `@coldsurfers/design-system/native` 를 고치지 않고 브라우저에서 그릴 수 있는가.
+ * 묻는 것 하나: `@coldsurfers/surf-ui/native` 를 고치지 않고 브라우저에서 그릴 수 있는가.
  * 그래서 여기서는 RN 용으로 쓴 컴포넌트를 **그대로** 부른다 — `View` 도 `react-native` 에서
  * 가져온다(`next.config.mjs` 의 별칭이 `react-native-web` 으로 푼다).
  *

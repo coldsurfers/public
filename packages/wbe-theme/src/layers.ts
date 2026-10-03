@@ -24,5 +24,5 @@ export const themeLayer = 'wbe-theme'
 /** recipe·표면 스타일. */
 export const componentsLayer = 'wbe-components'
 
-/** 리셋 ← 토큰 ← 컴포넌트. `@coldsurfers/design-system` 의 `ds-*` 순서와 같은 축이다. */
+/** 리셋 ← 토큰 ← 컴포넌트. `@coldsurfers/surf-ui` 의 `ds-*` 순서와 같은 축이다. */
 export const LAYER_ORDER = [resetLayer, themeLayer, componentsLayer] as const

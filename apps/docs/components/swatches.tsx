@@ -1,5 +1,5 @@
-import { tokenVarName } from '@coldsurfers/design-system/tokens'
-import { TOKEN_SCALES, type TokenGroup } from '@/lib/token-scales'
+import { tokenVarName } from '@coldsurfers/surf-ui/tokens'
+import { isColorGroup, TOKEN_SCALES, type TokenGroup, VAR_GROUP } from '@/lib/token-scales'
 
 /**
  * 토큰 표 — 값은 `lib/token-scales.ts` 가 DS 토큰에서 읽는다. 여기는 그리기만 한다.
@@ -7,7 +7,7 @@ import { TOKEN_SCALES, type TokenGroup } from '@/lib/token-scales'
  */
 export function Swatches({ group }: { group: TokenGroup }) {
   const scale = TOKEN_SCALES[group]
-  const isColor = group === 'color' || group === 'palette' || group === 'cover' || group === 'paper'
+  const isColor = isColorGroup(group)
 
   return (
     <div className="not-prose my-6 grid gap-2 sm:grid-cols-2">
@@ -25,7 +25,9 @@ export function Swatches({ group }: { group: TokenGroup }) {
             <Sample group={group} value={value} />
           )}
           <span className="flex min-w-0 flex-col">
-            <code className="truncate text-fd-foreground">--{tokenVarName(group, key)}</code>
+            <code className="truncate text-fd-foreground">
+              --{tokenVarName(VAR_GROUP[group], key)}
+            </code>
             <span className="truncate text-fd-muted-foreground">{value}</span>
           </span>
         </div>

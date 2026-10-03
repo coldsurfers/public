@@ -8,7 +8,7 @@ import { readExampleSource } from '@/lib/example-source'
  * 렌더링은 그 파일을 실제로 import 해서 하고, 코드 블록은 같은 파일을 읽어서 보여준다.
  * 그래서 문서에 적힌 코드와 화면에 보이는 것이 어긋날 수 없다 — 어긋나려면 파일이 둘이어야 한다.
  *
- * 그 컴포넌트는 `@coldsurfers/design-system` 을 워크스페이스로 물지만, exports 맵이 가리키는
+ * 그 컴포넌트는 `@coldsurfers/surf-ui` 을 워크스페이스로 물지만, exports 맵이 가리키는
  * 곳은 `dist` 다. 즉 **이 사이트가 빌드되는 것 자체가 발행 계약의 첫 소비자 검증**이다 —
  * `exports` 에 없는 경로는 여기서도 안 열린다.
  */

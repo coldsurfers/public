@@ -1,11 +1,18 @@
 'use client'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { Text } from '@coldsurfers/design-system/native/Text'
-import { nativeRadius, nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
+import { nativeRadius, nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { View } from 'react-native'
 
 /** 색을 훅에서 받아 스타일에 직접 넣는다 — RN 엔 CSS 변수가 없다. */
-const SLOTS = ['bg', 'surface', 'border', 'text', 'muted', 'accent'] as const
+const SLOTS = [
+  'bgBase',
+  'surfaceRaised',
+  'lineDivider',
+  'textPrimary',
+  'textSecondary',
+  'actionPrimary',
+] as const
 
 export default function Example() {
   const scheme = useScheme()
@@ -23,7 +30,7 @@ export default function Example() {
               height: 32,
               borderRadius: nativeRadius.sm,
               borderWidth: 1,
-              borderColor: scheme.border,
+              borderColor: scheme.lineDivider,
               backgroundColor: scheme[slot],
             }}
           />

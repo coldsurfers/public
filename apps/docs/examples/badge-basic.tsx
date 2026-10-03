@@ -1,5 +1,5 @@
 'use client'
-import { Badge } from '@coldsurfers/design-system/primitives'
+import { Badge } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

@@ -1,5 +1,5 @@
 'use client'
-import { UnderlineTab, UnderlineTabs } from '@coldsurfers/design-system/primitives'
+import { UnderlineTab, UnderlineTabs } from '@coldsurfers/surf-ui/primitives'
 import { useState } from 'react'
 
 const TABS = ['전체', 'Reviews', 'Picks']

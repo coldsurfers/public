@@ -1,8 +1,8 @@
 'use client'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { TabBar, useTabBarHeight } from '@coldsurfers/design-system/native/TabBar'
-import { Text } from '@coldsurfers/design-system/native/Text'
 import { AppScreen, type AppScreenOffsetBottom } from '@coldsurfers/screens/AppScreen'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { TabBar, useTabBarHeight } from '@coldsurfers/surf-ui/native/TabBar'
+import { Text } from '@coldsurfers/surf-ui/native/Text'
 import { House, Search, Tickets, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
@@ -29,8 +29,8 @@ export default function Example() {
           style={{
             flex: 1,
             borderWidth: 1,
-            borderColor: scheme.accent,
-            backgroundColor: scheme.surface2,
+            borderColor: scheme.actionPrimary,
+            backgroundColor: scheme.panelFill,
             gap: 8,
             padding: 12,
           }}
@@ -49,8 +49,9 @@ export default function Example() {
                   borderRadius: 8,
                   paddingHorizontal: 10,
                   paddingVertical: 6,
-                  borderColor: candidate === offsetBottom ? scheme.accent : scheme.border,
-                  backgroundColor: candidate === offsetBottom ? scheme.surfaceActive : scheme.bg,
+                  borderColor:
+                    candidate === offsetBottom ? scheme.actionPrimary : scheme.lineDivider,
+                  backgroundColor: candidate === offsetBottom ? scheme.statePressed : scheme.bgBase,
                 }}
               >
                 <Text textStyle="labelSm">{candidate}</Text>

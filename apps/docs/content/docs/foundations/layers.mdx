@@ -3,13 +3,13 @@ title: 계약과 레이어
 description: 무엇을 쓸 수 있고, 겹쳤을 때 누가 이기는가.
 ---
 
-배럴(`@coldsurfers/design-system`)이 갖는 건 **계약과 순서** 둘입니다. 값 자체는
+배럴(`@coldsurfers/surf-ui`)이 갖는 건 **계약과 순서** 둘입니다. 값 자체는
 `./tokens` 서브패스에 있습니다.
 
 ## `vars` — 이름을 타입으로 승격한다
 
 ```ts
-import { vars } from '@coldsurfers/design-system'
+import { vars } from '@coldsurfers/surf-ui'
 
 style({ color: vars.color.accent, padding: vars.space['4'] })
 ```
@@ -53,7 +53,7 @@ minifier 를 신뢰할 수 없으니 선언을 VE 로 옮겼고, 여러 청크�
 `.css.ts` 를 직접 쓰는 소비자는 `inComponentsLayer` 로 감쌉니다.
 
 ```ts
-import { inComponentsLayer } from '@coldsurfers/design-system'
+import { inComponentsLayer } from '@coldsurfers/surf-ui'
 import { style } from '@vanilla-extract/css'
 
 export const card = style(inComponentsLayer({ padding: '1rem' }))
@@ -62,7 +62,7 @@ export const card = style(inComponentsLayer({ padding: '1rem' }))
 ## 반응형
 
 ```ts
-import { media } from '@coldsurfers/design-system'
+import { media } from '@coldsurfers/surf-ui'
 
 style({ '@media': { [media.tablet]: { padding: '2rem' } } })
 ```

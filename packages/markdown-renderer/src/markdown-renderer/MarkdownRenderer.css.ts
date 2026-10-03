@@ -1,8 +1,8 @@
-import { inComponentsLayer, media, vars } from '@coldsurfers/design-system'
+import { inComponentsLayer, media, vars } from '@coldsurfers/surf-ui'
 import { style } from '@vanilla-extract/css'
 // 부수효과 — 레이어 순서 선언이 이 스타일시트의 맨 앞에 실려야 한다. 근거는 `layers.css.ts`.
 import '../layers.css'
-import { alpha, lineClamp } from '@coldsurfers/design-system/style-utils'
+import { alpha, lineClamp } from '@coldsurfers/surf-ui/style-utils'
 
 /**
  * 마크다운 본문 스킨 + 리치 임베드(YouTube·Bandcamp·Spotify·coldsurf 티켓·OG 카드)의 스타일 계약.
@@ -31,9 +31,9 @@ const blockGap = { marginBlock: 24 } as const
 /** 임베드 데이터 미해소 시의 폴백 링크(=원본 URL 노출). */
 export const fallbackLink = style(
   inComponentsLayer({
-    color: vars.color.link,
+    color: vars.color.textPrimary,
     ...colorTransition,
-    selectors: { '&:hover': { color: vars.color.linkHover } },
+    selectors: { '&:hover': { color: vars.color.actionPrimary } },
   }),
 )
 
@@ -44,7 +44,7 @@ export const fallbackBlock = style(inComponentsLayer(blockGap))
 export const ticketCard = style(
   inComponentsLayer({
     ...blockGap,
-    border: `1px solid ${vars.color.border}`,
+    border: `1px solid ${vars.color.lineDivider}`,
     borderRadius: vars.radius.sm,
     overflow: 'hidden',
   }),
@@ -69,21 +69,21 @@ export const ticketDate = style(
     fontSize: vars.fontSize['3xs'],
     letterSpacing: '0.3em',
     textTransform: 'uppercase',
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
     marginBottom: 4,
   }),
 )
 
 export const ticketTitle = style(
   inComponentsLayer({
-    color: vars.color.heading,
+    color: vars.color.textPrimary,
     fontWeight: vars.fontWeight.semibold,
     lineHeight: vars.lineHeight.snug,
   }),
 )
 
 export const ticketVenue = style(
-  inComponentsLayer({ color: vars.color.body, fontSize: vars.fontSize.sm, marginTop: 2 }),
+  inComponentsLayer({ color: vars.color.textPrimary, fontSize: vars.fontSize.sm, marginTop: 2 }),
 )
 
 /** 출처 브랜딩 — Bandcamp 의 'bc', Spotify 로고 자리. */
@@ -97,9 +97,9 @@ export const ticketBrand = style(
     fontSize: vars.fontSize['3xs'],
     letterSpacing: '0.25em',
     textTransform: 'uppercase',
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
     ...colorTransition,
-    selectors: { '&:hover': { color: vars.color.link } },
+    selectors: { '&:hover': { color: vars.color.textPrimary } },
   }),
 )
 
@@ -111,7 +111,9 @@ export const ticketBrandGlyph = style(
   inComponentsLayer({ fontSize: 13, lineHeight: '1', fontWeight: vars.fontWeight.semibold }),
 )
 
-export const ticketList = style(inComponentsLayer({ borderTop: `1px solid ${vars.color.border}` }))
+export const ticketList = style(
+  inComponentsLayer({ borderTop: `1px solid ${vars.color.lineDivider}` }),
+)
 
 export const ticketRow = style(
   inComponentsLayer({
@@ -121,18 +123,18 @@ export const ticketRow = style(
     gap: 16,
     paddingInline: 16,
     paddingBlock: 12,
-    borderBottom: `1px solid ${vars.color.border}`,
+    borderBottom: `1px solid ${vars.color.lineDivider}`,
     ...colorTransition,
     selectors: {
       '&:last-child': { borderBottom: 'none' },
-      '&:hover': { background: vars.color.surfaceHover },
+      '&:hover': { background: vars.color.stateHover },
     },
   }),
 )
 
 export const ticketSeller = style(
   inComponentsLayer({
-    color: vars.color.body,
+    color: vars.color.textPrimary,
     fontWeight: vars.fontWeight.medium,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -143,7 +145,7 @@ export const ticketSeller = style(
 export const ticketOpenDate = style(
   inComponentsLayer({
     fontSize: vars.fontSize.xs,
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
     whiteSpace: 'nowrap',
   }),
 )
@@ -153,8 +155,8 @@ export const ticketSource = style(
     paddingInline: 16,
     paddingBlock: 8,
     fontSize: vars.fontSize['2xs'],
-    color: vars.color.muted,
-    borderTop: `1px solid ${vars.color.border}`,
+    color: vars.color.textSecondary,
+    borderTop: `1px solid ${vars.color.lineDivider}`,
   }),
 )
 
@@ -201,10 +203,10 @@ export const ogCard = style(
     display: 'flex',
     alignItems: 'stretch',
     overflow: 'hidden',
-    border: `1px solid ${vars.color.border}`,
+    border: `1px solid ${vars.color.lineDivider}`,
     textDecoration: 'none',
     ...colorTransition,
-    selectors: { '&:hover': { background: vars.color.surface2 } },
+    selectors: { '&:hover': { background: vars.color.panelFill } },
   }),
 )
 
@@ -228,19 +230,19 @@ export const ogText = style(
 /** Tailwind `group-hover:` 등가 — 부모 카드 hover 를 선택자로 참조한다. */
 export const ogTitle = style(
   inComponentsLayer({
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
     fontWeight: vars.fontWeight.medium,
     fontSize: vars.fontSize.sm,
     lineHeight: vars.lineHeight.snug,
     ...lineClamp(2),
     ...colorTransition,
-    selectors: { [`${ogCard}:hover &`]: { color: vars.color.link } },
+    selectors: { [`${ogCard}:hover &`]: { color: vars.color.textPrimary } },
   }),
 )
 
 export const ogDescription = style(
   inComponentsLayer({
-    color: vars.color.muted,
+    color: vars.color.textSecondary,
     fontSize: vars.fontSize.xs,
     lineHeight: vars.lineHeight.relaxed,
     ...lineClamp(2),
@@ -253,7 +255,7 @@ export const ogSite = style(
     alignItems: 'center',
     gap: 6,
     minWidth: 0,
-    color: vars.color.faint,
+    color: vars.color.textTertiary,
     fontSize: vars.fontSize.xs,
   }),
 )
@@ -275,7 +277,7 @@ export const ogThumb = style(
     display: 'none',
     width: 128,
     flexShrink: 0,
-    background: vars.color.surface2,
+    background: vars.color.panelFill,
     '@media': { [media.tablet]: { display: 'block' } },
   }),
 )
@@ -291,7 +293,7 @@ export const h1 = style(
   inComponentsLayer({
     fontSize: vars.fontSize['3xl'],
     fontWeight: vars.fontWeight.semibold,
-    color: vars.color.heading,
+    color: vars.color.textPrimary,
     lineHeight: vars.lineHeight.tight,
     marginBottom: 32,
     '@media': { [media.tablet]: { fontSize: vars.fontSize['4xl'] } },
@@ -302,7 +304,7 @@ export const h2 = style(
   inComponentsLayer({
     fontSize: vars.fontSize.xl,
     fontWeight: vars.fontWeight.semibold,
-    color: vars.color.heading,
+    color: vars.color.textPrimary,
     marginTop: 48,
     marginBottom: 16,
   }),
@@ -312,7 +314,7 @@ export const h3 = style(
   inComponentsLayer({
     fontSize: vars.fontSize.base,
     fontWeight: vars.fontWeight.semibold,
-    color: vars.color.strong,
+    color: vars.color.textPrimary,
     marginTop: 32,
     marginBottom: 12,
   }),
@@ -320,7 +322,7 @@ export const h3 = style(
 
 export const paragraph = style(
   inComponentsLayer({
-    color: vars.color.body,
+    color: vars.color.textPrimary,
     fontSize: vars.fontSize.base,
     lineHeight: vars.lineHeight.relaxed,
     marginBottom: 20,
@@ -335,20 +337,20 @@ export const paragraph = style(
  */
 export const blockquote = style(
   inComponentsLayer({
-    borderLeft: `2px solid ${vars.color.border}`,
+    borderLeft: `2px solid ${vars.color.lineDivider}`,
     paddingLeft: 16,
     marginBlock: 24,
-    color: vars.color.blockquote,
+    color: vars.color.textSecondary,
   }),
 )
 
 /** 인라인 코드만. 블록 코드는 Shiki 가 이미 토큰 스타일을 인라인으로 박아둔다. */
 export const inlineCode = style(
   inComponentsLayer({
-    background: vars.color.codeBg,
+    background: vars.color.panelFill,
     paddingBlock: 2,
     fontSize: vars.fontSize.sm,
-    color: vars.color.codeFg,
+    color: vars.color.kicker,
     fontFamily: vars.font.mono,
   }),
 )
@@ -362,12 +364,12 @@ export const pre = style(
   inComponentsLayer({
     marginBlock: 24,
     padding: 16,
-    background: vars.color.codeBg,
+    background: vars.color.panelFill,
     fontSize: vars.fontSize.sm,
     fontFamily: vars.font.mono,
     lineHeight: vars.lineHeight.relaxed,
     overflowX: 'auto',
-    border: `1px solid ${vars.color.border}`,
+    border: `1px solid ${vars.color.lineDivider}`,
   }),
 )
 
@@ -375,13 +377,13 @@ export const pre = style(
 export const hr = style(
   inComponentsLayer({
     border: 'none',
-    borderTop: `1px solid ${vars.color.border}`,
+    borderTop: `1px solid ${vars.color.lineDivider}`,
     marginBlock: 40,
   }),
 )
 
 const listBase = {
-  color: vars.color.body,
+  color: vars.color.textPrimary,
   fontSize: vars.fontSize.base,
   lineHeight: vars.lineHeight.normal,
   marginBottom: 20,
@@ -406,7 +408,7 @@ export const li = style(
       position: 'absolute',
       left: 0,
       top: 0,
-      color: vars.color.faint,
+      color: vars.color.textTertiary,
     },
   }),
 )
@@ -418,23 +420,23 @@ export const li = style(
  */
 export const link = style(
   inComponentsLayer({
-    color: vars.color.link,
+    color: vars.color.textPrimary,
     textDecorationLine: 'underline',
     textDecorationThickness: 1,
-    textDecorationColor: alpha(vars.color.link, 40),
+    textDecorationColor: alpha(vars.color.textPrimary, 40),
     textUnderlineOffset: 2,
     ...colorTransition,
     selectors: {
       '&:hover': {
-        color: vars.color.linkHover,
-        textDecorationColor: vars.color.linkHover,
+        color: vars.color.actionPrimary,
+        textDecorationColor: vars.color.actionPrimary,
       },
     },
   }),
 )
 
 export const strong = style(
-  inComponentsLayer({ color: vars.color.strong, fontWeight: vars.fontWeight.semibold }),
+  inComponentsLayer({ color: vars.color.textPrimary, fontWeight: vars.fontWeight.semibold }),
 )
 
 export const image = style(
@@ -452,21 +454,21 @@ export const tableScroll = style(inComponentsLayer({ overflowX: 'auto', marginBl
 export const table = style(
   inComponentsLayer({
     width: '100%',
-    border: `1px solid ${vars.color.border}`,
+    border: `1px solid ${vars.color.lineDivider}`,
     fontSize: vars.fontSize.sm,
   }),
 )
 
-export const thead = style(inComponentsLayer({ background: vars.color.surface2 }))
+export const thead = style(inComponentsLayer({ background: vars.color.panelFill }))
 
 export const th = style(
   inComponentsLayer({
     textAlign: 'left',
     paddingInline: 16,
     paddingBlock: 8,
-    color: vars.color.subtle,
+    color: vars.color.textTertiary,
     fontWeight: vars.fontWeight.medium,
-    borderBottom: `1px solid ${vars.color.border}`,
+    borderBottom: `1px solid ${vars.color.lineDivider}`,
   }),
 )
 
@@ -474,7 +476,7 @@ export const td = style(
   inComponentsLayer({
     paddingInline: 16,
     paddingBlock: 8,
-    color: vars.color.muted,
-    borderBottom: `1px solid ${vars.color.borderSoft}`,
+    color: vars.color.textSecondary,
+    borderBottom: `1px solid ${vars.color.lineDivider}`,
   }),
 )

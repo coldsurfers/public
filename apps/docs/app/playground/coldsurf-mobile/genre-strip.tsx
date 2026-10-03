@@ -1,8 +1,8 @@
 'use client'
 
-import { Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeSpacing, paper } from '@coldsurfers/design-system/tokens/native'
+import { Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeColor, nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { Pressable, ScrollView } from 'react-native'
 import type { Genre } from './feed-data'
 
@@ -36,9 +36,9 @@ export function GenreStrip({ genres, selected, onSelect }: GenreStripProps) {
       showsHorizontalScrollIndicator={false}
       style={{
         flexGrow: 0,
-        backgroundColor: paper.warm,
+        backgroundColor: nativeColor.light.bgAlt,
         borderBottomWidth: 1,
-        borderBottomColor: scheme.border,
+        borderBottomColor: scheme.lineDivider,
       }}
       contentContainerStyle={{ gap: nativeSpacing[5], paddingHorizontal: nativeSpacing[4] }}
     >
@@ -56,7 +56,7 @@ export function GenreStrip({ genres, selected, onSelect }: GenreStripProps) {
               // 회색 선이 한 줄 더 생긴다.
               marginBottom: -1,
               borderBottomWidth: 2,
-              borderBottomColor: active ? scheme.accent : 'transparent',
+              borderBottomColor: active ? scheme.actionPrimary : 'transparent',
             }}
           >
             <Text

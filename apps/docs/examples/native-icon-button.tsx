@@ -1,6 +1,6 @@
 'use client'
-import { IconButton } from '@coldsurfers/design-system/native/IconButton'
-import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { IconButton } from '@coldsurfers/surf-ui/native/IconButton'
+import { nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { Bookmark, Heart, Share2, X } from 'lucide-react'
 import { View } from 'react-native'
 

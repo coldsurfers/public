@@ -42,7 +42,7 @@ description: 크기 대신 역할을 고르는 글자 바닥.
 
 ## RN 짝
 
-`@coldsurfers/design-system/native` 의 `Text` 가 같은 자리이고, **같은 `textStyle` 을 받습니다.**
+`@coldsurfers/surf-ui/native` 의 `Text` 가 같은 자리이고, **같은 `textStyle` 을 받습니다.**
 램프 표(`contract/text-style.ts`) 하나를 두 레인이 읽으므로 같은 이름을 준 글자는 양쪽에서 같은
 비율로 섭니다. 구현은 갈립니다 — VE 산출물은 CSS 문자열이라 RN 으로 넘어가지 않습니다.
 
@@ -50,7 +50,7 @@ RN 쪽은 `lineHeight` 와 `letterSpacing` 이 배수·`em` 이 아니라 **절�
 `lineHeightFor` · `letterSpacingFor` 가 값을 냅니다.
 
 ```tsx
-import { Text } from '@coldsurfers/design-system/native'
+import { Text } from '@coldsurfers/surf-ui/native'
 
 <Text textStyle="body" tone="body">본문</Text>
 ```

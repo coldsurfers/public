@@ -1,5 +1,5 @@
 'use client'
-import { LeadFeature } from '@coldsurfers/design-system/cards'
+import { LeadFeature } from '@coldsurfers/surf-ui/cards'
 
 export default function Example() {
   return (

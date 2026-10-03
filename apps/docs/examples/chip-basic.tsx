@@ -1,5 +1,5 @@
 'use client'
-import { Chip } from '@coldsurfers/design-system/primitives'
+import { Chip } from '@coldsurfers/surf-ui/primitives'
 import { useState } from 'react'
 
 const FILTERS = ['오늘', '이번 주', '이번 달']

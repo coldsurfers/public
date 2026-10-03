@@ -39,7 +39,7 @@
     "check:type": "tsc --noEmit"
   },
   "devDependencies": {
-    "@coldsurfers/design-system": "workspace:*",
+    "@coldsurfers/surf-ui": "workspace:*",
     "@types/node": "^22.10.0",
     "typescript": "~5.9.3",
     "vite": "^7.1.14"

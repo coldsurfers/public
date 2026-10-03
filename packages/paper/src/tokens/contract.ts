@@ -10,7 +10,7 @@
  * 한 이름이 두 값을 가리키게 된다 — DS 의 이름 사전이 금지하는 것이다.
  *
  * **값은 여기 없다.** 목록과 역할만 있고, 값은 테마가 준다. `coldsurf` 테마는 `build.mjs` 가
- * `@coldsurfers/design-system/tokens` 에서 파생하고, 소비처 테마는 자기 CSS 로 채운다.
+ * `@coldsurfers/surf-ui/tokens` 에서 파생하고, 소비처 테마는 자기 CSS 로 채운다.
  */
 
 export type PrintVarGroup = 'surface' | 'line' | 'ink' | 'accent' | 'form' | 'type'

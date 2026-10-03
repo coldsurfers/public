@@ -42,7 +42,7 @@ claude mcp add coldsurf-ds -- npx -y @coldsurfers/design-system-mcp
 | `get_doc` | 본문 하나 — **예제 코드 · props 표 · 토큰 값이 들어 있다** |
 
 `get_doc` 이 돌려주는 본문은 문서 사이트가 그리는 것과 같은 데이터다. 예제는
-`examples/*.tsx` 원본, props 표는 `@coldsurfers/design-system` 소스 타입, 토큰 값은
+`examples/*.tsx` 원본, props 표는 `@coldsurfers/surf-ui` 소스 타입, 토큰 값은
 발행된 토큰에서 나온다 — 사람이 옮겨 적은 값이 하나도 없다.
 
 ## 개발

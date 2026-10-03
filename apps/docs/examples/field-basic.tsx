@@ -1,5 +1,5 @@
 'use client'
-import { Field } from '@coldsurfers/design-system/primitives'
+import { Field } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

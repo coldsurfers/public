@@ -1,5 +1,5 @@
 'use client'
-import { ArticleCard } from '@coldsurfers/design-system/cards'
+import { ArticleCard } from '@coldsurfers/surf-ui/cards'
 
 export default function Example() {
   return (

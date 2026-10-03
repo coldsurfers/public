@@ -1,5 +1,5 @@
 'use client'
-import { Text } from '@coldsurfers/design-system/primitives'
+import { Text } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

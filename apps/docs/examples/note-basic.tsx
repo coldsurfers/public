@@ -1,5 +1,5 @@
 'use client'
-import { Note } from '@coldsurfers/design-system/primitives'
+import { Note } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (

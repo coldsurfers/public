@@ -1,7 +1,7 @@
 'use client'
 
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { paper } from '@coldsurfers/design-system/tokens/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeColor } from '@coldsurfers/surf-ui/tokens/native'
 import { BatteryFull, Signal, Wifi } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { View } from 'react-native'
@@ -23,7 +23,7 @@ import './phone-frame.css'
  *
  * status bar 글자와 home indicator 는 화면의 표면 톤을 따라가야 읽힌다. 그런데 **지금
  * 시안 표면이 하나뿐이다** — native 스킴은 `light` 하나고(`useScheme`), 시안의 고정 표면은
- * `paper.warm` 이다. 축이 하나인데 prop 을 열면 값이 안 정해진 채 소비처마다 다르게 적히고,
+ * `nativeColor.light.textOnMedia` 이다. 축이 하나인데 prop 을 열면 값이 안 정해진 채 소비처마다 다르게 적히고,
  * 그때 프레임은 계약이 아니라 색 인자를 받는 함수가 된다.
  *
  * **다크 크롬이 필요한 시안이 생기면 그때 연다.** 그 시점엔 무엇이 기본값인지가 화면 둘에서
@@ -45,7 +45,10 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
       <div className="pf-frame">
         {/* 색만 여기서 인라인으로 넣는다 — CSS 변수로 두면 문서 사이트 다크에서 어긋난다. */}
-        <div className="pf-statusbar" style={{ background: paper.warm, color: scheme.strong }}>
+        <div
+          className="pf-statusbar"
+          style={{ background: nativeColor.light.textOnMedia, color: scheme.textPrimary }}
+        >
           <span>{STATUS_TIME}</span>
           <span className="pf-statusbar-signals">
             <Signal size={16} aria-hidden />
@@ -57,7 +60,7 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
         {/* 여기부터 아래가 앱이다 — 화면이 `absolute` 를 걸 때의 기준점이기도 하다(탭바 등). */}
         <div className="pf-screen">{children}</div>
 
-        <div className="pf-home-indicator" style={{ background: scheme.strong }} />
+        <div className="pf-home-indicator" style={{ background: scheme.textPrimary }} />
       </div>
     </View>
   )

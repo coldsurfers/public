@@ -1,6 +1,6 @@
 'use client'
-import { Badge, CoverBlock } from '@coldsurfers/design-system/primitives'
-import { COVER_TONES } from '@coldsurfers/design-system/tokens'
+import { Badge, CoverBlock } from '@coldsurfers/surf-ui/primitives'
+import { COVER_TONES } from '@coldsurfers/surf-ui/tokens'
 
 export default function Example() {
   return (

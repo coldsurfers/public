@@ -1,5 +1,5 @@
 'use client'
-import { Eyebrow, Ticket } from '@coldsurfers/design-system/primitives'
+import { Eyebrow, Ticket } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (
@@ -17,7 +17,9 @@ export default function Example() {
       <div style={{ padding: 20 }}>
         <Eyebrow size="sm">Live · 홍대 상상마당</Eyebrow>
         <p style={{ margin: '8px 0 0', fontSize: 18, fontWeight: 600 }}>Silica Gel</p>
-        <p style={{ margin: '4px 0 0', color: 'var(--muted)' }}>2026.10.04 (일) 19:00</p>
+        <p style={{ margin: '4px 0 0', color: 'var(--surf-text-secondary)' }}>
+          2026.10.04 (일) 19:00
+        </p>
       </div>
     </Ticket>
   )

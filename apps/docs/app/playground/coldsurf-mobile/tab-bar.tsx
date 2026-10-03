@@ -1,8 +1,8 @@
 'use client'
 
-import { Text } from '@coldsurfers/design-system/native'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { nativeSpacing } from '@coldsurfers/design-system/tokens/native'
+import { Text } from '@coldsurfers/surf-ui/native'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { nativeSpacing } from '@coldsurfers/surf-ui/tokens/native'
 import { House, Search, Tickets, UserRound } from 'lucide-react'
 import { Pressable, View } from 'react-native'
 
@@ -68,9 +68,9 @@ export function TabBar({ tabs, selected, onSelect }: TabBarProps) {
         right: 0,
         bottom: 0,
         flexDirection: 'row',
-        backgroundColor: scheme.surface,
+        backgroundColor: scheme.surfaceRaised,
         borderTopWidth: 1,
-        borderTopColor: scheme.border,
+        borderTopColor: scheme.lineDivider,
         paddingTop: nativeSpacing[2],
         // 홈 인디케이터가 앉을 자리 — 실제 앱에서는 `useSafeAreaInsets().bottom` 이다.
         paddingBottom: nativeSpacing[6],
@@ -94,7 +94,7 @@ export function TabBar({ tabs, selected, onSelect }: TabBarProps) {
             <Icon
               size={22}
               strokeWidth={active ? 2.4 : 1.6}
-              color={active ? scheme.accent : scheme.subtle}
+              color={active ? scheme.actionPrimary : scheme.textTertiary}
               aria-hidden
             />
             <Text size="3xs" weight="medium" tone={active ? 'accent' : 'subtle'}>

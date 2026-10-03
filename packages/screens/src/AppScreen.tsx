@@ -1,6 +1,6 @@
-import { Spinner } from '@coldsurfers/design-system/native/Spinner'
-import { useScheme } from '@coldsurfers/design-system/native/scheme'
-import { useTabBarHeight } from '@coldsurfers/design-system/native/TabBar'
+import { Spinner } from '@coldsurfers/surf-ui/native/Spinner'
+import { useScheme } from '@coldsurfers/surf-ui/native/scheme'
+import { useTabBarHeight } from '@coldsurfers/surf-ui/native/TabBar'
 import styled from '@emotion/native'
 import { type ReactNode, Suspense } from 'react'
 import type { ViewProps } from 'react-native'
@@ -96,7 +96,12 @@ export function AppScreen({
     offsetBottom === 'tabBar' ? tabBarHeight : offsetBottom === 'safeArea' ? bottomInset : 0
 
   return (
-    <Root $bg={scheme.bg} $top={offsetTop === 'safeArea' ? topInset : 0} $bottom={bottom} {...rest}>
+    <Root
+      $bg={scheme.bgBase}
+      $top={offsetTop === 'safeArea' ? topInset : 0}
+      $bottom={bottom}
+      {...rest}
+    >
       <Suspense
         fallback={
           fallback ?? (

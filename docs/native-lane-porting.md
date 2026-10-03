@@ -163,7 +163,7 @@ export interface ConcertCardProps extends ConcertCardBareProps {
 ## 소비 — 배럴이냐 서브패스냐
 
 **Metro 는 tree-shaking 을 하지 않는다.** 그래서 `./native` 배럴을 열면 아홉 개가 전부 딸려온다.
-아끼려면 소비처가 **`@coldsurfers/design-system/native/Button` 을 직접** 열어야 한다.
+아끼려면 소비처가 **`@coldsurfers/surf-ui/native/Button` 을 직접** 열어야 한다.
 
 근거(metro@0.87 실측):
 

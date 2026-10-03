@@ -1,3 +1,5 @@
+> ⚠️ **폐기됨 (2026-10-03).** `--cs-*` 원색층은 surf-ui 이관에서 지웠다. 지금 정본은 Figma `surf-ui / color` — [`surf-ui-migration.md`](surf-ui-migration.md). 이 문서는 기록으로 남긴다.
+
 # 팔레트 층 — `--cs-*` 를 DS 가 진다
 
 **문서만. 코드는 승인 후.** 정하는 것은 하나다 — *COLDSURF 원색이 어디 사는가.*

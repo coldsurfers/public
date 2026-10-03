@@ -1,7 +1,7 @@
 'use client'
-import { ConcertCard } from '@coldsurfers/design-system/cards'
-import { Button } from '@coldsurfers/design-system/primitives'
-import { sprinkles } from '@coldsurfers/design-system/sprinkles'
+import { ConcertCard } from '@coldsurfers/surf-ui/cards'
+import { Button } from '@coldsurfers/surf-ui/primitives'
+import { sprinkles } from '@coldsurfers/surf-ui/sprinkles'
 
 export default function Example() {
   return (
@@ -20,8 +20,8 @@ export default function Example() {
         meta="롤링홀 · 서울 · 7.24 금"
         footer={
           // `footer` 는 슬롯이라 서식을 소비처가 준다 — 그 서식은 `sprinkles` 에서 온다.
-          // 색을 `var(--muted)` 로 손으로 박으면 토큰이 바뀌는 날 이 자리가 안 따라온다.
-          <p className={sprinkles({ margin: '0', marginTop: '1', color: 'muted' })}>
+          // 색을 `var(--surf-text-secondary)` 로 손으로 박으면 토큰이 바뀌는 날 이 자리가 안 따라온다.
+          <p className={sprinkles({ margin: '0', marginTop: '1', color: 'textSecondary' })}>
             좋아한 아티스트와 같은 결
           </p>
         }
@@ -31,7 +31,7 @@ export default function Example() {
         initial="ㅁ"
         title="Mid-Air Thief"
         meta="7.26 일"
-        footer={<p className={sprinkles({ margin: '0', color: 'muted' })}>무신사 개러지</p>}
+        footer={<p className={sprinkles({ margin: '0', color: 'textSecondary' })}>무신사 개러지</p>}
         reserveTitleLines
       />
       {/* 같은 섀시, 비율만 다르다. 공연 포스터는 세로로 인쇄되므로 칸이 세로로 설 수 있는
@@ -42,7 +42,7 @@ export default function Example() {
         coverRatio="portrait"
         title="HYUKOH"
         meta="8.15 금"
-        footer={<p className={sprinkles({ margin: '0', color: 'muted' })}>올림픽홀</p>}
+        footer={<p className={sprinkles({ margin: '0', color: 'textSecondary' })}>올림픽홀</p>}
         reserveTitleLines
       />
       {/* `initial` 도 `footer` 도 없다 — 이 섀시는 포스터가 없으면 note 면만 남기고,
