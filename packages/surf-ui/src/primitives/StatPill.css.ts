@@ -7,7 +7,7 @@ const base = {
   alignItems: 'center',
   gap: 3,
   height: 19,
-  paddingInline: 7,
+  paddingInline: 8,
   borderRadius: vars.shape.radiusPill,
   fontFamily: vars.font.geist,
   fontSize: 11,

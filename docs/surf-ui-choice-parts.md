@@ -13,7 +13,7 @@
 | `ReactionBar` | `primitives` | `1028:400` | 같은 폭 버튼 N개 · 라벨 + Geist 개수 · 켠 것은 `selected/fill` · 하나만 켠다 | 고르기 시트 · 공연 상세 |
 | `KeyValueRow` | `primitives` | `1028:387` | 왼쪽 라벨 `text/secondary` · 오른쪽 값 굵게 · 높이 36 · 줄 사이 선 | 좌석 등급 · 공연 상세 좌석 |
 | `MediaRow` | `cards` | `1028:331` | 썸네일 52×70 r8 · 시각 키커 · 제목 굵게 · 메타 · 아래 `footer` · 오른쪽 `aside`. `selected` = sky 선 · `dimmed` = 흐림 | 판의 공연 줄 · 고르기 시트 머리 |
-| `InfoRow` | `cards` | `1028:461` | 썸네일/아이콘 40 · 이름 굵게 · 부제 · `›` · 줄 전체가 링크 | 공연장 줄(web-next `VenueRow`) · 판 쪽 공연장 |
+| `InfoRow` | `cards` | `1028:461` | 썸네일/아이콘 44 · 이름 굵게 · 부제 · `›` · 줄 전체가 링크 | 공연장 줄(web-next `VenueRow`) · 판 쪽 공연장 |
 | `LinkBand` | `cards` | `1028:431` · `1028:468` | 선 있는 띠 r12 · 왼쪽 `lead`(키커 또는 큰 Geist 숫자) + 한 줄 · 오른쪽 `›` | 「CHOICE #031 에 실림」 · 목록의 판 예고 |
 | `PosterThumb` | `cards` | `1028:217` | 포스터 r12 3:4 · 왼쪽 아래 `badge` 슬롯 · 없으면 `CoverBlock` | 포스터 벽 · 같은 판 선반 |
 | `PosterShelf` | `cards` | `1028:452` | 머리 키커 + `PosterThumb` 가로 줄(모바일 가로 스크롤) · 아래 제목 굵게 + 메타 | 공연 상세 「같은 판」 · 판 사이 홈 |
@@ -32,6 +32,7 @@
 | 8 | 웹만. native 짝은 앱 화면이 생길 때 |
 | 9 | 모바일 아래 · 데스크탑 가운데 전환은 `Modal` 의 새 자리 `placement="sheet"` 한 규칙이 든다 — `Sheet` 가 오버레이에 `@media` 를 덧대면 같은 레이어에서 소스 순서로 갈린다 |
 | 10 | `ReactionBar` 는 `fieldset` — 잠금은 자체 prop 없이 `disabled` 하나로 안의 버튼이 함께 꺼진다 |
+| 11 | 줄 전체가 링크인 cards(`MediaRow` · `InfoRow` · `LinkBand` · `PosterShelfItem`)의 `asChild` 는 자식에 클래스를 입히고 **내용까지 그 안에 넣는다**(`cards/as-child.tsx`). `Chip` 의 `asChild` 는 클래스만 입힌다 — 줄은 안에 그릴 것이 있어서 다르다 |
 
 ## 쓰는 모양
 
@@ -47,7 +48,7 @@
 
 - [x] S1 스펙 — 이 문서
 - [x] S2 primitives — `Sheet` · `StatPill` · `KeyValueRow` · `ReactionBar`
-- [ ] S3 cards — `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`
+- [x] S3 cards — `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`
 - [ ] S4 문서 페이지 · examples · changeset(minor)
 - [ ] S5 검증 다섯 · `styles.css` 크기 · docs 화면 확인
 - [ ] S6 커밋 · PR
