@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.33.1
+
+### Patch Changes
+
+- [#242](https://github.com/coldsurfers/public/pull/242) [`e622566`](https://github.com/coldsurfers/public/commit/e6225666b81b2623a4f7965ec0628ea301202bdb) Thanks [@yungblud](https://github.com/yungblud)! - Badge `solid` 높이를 19 로 박고(픽셀 변화 없음) 대문자 라벨을 세로 가운데에 세운다
+
 ## 0.33.0
 
 ### Minor Changes
