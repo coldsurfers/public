@@ -32,7 +32,7 @@
 | 8 | 웹만. native 짝은 앱 화면이 생길 때 |
 | 9 | 모바일 아래 · 데스크탑 가운데 전환은 `Modal` 의 새 자리 `placement="sheet"` 한 규칙이 든다 — `Sheet` 가 오버레이에 `@media` 를 덧대면 같은 레이어에서 소스 순서로 갈린다 |
 | 10 | `ReactionBar` 는 `fieldset` — 잠금은 자체 prop 없이 `disabled` 하나로 안의 버튼이 함께 꺼진다 |
-| 11 | 줄 전체가 링크인 cards(`MediaRow` · `InfoRow` · `LinkBand` · `PosterShelfItem`)의 `asChild` 는 자식에 클래스를 입히고 **내용까지 그 안에 넣는다**(`cards/as-child.tsx`). `Chip` 의 `asChild` 는 클래스만 입힌다 — 줄은 안에 그릴 것이 있어서 다르다 |
+| 11 | 줄 전체가 링크인 cards(`MediaRow` · `InfoRow` · `LinkBand` · `PosterShelfItem`)의 `asChild` 는 **자식의 글이 제목**이 되고 나머지가 그 둘레에 그려진다(`cards/as-child.tsx`) — `<InfoRow asChild meta=…><Link to=…>이름</Link></InfoRow>`. 빈 `<a />` 를 넘기면 스크린 리더와 `useAnchorContent` 린트가 막혀서 이 모양으로 갔다. `Chip` 의 `asChild` 는 클래스만 입힌다 |
 
 ## 쓰는 모양
 
@@ -49,7 +49,7 @@
 - [x] S1 스펙 — 이 문서
 - [x] S2 primitives — `Sheet` · `StatPill` · `KeyValueRow` · `ReactionBar`
 - [x] S3 cards — `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`
-- [ ] S4 문서 페이지 · examples · changeset(minor)
+- [x] S4 문서 페이지 · examples · changeset(minor)
 - [ ] S5 검증 다섯 · `styles.css` 크기 · docs 화면 확인
 - [ ] S6 커밋 · PR
 

@@ -22,7 +22,8 @@ export function PosterShelf({ kicker, className, children, ...rest }: PosterShel
 }
 
 export interface PosterShelfItemProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
-  title: ReactNode
+  /** `asChild` 면 비우고 자식 링크의 글로 준다. */
+  title?: ReactNode
   posterUrl?: string
   cover?: ReactNode
   /** 제목 아래 Geist 한 줄 — `토 17:00`. */
@@ -44,21 +45,21 @@ export function PosterShelfItem({
   ...rest
 }: PosterShelfItemProps) {
   const cls = cx(s.item, className)
-  const content = (
+  const layout = (titleNode: ReactNode) => (
     <>
       <PosterThumb posterUrl={posterUrl} cover={cover} badge={badge} />
-      <span className={s.itemTitle}>{title}</span>
+      <span className={s.itemTitle}>{titleNode}</span>
       {meta ? <span className={s.itemMeta}>{meta}</span> : null}
     </>
   )
 
   if (asChild) {
-    const el = renderAsChild(children, cls, content)
+    const el = renderAsChild(children, cls, layout)
     if (el) return el
   }
   return (
     <article className={cls} {...rest}>
-      {content}
+      {layout(title)}
     </article>
   )
 }

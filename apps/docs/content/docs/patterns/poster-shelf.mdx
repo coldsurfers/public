@@ -1,0 +1,22 @@
+---
+title: PosterShelf
+description: 키커 아래로 가로로 흐르는 포스터 선반.
+---
+
+```ts
+import { PosterShelf, PosterShelfItem } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="poster-shelf" />
+
+머리 키커 + 포스터 칸(110)이 가로로 흐릅니다(Figma `1028:452`). 넘치면 가로 스크롤 · 스냅입니다.
+
+칸은 `PosterShelfItem` 을 children 으로 넣고, 링크는 `asChild` 로 넘깁니다 — 자식 링크의 글이 칸 제목이 됩니다.
+
+## Props
+
+<Props of="PosterShelf" dir="cards" />
+
+### PosterShelfItem
+
+<Props of="PosterShelfItem" dir="cards" file="PosterShelf.tsx" />

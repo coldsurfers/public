@@ -8,7 +8,8 @@ import * as s from './LinkBand.css'
  * 다른 묶음으로 넘기는 한 줄. 링크는 `asChild`.
  */
 export interface LinkBandProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
-  title: ReactNode
+  /** `asChild` 면 비우고 자식 링크의 글로 준다. */
+  title?: ReactNode
   /** 제목 위 Geist 키커 — `CHOICE #031 에 실림`. */
   kicker?: ReactNode
   /** 왼쪽 큰 Geist 숫자 — `#031`. */
@@ -29,24 +30,24 @@ export function LinkBand({
   ...rest
 }: LinkBandProps) {
   const cls = cx(s.root, className)
-  const content = (
+  const layout = (titleNode: ReactNode) => (
     <>
       {lead ? <span className={s.lead}>{lead}</span> : null}
       <span className={s.text}>
         {kicker ? <span className={s.kicker}>{kicker}</span> : null}
-        <span className={s.title}>{title}</span>
+        <span className={s.title}>{titleNode}</span>
       </span>
       <span className={s.action}>{action}</span>
     </>
   )
 
   if (asChild) {
-    const el = renderAsChild(children, cls, content)
+    const el = renderAsChild(children, cls, layout)
     if (el) return el
   }
   return (
     <div className={cls} {...rest}>
-      {content}
+      {layout(title)}
     </div>
   )
 }

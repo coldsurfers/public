@@ -1,0 +1,18 @@
+---
+title: Sheet
+description: 모바일은 아래 시트, 데스크탑은 가운데 모달.
+---
+
+```ts
+import { Sheet } from '@coldsurfers/surf-ui/primitives'
+```
+
+<Preview name="sheet-basic" />
+
+판매처 · 날짜 · 고르기처럼 지면에 펴기 긴 것을 담습니다(Figma `1028:381`). 화면 폭이 1024 아래면 아래에 붙고(위만 r28 · 손잡이 · safe-area), 위면 가운데 모달(최대 560)이 됩니다.
+
+행동 · portal · 면 모드는 [`Modal`](/docs/components/modal) 을 그대로 씁니다. `head` 에는 「무엇을 고른 건지」 한 줄 — 보통 `MediaRow` 를 넣습니다.
+
+## Props
+
+<Props of="Sheet" />

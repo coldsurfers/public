@@ -8,7 +8,8 @@ import * as s from './InfoRow.css'
  * 링크는 `asChild` 로 — `<InfoRow asChild title="…"><Link to="…" /></InfoRow>`.
  */
 export interface InfoRowProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
-  title: ReactNode
+  /** `asChild` 면 비우고 자식 링크의 글로 준다. */
+  title?: ReactNode
   /** 이름 아래 한 줄 — `동대문구 · 다가오는 5`. */
   meta?: ReactNode
   /** 왼쪽 44 칸 — 이미지 · 아이콘 · 이니셜. 없으면 빈 색면. */
@@ -26,11 +27,11 @@ export function InfoRow({
   ...rest
 }: InfoRowProps) {
   const cls = cx(s.root, className)
-  const content = (
+  const layout = (titleNode: ReactNode) => (
     <>
       <CoverBlock className={s.thumb}>{thumb}</CoverBlock>
       <span className={s.text}>
-        <span className={s.title}>{title}</span>
+        <span className={s.title}>{titleNode}</span>
         {meta ? <span className={s.meta}>{meta}</span> : null}
       </span>
       <span className={s.chevron} aria-hidden>
@@ -40,12 +41,12 @@ export function InfoRow({
   )
 
   if (asChild) {
-    const el = renderAsChild(children, cls, content)
+    const el = renderAsChild(children, cls, layout)
     if (el) return el
   }
   return (
     <div className={cls} {...rest}>
-      {content}
+      {layout(title)}
     </div>
   )
 }
