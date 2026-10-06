@@ -51,7 +51,7 @@
 - [x] S3 cards — `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`
 - [x] S4 문서 페이지 · examples · changeset(minor)
 - [x] S5 검증 다섯 · `styles.css` 크기 · docs 화면 확인 — 80.0 → 84.7KB. 화면에서 고친 셋: 줄 높이를 소비처에서 물려받음(문서 본문 28px) → 루트마다 `lineHeight` 고정 · 시트 뒤 가림 없음 → `overlay` 60% · 손잡이가 inline 이라 0×0 → block
-- [ ] S6 커밋 · PR
+- [x] S6 커밋 · PR
 
 ## 범위
 
