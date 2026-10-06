@@ -147,6 +147,9 @@ const light: ColorScheme = {
 /** 면 이름 — `data-surface` 속성 값과 같다. */
 export type Surface = 'ink' | 'light'
 
+/** 페이지 면 모드 — `Surface` 둘에 `auto`(OS `prefers-color-scheme` 를 따름)를 더한 것. */
+export type SurfaceMode = Surface | 'auto'
+
 export const colorSchemes: Record<Surface, ColorScheme> = { ink, light }
 
 /**

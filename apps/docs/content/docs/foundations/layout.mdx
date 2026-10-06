@@ -50,6 +50,10 @@ gutter 는 [여백 스케일](/docs/foundations/spacing)의 `space-6`, tablet �
 `useSurfaceMode()` 로 `tone` prop 없이 면을 압니다. ink 페이지면 `<body>` 도 ink 가 됩니다 —
 짧은 페이지 아래 · 오버스크롤 바운스 색이 새지 않습니다.
 
+`mode="auto"` 는 OS 를 따릅니다 — OS 가 다크면 ink, 아니면 light. 토글은 없습니다. 서버는 OS 를
+모르므로 `useSurfaceMode()` 가 `auto` 를 돌려주는 자리에서는 색을 JS 로 가르지 말고 CSS
+(`@media (prefers-color-scheme: dark)`)로 가릅니다.
+
 배경 · 글자색을 칠하는 건 여전히 앱의 `className` 입니다 — 표면 정책은 값이 아니라 제품 결정입니다.
 
 ### `name` 은 마커일 뿐이다
