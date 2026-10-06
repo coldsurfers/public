@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.36.0
+
+### Minor Changes
+
+- [#248](https://github.com/coldsurfers/public/pull/248) [`b8f886e`](https://github.com/coldsurfers/public/commit/b8f886ebadcd9ea38f5442b1d87724a7ed34cf7e) Thanks [@yungblud](https://github.com/yungblud)! - ink 면 바닥·글자를 남색에서 무채색으로 바꾼다 — `bgBase`·`bgAlt` `[#101010](https://github.com/coldsurfers/public/issues/101010)`, `surfaceRaised`·`panelFill` `[#181818](https://github.com/coldsurfers/public/issues/181818)`, `textPrimary` `#f3f5f7`, `textSecondary` `#9a9a9a`, `overlay` `[#101010](https://github.com/coldsurfers/public/issues/101010)`. 파랑은 키커·주 행동·번짐에만 남는다.
+
 ## 0.35.0
 
 ### Minor Changes
