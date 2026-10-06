@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 
-/** 반응 줄 — Figma `1028:400`. 같은 폭 버튼 N개, 켠 것 하나만 `selected` 면. */
+/** 반응 줄 — Figma `1028:400`. 같은 폭 버튼 N개, 켠 것은 `selected` 면. */
 export const bar = style(
   inComponentsLayer({ display: 'flex', gap: 8, minWidth: 0, margin: 0, padding: 0, border: 0 }),
 )

@@ -35,11 +35,14 @@ export const modalPlacement = styleVariants(
     center: { alignItems: 'center', justifyContent: 'center', padding: 16 },
     top: { alignItems: 'flex-start', justifyContent: 'center', padding: 16 },
     bottom: { alignItems: 'flex-end', justifyContent: 'center', padding: 0 },
-    /** `Sheet` 의 자리 — 모바일은 `bottom`, 데스크탑은 `center`. 한 규칙이 두 폭을 다 든다(한 속성은 한 레이어). */
+    /**
+     * `Sheet` 의 자리 — 모바일은 `bottom`, 데스크탑은 `center`. 한 규칙이 두 폭을 다 든다(한 속성은 한 레이어).
+     * 모바일 위 56 은 패널이 화면을 다 덮지 않게 남기는 어두운 띠 — 눌러서 닫을 자리다.
+     */
     sheet: {
       alignItems: 'flex-end',
       justifyContent: 'center',
-      padding: 0,
+      padding: '56px 0 0',
       '@media': { [media.desktop]: { alignItems: 'center', padding: 16 } },
     },
   },
