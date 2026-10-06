@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import { badge, badgeDot } from './Badge.css'
+import { badge, badgeDot, badgeLabel } from './Badge.css'
 import { cx } from './cx'
 
 /**
@@ -22,7 +22,7 @@ export function Badge({
   return (
     <span className={cx(badge({ variant }), className)} {...rest}>
       {dot ? <span className={badgeDot} /> : null}
-      {children}
+      <span className={badgeLabel[variant]}>{children}</span>
     </span>
   )
 }
