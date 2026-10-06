@@ -3,6 +3,15 @@ import { MediaRow } from '@coldsurfers/surf-ui/cards'
 import { Button, KeyValueRow, Sheet } from '@coldsurfers/surf-ui/primitives'
 import { useRef, useState } from 'react'
 
+const TIERS = [
+  ['VIP석', '189,000원'],
+  ['R석', '164,000원'],
+  ['S석', '134,000원'],
+  ['A석', '104,000원'],
+  ['B석', '79,000원'],
+  ['시야제한석', '59,000원'],
+]
+
 export default function Example() {
   const [open, setOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -25,14 +34,17 @@ export default function Example() {
             meta="경희대 평화의전당"
           />
         }
+        footer={
+          <Button variant="accent" onClick={() => setOpen(false)}>
+            놀유니버스에서 예매 ↗
+          </Button>
+        }
       >
         <div>
-          <KeyValueRow label="VIP석" value="189,000원" />
-          <KeyValueRow label="R석" value="164,000원" />
+          {TIERS.map(([label, value]) => (
+            <KeyValueRow key={label} label={label} value={value} />
+          ))}
         </div>
-        <Button variant="accent" onClick={() => setOpen(false)}>
-          놀유니버스에서 예매 ↗
-        </Button>
       </Sheet>
     </>
   )

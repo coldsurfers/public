@@ -23,7 +23,13 @@ export { KeyValueRow, type KeyValueRowProps } from './KeyValueRow'
 export { Modal, type ModalPlacement, type ModalProps } from './Modal'
 export { Note, type NoteProps, type NoteTone } from './Note'
 export { POPOVER_MENU_CLS, Popover, type PopoverProps } from './Popover'
-export { ReactionBar, type ReactionBarProps, type ReactionItem } from './ReactionBar'
+export {
+  ReactionBar,
+  type ReactionBarMultipleProps,
+  type ReactionBarProps,
+  type ReactionBarSingleProps,
+  type ReactionItem,
+} from './ReactionBar'
 export { RowAction, type RowActionProps } from './RowAction'
 export { Select, type SelectOption, type SelectProps } from './Select'
 export { Sheet, type SheetProps } from './Sheet'
