@@ -20,22 +20,22 @@
 
 | 역할 | ink | light | 옛 키 |
 | --- | --- | --- | --- |
-| `bg/base` · `bg/alt` | `#0a0f1a` · `#0b132e` | `#ffffff` · `#f5f7fa` | `bg` |
-| `surface/raised` | `#131a2d` | `#ffffff` | `surface` |
-| `panel/fill` · `panel/line` | `#131a2d` · 흰 8% | `#eef3ff` · 투명 | `surface2` · `codeBg` |
+| `bg/base` · `bg/alt` | `#101010` · `#101010` | `#ffffff` · `#f5f7fa` | `bg` |
+| `surface/raised` | `#181818` | `#ffffff` | `surface` |
+| `panel/fill` · `panel/line` | `#181818` · 흰 8% | `#eef3ff` · 투명 | `surface2` · `codeBg` |
 | `row/fill` | 흰 5% | `#ffffff` | — |
 | `line/divider` | 흰 8% | `#d7dee7` | `border` · `borderSoft` |
 | `state/hover` · `state/pressed` | 흰 6% · 10% | 잉크 6% · 8% | `surfaceHover` · `surfaceGhost*` · `surfaceActive` |
-| `text/primary` | `#ffffff` | `#0a0f1a` | `text` · `strong` · `body` · `heading` · `link` |
-| `text/secondary` | `#99a3b8` | `#5b6472` | `muted` · `blockquote` |
-| `text/tertiary` | `#99a3b8` 60% | `#9ca3af` | `subtle` · `faint` |
+| `text/primary` | `#f3f5f7` | `#0a0f1a` | `text` · `strong` · `body` · `heading` · `link` |
+| `text/secondary` | `#9a9a9a` | `#5b6472` | `muted` · `blockquote` |
+| `text/tertiary` | `#9a9a9a` 60% | `#9ca3af` | `subtle` · `faint` |
 | `text/on-media` | 흰 | 흰 | `paper.warm` · `palette.white` |
 | `kicker` | `#9ec2ff` | `#2563ff` | `ink.accent` · `codeFg` |
 | `action/tint-fill` · `action/tint-text` | 키커 14% · 키커 | 키커 14% · 키커 | — |
 | `action/primary` · `action/primary-hover` | `#2563ff` · `#1d4fd8` | 같음 | `accent` · `linkHover` · `accentHover` |
 | `action/on-primary` | 흰 | 흰 | — |
 | `action/primary-top` · `-bottom` · `-line` · `-shadow` | `#3a6dff` → `#1a3a9e` · sky 25% · 파랑 25% | 같음 | — (2026-10-03 추가 · 주 버튼 그라데이션) |
-| `glow` · `overlay` | 파랑 28% · `#0a0f1a` | 같음 | `palette.deepNight` |
+| `glow` · `overlay` | 파랑 28% · `#101010` | 파랑 28% · `#0a0f1a` | `palette.deepNight` |
 | `status/{success,warning,danger}` + `-bg` | 밝은 셋 + 14% | 진한 셋 + 14% | `status*` |
 
 ## layout · shape

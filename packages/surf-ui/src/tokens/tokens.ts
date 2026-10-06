@@ -74,20 +74,20 @@ export type ColorScheme = {
   statusDangerBg: string
 }
 
-/** 잉크 면 — 히어로 · 상세 · 무대. */
+/** 잉크 면 — 히어로 · 상세 · 무대. 바닥·글자는 무채색이고 파랑은 강조(키커·주 행동·번짐)에만 쓴다. */
 const ink: ColorScheme = {
-  bgBase: '#0a0f1a',
-  bgAlt: '#0b132e',
-  surfaceRaised: '#131a2d',
-  panelFill: '#131a2d',
+  bgBase: '#101010',
+  bgAlt: '#101010',
+  surfaceRaised: '#181818',
+  panelFill: '#181818',
   panelLine: 'rgba(255, 255, 255, 0.08)',
   rowFill: 'rgba(255, 255, 255, 0.05)',
   lineDivider: 'rgba(255, 255, 255, 0.08)',
   stateHover: 'rgba(255, 255, 255, 0.06)',
   statePressed: 'rgba(255, 255, 255, 0.1)',
-  textPrimary: '#ffffff',
-  textSecondary: '#99a3b8',
-  textTertiary: 'rgba(153, 163, 184, 0.6)',
+  textPrimary: '#f3f5f7',
+  textSecondary: '#9a9a9a',
+  textTertiary: 'rgba(154, 154, 154, 0.6)',
   textOnMedia: '#ffffff',
   kicker: '#9ec2ff',
   actionTintFill: 'rgba(158, 194, 255, 0.14)',
@@ -100,7 +100,7 @@ const ink: ColorScheme = {
   actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
   actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
   glow: 'rgba(37, 99, 255, 0.28)',
-  overlay: '#0a0f1a',
+  overlay: '#101010',
   statusSuccess: '#5fd08a',
   statusSuccessBg: 'rgba(95, 208, 138, 0.14)',
   statusWarning: '#f0b45a',
