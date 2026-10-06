@@ -17,7 +17,7 @@
 export type Hex = string
 
 /**
- * 색 역할 — Figma `surf-ui / color` 31 변수와 1:1. 키는 Figma 이름의 camelCase 다.
+ * 색 역할 — Figma `surf-ui / color` 33 변수와 1:1. 키는 Figma 이름의 camelCase 다.
  *
  * 스킴은 **면 단위** 두 벌이다: 기본은 `light`, `data-surface="ink"` 를 단 요소 안은 `ink`.
  * 한 페이지 안에서 섞는다(홈: 히어로 ink → 아래 묶음 light). OS 다크모드와는 무관하다.
@@ -62,6 +62,9 @@ export type ColorScheme = {
   actionPrimaryLine: string
   /** 주 버튼 그림자 — y8 · blur 24 */
   actionPrimaryShadow: string
+  /** 켜진 칩 · 알약 면. light 는 주 행동 파랑, ink 는 무채 반전 — 잉크에서 파랑은 주 행동 하나에만 남긴다 */
+  selectedFill: string
+  selectedText: string
   /** 포스터 뒤 번짐 */
   glow: string
   /** 스크림 · 포스터 위 그라데이션. 알파를 먹여 쓴다 */
@@ -99,6 +102,8 @@ const ink: ColorScheme = {
   actionPrimaryBottom: '#1a3a9e',
   actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
   actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
+  selectedFill: '#f3f5f7',
+  selectedText: '#101010',
   glow: 'rgba(37, 99, 255, 0.28)',
   overlay: '#101010',
   statusSuccess: '#5fd08a',
@@ -134,6 +139,8 @@ const light: ColorScheme = {
   actionPrimaryBottom: '#1a3a9e',
   actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
   actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
+  selectedFill: '#2563ff',
+  selectedText: '#ffffff',
   glow: 'rgba(37, 99, 255, 0.28)',
   overlay: '#0a0f1a',
   statusSuccess: '#1f7a3a',
