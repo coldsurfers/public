@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.35.0
+
+### Minor Changes
+
+- [#246](https://github.com/coldsurfers/public/pull/246) [`c347ddc`](https://github.com/coldsurfers/public/commit/c347ddc852c3bba256d8ce61c14a5a940a995de4) Thanks [@yungblud](https://github.com/yungblud)! - `Page` 에 `mode="auto"` 추가 — OS `prefers-color-scheme` 가 다크면 ink, 아니면 light. `SurfaceMode` 타입 공개.
+
 ## 0.34.0
 
 ### Minor Changes
