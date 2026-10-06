@@ -5,7 +5,8 @@ export default function Example() {
   return (
     // 실제 표면에선 min-height 가 100vh 다 — 미리보기라 style 로 낮춘다.
     <Page
-      surface="docs"
+      mode="light"
+      name="docs"
       style={{ minHeight: 220, width: '100%', border: '1px dashed var(--surf-line-divider)' }}
     >
       <div style={{ padding: 12, borderBottom: '1px dashed var(--surf-line-divider)' }}>

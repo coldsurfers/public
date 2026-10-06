@@ -9,6 +9,7 @@ import {
   modalPanel,
   modalPlacement,
 } from './Modal.css'
+import { useSurfaceMode } from './surface-mode'
 import { useDialogBehavior } from './useDialogBehavior'
 
 export type { ModalPlacement }
@@ -25,9 +26,9 @@ export type { ModalPlacement }
  * 의 공연장 레일(sticky)에서 같은 묶음의 티켓들이 모달 위로 올라왔다. portal 은 소비처가
  * 어디에 놓이든 이 함정을 없앤다 — `Popover`·`ImageLightbox` 와 같은 자리.
  *
- * 대신 warm-paper 서브트리가 인라인으로 주입하는 표면 오버라이드는 **못 받는다**. 팔레트는
- * 문제없다 — 스킴이 paper 하나뿐이라(#298) `:root` 가 곧 light 다. 서브트리가 얹는 건
- * `--bg: paper.warm` 같은 표면 차이뿐이므로, 그 바닥색이 필요하면 소비처가 직접 준다.
+ * 대신 포털은 DOM 상 `Page` 밖이라 면 스코프를 못 받는다 — 그래서 오버레이가 `useSurfaceMode()` 를
+ * `data-surface` 로 다시 단다. ink 페이지의 시트가 소비처의 손 없이 ink 로 뜬다. 서브트리에 인라인으로
+ * 얹은 표면 오버라이드(`style`)는 여전히 못 받는다 — 필요하면 소비처가 `overlayClassName` 으로 준다.
  *
  * 전면 시트처럼 백드롭/패널 구조가 아닌 표면은 이 컴포넌트 대신 훅만 쓴다.
  */
@@ -69,6 +70,7 @@ export function Modal({
   children,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
+  const mode = useSurfaceMode()
   useDialogBehavior({ open, onClose, ref: dialogRef, triggerRef, dismissible })
 
   if (!open || typeof document === 'undefined') return null
@@ -80,6 +82,7 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={label}
+      data-surface={mode}
       className={cx(modalOverlay, modalPlacement[placement], overlayClassName)}
       onClick={() => {
         if (dismissible) onClose()

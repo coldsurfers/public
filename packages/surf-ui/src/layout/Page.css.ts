@@ -1,5 +1,8 @@
-import { style } from '@vanilla-extract/css'
+import { assignVars, globalStyle, style } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
+import { vars } from '../css/contract.css'
+import { tokensLayer } from '../css/layers'
+import { colorSchemes } from '../tokens/tokens'
 
 /**
  * 표면 루트 — 화면을 채우는 세로 스택.
@@ -24,3 +27,15 @@ export const content = style(
     flex: 1,
   }),
 )
+
+/**
+ * ink 페이지면 `<body>` 도 ink 스코프를 받는다. `<body>` 는 React 트리 밖이라 `Page` 가 못 칠하는데,
+ * 비워 두면 짧은 페이지 아래·오버스크롤 바운스·iOS 26 상단 바(캔버스 색)가 light 로 샌다.
+ * 스코프만 걸면 reset 의 `background: bgBase` 가 저절로 ink 값을 읽는다.
+ * 안쪽 `[data-surface="ink"]` 구간(히어로 한 칸)이 아니라 **`Page` 루트**일 때만이다.
+ */
+globalStyle(`body:has(${page}[data-surface="ink"])`, {
+  '@layer': {
+    [tokensLayer]: { colorScheme: 'dark', vars: assignVars(vars.color, colorSchemes.ink) },
+  },
+})
