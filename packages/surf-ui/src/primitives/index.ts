@@ -31,6 +31,7 @@ export {
   type SkeletonTone,
 } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
+export { useSurfaceMode } from './surface-mode'
 export {
   Text,
   type TextProps,

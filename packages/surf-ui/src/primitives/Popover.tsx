@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { cx } from './cx'
 import { popoverAnchor, popoverMenu } from './Popover.css'
+import { useSurfaceMode } from './surface-mode'
 
 /**
  * 트리거 + 팝오버 뼈대 — `Select`(버튼+옵션 listbox)·`BSideGroupChip`(Chip+링크 menu)이 공유하던
@@ -47,6 +48,7 @@ export function Popover({
   className,
   menuClassName,
 }: PopoverProps) {
+  const mode = useSurfaceMode()
   const [open, setOpen] = useState(false)
   const [box, setBox] = useState<{
     top: number
@@ -124,6 +126,7 @@ export function Popover({
             <div
               ref={menuRef}
               role={role}
+              data-surface={mode}
               style={{
                 top: box.top,
                 left: box.left,
