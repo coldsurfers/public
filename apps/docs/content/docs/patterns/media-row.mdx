@@ -1,0 +1,20 @@
+---
+title: MediaRow
+description: 포스터 썸네일이 달린 공연 한 줄.
+---
+
+```ts
+import { MediaRow } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="media-row" />
+
+[`PickRow`](/docs/patterns/pick-card) 에 썸네일을 더한 줄입니다(Figma `1028:331`). 시각 키커 · 제목 · 장소 · 아래 줄(`footer`) · 오른쪽 칸(`aside`)이 섭니다.
+
+고른 줄은 `selected`, 고른 뒤 나머지는 `dimmed` 입니다. 포스터가 없으면 `cover`(보통 이니셜)가 색면 위에 섭니다.
+
+줄을 눌러 시트를 열거나 이동하려면 `asChild` 로 `button` · 라우터 `Link` 를 넘깁니다 — **그 자식의 글이 제목**이 되고 나머지가 둘레에 그려집니다.
+
+## Props
+
+<Props of="MediaRow" dir="cards" />

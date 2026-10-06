@@ -19,11 +19,14 @@ export { cx } from './cx'
 export { EmptyState, type EmptyStateProps } from './EmptyState'
 export { Eyebrow, type EyebrowProps } from './Eyebrow'
 export { Field, type FieldProps } from './Field'
+export { KeyValueRow, type KeyValueRowProps } from './KeyValueRow'
 export { Modal, type ModalPlacement, type ModalProps } from './Modal'
 export { Note, type NoteProps, type NoteTone } from './Note'
 export { POPOVER_MENU_CLS, Popover, type PopoverProps } from './Popover'
+export { ReactionBar, type ReactionBarProps, type ReactionItem } from './ReactionBar'
 export { RowAction, type RowActionProps } from './RowAction'
 export { Select, type SelectOption, type SelectProps } from './Select'
+export { Sheet, type SheetProps } from './Sheet'
 export {
   Skeleton,
   type SkeletonProps,
@@ -31,6 +34,7 @@ export {
   type SkeletonTone,
 } from './Skeleton'
 export { Spinner, type SpinnerProps } from './Spinner'
+export { StatPill, type StatPillProps, type StatPillTone } from './StatPill'
 export { useSurfaceMode } from './surface-mode'
 export {
   Text,

@@ -1,0 +1,18 @@
+---
+title: InfoRow
+description: 썸네일 · 이름 · 부제 · › 한 줄.
+---
+
+```ts
+import { InfoRow } from '@coldsurfers/surf-ui/cards'
+```
+
+<Preview name="info-row" />
+
+공연장 · 링크처럼 줄 전체가 한 곳으로 갑니다(Figma `1028:461`). 왼쪽 44 칸(`thumb`)은 이미지 · 아이콘 · 이니셜 무엇이든 받습니다.
+
+링크는 `asChild` 로 — 자식 `<a>` · `Link` 의 글이 이름(제목)이 되고, 썸네일 · 부제 · `›` 가 그 둘레에 그려집니다.
+
+## Props
+
+<Props of="InfoRow" dir="cards" />

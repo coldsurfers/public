@@ -1,0 +1,18 @@
+---
+title: ReactionBar
+description: 하나만 켜는 반응 버튼 줄.
+---
+
+```ts
+import { ReactionBar } from '@coldsurfers/surf-ui/primitives'
+```
+
+<Preview name="reaction-bar-basic" />
+
+같은 폭 버튼 N개에 라벨과 개수를 붙입니다(Figma `1028:400`). 하나만 켜지고, 켠 것을 다시 누르면 `onChange(null)` 입니다.
+
+숫자를 올리는 일(낙관적 갱신)은 소비처가 `items` 로 넘깁니다. `fieldset` 이라 `disabled` 하나로 안의 버튼이 함께 꺼지고, 이름은 `aria-label` 로 붙입니다.
+
+## Props
+
+<Props of="ReactionBar" />

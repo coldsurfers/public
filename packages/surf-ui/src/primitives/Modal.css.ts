@@ -1,6 +1,7 @@
 import { style, styleVariants } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { media } from '../css/media'
 
 /**
  * 백드롭 + 패널. 정렬·배경·폭은 소비처가 `overlayClassName`/`panelClassName` 으로 정한다 —
@@ -34,6 +35,13 @@ export const modalPlacement = styleVariants(
     center: { alignItems: 'center', justifyContent: 'center', padding: 16 },
     top: { alignItems: 'flex-start', justifyContent: 'center', padding: 16 },
     bottom: { alignItems: 'flex-end', justifyContent: 'center', padding: 0 },
+    /** `Sheet` 의 자리 — 모바일은 `bottom`, 데스크탑은 `center`. 한 규칙이 두 폭을 다 든다(한 속성은 한 레이어). */
+    sheet: {
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      padding: 0,
+      '@media': { [media.desktop]: { alignItems: 'center', padding: 16 } },
+    },
   },
   inComponentsLayer,
 )

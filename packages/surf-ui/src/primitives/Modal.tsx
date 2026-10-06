@@ -47,6 +47,7 @@ export interface ModalProps {
    *   center   가운데 (기본) — 확인 다이얼로그
    *   top      위쪽 — 커맨드팔레트. 오프셋(`margin-top`)은 소비처가 준다
    *   bottom   아래 붙는 시트 — 오버레이 여백이 0이라 화면 모서리까지 닿는다
+   *   sheet    모바일 `bottom` · 데스크탑 `center` — `Sheet` 가 쓴다
    *
    * `overlayClassName` 보다 **앞에** 붙으므로 소비처가 여전히 덮을 수 있다.
    */
