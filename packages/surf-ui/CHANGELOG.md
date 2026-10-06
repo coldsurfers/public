@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.37.0
+
+### Minor Changes
+
+- [#250](https://github.com/coldsurfers/public/pull/250) [`dcd7385`](https://github.com/coldsurfers/public/commit/dcd73859ad4a1fc3bc244458f4d7c56143592988) Thanks [@yungblud](https://github.com/yungblud)! - 색 역할 `selectedFill` · `selectedText` 추가 — 켜진 칩 · 알약 면. light 는 주 행동 파랑(`#2563ff` · 흰 글자), ink 는 무채 반전(`#f3f5f7` · `[#101010](https://github.com/coldsurfers/public/issues/101010)`)이다.
+
 ## 0.36.0
 
 ### Minor Changes
