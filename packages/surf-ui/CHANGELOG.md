@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.34.0
+
+### Minor Changes
+
+- [#244](https://github.com/coldsurfers/public/pull/244) [`022328f`](https://github.com/coldsurfers/public/commit/022328fc58c37f176ddf9b5925e2cfbeaa6c733c) Thanks [@yungblud](https://github.com/yungblud)! - `Page` 에 `mode: 'ink' | 'light'`(필수) — `data-surface` 로 나가고, `useSurfaceMode()` 로 내려가 `Modal` · `Popover` 오버레이가 같은 면으로 뜬다. ink 페이지면 `<body>` 도 ink 스코프를 받는다. 화면 이름은 `surface` 대신 `name`(`data-page`). ⚠️ `surface` prop 제거 — 깨지는 변경.
+
 ## 0.33.1
 
 ### Patch Changes
