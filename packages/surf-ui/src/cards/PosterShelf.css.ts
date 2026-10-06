@@ -4,7 +4,13 @@ import { vars } from '../css/contract.css'
 
 /** 포스터 선반 — Figma `1028:452`. 머리 키커 + 가로로 흐르는 칸(110). 넘치면 가로 스크롤 · 스냅. */
 export const root = style(
-  inComponentsLayer({ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }),
+  inComponentsLayer({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10,
+    minWidth: 0,
+    lineHeight: 1.3,
+  }),
 )
 
 export const kicker = style(

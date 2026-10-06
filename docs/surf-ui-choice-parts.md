@@ -27,7 +27,7 @@
 | 3 | 링크는 `asChild` — 라우터를 물지 않는다(`Chip` · `RowAction` 과 같은 규율) |
 | 4 | 상태는 boolean props(`selected` · `dimmed` · `active`) → 안에서 `data-*`. 소비처가 className 으로 상태를 흉내 내지 않게 |
 | 5 | 숫자 · 상태 타입은 도메인을 모른다 — `StatPill` 은 `icon` + `value`, `ReactionBar` 는 `items: { id, label, count }[]` + `value` + `onChange` |
-| 6 | `Sheet` 는 `Modal` 을 감싼다 — 행동(`useDialogBehavior`) · portal · 표면 모드 재부착은 그대로 물려받고, 패널 모양만 더한다 |
+| 6 | `Sheet` 는 `Modal` 을 감싼다 — 행동(`useDialogBehavior`) · portal · 표면 모드 재부착은 그대로 물려받고, 뒤 가림(`overlay` 60%)과 패널 모양만 더한다 |
 | 7 | JSDoc 첫 줄에 Figma node 를 적는다 — 시안 ↔ 코드 왕복 |
 | 8 | 웹만. native 짝은 앱 화면이 생길 때 |
 | 9 | 모바일 아래 · 데스크탑 가운데 전환은 `Modal` 의 새 자리 `placement="sheet"` 한 규칙이 든다 — `Sheet` 가 오버레이에 `@media` 를 덧대면 같은 레이어에서 소스 순서로 갈린다 |
@@ -50,7 +50,7 @@
 - [x] S2 primitives — `Sheet` · `StatPill` · `KeyValueRow` · `ReactionBar`
 - [x] S3 cards — `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`
 - [x] S4 문서 페이지 · examples · changeset(minor)
-- [ ] S5 검증 다섯 · `styles.css` 크기 · docs 화면 확인
+- [x] S5 검증 다섯 · `styles.css` 크기 · docs 화면 확인 — 80.0 → 84.7KB. 화면에서 고친 셋: 줄 높이를 소비처에서 물려받음(문서 본문 28px) → 루트마다 `lineHeight` 고정 · 시트 뒤 가림 없음 → `overlay` 60% · 손잡이가 inline 이라 0×0 → block
 - [ ] S6 커밋 · PR
 
 ## 범위

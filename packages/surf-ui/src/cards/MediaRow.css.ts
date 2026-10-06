@@ -16,6 +16,7 @@ export const root = style(
     boxShadow: 'inset 0 0 0 1px transparent',
     color: vars.color.textPrimary,
     fontFamily: vars.font.sans,
+    lineHeight: 1.3,
     textAlign: 'left',
     textDecoration: 'none',
     transition: 'background 150ms, box-shadow 150ms, opacity 150ms',
@@ -79,7 +80,17 @@ export const meta = style(
 )
 
 export const footer = style(
-  inComponentsLayer({ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, marginTop: 2 }),
+  inComponentsLayer({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    minWidth: 0,
+    marginTop: 2,
+    fontFamily: vars.font.geist,
+    fontSize: 13,
+    fontWeight: vars.fontWeight.bold,
+    letterSpacing: '-0.02em',
+  }),
 )
 
 export const aside = style(

@@ -20,8 +20,10 @@ export const item = style(
     border: 0,
     borderRadius: vars.shape.radiusPill,
     background: vars.color.rowFill,
+    boxShadow: `inset 0 0 0 1px ${vars.color.lineDivider}`,
     color: vars.color.textPrimary,
     fontFamily: vars.font.sans,
+    lineHeight: 1,
     fontSize: 13,
     fontWeight: vars.fontWeight.bold,
     whiteSpace: 'nowrap',
@@ -30,6 +32,7 @@ export const item = style(
     selectors: {
       '&[aria-pressed="true"]': {
         background: vars.color.selectedFill,
+        boxShadow: 'none',
         color: vars.color.selectedText,
       },
       '&:disabled': { cursor: 'default', opacity: 0.5 },

@@ -1,6 +1,6 @@
 'use client'
 import { MediaRow } from '@coldsurfers/surf-ui/cards'
-import { Badge, StatPill } from '@coldsurfers/surf-ui/primitives'
+import { StatPill } from '@coldsurfers/surf-ui/primitives'
 
 export default function Example() {
   return (
@@ -24,8 +24,8 @@ export default function Example() {
         meta="파주 · 아시아출판문화정보센터"
         footer={
           <>
-            <strong>88,000원</strong>
-            <Badge variant="soft">2TM</Badge>
+            88,000원
+            <StatPill value="2TM" />
           </>
         }
         aside={
@@ -41,6 +41,12 @@ export default function Example() {
         kicker="일 10.11 · 14:00"
         title="인터스텔라 필름콘서트"
         meta="경희대 평화의전당"
+        footer={
+          <>
+            69,000~원
+            <StatPill value="놀유니버스 외 2" />
+          </>
+        }
         aside={<StatPill icon="👁" value="17" />}
       />
       <MediaRow

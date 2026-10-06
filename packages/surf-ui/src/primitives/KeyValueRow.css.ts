@@ -12,6 +12,7 @@ export const row = style(
     minHeight: 36,
     paddingInline: 12,
     fontFamily: vars.font.sans,
+    lineHeight: 1.3,
     fontSize: vars.shape.typeBody,
     selectors: { '& + &': { borderTop: `1px solid ${vars.color.lineDivider}` } },
   }),

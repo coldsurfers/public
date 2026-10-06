@@ -16,6 +16,7 @@ export const root = style(
     boxShadow: `inset 0 0 0 1px ${vars.color.kicker}`,
     color: vars.color.textPrimary,
     fontFamily: vars.font.sans,
+    lineHeight: 1.3,
     textAlign: 'left',
     textDecoration: 'none',
     selectors: { 'button&, a&': { cursor: 'pointer' } },
