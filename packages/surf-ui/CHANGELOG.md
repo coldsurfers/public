@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.38.0
+
+### Minor Changes
+
+- [#252](https://github.com/coldsurfers/public/pull/252) [`2c080e3`](https://github.com/coldsurfers/public/commit/2c080e3de6b963b6a6ff0b2091f18a5a15349801) Thanks [@yungblud](https://github.com/yungblud)! - 초이스 부품 아홉 추가 — primitives `Sheet` · `StatPill` · `KeyValueRow` · `ReactionBar`, cards `MediaRow` · `InfoRow` · `LinkBand` · `PosterThumb` · `PosterShelf`(`PosterShelfItem`). `Modal` 에 `placement="sheet"`(모바일 아래 · 데스크탑 가운데) 자리를 더한다.
+
 ## 0.37.0
 
 ### Minor Changes
