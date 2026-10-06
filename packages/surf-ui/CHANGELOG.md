@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.39.0
+
+### Minor Changes
+
+- [#254](https://github.com/coldsurfers/public/pull/254) [`ca0bcd0`](https://github.com/coldsurfers/public/commit/ca0bcd09f296903cfbb1d420e28899d3adb5fa08) Thanks [@yungblud](https://github.com/yungblud)! - `Sheet` 를 머리(`head`) · 내용(`children`, 스크롤) · 아래(`footer`) 세 칸으로 나누고, 모바일 머리 끌어내려 닫기 · 입퇴장 애니메이션을 더한다. 모바일은 위 56 을 어두운 띠로 남긴다. `ReactionBar` 에 `multiple` 을 더한다 — `value: string[]` · `onChange(id, on)`.
+
 ## 0.38.0
 
 ### Minor Changes
