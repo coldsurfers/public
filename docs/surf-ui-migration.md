@@ -16,7 +16,7 @@
 | 5 | 이번 PR 은 **토큰만** — 이름 변경 + color · layout · shape + 기존 컴포넌트를 새 이름에 맞춤. 새 부품은 다음 PR |
 | 6 | `cover` · `nodeTone` 은 남긴다 — 테마가 아니라 데이터로 고르는 색이다 |
 
-## 색 — Figma 31 역할 (`surf-ui / color`)
+## 색 — Figma 33 역할 (`surf-ui / color`)
 
 | 역할 | ink | light | 옛 키 |
 | --- | --- | --- | --- |
@@ -35,6 +35,7 @@
 | `action/primary` · `action/primary-hover` | `#2563ff` · `#1d4fd8` | 같음 | `accent` · `linkHover` · `accentHover` |
 | `action/on-primary` | 흰 | 흰 | — |
 | `action/primary-top` · `-bottom` · `-line` · `-shadow` | `#3a6dff` → `#1a3a9e` · sky 25% · 파랑 25% | 같음 | — (2026-10-03 추가 · 주 버튼 그라데이션) |
+| `selected/fill` · `selected/text` | `#f3f5f7` · `#101010` | `#2563ff` · 흰 | — (2026-10-06 추가 · 켜진 칩·알약) |
 | `glow` · `overlay` | 파랑 28% · `#101010` | 파랑 28% · `#0a0f1a` | `palette.deepNight` |
 | `status/{success,warning,danger}` + `-bg` | 밝은 셋 + 14% | 진한 셋 + 14% | `status*` |
 
