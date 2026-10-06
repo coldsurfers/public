@@ -1,18 +1,19 @@
 import type { HTMLAttributes } from 'react'
 import { cx } from '../primitives'
 import { SurfaceModeContext } from '../primitives/surface-mode'
-import type { Surface } from '../tokens/tokens'
+import type { SurfaceMode } from '../tokens/tokens'
 import { content, page } from './Page.css'
 
 export interface PageProps extends HTMLAttributes<HTMLDivElement> {
   /**
-   * 이 페이지의 면 — `ink` · `light`. **필수다.** 화면마다 한 번 명시한다.
+   * 이 페이지의 면 — `ink` · `light` · `auto`. **필수다.** 화면마다 한 번 명시한다.
+   * `auto` 는 OS 가 다크면 ink, 아니면 light 다(`prefers-color-scheme`). 토글은 없다.
    *
    * `data-surface` 로 나가 그 안의 색 토큰을 해당 면 값으로 바꾸고(`css/theme.css.ts`), context 로 내려가
    * 포털 오버레이(`Modal` · `Popover`)와 `useSurfaceMode()` 를 읽는 부품이 같은 면을 받는다.
    * ink 면이면 `<body>` 도 ink 스코프를 받는다(`Page.css.ts`) — 짧은 페이지 아래·오버스크롤 바운스 색.
    */
-  mode: Surface
+  mode: SurfaceMode
   /**
    * 화면 이름 — `data-page` 로 나가는 앱의 표식이다. DS 는 해석하지 않는다.
    *

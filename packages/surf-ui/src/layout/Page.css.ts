@@ -33,9 +33,23 @@ export const content = style(
  * 비워 두면 짧은 페이지 아래·오버스크롤 바운스·iOS 26 상단 바(캔버스 색)가 light 로 샌다.
  * 스코프만 걸면 reset 의 `background: bgBase` 가 저절로 ink 값을 읽는다.
  * 안쪽 `[data-surface="ink"]` 구간(히어로 한 칸)이 아니라 **`Page` 루트**일 때만이다.
+ * `auto` 페이지는 OS 가 다크일 때만 같은 스코프를 받는다.
  */
 globalStyle(`body:has(${page}[data-surface="ink"])`, {
   '@layer': {
     [tokensLayer]: { colorScheme: 'dark', vars: assignVars(vars.color, colorSchemes.ink) },
+  },
+})
+
+globalStyle(`body:has(${page}[data-surface="auto"])`, {
+  '@layer': {
+    [tokensLayer]: {
+      '@media': {
+        '(prefers-color-scheme: dark)': {
+          colorScheme: 'dark',
+          vars: assignVars(vars.color, colorSchemes.ink),
+        },
+      },
+    },
   },
 })

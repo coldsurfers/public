@@ -10,6 +10,7 @@ import {
   letterSpacing,
   lineHeight,
   radius,
+  type Surface,
   shadow,
   shape,
   spacing,
@@ -27,7 +28,7 @@ import { declareLayerOrder } from './layers.css'
  *
  * **색은 면 단위 두 벌이다.** `:root` 는 light, `[data-surface="ink"]` 를 단 요소 안은 ink.
  * 한 페이지 안에서 섞는다(홈: 히어로 ink → 아래 묶음 light). `[data-surface="light"]` 는 ink 안에서
- * 다시 밝은 면을 여는 자리다. OS 다크모드(`prefers-color-scheme`)와는 무관하다.
+ * 다시 밝은 면을 여는 자리다. OS 다크모드(`prefers-color-scheme`)를 따르는 건 `[data-surface="auto"]` 하나뿐이다.
  *
  * **layout 은 폭 두 벌이다.** `:root` 는 mobile, `breakpoints.desktop` 이상은 desktop.
  *
@@ -44,14 +45,12 @@ import { declareLayerOrder } from './layers.css'
 // 이 한 줄이 "가장 먼저 로드되는 CSS 의 맨 앞은 순서 선언"을 보장한다. 이유는 `layers.css.ts`.
 declareLayerOrder()
 
-const surfaceBlock = (surface: 'ink' | 'light') => ({
-  '@layer': {
-    [tokensLayer]: {
-      colorScheme: surface === 'ink' ? 'dark' : 'light',
-      vars: assignVars(vars.color, colorSchemes[surface]),
-    },
-  },
+const scheme = (surface: Surface) => ({
+  colorScheme: surface === 'ink' ? 'dark' : 'light',
+  vars: assignVars(vars.color, colorSchemes[surface]),
 })
+
+const surfaceBlock = (surface: Surface) => ({ '@layer': { [tokensLayer]: scheme(surface) } })
 
 /** 스케일 + light 색 + mobile layout. */
 globalStyle(':root', {
@@ -84,3 +83,12 @@ globalStyle(':root', {
 // 면 단위 스킴. `:root` 블록보다 **뒤에** 발행해야 같은 상세도(0,1,0)에서 이긴다.
 globalStyle('[data-surface="ink"]', surfaceBlock('ink'))
 globalStyle('[data-surface="light"]', surfaceBlock('light'))
+// OS 를 따르는 면 — 기본 light, OS 가 다크면 ink. 토글은 없다.
+globalStyle('[data-surface="auto"]', {
+  '@layer': {
+    [tokensLayer]: {
+      ...scheme('light'),
+      '@media': { '(prefers-color-scheme: dark)': scheme('ink') },
+    },
+  },
+})
