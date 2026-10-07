@@ -1,4 +1,4 @@
-import { type PointerEvent, type RefObject, useRef } from 'react'
+import { type MouseEvent, type PointerEvent, type RefObject, useRef } from 'react'
 
 /** 이만큼 끌어내리면 닫는다(px). */
 const CLOSE_DISTANCE = 80
@@ -11,38 +11,49 @@ export const THROW_MS = 200
 export const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/** 이만큼 내려와야 끌기다 — 그 전에 떼면 탭이라 머리 안 링크 · 클릭이 그대로 산다(px). */
+const DRAG_SLOP = 6
+
 /**
  * 시트 머리를 잡고 끌어내려 닫기 — 패널이 손가락을 따라 내려가고, 놓으면 닫거나 제자리로 돌아간다.
- * 위로는 안 끌린다. 터치 · 펜만 받는다(마우스 = 데스크탑 모달). 버튼 · 링크를 누른 건 끌기가 아니다.
+ * 위로는 안 끌린다. 터치 · 펜만 받는다(마우스 = 데스크탑 모달). 버튼 · 입력칸을 누른 건 끌기가 아니다.
+ * 링크 위에서도 끌린다 — `DRAG_SLOP` 을 넘어야 포인터를 붙잡고, 끈 뒤 따라오는 클릭 한 번은 막는다.
  *
  * @param panelRef 움직일 패널.
  * @param onThrown 패널이 화면 밖으로 내려간 뒤 — 이미 퇴장했으니 퇴장 애니메이션 없이 닫는다.
- * @returns 머리에 펼칠 포인터 핸들러.
+ * @returns 머리에 펼칠 포인터 · 클릭 핸들러.
  */
 export function useDragToClose(panelRef: RefObject<HTMLElement | null>, onThrown: () => void) {
-  const drag = useRef<{ startY: number; startAt: number; dy: number } | null>(null)
+  const drag = useRef<{ startY: number; startAt: number; dy: number; active: boolean } | null>(null)
+  const dragged = useRef(false)
 
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
-    const panel = panelRef.current
-    if (!panel || e.pointerType === 'mouse') return
-    if ((e.target as HTMLElement).closest('button, a, input, select, textarea')) return
-    e.currentTarget.setPointerCapture(e.pointerId)
-    panel.style.transition = 'none'
-    drag.current = { startY: e.clientY, startAt: e.timeStamp, dy: 0 }
+    dragged.current = false
+    if (!panelRef.current || e.pointerType === 'mouse') return
+    if ((e.target as HTMLElement).closest('button, input, select, textarea')) return
+    drag.current = { startY: e.clientY, startAt: e.timeStamp, dy: 0, active: false }
   }
 
   const onPointerMove = (e: PointerEvent<HTMLElement>) => {
     const panel = panelRef.current
-    if (!panel || !drag.current) return
-    drag.current.dy = Math.max(0, e.clientY - drag.current.startY)
-    panel.style.transform = `translateY(${drag.current.dy}px)`
+    const current = drag.current
+    if (!panel || !current) return
+    current.dy = Math.max(0, e.clientY - current.startY)
+    if (!current.active) {
+      if (current.dy < DRAG_SLOP) return
+      current.active = true
+      e.currentTarget.setPointerCapture(e.pointerId)
+      panel.style.transition = 'none'
+    }
+    panel.style.transform = `translateY(${current.dy}px)`
   }
 
   const onPointerUp = (e: PointerEvent<HTMLElement>) => {
     const panel = panelRef.current
     const current = drag.current
     drag.current = null
-    if (!panel || !current) return
+    if (!panel || !current?.active) return
+    dragged.current = true
     const velocity = current.dy / Math.max(1, e.timeStamp - current.startAt)
     const reduced = prefersReducedMotion()
     if (current.dy > CLOSE_DISTANCE || velocity > CLOSE_VELOCITY) {
@@ -56,5 +67,13 @@ export function useDragToClose(panelRef: RefObject<HTMLElement | null>, onThrown
     panel.style.transform = ''
   }
 
-  return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp }
+  /** 끈 뒤 따라오는 클릭 — 링크에서 시작한 끌기가 이동으로 끝나지 않게 한 번 막는다. */
+  const onClickCapture = (e: MouseEvent<HTMLElement>) => {
+    if (!dragged.current) return
+    dragged.current = false
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  return { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp, onClickCapture }
 }
