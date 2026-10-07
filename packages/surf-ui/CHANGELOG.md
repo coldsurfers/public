@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.39.1
+
+### Patch Changes
+
+- [#256](https://github.com/coldsurfers/public/pull/256) [`3a63241`](https://github.com/coldsurfers/public/commit/3a632418c7aa1187d725c5a16ee2d1f1e8cb0530) Thanks [@yungblud](https://github.com/yungblud)! - `Sheet` 머리 안 링크 위에서도 끌어내려 닫기가 된다 — 6px 넘게 내려와야 끌기로 보고 포인터를 붙잡으며, 끈 뒤 따라오는 클릭 한 번은 막는다. 탭은 그대로 링크로 간다.
+
 ## 0.39.0
 
 ### Minor Changes
