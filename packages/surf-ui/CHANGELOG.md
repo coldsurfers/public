@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.40.0
+
+### Minor Changes
+
+- [#258](https://github.com/coldsurfers/public/pull/258) [`d051ba7`](https://github.com/coldsurfers/public/commit/d051ba73e2d4502189f28459be64ef30b3e836cb) Thanks [@yungblud](https://github.com/yungblud)! - Chip md 를 시안 M1 시점 칩으로 정본화 — 30 · r8 · 12 bold, 선택은 `selected` 토큰(ink 흰 면 · light accent 면), 비활성 바탕은 `rowFill`
+
 ## 0.39.1
 
 ### Patch Changes
