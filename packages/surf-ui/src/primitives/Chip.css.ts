@@ -26,7 +26,6 @@ export const chip = recipe({
     justifyContent: 'center',
     gap: spec.gap,
     whiteSpace: 'nowrap',
-    fontWeight: vars.fontWeight[spec.fontWeight],
     cursor: 'pointer',
     transitionProperty: 'color, background-color, border-color',
     transitionDuration: '150ms',
@@ -41,6 +40,7 @@ export const chip = recipe({
         height: spec.size.md.height,
         paddingInline: spec.size.md.paddingInline,
         fontSize: vars.fontSize[spec.size.md.fontSize],
+        fontWeight: vars.fontWeight[spec.size.md.fontWeight],
       }),
       sm: inComponentsLayer({
         borderRadius: vars.radius[spec.size.sm.radius],
@@ -48,14 +48,15 @@ export const chip = recipe({
         height: spec.size.sm.height,
         paddingInline: spec.size.sm.paddingInline,
         fontSize: vars.fontSize[spec.size.sm.fontSize],
+        fontWeight: vars.fontWeight[spec.size.sm.fontWeight],
       }),
     },
 
     active: {
       true: inComponentsLayer({
         borderColor: 'transparent',
-        background: vars.color.actionPrimary,
-        color: 'white',
+        background: vars.color.selectedFill,
+        color: vars.color.selectedText,
       }),
       false: {},
     },
@@ -66,7 +67,7 @@ export const chip = recipe({
       variants: { size: 'md', active: false },
       style: inComponentsLayer({
         borderColor: vars.color.lineDivider,
-        background: vars.color.surfaceRaised,
+        background: vars.color.rowFill,
         color: vars.color.textPrimary,
         selectors: { '&:hover': { background: vars.color.stateHover } },
       }),

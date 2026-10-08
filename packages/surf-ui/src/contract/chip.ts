@@ -23,26 +23,26 @@ type ChipSizeSpec = {
   borderWidth: number
   radius: RadiusKey
   fontSize: FontSizeKey
+  fontWeight: FontWeightKey
 }
 
 /**
  * 치수 — 웹 `Chip.css.ts` 가 리터럴로 들고 있던 값을 옮긴 것이다.
+ * `md` 는 2026-10-08 시안 M1(COLDSURF Figma `1188:1127`)의 시점 칩을 정본으로 올렸다 — 30 · r8 · 12 bold.
  *
  * **높이를 `height` 로 박는 이유**는 `Button.css.ts` 의 §높이(컨트롤 공통 규율)이고, RN 에서는
  * 더 강하다 — 세로 padding 으로 높이를 만들면 폰트 메트릭이 다른 iOS/Android 에서 같은 필이
- * 다른 높이로 선다. 35·26 은 상속 `line-height: 1.5` 에서 계산되던 값 그대로다
- * (md 14×1.5+6·2+1·2 · sm 12×1.5+4·2).
+ * 다른 높이로 선다.
  *
  * 색은 축에서 읽는다 — 이 표가 두 구현의 정본이다:
  *
  * | 축 | 배경 | 테두리 | 글자 |
  * | --- | --- | --- | --- |
- * | `active` | `accent` | 없음(transparent) | 흰색(리터럴) |
- * | `md` 비활성 | `surface` | `border` | `body` |
- * | `sm` 비활성 | `surface2` | 없음 | `muted` |
+ * | `active` | `selectedFill` | 없음(transparent) | `selectedText` |
+ * | `md` 비활성 | `rowFill` | `lineDivider` | `textPrimary` |
+ * | `sm` 비활성 | `panelFill` | 없음 | `textSecondary` |
  *
- * `active` 글자가 토큰이 아니라 흰색 리터럴인 이유는 `Button` 의 `accent` 와 같다 — 스킴을 안 타는
- * 바탕(Surf Blue) 위 글자라 바탕과 같이 고정된다(`contract/button.ts` 의 `ButtonColor`).
+ * `active` 는 스킴을 탄다 — ink 에선 흰 면 + 잉크 글자, light 에선 accent 면 + 흰 글자(`selected*` 토큰의 두 값).
  *
  * 라벨 서식(크기·굵기·색)은 **필의 계약**이지 텍스트의 계약이 아니다 — 그래서 두 레인 다
  * `Chip.Label` 슬롯이 그걸 들고, 소비처는 서식을 쓰지 않는다. 웹은 상속이 이미 하던 일이라
@@ -59,16 +59,15 @@ export const CHIP_SPEC = {
    * 라벨만 있으면 붙을 상대가 없어 0 과 같다.
    */
   gap: 4,
-  /** 두 크기 공통. */
-  fontWeight: 'semibold' satisfies FontWeightKey,
   size: {
-    /** rounded-full 필 — quick chips · section chips · filter. */
+    /** r8 필 — quick chips · section chips · filter. */
     md: {
-      height: 35,
-      paddingInline: 14,
+      height: 30,
+      paddingInline: 12,
       borderWidth: 1,
-      radius: 'full',
-      fontSize: 'sm',
+      radius: 'lg',
+      fontSize: 'xs',
+      fontWeight: 'bold',
     },
     /** 소형 tag — genre 태그. 테두리가 없고 바탕만으로 선다. */
     sm: {
@@ -77,6 +76,7 @@ export const CHIP_SPEC = {
       borderWidth: 0,
       radius: 'md',
       fontSize: 'xs',
+      fontWeight: 'semibold',
     },
   } satisfies Record<ChipSize, ChipSizeSpec>,
 } as const

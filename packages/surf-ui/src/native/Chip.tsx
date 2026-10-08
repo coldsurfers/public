@@ -38,21 +38,21 @@ export type { ChipSize }
 
 export interface ChipProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
   size?: ChipSize
-  /** 선택 상태 — accent 필 + 흰 텍스트. 시안 언어의 정본은 웹 `Chip.tsx` 주석. */
+  /** 선택 상태 — `selected` 면 + 글자. 시안 언어의 정본은 웹 `Chip.tsx` 주석. */
   active?: boolean
   children?: ReactNode
 }
 
 /** `CHIP_SPEC` 의 색 표와 1:1 — 비활성일 때만 size 로 갈린다. */
 const surfaceFor = (scheme: ColorScheme, size: ChipSize, active: boolean): ViewStyle => {
-  if (active) return { backgroundColor: scheme.actionPrimary, borderColor: 'transparent' }
+  if (active) return { backgroundColor: scheme.selectedFill, borderColor: 'transparent' }
   return size === 'md'
-    ? { backgroundColor: scheme.surfaceRaised, borderColor: scheme.lineDivider }
+    ? { backgroundColor: scheme.rowFill, borderColor: scheme.lineDivider }
     : { backgroundColor: scheme.panelFill, borderColor: 'transparent' }
 }
 
 const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): string => {
-  if (active) return 'white'
+  if (active) return scheme.selectedText
   return size === 'md' ? scheme.textPrimary : scheme.textSecondary
 }
 
@@ -86,7 +86,7 @@ const Root = styled.TouchableOpacity<{
 const Label = styled.Text<{ $color: string; $size: ChipSize }>(({ $color, $size }) => ({
   color: $color,
   fontSize: nativeFontSize[spec.size[$size].fontSize],
-  fontWeight: fontWeight[spec.fontWeight],
+  fontWeight: fontWeight[spec.size[$size].fontWeight],
   includeFontPadding: false,
 }))
 
