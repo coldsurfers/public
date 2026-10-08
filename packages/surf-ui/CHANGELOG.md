@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.40.1
+
+### Patch Changes
+
+- [#260](https://github.com/coldsurfers/public/pull/260) [`030081c`](https://github.com/coldsurfers/public/commit/030081c3fc504e7ce6d6261a2acdba6a3a8ef48e) Thanks [@yungblud](https://github.com/yungblud)! - fix(surf-ui): 토스트가 좁은 화면에서 뷰포트 절반으로 줄어 글자가 잘리던 문제 수정 — `width: max-content`
+
 ## 0.40.0
 
 ### Minor Changes

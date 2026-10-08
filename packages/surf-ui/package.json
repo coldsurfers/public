@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/surf-ui",
-  "version": "0.40.0",
+  "version": "0.40.1",
   "description": "COLDSURF surf-ui — tokens, CSS contract, and React primitives.",
   "keywords": [
     "design-system",
