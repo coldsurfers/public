@@ -20,6 +20,7 @@ export const toast = recipe({
     left: '50%',
     zIndex: 60,
     display: 'flex',
+    width: 'max-content',
     maxWidth: 'min(92vw, 420px)',
     alignItems: 'center',
     gap: 8,
