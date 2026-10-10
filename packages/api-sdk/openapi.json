@@ -2611,7 +2611,6 @@
           "name",
           "tagline",
           "upcomingEventCount",
-          "stats",
           "venues",
           "upcomingEvents"
         ]
@@ -9703,6 +9702,14 @@
             "required": false,
             "name": "genres",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "area",
+            "in": "query"
           }
         ],
         "responses": {
@@ -9833,6 +9840,14 @@
             },
             "required": false,
             "name": "genres",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "area",
             "in": "query"
           }
         ],

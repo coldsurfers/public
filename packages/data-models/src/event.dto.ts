@@ -36,6 +36,12 @@ export const GetEventsQueryStringDTOSchema = OffsetPaginationDTOSchema.extend({
   locationCityId: z.string().optional(),
   locationCityName: z.string().optional(),
   eventCategoryName: z.string().optional(),
+  /** `upcoming` = 오늘(서울) 이후 시작 · `ongoing` = 이미 시작했고 아직 안 끝남(상연 중). */
+  period: z.enum(['upcoming', 'ongoing']).optional(),
+  /** 장르 칩(쉼표) — 아티스트 또는 라벨 장르가 하나라도 겹치면 남긴다. */
+  genres: z.string().optional(),
+  /** 스팟 slug — 공연장이 이 스팟인 공연만. */
+  area: z.string().optional(),
 })
 export type GetEventsQueryStringDTO = z.infer<typeof GetEventsQueryStringDTOSchema>
 

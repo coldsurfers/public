@@ -4858,6 +4858,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
+                    area?: string;
                     eventCategoryName?: string;
                     genres?: string;
                     latitude?: number | null;
@@ -5603,6 +5604,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
+                    area?: string;
                     eventCategoryName?: string;
                     genres?: string;
                     latitude?: number | null;
@@ -9263,7 +9265,7 @@ export interface components {
             id: string;
             name: string;
             slug: string;
-            stats: {
+            stats?: {
                 categories: {
                     count: number;
                     name: string;
