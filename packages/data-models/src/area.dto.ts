@@ -48,7 +48,9 @@ export type AreaWithStatsDTO = z.infer<typeof AreaWithStatsDTOSchema>
 
 // 상세 — 공연은 **날짜순 원본만** 싣는다. 「오늘·이번 주」 묶음은 클라이언트가 KST 로 한다.
 // venues 는 예정 공연이 있는 공연장만.
-export const AreaDetailDTOSchema = AreaWithStatsDTOSchema.extend({
+// stats 는 아직 서버가 계산하지 않아 선택이다(스팟 커뮤니티 작업 때 필수로 올린다).
+export const AreaDetailDTOSchema = AreaDTOSchema.extend({
+  stats: AreaStatsDTOSchema.optional(),
   venues: VenueDTOSchema.array(),
   upcomingEvents: EventDTOSchema.array(),
 })
