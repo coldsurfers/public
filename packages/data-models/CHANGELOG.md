@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.1
+
+### Patch Changes
+
+- [#262](https://github.com/coldsurfers/public/pull/262) [`b3804b1`](https://github.com/coldsurfers/public/commit/b3804b13fab6afb272b522e52736a456a7d14233) Thanks [@yungblud](https://github.com/yungblud)! - `AreaDTO` 에 `windowEventCount`(선택), `GetAreasQueryDTO`(`from` · `to`) 추가 — 스팟 목록이 창 안 예정 공연 수를 한 번에 준다
+
 ## 0.20.0
 
 ### Minor Changes
