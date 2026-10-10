@@ -12,8 +12,18 @@ export const AreaDTOSchema = z.object({
   name: z.string(),
   tagline: z.string().nullable(),
   upcomingEventCount: z.number().int(),
+  // 요청이 준 창(from ≤ 시작 < to) 안에 시작하는 예정 공연 수. 창을 안 주면 빠진다.
+  // 창은 클라이언트가 KST 로 정해 넘긴다 — 서버는 「이번 주말」을 정하지 않고 세기만 한다.
+  windowEventCount: z.number().int().optional(),
 })
 export type AreaDTO = z.infer<typeof AreaDTOSchema>
+
+// 목록 쿼리 — 둘 다 주면 `windowEventCount` 를 센다(ISO 8601).
+export const GetAreasQueryDTOSchema = z.object({
+  from: z.string().optional(),
+  to: z.string().optional(),
+})
+export type GetAreasQueryDTO = z.infer<typeof GetAreasQueryDTOSchema>
 
 // 스팟 요약 — **원본 값만** 싣는다. 비중(%)과 「잔잔 · 보통 · 큰 파도」 단계는 표면이 정한다
 // (/v1/forecast 와 같은 원칙 — 표시를 바꿀 때 서버를 다시 배포하지 않게).
