@@ -346,169 +346,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/event-rsvp": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** RSVP 인기 이벤트 목록(공개) — PUBLISHED·rsvpCounts desc 25건 */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description rsvp events */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["EventRsvpDTOSchema"][];
-                    };
-                };
-                /** @description error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/event-rsvp/{eventId}/counts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** RSVP 카운트(익명) — 12개 이모지별 count + me(anonymousUser 투표 여부). 이벤트 미존재 404 */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    eventId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description rsvp counts */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["EventRsvpCountsWithMeDTOSchema"];
-                    };
-                };
-                /** @description bad request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-                /** @description error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /** RSVP 카운트 갱신(익명) — emoji 토글. 반응 emoji 가산, 참여 emoji(GOING/MAYBE/NOT_GOING) 상호배타. 응답은 갱신 후 카운트 */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    eventId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["EventRsvpUpdateActionDTOSchema"];
-                };
-            };
-            responses: {
-                /** @description updated rsvp counts */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["EventRsvpCountsWithMeDTOSchema"];
-                    };
-                };
-                /** @description invalid anonymous user */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-                /** @description not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-                /** @description error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/event/track-view": {
         parameters: {
             query?: never;
@@ -612,6 +449,53 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 예보 — 오늘 밤 · 이번 주말 · 다음 주의 건수 · 평소 대비 · 픽 */
+        get: {
+            parameters: {
+                query?: {
+                    region?: "seoul";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description forecast */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ForecastDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2048,7 +1932,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["SearchDTOSchema"][];
+                        "application/json": components["schemas"]["SearchResultDTOSchema"][];
                     };
                 };
                 /** @description error */
@@ -3557,10 +3441,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 동네(권역) 목록 — 예정 공연 수 포함 */
+        /** 동네(권역) 목록 — 예정 공연 수 포함. from · to 를 주면 그 창 안에 시작하는 공연 수(windowEventCount)도 */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -4406,6 +4293,119 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/drops/{handle}/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Drop 한 장(공개) — 연 사람 핸들 + Drop slug. 상세는 공연 상세와 같은 꼴 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    handle: string;
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DropDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/drops/by-concert/{concertSlug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연 slug → Drop 주소(공개) — 옛 /event/<slug> 링크를 옮길 때. Drop 이 아니면 404 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    concertSlug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DropLinkDTOSchema"];
+                    };
+                };
+                /** @description not a drop */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/entry-tickets/events/{eventId}": {
         parameters: {
             query?: never;
@@ -4431,7 +4431,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["EntryTicketPoolDTOSchema"];
+                        "application/json": components["schemas"]["RsvpPoolStatsDTOSchema"];
                     };
                 };
                 /** @description not found */
@@ -4471,7 +4471,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 입장권 claim(인증 필수) — 사전발행 pool 중 AVAILABLE 1건 점유. 1인 1매 */
+        /** 입장권 받기(인증 필수) — EntryTicketPool 정원 안에서 한 장 새로 만든다. 1인 1매 */
         post: {
             parameters: {
                 query?: never;
@@ -4501,7 +4501,7 @@ export interface paths {
                         "application/json": components["schemas"]["ErrorResponseDTOSchema"];
                     };
                 };
-                /** @description concert not found (capacity null 포함) */
+                /** @description concert not found (Pool 없음 포함) */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -4552,7 +4552,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 입장권 상세(인증 필수) — 본인 claim·PUBLISHED. 미존재 404 */
+        /** 입장권 상세(인증 필수) — 본인 claim·열리는 공연. 미존재 404 */
         get: {
             parameters: {
                 query?: never;
@@ -4617,7 +4617,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 내 입장권 목록(인증 필수) — PUBLISHED 공연·claimedAt desc */
+        /** 내 입장권 목록(인증 필수) — 열리는 공연(링크만 RSVP 포함)·claimedAt desc */
         get: {
             parameters: {
                 query?: never;
@@ -4671,7 +4671,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 입장권 상세 by slug(인증 필수) — 본인 claim·PUBLISHED. 미존재 404 */
+        /** 입장권 상세 by slug(인증 필수) — 본인 claim·열리는 공연. 미존재 404 */
         get: {
             parameters: {
                 query?: never;
@@ -4859,11 +4859,13 @@ export interface paths {
             parameters: {
                 query?: {
                     eventCategoryName?: string;
+                    genres?: string;
                     latitude?: number | null;
                     locationCityId?: string;
                     locationCityName?: string;
                     longitude?: number | null;
                     offset?: number | null;
+                    period?: "upcoming" | "ongoing";
                     size?: number | null;
                 };
                 header?: never;
@@ -4879,6 +4881,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["EventDTOSchema"][];
+                    };
+                };
+                /** @description unknown genre chip */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
                     };
                 };
                 /** @description error */
@@ -5007,6 +5018,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/events/{eventId}/going": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연의 갈게요 수(공개) — 담은 계정 수 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    eventId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description going count */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventGoingCountDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/events/{eventId}/posters": {
         parameters: {
             query?: never;
@@ -5054,15 +5112,16 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v2/events/{eventId}/rsvp": {
+    "/v2/events/{eventId}/reaction": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** RSVP 카운트 — 12개 이모지별 count + me(anonymousUser 투표 여부) */
-        get: {
+        get?: never;
+        /** 내 반응 하나 켜기 · 끄기 — on false 면 그 종류만 지운다. 로그인 또는 익명 id 필수 */
+        put: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -5071,18 +5130,33 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "go" | "maybe" | "pricey";
+                        on: boolean;
+                    };
+                };
+            };
             responses: {
-                /** @description rsvp counts */
+                /** @description reaction of the event */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["EventRsvpCountsWithMeDTOSchema"];
+                        "application/json": {
+                            counts: {
+                                go: number;
+                                maybe: number;
+                                pricey: number;
+                            };
+                            mine: ("go" | "maybe" | "pricey")[];
+                        };
                     };
                 };
-                /** @description bad request */
+                /** @description no identity */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -5091,7 +5165,16 @@ export interface paths {
                         "application/json": components["schemas"]["ErrorResponseDTOSchema"];
                     };
                 };
-                /** @description not found */
+                /** @description invalid access token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description event not found */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -5111,7 +5194,6 @@ export interface paths {
                 };
             };
         };
-        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -5510,6 +5592,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/events/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 이벤트 목록 총 건수 — `/v2/events` 와 같은 조건(offset · size 는 무시) */
+        get: {
+            parameters: {
+                query?: {
+                    eventCategoryName?: string;
+                    genres?: string;
+                    latitude?: number | null;
+                    locationCityId?: string;
+                    locationCityName?: string;
+                    longitude?: number | null;
+                    offset?: number | null;
+                    period?: "upcoming" | "ongoing";
+                    size?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description count */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventsCountDTOSchema"];
+                    };
+                };
+                /** @description unknown genre chip */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/events/kopis": {
         parameters: {
             query?: never;
@@ -5601,6 +5747,122 @@ export interface paths {
                             data: components["schemas"]["EventDTOSchema"][];
                             nextCursor: string | null;
                             prevCursor: string | null;
+                        };
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/events/next-week": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 다음 주(다음 월 00:00 ~ 그다음 월 00:00 KST) 이벤트 목록 — 커서 페이지네이션
+         * @description 홈 예보(`/v1/forecast`)의 다음 주 카드가 링크하는 목록. 구간은 예보와 같은 함수로 정한다.
+         */
+        get: {
+            parameters: {
+                query: {
+                    cursor?: string;
+                    direction: "next" | "prev";
+                    eventCategoryName?: string;
+                    locationCityName?: string;
+                    size?: number | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description next week events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["EventDTOSchema"][];
+                            nextCursor: string | null;
+                            prevCursor: string | null;
+                        };
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/events/reactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연별 반응 수 + 내 반응(신원 있을 때) — slug 최대 20개 */
+        get: {
+            parameters: {
+                query: {
+                    slugs: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description reactions by slug */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            counts: {
+                                [key: string]: {
+                                    go: number;
+                                    maybe: number;
+                                    pricey: number;
+                                };
+                            };
+                            mine: {
+                                [key: string]: ("go" | "maybe" | "pricey")[];
+                            };
                         };
                     };
                 };
@@ -5985,6 +6247,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/events/views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연별 30일 조회(본 사람 수 · 봇 제외) — slug 최대 20개 */
+        get: {
+            parameters: {
+                query: {
+                    slugs: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description views by slug */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            views: {
+                                [key: string]: number;
+                            };
+                        };
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/events/weekend": {
         parameters: {
             query?: never;
@@ -6221,7 +6534,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 장르 칩 목록 — upcoming 재고에서 파생 · 건수 desc */
+        /** 장르 칩 목록 — by-genre 기본 창 재고에서 파생 · 건수 desc */
         get: {
             parameters: {
                 query?: never;
@@ -6253,6 +6566,743 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host-follows/{handle}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 이 주최자를 팔로우 중인지 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    handle: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HostFollowDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description host not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        /** 주최자 팔로우 — 새 Drop 메일 수신 동의(필수). 다시 불러도 같은 결과 */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    handle: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["FollowHostBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HostFollowDTOSchema"];
+                    };
+                };
+                /** @description cannot follow yourself */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description host not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** 주최자 팔로우 해제 — 이 주최자의 새 Drop 메일만 끈다 */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    handle: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HostFollowDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description host not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/drop-slug": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Drop 주소 확인(인증 필수) — slug 로 물으면 비었는지, title 로 물으면 제목에서 지은 빈 주소 */
+        get: {
+            parameters: {
+                query?: {
+                    slug?: string;
+                    title?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DropSlugCheckDTOSchema"];
+                    };
+                };
+                /** @description slug · title 둘 다 없음 */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/drops/{handle}/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Drop 관리를 주소로(인증 필수) — 연 사람만. 취소한 Drop 도 연다(canceled) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    handle: string;
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpManageDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found, or not issued by me */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/kopis-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** KOPIS 공연 검색(인증 필수) — 01 공연 고르기. 우리 DB 에 들어온 공연만, 제목 부분 일치 최대 20건 */
+        get: {
+            parameters: {
+                query: {
+                    q: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HostKopisSearchDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/rsvp-hub": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 RSVP(인증 필수) — 연 것 · 받은 입장권. `/rsvp` 허브 · 입장권 화면 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpHubDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/rsvps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** RSVP 열기(인증 필수) — 직접 쓴 공연 + 입장권 풀. 로그인한 누구나 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["CreateRsvpBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CreateRsvpDTOSchema"];
+                    };
+                };
+                /** @description venue · city · category not found, or past date */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/rsvps/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** RSVP 관리(인증 필수) — 연 사람만. GOING · IN · LEFT + 받은 사람 명단 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpManageDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found, or not issued by me */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Drop 취소(인증 필수) — 연 사람만. 지우지 않고 취소로 남긴다(받은 입장권은 canceled) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description canceled */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found, or not issued by me */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Drop 고치기(인증 필수) — 연 사람만. 받기 열기/닫기 · 제목 · 일시 · 장소 · 정원. 주소는 고정 */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UpdateRsvpBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description updated — 바뀐 관리 화면 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpManageDTOSchema"];
+                    };
+                };
+                /** @description PAST_DATE · VENUE_NOT_FOUND · CAPACITY_BELOW_GOING (message) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found, or not issued by me */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v2/host/rsvps/{slug}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** RSVP 입장(인증 필수) — 연 사람만. 받은 입장권 코드를 입장으로 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["RsvpCheckInBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description checked in */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpCheckInDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description rsvp not found / not mine, or ticket not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description already checked in */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RsvpCheckInDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -6989,6 +8039,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/users/me/area/detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 동네 상세(인증 필수) — 날짜순 예정 공연 앞 `limit` 건. 내 동네가 없으면 404 */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description my area detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AreaDetailDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description my area not set */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/users/me/consents/required": {
         parameters: {
             query?: never;
@@ -7576,6 +8691,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/users/me/tabs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 꼬리표(인증 필수) — 담은 공연 요약 · 담은 순서 desc · 최대 100 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description my tabs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ConcertDTOSchema"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/users/me/terms-agreements": {
         parameters: {
             query?: never;
@@ -7925,6 +9094,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/venues/{venueId}/views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연장 30일 조회 — 이 공연장 공연을 본 사람 수(중복 제거 · 봇 제외) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    venueId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description venue views */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            views: number;
+                        };
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** 공연장 조회 기록(공개 · anon/user 비필수) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    venueId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        ua?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description no content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/venues/slug/{slug}": {
         parameters: {
             query?: never;
@@ -8010,6 +9263,18 @@ export interface components {
             id: string;
             name: string;
             slug: string;
+            stats: {
+                categories: {
+                    count: number;
+                    name: string;
+                }[];
+                neighborCount: number;
+                swell: {
+                    baseline: number;
+                    count: number;
+                    ratio: number | null;
+                };
+            };
             tagline: string | null;
             upcomingEventCount: number;
             upcomingEvents: {
@@ -8057,6 +9322,7 @@ export interface components {
                 slug: string | null;
                 thumbnailUrl: string | null;
             }[];
+            windowEventCount?: number;
         };
         AreaDTOSchema: {
             id: string;
@@ -8064,6 +9330,7 @@ export interface components {
             slug: string;
             tagline: string | null;
             upcomingEventCount: number;
+            windowEventCount?: number;
         };
         ArtistDetailDTOSchema: {
             id: string;
@@ -8226,6 +9493,24 @@ export interface components {
         CreateReviewBodyDTOSchema: {
             body: string;
             rating: number;
+        };
+        CreateRsvpBodyDTOSchema: {
+            capacity: number;
+            dropSlug?: string;
+            eventCategoryId?: string;
+            locationCityId?: string;
+            place: {
+                venueId: string;
+            } | {
+                plainVenueText: string;
+            };
+            /** Format: date-time */
+            startsAt: string;
+            title: string;
+        };
+        CreateRsvpDTOSchema: {
+            drop: components["schemas"]["DropLinkDTOSchema"];
+            slug: string;
         };
         CreateSubscriptionBodyDTOSchema: {
             consent: boolean;
@@ -8406,6 +9691,19 @@ export interface components {
                 venueId?: string;
             };
         };
+        DropDTOSchema: {
+            concertSlug: string;
+            detail: components["schemas"]["EventDetailDTOSchema"];
+            drop: components["schemas"]["DropLinkDTOSchema"];
+        };
+        DropLinkDTOSchema: {
+            handle: string;
+            slug: string;
+        };
+        DropSlugCheckDTOSchema: {
+            available: boolean;
+            slug: string;
+        };
         EntryTicketDTOSchema: {
             claimedAt: string | null;
             code: string;
@@ -8440,15 +9738,8 @@ export interface components {
             scannedAt: string | null;
             status: "AVAILABLE" | "CLAIMED" | "USED" | "CANCELLED";
         }[];
-        EntryTicketPoolDTOSchema: {
-            available: number;
-            cancelled: number;
-            capacity: number;
-            claimed: number;
-            used: number;
-        } | null;
         ErrorResponseDTOSchema: {
-            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED" | "DAILY_EDITION_NOT_FOUND" | "AREA_NOT_FOUND";
+            code: "INVALID_ANONYMOUS_USER" | "INVALID_PASSWORD" | "INVALID_ACCESS_TOKEN" | "INVALID_QUERY_STRING" | "USER_NOT_FOUND" | "CONCERT_NOT_FOUND" | "SUBSCRIBED_CONCERT_NOT_FOUND" | "ARTIST_NOT_FOUND" | "VENUE_NOT_FOUND" | "SUBSCRIBED_ARTIST_NOT_FOUND" | "SUBSCRIBED_VENUE_NOT_FOUND" | "INVALID_USER" | "PASSWORD_NOT_MATCH" | "ACCESS_TOKEN_NOT_FOUND" | "USER_DEACTIVATED" | "USER_ALREADY_EXISTING" | "HANDLE_RESERVED" | "EMAIL_AUTH_REQUEST_NOT_FOUND" | "INVALID_EMAIL_AUTH_REQUEST" | "EMAIL_AUTH_REQUEST_ALREADY_AUTHENTICATED" | "EMAIL_AUTH_REQUEST_TIMEOUT" | "UNKNOWN" | "EVENT_NOT_FOUND" | "POSTER_NOT_FOUND" | "ARTIST_PROFILE_IMAGE_NOT_FOUND" | "IMAGE_KEY_NOT_FOUND" | "IMAGE_NOT_FOUND" | "REFRESH_TOKEN_NOT_FOUND" | "TICKET_NOT_FOUND" | "INVALID_ACTION_TOKEN" | "INVALID_GEO_DATA" | "INVALID_FEED_ENTITY_TYPE" | "INVALID_FEED" | "FEED_NOT_FOUND" | "INVALID_IMAGE_META" | "CONSENT_REQUIRED" | "PARTNER_NOT_FOUND" | "PARTNER_NOT_VERIFIED" | "PARTNER_ALREADY_EXISTS" | "NOT_CONNECTED_CONCERT" | "ENTRY_TICKETS_ALREADY_ISSUED" | "ENTRY_TICKET_NOT_FOUND" | "ENTRY_TICKET_ALREADY_USED" | "ENTRY_TICKET_NOT_CLAIMED" | "ENTRY_TICKET_ALREADY_CLAIMED" | "ENTRY_TICKET_SOLD_OUT" | "NEWSLETTER_SUBSCRIBER_NOT_FOUND" | "INVALID_TERMS_VERSION" | "TERMS_VERSION_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "REVIEW_NOT_FOUND" | "REVIEW_ALREADY_EXISTS" | "REVIEW_FORBIDDEN" | "EVENT_NOT_ENDED" | "COMMENT_NOT_FOUND" | "COMMENT_FORBIDDEN" | "RATE_LIMITED" | "DAILY_EDITION_NOT_FOUND" | "AREA_NOT_FOUND" | "AREA_POST_NOT_FOUND" | "AREA_POST_COMMENT_NOT_FOUND" | "NOT_AREA_NEIGHBOR" | "AREA_POST_FORBIDDEN" | "INVALID_PARENT_COMMENT" | "REPORT_TARGET_NOT_FOUND" | "STAFF_ONLY" | "AREA_PROPOSAL_NOT_FOUND" | "AREA_PROPOSAL_ALREADY_OPENED" | "AREA_SLUG_TAKEN" | "LOCATION_CITY_NOT_FOUND";
             message: string;
         };
         EventCategoryDTOSchema: {
@@ -8500,6 +9791,11 @@ export interface components {
                 artists: {
                     id: string;
                     name: string;
+                    nameEn?: string | null;
+                    nameKo?: string | null;
+                    nextDate?: string | null;
+                    /** @enum {string|null} */
+                    swellTier?: "CALM" | "MID" | "BIG" | null;
                     thumbCopyright: {
                         id: string;
                         license: string;
@@ -8507,6 +9803,7 @@ export interface components {
                         owner: string;
                     } | null;
                     thumbUrl: string | null;
+                    upcomingCount?: number;
                 }[];
                 category: {
                     id: string;
@@ -8620,93 +9917,11 @@ export interface components {
             /** @enum {string} */
             type: "concert";
         };
-        EventRsvpCountsWithMeDTOSchema: {
-            BROKEN_HEART?: {
-                count: number;
-                me: boolean;
-            };
-            BURNING?: {
-                count: number;
-                me: boolean;
-            };
-            CONFETTI?: {
-                count: number;
-                me: boolean;
-            };
-            GOING?: {
-                count: number;
-                me: boolean;
-            };
-            HEART?: {
-                count: number;
-                me: boolean;
-            };
-            MAYBE?: {
-                count: number;
-                me: boolean;
-            };
-            NOT_GOING?: {
-                count: number;
-                me: boolean;
-            };
-            PARTY?: {
-                count: number;
-                me: boolean;
-            };
-            PRAY?: {
-                count: number;
-                me: boolean;
-            };
-            ROCKET?: {
-                count: number;
-                me: boolean;
-            };
-            SAD?: {
-                count: number;
-                me: boolean;
-            };
-            SMILE?: {
-                count: number;
-                me: boolean;
-            };
+        EventGoingCountDTOSchema: {
+            count: number;
         };
-        EventRsvpDTOSchema: {
-            category?: {
-                id: string;
-                name: string;
-            };
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            date: string;
-            entryTicketCapacity?: number | null;
-            /** Format: uuid */
-            id: string;
-            interestedCount: number;
-            isSubscribed?: boolean;
-            mainPoster: {
-                copyright: {
-                    id: string;
-                    license: string;
-                    licenseURL: string;
-                    owner: string;
-                } | null;
-                url: string | null;
-            } | null;
-            mainVenue: {
-                name: string;
-            } | null;
-            plainVenueText: string | null;
-            slug: string | null;
-            status: "DRAFT" | "PUBLISHED" | unknown;
-            title: string;
-            viewCount?: number;
-        };
-        EventRsvpUpdateActionDTOSchema: {
-            /** @enum {string} */
-            action: "TOGGLE";
-            /** @enum {string} */
-            emoji: "BURNING" | "CONFETTI" | "HEART" | "PARTY" | "PRAY" | "ROCKET" | "SAD" | "BROKEN_HEART" | "SMILE" | "GOING" | "MAYBE" | "NOT_GOING";
+        EventsCountDTOSchema: {
+            count: number;
         };
         EventStatsDTOSchema: {
             thisWeek: number;
@@ -8918,6 +10133,31 @@ export interface components {
             /** Format: uuid */
             id: string;
         };
+        FollowHostBodyDTOSchema: {
+            /** @enum {boolean} */
+            consent: true;
+        };
+        ForecastDTOSchema: {
+            region: string;
+            windows: components["schemas"]["ForecastWindowDTOSchema"][];
+        };
+        ForecastWindowDTOSchema: {
+            /** @description 같은 구간 지난 8주 평균 건수 */
+            baseline: number;
+            count: number;
+            /** @description ISO · 미포함 */
+            end: string;
+            picks: {
+                event: components["schemas"]["ConcertDTOSchema"];
+                swell: boolean;
+            }[];
+            /** @description count / baseline · 평소 0건이면 null */
+            ratio: number | null;
+            /** @description ISO · 포함 */
+            start: string;
+            /** @enum {string} */
+            when: "tonight" | "weekend" | "next-week";
+        };
         GenreFeedDTOSchema: {
             data: {
                 artists: {
@@ -8974,6 +10214,21 @@ export interface components {
             count: number;
             genre: string;
         }[];
+        HostFollowDTOSchema: {
+            following: boolean;
+        };
+        HostKopisSearchDTOSchema: {
+            results: {
+                endDate?: string;
+                id: string;
+                posterUrl?: string;
+                startDate: string;
+                /** @enum {string} */
+                status: "upcoming" | "ongoing" | "ended";
+                title: string;
+                venue: string;
+            }[];
+        };
         LocationCityDTOSchema: {
             geohash: string | null;
             id: string;
@@ -9045,6 +10300,7 @@ export interface components {
                 slug: string;
                 tagline: string | null;
                 upcomingEventCount: number;
+                windowEventCount?: number;
             } | null;
         };
         MyReviewDTOSchema: {
@@ -9199,7 +10455,70 @@ export interface components {
             };
             totalCount: number;
         };
-        SearchDTOSchema: {
+        RsvpCheckInBodyDTOSchema: {
+            code: string;
+        };
+        RsvpCheckInDTOSchema: {
+            code: string;
+            scannedAt: string;
+        };
+        RsvpHubDTOSchema: {
+            hosting: {
+                canceled: boolean;
+                capacity: number;
+                date: string;
+                drop: components["schemas"]["DropLinkDTOSchema"];
+                going: number;
+                in: number;
+                open: boolean;
+                slug: string;
+                title: string;
+                venue: string | null;
+            }[];
+            tickets: {
+                canceled: boolean;
+                code: string;
+                date: string;
+                drop: components["schemas"]["DropLinkDTOSchema"] & unknown;
+                scannedAt: string | null;
+                slug: string;
+                title: string;
+                venue: string | null;
+            }[];
+        };
+        RsvpManageDTOSchema: {
+            canceled: boolean;
+            capacity: number;
+            concertId: string;
+            date: string;
+            drop: components["schemas"]["DropLinkDTOSchema"];
+            going: number;
+            in: number;
+            left: number;
+            open: boolean;
+            roster: {
+                code: string;
+                scannedAt: string | null;
+            }[];
+            slug: string;
+            title: string;
+            venue: string | null;
+            venueId: string | null;
+        };
+        RsvpPoolStatsDTOSchema: {
+            available: number;
+            cancelled: number;
+            capacity: number;
+            claimed: number;
+            open: boolean;
+            used: number;
+        } | null;
+        SearchListQueryStringDTOSchema: {
+            keyword: string;
+            /** @enum {string} */
+            type?: "artist" | "venue" | "concert";
+        };
+        SearchResultDTOSchema: {
             id: string;
             name: string;
             profileImgUrl: string | null;
@@ -9215,6 +10534,7 @@ export interface components {
         } | {
             /** Format: date-time */
             date: string | null;
+            endDate: string | null;
             id: string;
             locationCityId: string;
             slug: string | null;
@@ -9223,11 +10543,6 @@ export interface components {
             /** @enum {string} */
             type: "concert";
             venueTitle: string;
-        };
-        SearchListQueryStringDTOSchema: {
-            keyword: string;
-            /** @enum {string} */
-            type?: "artist" | "venue" | "concert";
         };
         SubscribeArtistBodyDTOSchema: {
             /** Format: uuid */
@@ -9311,6 +10626,18 @@ export interface components {
         UpdateReviewBodyDTOSchema: {
             body: string;
             rating: number;
+        };
+        UpdateRsvpBodyDTOSchema: {
+            capacity?: number;
+            open?: boolean;
+            place?: {
+                venueId: string;
+            } | {
+                plainVenueText: string;
+            };
+            /** Format: date-time */
+            startsAt?: string;
+            title?: string;
         };
         UpdateUserPreferencesBodyDTOSchema: {
             APP_FEATURE_NOTIFICATION_EMAIL?: {

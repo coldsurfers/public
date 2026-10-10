@@ -719,67 +719,6 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         return response.data
       },
     },
-    eventRsvp: {
-      queryKeys: {
-        all: ['event-rsvp'],
-        counts: ({ eventId, anonymousUserId }: { eventId: string; anonymousUserId: string }) => [
-          'event-rsvp',
-          'counts',
-          { eventId, anonymousUserId },
-        ],
-        list: ['event-rsvp', 'list'],
-      },
-      getEventRsvpCounts: async ({
-        eventId,
-        anonymousUserId,
-      }: {
-        eventId: string
-        anonymousUserId: string
-      }) => {
-        const response = await baseFetchClient.GET('/v1/event-rsvp/{eventId}/counts', {
-          params: {
-            path: { eventId },
-          },
-          headers: {
-            'x-anonymous-user-id': anonymousUserId,
-          },
-        })
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-      updateEventRsvp: async ({
-        eventId,
-        action,
-        anonymousUserId,
-      }: {
-        eventId: string
-        action: components['schemas']['EventRsvpUpdateActionDTOSchema']
-        anonymousUserId: string
-      }) => {
-        const response = await baseFetchClient.POST('/v1/event-rsvp/{eventId}/counts', {
-          params: {
-            path: { eventId },
-          },
-          body: action,
-          headers: {
-            'x-anonymous-user-id': anonymousUserId,
-          },
-        })
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-      getEventRsvpList: async () => {
-        const response = await baseFetchClient.GET('/v1/event-rsvp')
-        if (response.error) {
-          throw new OpenApiError(response.error)
-        }
-        return response.data
-      },
-    },
     eventCategory: {
       queryKeys: {
         all: ['event-category'],
