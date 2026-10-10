@@ -1,5 +1,11 @@
 # @coldsurfers/api-sdk
 
+## 4.6.0
+
+### Minor Changes
+
+- [#266](https://github.com/coldsurfers/public/pull/266) [`d5487b3`](https://github.com/coldsurfers/public/commit/d5487b30062aa65aac2c00c1da77f70577518947) Thanks [@yungblud](https://github.com/yungblud)! - billets-server OpenAPI 를 다시 덤프 — `GET /v2/areas` 의 `from` · `to` 쿼리와 `windowEventCount` 추가, 그동안 밀린 경로 25개 추가 · 서버에서 사라진 RSVP 경로 4개와 그 래퍼(`eventRsvp`) 제거
+
 ## 4.5.0
 
 ### Minor Changes
