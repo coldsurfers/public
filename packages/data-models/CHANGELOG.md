@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.3
+
+### Patch Changes
+
+- [#267](https://github.com/coldsurfers/public/pull/267) [`cf3e04e`](https://github.com/coldsurfers/public/commit/cf3e04e7ed91002e24d0b7f11d52e3cbc9e5443a) Thanks [@yungblud](https://github.com/yungblud)! - `GET /v2/events` · `/v2/events/count` 에 `area`(스팟 slug) 쿼리 추가. data-models 는 서버가 넓혀 쓰던 `period` · `genres` 도 정본으로 옮긴다.
+
 ## 0.20.2
 
 ### Patch Changes
