@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.2
+
+### Patch Changes
+
+- [#264](https://github.com/coldsurfers/public/pull/264) [`c342f92`](https://github.com/coldsurfers/public/commit/c342f9254c1532e6158bde4b9078c0a836f7373a) Thanks [@yungblud](https://github.com/yungblud)! - `AreaDetailDTO.stats` 를 선택으로 — billets-server 가 아직 계산하지 않는 값이라, 0.20.x 로 올리면 서버 타입이 깨졌다
+
 ## 0.20.1
 
 ### Patch Changes
