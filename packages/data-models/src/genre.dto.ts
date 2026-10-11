@@ -142,7 +142,7 @@ export const CHIP_SETS = {
     'civic-orchestra',
     'house-concert',
     'year-end',
-    'christmas', // Gigs · Dance 와 공유
+    'christmas', // Gigs · Dance · Theatre 와 공유
     'tango',
     'visiting', // Gigs · Dance 와 공유
   ],
@@ -186,6 +186,7 @@ export const CHIP_SETS = {
     'theatre-festival',
     'puppet',
     'madang',
+    'christmas', // 연극으로 분류된 「호두까기 인형」 · 크리스마스 아동극
   ],
 } as const satisfies Record<EventCategoryName, readonly GenreChip[]>
 
