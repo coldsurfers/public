@@ -10,6 +10,40 @@ import { EVENT_CATEGORIES, type EventCategoryName } from './event-category.dto'
 // 자기 정의를 지키게 되고, 나중에 폴백을 Artist 로 승격시킬 때 기존 라벨을 지울 필요가 없다.
 
 /**
+ * 무드 · 상황 칩 (2026-10-11) — 장르가 아니라 관객이 부르는 이름이다(「대학로」·「내한」·「브런치」).
+ * 아티스트가 아니라 **공연 하나**의 속성이라 `ConcertLabel` 에만 붙는다. 그래서 공연의 칩을 셀 때
+ * 아티스트가 있어도 이 칩들은 라벨에서 더한다(편성 칩은 여전히 아티스트가 이긴다).
+ * 카테고리를 넘는 칩(`visiting`·`christmas`·`festival`)은 하나만 둔다.
+ */
+export const MOOD_CHIPS = [
+  'visiting',
+  'christmas',
+  'festival',
+  'national-tour',
+  'edm',
+  'ccm',
+  'brunch-concert',
+  'talk-concert',
+  'civic-orchestra',
+  'house-concert',
+  'year-end',
+  'tango',
+  'daehakro',
+  'human-drama',
+  'period-drama',
+  'classic-play',
+  'grand-musical',
+  'theatre-festival',
+  'puppet',
+  'madang',
+  'kids-gugak',
+  'yeonhui',
+  'new-gugak',
+  'gugak-solo',
+  'kids-dance',
+] as const
+
+/**
  * KOPIS-fit 장르 칩 어휘. 서구 canon(`PaulRockstarGenre`)과 어휘를 공유하지 않는다 —
  * 공연 풀이 사실상 전량 국내라 트로트·아이돌을 담을 칸이 캐논에 없다.
  *
@@ -61,6 +95,7 @@ export const GENRE_CHIPS = [
   'mystery-thriller',
   'comedy',
   'horror',
+  ...MOOD_CHIPS,
 ] as const
 export type GenreChip = (typeof GENRE_CHIPS)[number]
 
@@ -85,6 +120,12 @@ export const CHIP_SETS = {
     'overseas-pop',
     'crossover-vocal',
     'gugak-fusion',
+    'visiting',
+    'national-tour',
+    'festival',
+    'christmas',
+    'edm',
+    'ccm',
   ],
   Classic: [
     'orchestra',
@@ -96,21 +137,56 @@ export const CHIP_SETS = {
     'family-classical',
     'film-score',
     'crossover-vocal', // Gigs 와 공유
+    'brunch-concert',
+    'talk-concert',
+    'civic-orchestra',
+    'house-concert',
+    'year-end',
+    'christmas', // Gigs · Dance 와 공유
+    'tango',
+    'visiting', // Gigs · Dance 와 공유
   ],
-  Dance: ['ballet', 'contemporary-dance', 'korean-dance', 'street-dance'],
+  Dance: [
+    'ballet',
+    'contemporary-dance',
+    'korean-dance',
+    'street-dance',
+    'kids-dance',
+    'christmas', // 「호두까기인형」
+    'visiting',
+  ],
   'Korean-Traditional': [
     'gugak-orchestra',
     'pansori',
     'minyo',
     'changgeuk',
     'gugak-fusion', // Gigs 와 공유
+    'kids-gugak',
+    'yeonhui',
+    'new-gugak',
+    'gugak-solo',
+    'festival', // Gigs 와 공유
   ],
   // 칩을 `Artist`(사람이 아니라 **작품·IP 개체**)가 보유하는 유일한 카테고리다 —
   // 제목의 92.7% 에 형식어가 없어 공연 단위 라벨링이 성립하지 않는다.
   // 배치 20260814-1 로 개체 22개·128건이 붙었다(커버리지 14.9%).
   // ⚠️ 실재고는 `family-kids` 뿐이고 나머지 4칩은 아직 0건이다 — 어휘 전체를 여는 선택(2026-08-14).
   // 정본: specs/web-next/concert-chip-expansion.md
-  Theatre: ['family-kids', 'romantic-comedy', 'mystery-thriller', 'comedy', 'horror'],
+  Theatre: [
+    'family-kids',
+    'romantic-comedy',
+    'mystery-thriller',
+    'comedy',
+    'horror',
+    'daehakro',
+    'human-drama',
+    'period-drama',
+    'classic-play',
+    'grand-musical',
+    'theatre-festival',
+    'puppet',
+    'madang',
+  ],
 } as const satisfies Record<EventCategoryName, readonly GenreChip[]>
 
 // ─── 장르 칩 공연 피드 (`GET /v2/events/by-genre`) ────────────────────────────
