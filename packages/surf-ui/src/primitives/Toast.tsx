@@ -37,17 +37,19 @@ const ToastContext = createContext<ToastApi | null>(null)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<ToastState | null>(null)
+  const [open, setOpen] = useState(false)
   const timerRef = useRef<number | null>(null)
 
   const hide = useCallback(() => {
     if (timerRef.current !== null) window.clearTimeout(timerRef.current)
     timerRef.current = null
-    setToast(null)
+    setOpen(false)
   }, [])
 
   const show = useCallback(
     (message: string, tone: ToastTone = 'neutral', options?: ToastOptions) => {
       setToast({ message, tone, ...options })
+      setOpen(true)
       if (timerRef.current !== null) window.clearTimeout(timerRef.current)
       timerRef.current = window.setTimeout(
         hide,
@@ -65,7 +67,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className={toastStyle({ visible: Boolean(toast), stacked: Boolean(toast?.description) })}
+        className={toastStyle({ visible: open, stacked: Boolean(toast?.description) })}
       >
         {toast?.tone === 'success' ? <span aria-hidden>✓</span> : null}
         {toast?.tone === 'error' ? <span aria-hidden className={toastErrorDot} /> : null}
