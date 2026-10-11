@@ -1,6 +1,6 @@
 {
   "name": "@coldsurfers/data-models",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "description": "COLDSURF shared zod schemas and DTOs — the wire contract between servers, web surfaces, and native apps.",
   "keywords": [
     "dto",
