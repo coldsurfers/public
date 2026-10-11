@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.4
+
+### Patch Changes
+
+- [#271](https://github.com/coldsurfers/public/pull/271) [`e6ec1f5`](https://github.com/coldsurfers/public/commit/e6ec1f53ea9bf887d290eb6a2178af58696f8f0e) Thanks [@yungblud](https://github.com/yungblud)! - 장르 칩에 무드 · 상황 칩 25개 추가 (대학로 · 내한 · 브런치 등) — `MOOD_CHIPS` · `GENRE_CHIPS` · `CHIP_SETS`
+
 ## 0.20.3
 
 ### Patch Changes
