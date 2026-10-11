@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.5
+
+### Patch Changes
+
+- [#273](https://github.com/coldsurfers/public/pull/273) [`1517464`](https://github.com/coldsurfers/public/commit/15174643832407dd22359a3a5692e8b65a3db3c1) Thanks [@yungblud](https://github.com/yungblud)! - `CHIP_SETS.Theatre` 에 `christmas` 추가 — 연극으로 분류된 「호두까기 인형」 · 크리스마스 아동극
+
 ## 0.20.4
 
 ### Patch Changes
