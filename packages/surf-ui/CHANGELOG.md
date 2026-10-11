@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.40.2
+
+### Patch Changes
+
+- [#269](https://github.com/coldsurfers/public/pull/269) [`7503bdd`](https://github.com/coldsurfers/public/commit/7503bdd232b9fab0517d30bb7a44f1e1c9a672b4) Thanks [@yungblud](https://github.com/yungblud)! - Toast 가 사라지는 전환 동안 마지막 내용을 유지한다 — 글자가 먼저 비면서 pill 폭이 줄던 문제. 숨은 뒤엔 `visibility: hidden` 으로 액션 버튼 클릭과 보조기기 노출을 막는다.
+
 ## 0.40.1
 
 ### Patch Changes
