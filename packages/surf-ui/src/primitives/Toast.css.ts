@@ -32,7 +32,7 @@ export const toast = recipe({
     fontSize: 13.5,
     boxShadow: vars.shadow.md,
     pointerEvents: 'none',
-    transitionProperty: 'opacity, transform',
+    transitionProperty: 'opacity, transform, visibility',
     transitionDuration: '200ms',
     '@media': {
       [media.tablet]: { bottom: 32 },
@@ -43,7 +43,11 @@ export const toast = recipe({
     /** 떠 있는가 — 위치 이동은 언제나 `translateX(-50%)` 위에 얹힌다. */
     visible: {
       true: inComponentsLayer({ transform: 'translate(-50%, 0)', opacity: 1 }),
-      false: inComponentsLayer({ transform: 'translate(-50%, 12px)', opacity: 0 }),
+      false: inComponentsLayer({
+        transform: 'translate(-50%, 12px)',
+        opacity: 0,
+        visibility: 'hidden',
+      }),
     },
     /**
      * 두 줄(`description`) 상자 — Figma `3743:1364`. 알약 모서리는 두 줄 높이에서 타원이 되므로
