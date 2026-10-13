@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.41.0
+
+### Minor Changes
+
+- [#275](https://github.com/coldsurfers/public/pull/275) [`07afa74`](https://github.com/coldsurfers/public/commit/07afa74b3f0aa1fda99e7eb0b21f02ebfb03ec16) Thanks [@yungblud](https://github.com/yungblud)! - `sprinkles({ textBox: 'cap' })` 추가 — 글자 상자를 대문자 높이 ~ 기준선으로 잘라(`text-box: trim-both cap alphabetic`) 알약 · 칩 안 글자를 눈으로 가운데에 세운다. Pretendard 위 여백 때문에 0.5–1px 뜨던 것을 패딩 보정 없이 맞춘다. flex 상자 자신이 아니라 안쪽 블록 한 겹에 건다.
+
 ## 0.40.2
 
 ### Patch Changes
