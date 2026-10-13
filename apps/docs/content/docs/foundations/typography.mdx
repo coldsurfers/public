@@ -101,6 +101,25 @@ mono 지배가 12px 위와 뚜렷하게 갈렸고, 파일당 1~2종만 쓰여 **
   그쪽 값이 이미 자간을 정하므로 이 토큰을 덧대지 않습니다.
 </Callout>
 
+## text box
+
+알약 · 칩처럼 **상자 안 한 줄 글자**를 눈으로 가운데에 세울 때 씁니다.
+
+```tsx
+<span className={pill}>
+  <span className={sprinkles({ display: 'block', textBox: 'cap' })}>새 11</span>
+</span>
+```
+
+`textBox: 'cap'` 은 글자 상자를 대문자 높이에서 기준선까지 자릅니다(`text-box: trim-both cap alphabetic`).
+Pretendard 는 위 여백이 아래보다 커서, 상자만 flex 로 가운데 두면 글자가 0.5–1px 뜹니다.
+패딩 1px 로 메우면 크기가 바뀔 때마다 다시 재야 합니다.
+
+<Callout tone="warning">
+  **flex · grid 상자 자신에는 먹지 않습니다.** 안쪽 블록 한 겹에 겁니다. 지원하지 않는
+  브라우저(Firefox)에서는 자르지 않은 원래 상자로 남습니다 — 깨지지는 않습니다.
+</Callout>
+
 ## editorial type
 
 매거진 톤의 합성 타이포 슬롯입니다. `eyebrow` · `display` · `caption` 세 그룹이 있고,
