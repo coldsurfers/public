@@ -123,3 +123,20 @@ export const BUTTON_SPEC = {
   size: SIZE,
   variant: VARIANT,
 } as const
+
+/**
+ * 정사각 `IconButton` 의 크기 축. `ButtonSize` 를 따르지 않는다 — 저 축은 *라벨이 있는 컨트롤의
+ * 높이*고, 여기는 **손가락이 닿는 정사각**이다. 44 는 iOS HIG 최소 터치 타깃이라 `md` 의
+ * 기본값으로 둔다 — 시안 치수가 아니라 접근성 하한이다.
+ */
+export type IconButtonSize = 'sm' | 'md'
+
+/**
+ * `IconButton` 의 치수. variant → 색은 `BUTTON_SPEC.variant` 를 그대로 읽는다 — 색 어휘를
+ * 하나 더 만들면 같은 `outline` 이 두 컴포넌트에서 다른 뜻이 될 수 있다.
+ */
+export const ICON_BUTTON_SPEC = {
+  side: { sm: 36, md: 44 } satisfies Record<IconButtonSize, number>,
+  /** 기본 모서리. `shape="pill"` 이면 `BUTTON_SPEC.pillRadius` 로 원이 된다. */
+  radius: 'md' satisfies RadiusKey,
+} as const

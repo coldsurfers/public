@@ -1,5 +1,5 @@
 /**
- * React primitives — Button · Chip · Badge · Field · Modal · …
+ * React primitives — Button · IconButton · TextButton · Chip · Badge · Field · Modal · …
  *
  * ⚠️ **흡수에는 상한이 있다.** 시안 컨트롤 높이가 34/35/36/46/48 다섯 종이라 그대로 받으면
  *    `Button.size` 가 7종이 된다 — 그건 추상화가 아니라 목록이다. variant 를 늘리기 전에
@@ -19,6 +19,7 @@ export { cx } from './cx'
 export { EmptyState, type EmptyStateProps } from './EmptyState'
 export { Eyebrow, type EyebrowProps } from './Eyebrow'
 export { Field, type FieldProps } from './Field'
+export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { KeyValueRow, type KeyValueRowProps } from './KeyValueRow'
 export { Modal, type ModalPlacement, type ModalProps } from './Modal'
 export { Note, type NoteProps, type NoteTone } from './Note'
@@ -49,6 +50,7 @@ export {
   type TextTag,
   type TextTone,
 } from './Text'
+export { TextButton, type TextButtonProps, type TextButtonTone } from './TextButton'
 export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
 export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export {

@@ -1,13 +1,9 @@
 import { style } from '@vanilla-extract/css'
 import { recipe } from '@vanilla-extract/recipes'
-import {
-  type ButtonColor,
-  type ButtonSize,
-  type ButtonVariant,
-  BUTTON_SPEC as spec,
-} from '../contract'
+import { type ButtonSize, BUTTON_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { surfaceStyle } from './button-surface'
 
 /**
  * 액션 버튼의 스타일 계약.
@@ -40,11 +36,6 @@ import { vars } from '../css/contract.css'
  * 라벨을 세로 가운데로 잡아주므로 세로 padding 은 필요 없다. `Chip`·`Select` 도 같은 규율.
  */
 
-/** `ButtonColor` → CSS 값. native `Button.tsx` 의 `colorFor` 와 짝이다. */
-function colorFor(color: ButtonColor): string {
-  return color === 'white' || color === 'transparent' ? color : vars.color[color]
-}
-
 /**
  * 치수 — 스케일 안이면 토큰 var, 밖이면 px 리터럴이다(`cta` 만 후자).
  * 판정을 `BUTTON_SPEC` 이 값의 종류로 이미 해놨으므로 여기선 옮기기만 한다.
@@ -56,21 +47,6 @@ function sizeStyle(size: ButtonSize) {
     paddingInline: s.paddingInline,
     fontSize: typeof s.fontSize === 'number' ? `${s.fontSize}px` : vars.fontSize[s.fontSize],
     borderRadius: typeof s.radius === 'number' ? `${s.radius}px` : vars.radius[s.radius],
-  }
-}
-
-/**
- * 바탕·글자·테두리. `:hover` 는 짝이 없어 호출부가 얹는다.
- *
- * 테두리를 **shorthand 로** 낸다 — base 의 `border: none` 을 longhand 로 덮으면 우선순위가
- * 소스 순서에 걸려 조용히 사라진다.
- */
-function surfaceStyle(variant: ButtonVariant) {
-  const v = spec.variant[variant]
-  return {
-    background: colorFor(v.background),
-    color: colorFor(v.label),
-    ...('border' in v ? { border: `${v.border.width}px solid ${colorFor(v.border.color)}` } : null),
   }
 }
 
