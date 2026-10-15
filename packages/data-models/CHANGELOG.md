@@ -1,5 +1,11 @@
 # @coldsurfers/data-models
 
+## 0.20.6
+
+### Patch Changes
+
+- [#277](https://github.com/coldsurfers/public/pull/277) [`05663c4`](https://github.com/coldsurfers/public/commit/05663c441ff026a5351ab8a87b10be11985b933b) Thanks [@yungblud](https://github.com/yungblud)! - 공연장 상세에 `upcomingCount` · `previousCount` 를 더하고, 공연장 공연 더보기 DTO(`GetVenueEventsQueryDTOSchema` · `VenueEventsPageDTOSchema`)를 추가
+
 ## 0.20.5
 
 ### Patch Changes
