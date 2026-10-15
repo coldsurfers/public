@@ -2261,6 +2261,12 @@
                 }
               ]
             }
+          },
+          "upcomingCount": {
+            "type": "integer"
+          },
+          "previousCount": {
+            "type": "integer"
           }
         },
         "required": [
@@ -2273,7 +2279,176 @@
           "memo",
           "thumbnailUrl",
           "upcomingEvents",
-          "previousEvents"
+          "previousEvents",
+          "upcomingCount",
+          "previousCount"
+        ]
+      },
+      "VenueEventsPageDTOSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "concert"
+                      ]
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "date": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "mainPoster": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "copyright": {
+                              "type": "object",
+                              "nullable": true,
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "owner": {
+                                  "type": "string"
+                                },
+                                "license": {
+                                  "type": "string"
+                                },
+                                "licenseURL": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "owner",
+                                "license",
+                                "licenseURL"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "url",
+                            "copyright"
+                          ]
+                        },
+                        "mainVenue": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        },
+                        "slug": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "plainVenueText": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "status": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "DRAFT"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "PUBLISHED"
+                              ]
+                            },
+                            {
+                              "nullable": true
+                            }
+                          ]
+                        },
+                        "viewCount": {
+                          "type": "number"
+                        },
+                        "isSubscribed": {
+                          "type": "boolean"
+                        },
+                        "category": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name"
+                          ]
+                        },
+                        "entryTicketCapacity": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "date",
+                        "mainPoster",
+                        "mainVenue",
+                        "slug",
+                        "plainVenueText",
+                        "status"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "data"
+                  ]
+                }
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
         ]
       },
       "VenueSubscribeDTOSchema": {
@@ -2686,6 +2861,625 @@
           "areaId"
         ]
       },
+      "BoardDTOSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "axis": {
+            "type": "string",
+            "enum": [
+              "when",
+              "genre",
+              "mood",
+              "venue",
+              "area"
+            ]
+          },
+          "rule": {
+            "$ref": "#/components/schemas/BoardRuleDTOSchema"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "newThisWeek": {
+            "type": "integer"
+          },
+          "covers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "axis",
+          "rule",
+          "count",
+          "newThisWeek",
+          "covers"
+        ]
+      },
+      "BoardRuleDTOSchema": {
+        "type": "object",
+        "properties": {
+          "when": {
+            "type": "string",
+            "enum": [
+              "weekend"
+            ]
+          },
+          "chips": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "area": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          }
+        }
+      },
+      "BoardFollowDTOSchema": {
+        "type": "object",
+        "properties": {
+          "boardId": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "notify": {
+            "type": "boolean"
+          },
+          "newCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "boardId",
+          "slug",
+          "notify",
+          "newCount"
+        ]
+      },
+      "BoardFollowStateDTOSchema": {
+        "type": "object",
+        "properties": {
+          "boardId": {
+            "type": "string"
+          },
+          "following": {
+            "type": "boolean"
+          },
+          "notify": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "boardId",
+          "following",
+          "notify"
+        ]
+      },
+      "PutBoardToggleBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "on": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "on"
+        ]
+      },
+      "NotifyBoardFollowersResultDTO": {
+        "type": "object",
+        "properties": {
+          "follows": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "updated": {
+            "type": "integer"
+          },
+          "skipped": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "follows",
+          "created",
+          "updated",
+          "skipped"
+        ]
+      },
+      "PickBoardDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "PRIVATE"
+            ]
+          },
+          "count": {
+            "type": "integer"
+          },
+          "covers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "concertIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "visibility",
+          "count",
+          "covers",
+          "concertIds",
+          "createdAt"
+        ]
+      },
+      "PostPickBoardBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "concertIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "PickBoardDetailDTO": {
+        "type": "object",
+        "properties": {
+          "board": {
+            "$ref": "#/components/schemas/PickBoardDTO"
+          },
+          "isMine": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventDTOSchema"
+            }
+          }
+        },
+        "required": [
+          "board",
+          "isMine",
+          "items"
+        ]
+      },
+      "BoardItemStateDTO": {
+        "type": "object",
+        "properties": {
+          "boardId": {
+            "type": "string"
+          },
+          "concertId": {
+            "type": "string"
+          },
+          "saved": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "boardId",
+          "concertId",
+          "saved"
+        ]
+      },
+      "PatchPickBoardBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TopicNotificationDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "BOARD_NEW"
+            ]
+          },
+          "topic": {
+            "type": "string"
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "board": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "slug",
+              "name"
+            ]
+          },
+          "count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "topic",
+          "isRead",
+          "createdAt",
+          "board",
+          "count"
+        ]
+      },
+      "PutDeviceBodyDTO": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "format": "uri"
+          },
+          "keys": {
+            "type": "object",
+            "properties": {
+              "p256dh": {
+                "type": "string",
+                "minLength": 1
+              },
+              "auth": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "p256dh",
+              "auth"
+            ]
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ]
+      },
+      "CreatePinDTOSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "id"
+        ]
+      },
+      "CreatePinBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "concert"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "venueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  }
+                },
+                "required": [
+                  "venueId"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "plainVenueText": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  }
+                },
+                "required": [
+                  "plainVenueText"
+                ]
+              }
+            ]
+          },
+          "plainVenueText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "imageKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventCategoryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "sourceUrl": {
+            "type": "string",
+            "maxLength": 2000,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "title",
+          "startsAt"
+        ]
+      },
+      "UpdatePinBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "areaSlug": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "line": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "contactUrl": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300,
+            "format": "uri"
+          }
+        }
+      },
+      "OpenPinTabsBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "capacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5000
+          },
+          "open": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "capacity"
+        ]
+      },
+      "RepostRequestBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      },
+      "PinImageDTOSchema": {
+        "type": "object",
+        "properties": {
+          "imageKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "imageKey",
+          "url"
+        ]
+      },
+      "PinImageErrorDTOSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNSUPPORTED_IMAGE",
+              "TOO_LARGE",
+              "FETCH_FAILED",
+              "DAILY_LIMIT",
+              "RATE_LIMITED",
+              "UNAVAILABLE"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "PinImageFileBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "required": [
+          "file"
+        ]
+      },
+      "PinImageUrlBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2000,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "LinkPreviewDTOSchema": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "uri"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "maxItems": 12
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "place": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "time": {
+            "type": "string",
+            "pattern": "^\\d{2}:\\d{2}$"
+          }
+        }
+      },
+      "LinkPreviewErrorDTOSchema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNSUPPORTED_URL",
+              "FETCH_FAILED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "LinkPreviewBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2000,
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
       "HostKopisSearchDTOSchema": {
         "type": "object",
         "properties": {
@@ -2812,6 +3606,27 @@
             "minimum": 1,
             "maximum": 5000
           },
+          "areaSlug": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "line": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "contactUrl": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300,
+            "format": "uri"
+          },
+          "open": {
+            "type": "boolean"
+          },
           "locationCityId": {
             "type": "string",
             "minLength": 1,
@@ -2884,6 +3699,37 @@
           "drop": {
             "$ref": "#/components/schemas/DropLinkDTOSchema"
           },
+          "area": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "slug",
+              "name"
+            ]
+          },
+          "line": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string",
+            "nullable": true
+          },
           "going": {
             "type": "integer"
           },
@@ -2924,6 +3770,11 @@
           "open",
           "canceled",
           "drop",
+          "area",
+          "line",
+          "contactUrl",
+          "createdAt",
+          "updatedAt",
           "going",
           "in",
           "left",
@@ -2979,8 +3830,101 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 5000
+          },
+          "areaSlug": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "line": {
+            "type": "string",
+            "nullable": true,
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "contactUrl": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 300,
+            "format": "uri"
           }
         }
+      },
+      "MyPinsDTOSchema": {
+        "type": "object",
+        "properties": {
+          "pins": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "venue": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "area": {
+                  "type": "object",
+                  "nullable": true,
+                  "properties": {
+                    "slug": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "slug",
+                    "name"
+                  ]
+                },
+                "capacity": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "hidden": {
+                  "type": "object",
+                  "nullable": true,
+                  "properties": {
+                    "until": {
+                      "type": "string"
+                    },
+                    "requestedAt": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "until",
+                    "requestedAt"
+                  ]
+                }
+              },
+              "required": [
+                "slug",
+                "title",
+                "date",
+                "venue",
+                "area",
+                "capacity",
+                "hidden"
+              ]
+            }
+          }
+        },
+        "required": [
+          "pins"
+        ]
       },
       "RsvpCheckInDTOSchema": {
         "type": "object",
@@ -3163,6 +4107,29 @@
         },
         "required": [
           "consent"
+        ]
+      },
+      "ReportEventBodyDTOSchema": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "SPAM",
+              "ABUSE",
+              "PERSONAL_INFO",
+              "ILLEGAL",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "reason"
         ]
       },
       "ArtistDetailDTOSchema": {
@@ -8660,13 +9627,26 @@
               },
               "id": {
                 "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "upcomingCount": {
+                "type": "integer"
+              },
+              "posterUrl": {
+                "type": "string",
+                "nullable": true
               }
             },
             "required": [
               "type",
               "name",
               "profileImgUrl",
-              "id"
+              "id",
+              "slug",
+              "upcomingCount",
+              "posterUrl"
             ]
           },
           {
@@ -9710,6 +10690,55 @@
             "required": false,
             "name": "area",
             "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            },
+            "required": false,
+            "name": "posted",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            },
+            "required": false,
+            "name": "noArea",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": false,
+            "name": "venue",
+            "in": "query"
           }
         ],
         "responses": {
@@ -9848,6 +10877,55 @@
             },
             "required": false,
             "name": "area",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            },
+            "required": false,
+            "name": "posted",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            },
+            "required": false,
+            "name": "noArea",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": false,
+            "name": "venue",
             "in": "query"
           }
         ],
@@ -10048,6 +11126,16 @@
           },
           "404": {
             "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "HIDDEN — 신고로 임시조치된 핀(올린 사람 본인에게는 200 + pin.hidden)",
             "content": {
               "application/json": {
                 "schema": {
@@ -11165,6 +12253,88 @@
         }
       }
     },
+    "/v2/venues/{id}/events": {
+      "get": {
+        "tags": [
+          "v2",
+          "venues"
+        ],
+        "summary": "공연장 공연 더보기 — 예정·지난 한 갈래를 cursor 로 한 쪽씩",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "upcoming",
+                "previous"
+              ]
+            },
+            "required": true,
+            "name": "when",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 24
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "venue events page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VenueEventsPageDTOSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "invalid cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/venues/{venueId}/views": {
       "get": {
         "tags": [
@@ -11852,6 +13022,1601 @@
         }
       }
     },
+    "/v2/boards": {
+      "get": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "보드 목록 — 건수 · 커버 포함. 건수 3 미만은 뺀다. from · until 이 없으면 주말 보드도 뺀다",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "boards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoardDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/board-follows": {
+      "get": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "내 보드 팔로우(인증 필수) — 보드마다 「새 N」. from · until 은 주말 보드 창",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "my board follows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoardFollowDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/board-follows/new": {
+      "get": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "내 보드의 새 공연(인증 필수) — 마지막으로 본 뒤 들어온 공연, 최신 등록 순 30건",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "new events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventDTOSchema"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}/follow": {
+      "put": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "보드 팔로우 켜기 · 끄기(인증 필수) — 켜면 알림도 켜진다",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutBoardToggleBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardFollowStateDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}/notify": {
+      "put": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "보드 알림 켜기 · 끄기(인증 필수) — 팔로우한 보드만",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutBoardToggleBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardFollowStateDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/notify": {
+      "post": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "보드 알림 만들기(운영 훅, 시크릿 헤더) — from · until 이 없으면 주말 보드는 건너뛴다",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?([+-]\\d{2}:\\d{2}|Z))?$"
+            },
+            "required": false,
+            "name": "until",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "x-cache-purge-secret",
+            "in": "header"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotifyBoardFollowersResultDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "not configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}/seen": {
+      "put": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "보드를 봤다(인증 필수) — 「새 N」을 0 으로. 팔로우한 보드만",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardFollowStateDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/boards": {
+      "get": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "내 고른 보드(인증 필수) — 최근 만든 순 · 보드마다 담긴 공연 id 와 표지 4장",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "my boards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PickBoardDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드 만들기(인증 필수) — 처음 담을 공연을 같이 받는다",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostPickBoardBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickBoardDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}/items": {
+      "get": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드 한 장과 담긴 공연 — 공개 보드이거나 내 보드",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "board",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickBoardDetailDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}/items/{concertId}": {
+      "put": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드에 담기(인증 필수 · 멱등)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "concertId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardItemStateDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드에서 빼기(인증 필수 · 멱등)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "concertId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardItemStateDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/boards/{boardId}": {
+      "patch": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드 이름 바꾸기(인증 필수)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchPickBoardBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "board",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickBoardDTO"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v2",
+          "boards"
+        ],
+        "summary": "고른 보드 지우기(인증 필수)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "boardId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "deleted"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/notifications": {
+      "get": {
+        "tags": [
+          "v2",
+          "notifications"
+        ],
+        "summary": "내 종류 · 토픽 알림(인증 필수) — 보드 새 공연 줄, 최신 순 50",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "topic notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopicNotificationDTO"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/users/me/devices": {
+      "put": {
+        "tags": [
+          "v2",
+          "notifications"
+        ],
+        "summary": "웹 푸시 기기 등록(인증 필수) — endpoint 로 upsert",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutDeviceBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "registered"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/pins": {
+      "post": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "핀 붙이기(인증 필수) — 제목 · 날짜만으로 공연 행(PUBLISHED). 꼬리표 풀 없음. 정본: specs/web-next/pin-create.md",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePinBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePinDTOSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "PAST_DATE · CATEGORY_NOT_FOUND · VENUE_NOT_FOUND · IMAGE_NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PIN_LIMITED — 임시조치(감춤)된 핀 3개 이상(약관 제19조 ⑦)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "내가 붙인 핀(인증 필수) — 내린 것 빼고 감춘 것 넣음. `/my/pins`",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyPinsDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/pins/{slug}": {
+      "patch": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "핀 더하기(인증 필수) — 붙인 사람만. 동네 · 한 줄 · 연락 링크",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePinBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "updated"
+          },
+          "400": {
+            "description": "AREA_NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "남의 것 · 없는 것 · 내린 것",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "핀 내리기(인증 필수) — 붙인 사람만. 지우지 않고 deletedAt(꼬리표를 열었으면 받은 입장권은 canceled)",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "taken down"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "남의 것 · 없는 것 · 내린 것",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/pins/{slug}/tabs": {
+      "post": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "꼬리표 나중에 열기(인증 필수) — 붙인 사람만. 풀을 한 번 만든다",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenPinTabsBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "opened"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "남의 것 · 없는 것 · 내린 것",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "ALREADY_OPEN — 풀이 이미 있다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/pins/{slug}/repost-request": {
+      "post": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "감춘 핀 재게시 요청(인증 필수) — 붙인 사람만 · 한 번. 약관 제19조 ⑤",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepostRequestBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "requested"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "남의 것 · 없는 것 · 감추지 않은 것",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "ALREADY_REQUESTED — 이미 요청했다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/pin-images": {
+      "post": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "핀 이미지 올리기(인증 필수) — 기기 파일(multipart) 또는 링크 이미지(JSON url)를 R2 에 복사. 정본: specs/yellownmusk/pin-create.md",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PinImageFileBodyDTOSchema"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinImageUrlBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "created — imageKey 를 POST /v2/host/pins 에 싣는다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageDTOSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "file · url 둘 다 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "TOO_LARGE — 파일 2MB · 링크 이미지 10MB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageErrorDTOSchema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "UNSUPPORTED_IMAGE — jpeg · png · webp 만",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageErrorDTOSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "FETCH_FAILED — 링크 이미지를 못 받음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageErrorDTOSchema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "DAILY_LIMIT — 하루 20장 · RATE_LIMITED — IP 분당 상한",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageErrorDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "UNAVAILABLE — R2 바인딩 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinImageErrorDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/host/link-preview": {
+      "post": {
+        "tags": [
+          "v2",
+          "host"
+        ],
+        "summary": "링크로 칸 채우기(인증 필수) — 붙여 넣은 링크에서 이미지 · 제목 · 장소 · 날짜를 읽는다. 저장 없음",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkPreviewBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ok — 잡힌 칸만. 0칸이면 {}",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkPreviewDTOSchema"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "UNSUPPORTED_URL · FETCH_FAILED — 못 읽음. 폼은 열린다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkPreviewErrorDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v2/host/kopis-events": {
       "get": {
         "tags": [
@@ -11916,7 +14681,7 @@
           "v2",
           "host"
         ],
-        "summary": "RSVP 열기(인증 필수) — 직접 쓴 공연 + 입장권 풀. 로그인한 누구나",
+        "summary": "게시판에 붙이기(인증 필수) — 직접 쓴 공연(PUBLISHED) + 입장권 풀 · 동네 · 한 줄 · 링크. 로그인한 누구나",
         "security": [
           {
             "AccessTokenAuth": []
@@ -11943,7 +14708,7 @@
             }
           },
           "400": {
-            "description": "venue · city · category not found, or past date",
+            "description": "venue · area · city · category not found, or past date",
             "content": {
               "application/json": {
                 "schema": {
@@ -12778,6 +15543,396 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/events/{eventId}/report": {
+      "post": {
+        "tags": [
+          "v2",
+          "events"
+        ],
+        "summary": "핀 신고(인증 필수) — 사유 다섯 중 하나. 두 번 신고해도 한 건",
+        "security": [
+          {
+            "AccessTokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "eventId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportEventBodyDTOSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "reported"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "없는 것 · KOPIS 공연(붙인 핀이 아님)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/artists/slug/{slug}": {
+      "get": {
+        "tags": [
+          "v2",
+          "artists"
+        ],
+        "summary": "아티스트 상세(slug) — 예정 총수 · 예정 최대 30 · 지난 공연 최근 5",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "required": true,
+            "name": "slug",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "artist detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "genres": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "upcomingCount": {
+                      "type": "integer"
+                    },
+                    "upcoming": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slug": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "city": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "venueName": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "posterUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ticketUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "lineupCount": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "slug",
+                          "title",
+                          "date",
+                          "city",
+                          "venueName",
+                          "posterUrl",
+                          "ticketUrl",
+                          "lineupCount"
+                        ]
+                      }
+                    },
+                    "past": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slug": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "city": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "venueName": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "posterUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ticketUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "lineupCount": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "slug",
+                          "title",
+                          "date",
+                          "city",
+                          "venueName",
+                          "posterUrl",
+                          "ticketUrl",
+                          "lineupCount"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "slug",
+                    "name",
+                    "genres",
+                    "upcomingCount",
+                    "upcoming",
+                    "past"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDTOSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/artists": {
+      "get": {
+        "tags": [
+          "v2",
+          "artists"
+        ],
+        "summary": "아티스트 목록 — Gigs 예정 공연이 있는 팀 · 30일 조회순 또는 다음 공연순",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "required": false,
+            "name": "genre",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "views",
+                "date"
+              ],
+              "default": "views"
+            },
+            "required": false,
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60,
+              "default": 24
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "artists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer"
+                    },
+                    "artists": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "genres": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "upcomingCount": {
+                            "type": "integer"
+                          },
+                          "nextEvent": {
+                            "type": "object",
+                            "properties": {
+                              "slug": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "date": {
+                                "type": "string"
+                              },
+                              "venueName": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "posterUrl": {
+                                "type": "string",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "slug",
+                              "title",
+                              "date",
+                              "venueName",
+                              "posterUrl"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "slug",
+                          "name",
+                          "genres",
+                          "upcomingCount",
+                          "nextEvent"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "total",
+                    "artists"
+                  ]
                 }
               }
             }

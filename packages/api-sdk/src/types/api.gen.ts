@@ -3598,6 +3598,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/artists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 아티스트 목록 — Gigs 예정 공연이 있는 팀 · 30일 조회순 또는 다음 공연순 */
+        get: {
+            parameters: {
+                query?: {
+                    before?: string;
+                    genre?: string;
+                    limit?: number;
+                    sort?: "views" | "date";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description artists */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            artists: {
+                                genres: string[];
+                                id: string;
+                                name: string;
+                                nextEvent: {
+                                    date: string;
+                                    posterUrl: string | null;
+                                    slug: string;
+                                    title: string;
+                                    venueName: string | null;
+                                };
+                                slug: string;
+                                upcomingCount: number;
+                            }[];
+                            total: number;
+                        };
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/artists/{artistId}/profile-images": {
         parameters: {
             query?: never;
@@ -3938,6 +4004,668 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/artists/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 아티스트 상세(slug) — 예정 총수 · 예정 최대 30 · 지난 공연 최근 5 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description artist detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            genres: string[];
+                            id: string;
+                            name: string;
+                            past: {
+                                city: string | null;
+                                date: string;
+                                lineupCount: number;
+                                posterUrl: string | null;
+                                slug: string;
+                                ticketUrl: string | null;
+                                title: string;
+                                venueName: string | null;
+                            }[];
+                            slug: string;
+                            upcoming: {
+                                city: string | null;
+                                date: string;
+                                lineupCount: number;
+                                posterUrl: string | null;
+                                slug: string;
+                                ticketUrl: string | null;
+                                title: string;
+                                venueName: string | null;
+                            }[];
+                            upcomingCount: number;
+                        };
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 보드 목록 — 건수 · 커버 포함. 건수 3 미만은 뺀다. from · until 이 없으면 주말 보드도 뺀다 */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    until?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description boards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardDTOSchema"][];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/{boardId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 고른 보드 지우기(인증 필수) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** 고른 보드 이름 바꾸기(인증 필수) */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PatchPickBoardBodyDTO"];
+                };
+            };
+            responses: {
+                /** @description board */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PickBoardDTO"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v2/boards/{boardId}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 보드 팔로우 켜기 · 끄기(인증 필수) — 켜면 알림도 켜진다 */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PutBoardToggleBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardFollowStateDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/{boardId}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 고른 보드 한 장과 담긴 공연 — 공개 보드이거나 내 보드 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description board */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PickBoardDetailDTO"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/{boardId}/items/{concertId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 고른 보드에 담기(인증 필수 · 멱등) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                    concertId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardItemStateDTO"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** 고른 보드에서 빼기(인증 필수 · 멱등) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                    concertId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardItemStateDTO"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/{boardId}/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 보드 알림 켜기 · 끄기(인증 필수) — 팔로우한 보드만 */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PutBoardToggleBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardFollowStateDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/{boardId}/seen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 보드를 봤다(인증 필수) — 「새 N」을 0 으로. 팔로우한 보드만 */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    boardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description state */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardFollowStateDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/boards/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 보드 알림 만들기(운영 훅, 시크릿 헤더) — from · until 이 없으면 주말 보드는 건너뛴다 */
+        post: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    until?: string;
+                };
+                header: {
+                    "x-cache-purge-secret": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description result */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NotifyBoardFollowersResultDTO"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description not configured */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -4860,14 +5588,19 @@ export interface paths {
                 query?: {
                     area?: string;
                     eventCategoryName?: string;
+                    from?: string;
                     genres?: string;
                     latitude?: number | null;
                     locationCityId?: string;
                     locationCityName?: string;
                     longitude?: number | null;
+                    noArea?: "true";
                     offset?: number | null;
                     period?: "upcoming" | "ongoing";
+                    posted?: "true";
                     size?: number | null;
+                    until?: string;
+                    venue?: string;
                 };
                 header?: never;
                 path?: never;
@@ -5196,6 +5929,73 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/events/{eventId}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 핀 신고(인증 필수) — 사유 다섯 중 하나. 두 번 신고해도 한 건 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    eventId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ReportEventBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description reported */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description 없는 것 · KOPIS 공연(붙인 핀이 아님) */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -5606,14 +6406,19 @@ export interface paths {
                 query?: {
                     area?: string;
                     eventCategoryName?: string;
+                    from?: string;
                     genres?: string;
                     latitude?: number | null;
                     locationCityId?: string;
                     locationCityName?: string;
                     longitude?: number | null;
+                    noArea?: "true";
                     offset?: number | null;
                     period?: "upcoming" | "ongoing";
+                    posted?: "true";
                     size?: number | null;
+                    until?: string;
+                    venue?: string;
                 };
                 header?: never;
                 path?: never;
@@ -6066,6 +6871,15 @@ export interface paths {
                 };
                 /** @description not found */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description HIDDEN — 신고로 임시조치된 핀(올린 사람 본인에게는 200 + pin.hidden) */
+                410: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6938,6 +7752,575 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/host/link-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 링크로 칸 채우기(인증 필수) — 붙여 넣은 링크에서 이미지 · 제목 · 장소 · 날짜를 읽는다. 저장 없음 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LinkPreviewBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description ok — 잡힌 칸만. 0칸이면 {} */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LinkPreviewDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description UNSUPPORTED_URL · FETCH_FAILED — 못 읽음. 폼은 열린다 */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LinkPreviewErrorDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/pin-images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 핀 이미지 올리기(인증 필수) — 기기 파일(multipart) 또는 링크 이미지(JSON url)를 R2 에 복사. 정본: specs/yellownmusk/pin-create.md */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PinImageUrlBodyDTOSchema"];
+                    "multipart/form-data": components["schemas"]["PinImageFileBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description created — imageKey 를 POST /v2/host/pins 에 싣는다 */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageDTOSchema"];
+                    };
+                };
+                /** @description file · url 둘 다 없음 */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description TOO_LARGE — 파일 2MB · 링크 이미지 10MB */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageErrorDTOSchema"];
+                    };
+                };
+                /** @description UNSUPPORTED_IMAGE — jpeg · png · webp 만 */
+                415: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageErrorDTOSchema"];
+                    };
+                };
+                /** @description FETCH_FAILED — 링크 이미지를 못 받음 */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageErrorDTOSchema"];
+                    };
+                };
+                /** @description DAILY_LIMIT — 하루 20장 · RATE_LIMITED — IP 분당 상한 */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageErrorDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description UNAVAILABLE — R2 바인딩 없음 */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PinImageErrorDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/pins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내가 붙인 핀(인증 필수) — 내린 것 빼고 감춘 것 넣음. `/my/pins` */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ok */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MyPinsDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** 핀 붙이기(인증 필수) — 제목 · 날짜만으로 공연 행(PUBLISHED). 꼬리표 풀 없음. 정본: specs/web-next/pin-create.md */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["CreatePinBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CreatePinDTOSchema"];
+                    };
+                };
+                /** @description PAST_DATE · CATEGORY_NOT_FOUND · VENUE_NOT_FOUND · IMAGE_NOT_FOUND */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description PIN_LIMITED — 임시조치(감춤)된 핀 3개 이상(약관 제19조 ⑦) */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/pins/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 핀 내리기(인증 필수) — 붙인 사람만. 지우지 않고 deletedAt(꼬리표를 열었으면 받은 입장권은 canceled) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description taken down */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description 남의 것 · 없는 것 · 내린 것 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** 핀 더하기(인증 필수) — 붙인 사람만. 동네 · 한 줄 · 연락 링크 */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UpdatePinBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description updated */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description AREA_NOT_FOUND */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description 남의 것 · 없는 것 · 내린 것 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/v2/host/pins/{slug}/repost-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 감춘 핀 재게시 요청(인증 필수) — 붙인 사람만 · 한 번. 약관 제19조 ⑤ */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["RepostRequestBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description requested */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description 남의 것 · 없는 것 · 감추지 않은 것 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description ALREADY_REQUESTED — 이미 요청했다 */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/host/pins/{slug}/tabs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 꼬리표 나중에 열기(인증 필수) — 붙인 사람만. 풀을 한 번 만든다 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["OpenPinTabsBodyDTOSchema"];
+                };
+            };
+            responses: {
+                /** @description opened */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description 남의 것 · 없는 것 · 내린 것 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description ALREADY_OPEN — 풀이 이미 있다 */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/host/rsvp-hub": {
         parameters: {
             query?: never;
@@ -7001,7 +8384,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** RSVP 열기(인증 필수) — 직접 쓴 공연 + 입장권 풀. 로그인한 누구나 */
+        /** 게시판에 붙이기(인증 필수) — 직접 쓴 공연(PUBLISHED) + 입장권 풀 · 동네 · 한 줄 · 링크. 로그인한 누구나 */
         post: {
             parameters: {
                 query?: never;
@@ -7024,7 +8407,7 @@ export interface paths {
                         "application/json": components["schemas"]["CreateRsvpDTOSchema"];
                     };
                 };
-                /** @description venue · city · category not found, or past date */
+                /** @description venue · area · city · category not found, or past date */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -8106,6 +9489,216 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/users/me/board-follows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 보드 팔로우(인증 필수) — 보드마다 「새 N」. from · until 은 주말 보드 창 */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    until?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description my board follows */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["BoardFollowDTOSchema"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/users/me/board-follows/new": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 보드의 새 공연(인증 필수) — 마지막으로 본 뒤 들어온 공연, 최신 등록 순 30건 */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    until?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description new events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EventDTOSchema"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/users/me/boards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 고른 보드(인증 필수) — 최근 만든 순 · 보드마다 담긴 공연 id 와 표지 4장 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description my boards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PickBoardDTO"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** 고른 보드 만들기(인증 필수) — 처음 담을 공연을 같이 받는다 */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PostPickBoardBodyDTO"];
+                };
+            };
+            responses: {
+                /** @description created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PickBoardDTO"];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/users/me/consents/required": {
         parameters: {
             query?: never;
@@ -8153,6 +9746,62 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v2/users/me/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 웹 푸시 기기 등록(인증 필수) — endpoint 로 upsert */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["PutDeviceBodyDTO"];
+                };
+            };
+            responses: {
+                /** @description registered */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -8274,6 +9923,60 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/v2/users/me/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 종류 · 토픽 알림(인증 필수) — 보드 새 공연 줄, 최신 순 50 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description topic notifications */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TopicNotificationDTO"][];
+                    };
+                };
+                /** @description unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v2/users/me/preferences": {
@@ -8910,6 +10613,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v2/venues/{id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공연장 공연 더보기 — 예정·지난 한 갈래를 cursor 로 한 쪽씩 */
+        get: {
+            parameters: {
+                query: {
+                    cursor?: string;
+                    limit?: number;
+                    when: "upcoming" | "previous";
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description venue events page */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VenueEventsPageDTOSchema"];
+                    };
+                };
+                /** @description invalid cursor */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+                /** @description error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponseDTOSchema"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v2/venues/{venueId}/subscriptions": {
         parameters: {
             query?: never;
@@ -9407,6 +11170,40 @@ export interface components {
             /** Format: uuid */
             userId: string;
         };
+        BoardDTOSchema: {
+            /** @enum {string} */
+            axis: "when" | "genre" | "mood" | "venue" | "area";
+            count: number;
+            covers: string[];
+            id: string;
+            name: string;
+            newThisWeek: number;
+            rule: components["schemas"]["BoardRuleDTOSchema"];
+            slug: string;
+        };
+        BoardFollowDTOSchema: {
+            boardId: string;
+            newCount: number;
+            notify: boolean;
+            slug: string;
+        };
+        BoardFollowStateDTOSchema: {
+            boardId: string;
+            following: boolean;
+            notify: boolean;
+        };
+        BoardItemStateDTO: {
+            boardId: string;
+            concertId: string;
+            saved: boolean;
+        };
+        BoardRuleDTOSchema: {
+            area?: string;
+            chips?: string[];
+            venue?: string;
+            /** @enum {string} */
+            when?: "weekend";
+        };
         CheckHandleBodyDTOSchema: {
             handle: string;
         };
@@ -9492,15 +11289,42 @@ export interface components {
             suggestedValue?: string;
             venueId?: string;
         };
+        CreatePinBodyDTOSchema: {
+            eventCategoryId?: string;
+            /** Format: uuid */
+            imageKey?: string;
+            /** @enum {string} */
+            kind?: "concert";
+            place?: {
+                venueId: string;
+            } | {
+                plainVenueText: string;
+            };
+            plainVenueText?: string;
+            /** Format: uri */
+            sourceUrl?: string;
+            /** Format: date-time */
+            startsAt: string;
+            title: string;
+        };
+        CreatePinDTOSchema: {
+            id: string;
+            slug: string;
+        };
         CreateReviewBodyDTOSchema: {
             body: string;
             rating: number;
         };
         CreateRsvpBodyDTOSchema: {
+            areaSlug?: string | null;
             capacity: number;
+            /** Format: uri */
+            contactUrl?: string | null;
             dropSlug?: string;
             eventCategoryId?: string;
+            line?: string | null;
             locationCityId?: string;
+            open?: boolean;
             place: {
                 venueId: string;
             } | {
@@ -10231,6 +12055,24 @@ export interface components {
                 venue: string;
             }[];
         };
+        LinkPreviewBodyDTOSchema: {
+            /** Format: uri */
+            url: string;
+        };
+        LinkPreviewDTOSchema: {
+            date?: string;
+            /** Format: uri */
+            image?: string;
+            images?: string[];
+            place?: string;
+            time?: string;
+            title?: string;
+        };
+        LinkPreviewErrorDTOSchema: {
+            /** @enum {string} */
+            code: "UNSUPPORTED_URL" | "FETCH_FAILED";
+            message: string;
+        };
         LocationCityDTOSchema: {
             geohash: string | null;
             id: string;
@@ -10305,6 +12147,23 @@ export interface components {
                 windowEventCount?: number;
             } | null;
         };
+        MyPinsDTOSchema: {
+            pins: {
+                area: {
+                    name: string;
+                    slug: string;
+                } | null;
+                capacity: number | null;
+                date: string;
+                hidden: {
+                    requestedAt: string | null;
+                    until: string;
+                } | null;
+                slug: string;
+                title: string;
+                venue: string | null;
+            }[];
+        };
         MyReviewDTOSchema: {
             review: {
                 author: {
@@ -10336,6 +12195,53 @@ export interface components {
             optedIn: boolean;
             userId: string;
         };
+        NotifyBoardFollowersResultDTO: {
+            created: number;
+            follows: number;
+            skipped: number;
+            updated: number;
+        };
+        OpenPinTabsBodyDTOSchema: {
+            capacity: number;
+            open?: boolean;
+        };
+        PatchPickBoardBodyDTO: {
+            name: string;
+        };
+        PickBoardDetailDTO: {
+            board: components["schemas"]["PickBoardDTO"];
+            isMine: boolean;
+            items: components["schemas"]["EventDTOSchema"][];
+        };
+        PickBoardDTO: {
+            concertIds: string[];
+            count: number;
+            covers: string[];
+            createdAt: string;
+            id: string;
+            name: string;
+            /** @enum {string} */
+            visibility: "PUBLIC" | "PRIVATE";
+        };
+        PinImageDTOSchema: {
+            /** Format: uuid */
+            imageKey: string;
+            /** Format: uri */
+            url: string;
+        };
+        PinImageErrorDTOSchema: {
+            /** @enum {string} */
+            code: "UNSUPPORTED_IMAGE" | "TOO_LARGE" | "FETCH_FAILED" | "DAILY_LIMIT" | "RATE_LIMITED" | "UNAVAILABLE";
+            message: string;
+        };
+        PinImageFileBodyDTOSchema: {
+            /** Format: binary */
+            file: string;
+        };
+        PinImageUrlBodyDTOSchema: {
+            /** Format: uri */
+            url: string;
+        };
         PosterDetailDTOSchema: {
             copyright: {
                 id: string;
@@ -10357,11 +12263,26 @@ export interface components {
         PostFCMTokenBodyDTOSchema: {
             fcmToken: string;
         };
+        PostPickBoardBodyDTO: {
+            concertIds?: string[];
+            name: string;
+        };
         PriceDTOSchema: {
             currency: string;
             id: string;
             name: string;
             price: number;
+        };
+        PutBoardToggleBodyDTOSchema: {
+            on: boolean;
+        };
+        PutDeviceBodyDTO: {
+            /** Format: uri */
+            endpoint: string;
+            keys: {
+                auth: string;
+                p256dh: string;
+            };
         };
         PutMyAreaBodyDTOSchema: {
             areaId: string;
@@ -10403,6 +12324,14 @@ export interface components {
             settings: {
                 latestVersion: string;
             };
+        };
+        ReportEventBodyDTOSchema: {
+            note?: string;
+            /** @enum {string} */
+            reason: "SPAM" | "ABUSE" | "PERSONAL_INFO" | "ILLEGAL" | "OTHER";
+        };
+        RepostRequestBodyDTOSchema: {
+            note?: string;
         };
         RequiredConsentsDTOSchema: {
             terms: {
@@ -10489,14 +12418,21 @@ export interface components {
             }[];
         };
         RsvpManageDTOSchema: {
+            area: {
+                name: string;
+                slug: string;
+            } | null;
             canceled: boolean;
             capacity: number;
             concertId: string;
+            contactUrl: string | null;
+            createdAt: string;
             date: string;
             drop: components["schemas"]["DropLinkDTOSchema"];
             going: number;
             in: number;
             left: number;
+            line: string | null;
             open: boolean;
             roster: {
                 code: string;
@@ -10504,6 +12440,7 @@ export interface components {
             }[];
             slug: string;
             title: string;
+            updatedAt: string | null;
             venue: string | null;
             venueId: string | null;
         };
@@ -10523,9 +12460,12 @@ export interface components {
         SearchResultDTOSchema: {
             id: string;
             name: string;
+            posterUrl: string | null;
             profileImgUrl: string | null;
+            slug: string;
             /** @enum {string} */
             type: "artist";
+            upcomingCount: number;
         } | {
             address?: string;
             id: string;
@@ -10611,6 +12551,20 @@ export interface components {
             sellerName: string;
             url: string;
         };
+        TopicNotificationDTO: {
+            board: {
+                id: string;
+                name: string;
+                slug: string;
+            };
+            count: number;
+            createdAt: string;
+            id: string;
+            isRead: boolean;
+            /** @enum {string} */
+            kind: "BOARD_NEW";
+            topic: string;
+        };
         UnsubscribeArtistBodyDTOSchema: {
             /** Format: uuid */
             artistId: string;
@@ -10625,12 +12579,22 @@ export interface components {
         UpdateNightMarketingConsentBodyDTOSchema: {
             optedIn: boolean;
         };
+        UpdatePinBodyDTOSchema: {
+            areaSlug?: string | null;
+            /** Format: uri */
+            contactUrl?: string | null;
+            line?: string | null;
+        };
         UpdateReviewBodyDTOSchema: {
             body: string;
             rating: number;
         };
         UpdateRsvpBodyDTOSchema: {
+            areaSlug?: string | null;
             capacity?: number;
+            /** Format: uri */
+            contactUrl?: string | null;
+            line?: string | null;
             open?: boolean;
             place?: {
                 venueId: string;
@@ -11217,6 +13181,7 @@ export interface components {
             lng: number;
             memo: string | null;
             name: string;
+            previousCount: number;
             previousEvents: {
                 data: {
                     category?: {
@@ -11254,6 +13219,7 @@ export interface components {
             }[];
             slug: string | null;
             thumbnailUrl: string | null;
+            upcomingCount: number;
             upcomingEvents: {
                 data: {
                     category?: {
@@ -11299,6 +13265,44 @@ export interface components {
             name: string;
             slug: string | null;
             thumbnailUrl: string | null;
+        };
+        VenueEventsPageDTOSchema: {
+            items: {
+                data: {
+                    category?: {
+                        id: string;
+                        name: string;
+                    };
+                    /** Format: date-time */
+                    createdAt?: string;
+                    /** Format: date-time */
+                    date: string;
+                    entryTicketCapacity?: number | null;
+                    /** Format: uuid */
+                    id: string;
+                    isSubscribed?: boolean;
+                    mainPoster: {
+                        copyright: {
+                            id: string;
+                            license: string;
+                            licenseURL: string;
+                            owner: string;
+                        } | null;
+                        url: string | null;
+                    } | null;
+                    mainVenue: {
+                        name: string;
+                    } | null;
+                    plainVenueText: string | null;
+                    slug: string | null;
+                    status: "DRAFT" | "PUBLISHED" | unknown;
+                    title: string;
+                    viewCount?: number;
+                };
+                /** @enum {string} */
+                type: "concert";
+            }[];
+            nextCursor: string | null;
         };
         VenueSubscribeDTOSchema: {
             /** Format: date-time */
