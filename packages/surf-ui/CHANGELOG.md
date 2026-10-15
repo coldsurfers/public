@@ -1,5 +1,11 @@
 # @coldsurfers/design-system
 
+## 0.42.0
+
+### Minor Changes
+
+- [#281](https://github.com/coldsurfers/public/pull/281) [`a83bb70`](https://github.com/coldsurfers/public/commit/a83bb702784a0ef43a4bf9f93228ff9b718dbada) Thanks [@yungblud](https://github.com/yungblud)! - 웹 `IconButton` · `TextButton` 추가. `IconButton` 은 native 짝과 같은 variant · 크기(`sm` 36 · `md` 44) 축이고, 치수 표를 계약 `ICON_BUTTON_SPEC` 으로 올려 두 구현이 같이 읽는다. `TextButton` 은 문장에 섞이는 글자 단추(웹 전용, `tone` muted · danger).
+
 ## 0.41.0
 
 ### Minor Changes
