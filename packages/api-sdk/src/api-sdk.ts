@@ -26,6 +26,11 @@ export type FetchOptions = {
   cache?: RequestCache
 }
 
+/** 공연장 공연 더보기 쿼리 — `when` 갈래 · `cursor` · `limit`. */
+export type VenueEventsQuery = NonNullable<
+  paths['/v2/venues/{id}/events']['get']['parameters']['query']
+>
+
 /** 알림 목록의 종류 필터 축 — `Feed.entityType`. 알림 지면 카테고리 레일이 이걸로 거른다. */
 export type NotificationFeedEntityType = NonNullable<
   paths['/v1/notifications']['get']['parameters']['query']['type']
@@ -833,6 +838,16 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         }) => ['venue', 'list', { locationCityName, offset, size }],
         detail: (venueId: string) => ['venue', 'detail', venueId],
         detailBySlug: (venueSlug: string) => ['venue', 'detail', venueSlug],
+        events: ({
+          venueId,
+          when,
+          limit,
+        }: { venueId: string } & Omit<VenueEventsQuery, 'cursor'>) => [
+          'venue',
+          'events',
+          venueId,
+          { when, limit },
+        ],
       },
       getVenueDetail: async (venueId: string, fetchOptions?: FetchOptions) => {
         const response = await baseFetchClient.GET('/v2/venues/{id}', {
@@ -854,6 +869,26 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
             path: {
               slug,
             },
+          },
+          ...fetchOptions,
+        })
+        if (response.error) {
+          throw new OpenApiError(response.error)
+        }
+        return response.data
+      },
+      /** 공연장 공연 한 쪽 — 상세 다음 쪽은 `nextCursor` 를 그대로 넘긴다. */
+      getVenueEvents: async (
+        venueId: string,
+        query: VenueEventsQuery,
+        fetchOptions?: FetchOptions,
+      ) => {
+        const response = await baseFetchClient.GET('/v2/venues/{id}/events', {
+          params: {
+            path: {
+              id: venueId,
+            },
+            query,
           },
           ...fetchOptions,
         })
