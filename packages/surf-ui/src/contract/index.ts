@@ -47,6 +47,8 @@ export {
   type ButtonShape,
   type ButtonSize,
   type ButtonVariant,
+  ICON_BUTTON_SPEC,
+  type IconButtonSize,
 } from './button'
 export { CHIP_SPEC, type ChipSize } from './chip'
 export {

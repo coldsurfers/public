@@ -1,22 +1,18 @@
 import styled from '@emotion/native'
 import type { ComponentPropsWithRef, ReactNode } from 'react'
 import type { TouchableOpacity } from 'react-native'
-import { BUTTON_SPEC, type ButtonVariant } from '../contract'
+import { BUTTON_SPEC, type ButtonVariant, ICON_BUTTON_SPEC, type IconButtonSize } from '../contract'
 import { type ColorScheme, nativeRadius } from '../tokens/native'
 import { surfaceFor } from './button-style'
 import { useScheme } from './scheme'
 
 /**
- * 아이콘만 있는 정사각 액션. `Button` 과 **같은 variant 축**을 쓴다 — 색 어휘를 하나 더
- * 만들면 같은 `outline` 이 두 컴포넌트에서 다른 뜻이 될 수 있다.
+ * 아이콘만 있는 정사각 액션. `Button` 과 **같은 variant 축**을 쓴다. 치수 정본은 `ICON_BUTTON_SPEC`
+ * — 웹 `primitives/IconButton` 과 같은 표다.
  *
  * ref 는 `Button` 과 같은 경로로 딸려 온다(`ComponentPropsWithRef`).
- *
- * 크기가 `Button` 의 sm·md·cta 를 따르지 않는 이유: 저 축은 *라벨이 있는 컨트롤의 높이*고,
- * 여기는 **손가락이 닿는 정사각**이다. 44 는 iOS HIG 최소 터치 타깃이라 `md` 의 기본값으로
- * 둔다 — 시안 치수가 아니라 접근성 하한이다.
  */
-export type IconButtonSize = 'sm' | 'md'
+export type { IconButtonSize }
 
 export interface IconButtonProps extends ComponentPropsWithRef<typeof TouchableOpacity> {
   variant?: ButtonVariant
@@ -26,8 +22,6 @@ export interface IconButtonProps extends ComponentPropsWithRef<typeof TouchableO
   children: ReactNode
 }
 
-const SIDE: Record<IconButtonSize, number> = { sm: 36, md: 44 }
-
 const Root = styled.TouchableOpacity<{
   $scheme: ColorScheme
   $variant: ButtonVariant
@@ -36,9 +30,9 @@ const Root = styled.TouchableOpacity<{
 }>(({ $scheme, $variant, $size, $disabled }) => ({
   alignItems: 'center',
   justifyContent: 'center',
-  width: SIDE[$size],
-  height: SIDE[$size],
-  borderRadius: nativeRadius.md,
+  width: ICON_BUTTON_SPEC.side[$size],
+  height: ICON_BUTTON_SPEC.side[$size],
+  borderRadius: nativeRadius[ICON_BUTTON_SPEC.radius],
   opacity: $disabled ? BUTTON_SPEC.disabledOpacity : 1,
   ...surfaceFor($scheme, $variant),
 }))
