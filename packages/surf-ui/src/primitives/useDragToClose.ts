@@ -1,3 +1,5 @@
+'use client'
+
 import { type MouseEvent, type PointerEvent, type RefObject, useRef } from 'react'
 
 /** 이만큼 끌어내리면 닫는다(px). */

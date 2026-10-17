@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { TOAST_TIMING, type ToastOptions, type ToastTone } from '../contract'
 import {

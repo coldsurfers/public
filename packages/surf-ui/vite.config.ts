@@ -81,6 +81,53 @@ const injectStylesImport = {
  *    `./tokens/native` 로 열리는 것과 같은 처리다 — 둘을 갈라 주는 게 `exports` 맵의 일이다.
  */
 
+const USE_CLIENT = /^\s*['"]use client['"]/
+
+/**
+ * `'use client'` 경계를 dist 까지 옮긴다 — rollup 은 모듈 directive 를 번들하며 버린다.
+ * 소스 첫 줄이 `'use client'` 인 모듈만 `client` 청크로 떼고 그 청크 앞에 directive 를 다시 붙인다.
+ * 엔트리 청크가 클라이언트 모듈을 품으면 빌드를 멈춘다 — 서버 컴포넌트가 `primitives` 를 import 하면
+ * 모듈 최상단 `createContext` 가 react-server 에서 터진다(yellownmusk 0.43 사고).
+ */
+const clientBoundary = (): Plugin => {
+  const clientIds = new Set<string>()
+  return {
+    name: 'client-boundary',
+    transform(code, id) {
+      if (!USE_CLIENT.test(code)) return null
+      clientIds.add(id)
+      return { code: code.replace(USE_CLIENT, ''), map: null }
+    },
+    outputOptions(options) {
+      return {
+        ...options,
+        // 클라이언트 모듈이 쓰는 순수 모듈(`cx` 등)은 `shared` 로 뺀다 — `client` 에 섞이면 서버가 못 부른다.
+        manualChunks(id, { getModuleInfo }) {
+          if (clientIds.has(id)) return 'client'
+          const info = getModuleInfo(id)
+          if (!info || info.isEntry) return undefined
+          return info.importers.some((importer) => clientIds.has(importer)) ? 'shared' : undefined
+        },
+      }
+    },
+    renderChunk(code, chunk) {
+      const client = chunk.moduleIds.filter((id) => clientIds.has(id))
+      if (client.length === 0) return null
+      if (chunk.isEntry) {
+        this.error(`엔트리 ${chunk.name} 가 클라이언트 모듈을 품었다: ${client.join(', ')}`)
+      }
+      const inside = new Set(chunk.moduleIds)
+      for (const id of chunk.moduleIds) {
+        const outside = (this.getModuleInfo(id)?.importers ?? []).filter((by) => !inside.has(by))
+        if (!clientIds.has(id) && outside.length > 0) {
+          this.error(`순수 모듈 ${id} 가 client 청크에 들어가 밖(${outside.join(', ')})에서 쓰인다`)
+        }
+      }
+      return { code: `'use client';\n${code}`, map: null }
+    },
+  }
+}
+
 const emitTokensCss: Plugin = {
   name: 'emit-tokens-css',
   generateBundle() {
@@ -93,6 +140,7 @@ export default defineConfig({
     vanillaExtractPlugin(),
     dts({ include: ['src'], tsconfigPath: './tsconfig.json', rollupTypes: true }),
     emitTokensCss,
+    clientBoundary(),
   ],
   build: {
     /**
