@@ -1,5 +1,15 @@
 # @coldsurfers/design-system
 
+## 0.43.0
+
+### Minor Changes
+
+- [#284](https://github.com/coldsurfers/public/pull/284) [`34346eb`](https://github.com/coldsurfers/public/commit/34346ebef36686d085df7ab31156cad4750fa5ba) Thanks [@yungblud](https://github.com/yungblud)! - 소비 앱이 없는 컴포넌트 17개를 지운다. primitives 는 Badge · CornerLabel · EmptyState · KeyValueRow · Select · Text · ThinkingDots · Ticket · TypewriterText · UnderlineTabs, cards 는 ChipCard · FeatureCard · InfoRow · LinkBand · PhotoHero · PosterShelf · PosterTile 이다. native 레인은 그대로다.
+
+- [#285](https://github.com/coldsurfers/public/pull/285) [`560f52b`](https://github.com/coldsurfers/public/commit/560f52b15f4e5c5ca7f7aad3a69536fea81b0338) Thanks [@yungblud](https://github.com/yungblud)! - 시안 v3(Figma 1455:250) 컴포넌트를 들인다. Button 에 `secondary` variant · `lg` 크기(알약 48 · 굵게), IconButton 에 `secondary`, Chip 에 `lg` 크기(회색 알약 38), cards 에 `PinCard` 를 더한다. native Button · Chip 도 같은 계약을 따라온다.
+
+- [#283](https://github.com/coldsurfers/public/pull/283) [`a1d935c`](https://github.com/coldsurfers/public/commit/a1d935c8cc7b29b8276a65590b70794f42d1c901) Thanks [@yungblud](https://github.com/yungblud)! - light 면 색과 포스터 모서리를 시안 v3(Figma 1455:250)로 바꾼다 — 무채 바탕 · 먹 [#111](https://github.com/coldsurfers/public/issues/111) · 주 버튼 #2457ff 평면 · 켜진 칩 검정 · `radiusPoster` 16px. yellownmusk 가 앱 안에서 덮어쓰던 값을 올린 것이다.
+
 ## 0.42.0
 
 ### Minor Changes
