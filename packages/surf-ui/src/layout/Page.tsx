@@ -1,5 +1,7 @@
+'use client'
+
 import type { HTMLAttributes } from 'react'
-import { cx } from '../primitives'
+import { cx } from '../primitives/cx'
 import { SurfaceModeContext } from '../primitives/surface-mode'
 import type { SurfaceMode } from '../tokens/tokens'
 import { content, page } from './Page.css'
