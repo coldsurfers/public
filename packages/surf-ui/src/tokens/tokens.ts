@@ -62,7 +62,7 @@ export type ColorScheme = {
   actionPrimaryLine: string
   /** 주 버튼 그림자 — y8 · blur 24 */
   actionPrimaryShadow: string
-  /** 켜진 칩 · 알약 면. light 는 주 행동 파랑, ink 는 무채 반전 — 잉크에서 파랑은 주 행동 하나에만 남긴다 */
+  /** 켜진 칩 · 알약 면. 두 면 모두 무채 반전 — 파랑은 주 행동 하나에만 남긴다 */
   selectedFill: string
   selectedText: string
   /** 포스터 뒤 번짐 */
@@ -114,35 +114,35 @@ const ink: ColorScheme = {
   statusDangerBg: 'rgba(255, 107, 99, 0.14)',
 }
 
-/** 밝은 면 — 목록 · 홈 묶음. `:root` 기본값. */
+/** 밝은 면 — 목록 · 홈 묶음. `:root` 기본값. 주 버튼은 평면(그라데이션 · 테 · 그림자 없음). Figma 1455:250 */
 const light: ColorScheme = {
   bgBase: '#ffffff',
-  bgAlt: '#f5f7fa',
+  bgAlt: '#f1f1f1',
   surfaceRaised: '#ffffff',
   panelFill: '#eef3ff',
   panelLine: 'rgba(255, 255, 255, 0)',
   rowFill: '#ffffff',
-  lineDivider: '#d7dee7',
-  stateHover: 'rgba(10, 15, 26, 0.06)',
+  lineDivider: '#e6e6e6',
+  stateHover: 'rgba(17, 17, 17, 0.06)',
   statePressed: 'rgba(10, 15, 26, 0.08)',
-  textPrimary: '#0a0f1a',
-  textSecondary: '#5b6472',
+  textPrimary: '#111111',
+  textSecondary: '#6b6b6b',
   textTertiary: '#9ca3af',
   textOnMedia: '#ffffff',
   kicker: '#2563ff',
   actionTintFill: 'rgba(37, 99, 255, 0.14)',
   actionTintText: '#2563ff',
-  actionPrimary: '#2563ff',
-  actionPrimaryHover: '#1d4fd8',
+  actionPrimary: '#2457ff',
+  actionPrimaryHover: '#1c47e0',
   actionOnPrimary: '#ffffff',
-  actionPrimaryTop: '#3a6dff',
-  actionPrimaryBottom: '#1a3a9e',
-  actionPrimaryLine: 'rgba(158, 194, 255, 0.25)',
-  actionPrimaryShadow: 'rgba(37, 99, 255, 0.25)',
-  selectedFill: '#2563ff',
+  actionPrimaryTop: '#2457ff',
+  actionPrimaryBottom: '#2457ff',
+  actionPrimaryLine: 'transparent',
+  actionPrimaryShadow: 'transparent',
+  selectedFill: '#111111',
   selectedText: '#ffffff',
   glow: 'rgba(37, 99, 255, 0.28)',
-  overlay: '#0a0f1a',
+  overlay: '#111111',
   statusSuccess: '#1f7a3a',
   statusSuccessBg: 'rgba(31, 122, 58, 0.14)',
   statusWarning: '#9a5a12',
@@ -580,7 +580,7 @@ export const layout: Record<'mobile' | 'desktop', LayoutScale> = {
 export const shape = {
   radiusPanel: '20px',
   radiusSheet: '28px',
-  radiusPoster: '24px',
+  radiusPoster: '16px',
   radiusRow: '12px',
   radiusRowAction: '8px',
   radiusPill: '9999px',
