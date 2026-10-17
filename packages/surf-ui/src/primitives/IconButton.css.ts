@@ -36,6 +36,10 @@ export const iconButton = recipe({
         ...surfaceStyle('primary'),
         selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
       }),
+      secondary: inComponentsLayer({
+        ...surfaceStyle('secondary'),
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.stateHover } },
+      }),
       accent: inComponentsLayer({
         ...surfaceStyle('accent'),
         selectors: { '&:hover:not(:disabled)': { filter: 'brightness(1.08)' } },

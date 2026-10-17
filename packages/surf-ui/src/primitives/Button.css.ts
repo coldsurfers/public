@@ -47,6 +47,7 @@ function sizeStyle(size: ButtonSize) {
     paddingInline: s.paddingInline,
     fontSize: typeof s.fontSize === 'number' ? `${s.fontSize}px` : vars.fontSize[s.fontSize],
     borderRadius: typeof s.radius === 'number' ? `${s.radius}px` : vars.radius[s.radius],
+    ...('fontWeight' in s ? { fontWeight: vars.fontWeight[s.fontWeight] } : null),
   }
 }
 
@@ -72,6 +73,10 @@ export const button = recipe({
       primary: inComponentsLayer({
         ...surfaceStyle('primary'),
         selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+      }),
+      secondary: inComponentsLayer({
+        ...surfaceStyle('secondary'),
+        selectors: { '&:hover:not(:disabled)': { background: vars.color.stateHover } },
       }),
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
@@ -107,6 +112,7 @@ export const button = recipe({
       md: inComponentsLayer(sizeStyle('md')),
       /** 랜딩 히어로 CTA — Figma `1128:119`·`1128:121`. 시안 일치의 전부는 `height` 다. */
       cta: inComponentsLayer(sizeStyle('cta')),
+      lg: inComponentsLayer(sizeStyle('lg')),
     },
 
     /**

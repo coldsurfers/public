@@ -42,6 +42,14 @@ export const chip = recipe({
         fontSize: vars.fontSize[spec.size.md.fontSize],
         fontWeight: vars.fontWeight[spec.size.md.fontWeight],
       }),
+      lg: inComponentsLayer({
+        borderRadius: vars.radius[spec.size.lg.radius],
+        borderWidth: spec.size.lg.borderWidth,
+        height: spec.size.lg.height,
+        paddingInline: spec.size.lg.paddingInline,
+        fontSize: `${spec.size.lg.fontSize}px`,
+        fontWeight: vars.fontWeight[spec.size.lg.fontWeight],
+      }),
       sm: inComponentsLayer({
         borderRadius: vars.radius[spec.size.sm.radius],
         borderWidth: spec.size.sm.borderWidth,
@@ -68,6 +76,14 @@ export const chip = recipe({
       style: inComponentsLayer({
         borderColor: vars.color.lineDivider,
         background: vars.color.rowFill,
+        color: vars.color.textPrimary,
+        selectors: { '&:hover': { background: vars.color.stateHover } },
+      }),
+    },
+    {
+      variants: { size: 'lg', active: false },
+      style: inComponentsLayer({
+        background: vars.color.bgAlt,
         color: vars.color.textPrimary,
         selectors: { '&:hover': { background: vars.color.stateHover } },
       }),

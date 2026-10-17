@@ -15,10 +15,10 @@ import type { ColorScheme, fontSize, fontWeight, radius } from '../tokens'
  * 것이 아니라 *되돌릴 수 없음*을 말하려고 고른다. 그래서 `accent`(주 액션)와 나란히 서지
  * 않는다. 한 화면에 둘이 같이 필요하면 둘 중 하나는 주 액션이 아니다.
  */
-export type ButtonVariant = 'primary' | 'ghost' | 'accent' | 'outline' | 'danger'
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'outline' | 'danger'
 
 /** *라벨이 있는* 컨트롤의 높이 축. 정사각 `IconButton` 은 이 축을 쓰지 않는다. */
-export type ButtonSize = 'sm' | 'md' | 'cta'
+export type ButtonSize = 'sm' | 'md' | 'cta' | 'lg'
 
 /**
  * 모서리 축. 기본 `rounded` 는 크기마다 정해진 모서리(`SIZE[*].radius`)를 쓰고, `pill` 은 크기와
@@ -53,6 +53,8 @@ type ButtonSizeSpec = {
   paddingInline: number
   fontSize: FontSizeKey | number
   radius: RadiusKey | number
+  /** 없으면 `BUTTON_SPEC.fontWeight`. */
+  fontWeight?: FontWeightKey
 }
 
 type ButtonVariantSpec = {
@@ -79,6 +81,8 @@ const SIZE = {
   md: { height: 52, paddingInline: 24, fontSize: 'base', radius: 'lg' },
   /** 랜딩 히어로 CTA. */
   cta: { height: 46, paddingInline: 22, fontSize: 15, radius: 10 },
+  /** 알약 48 — 시안 v3 `v3/Button`(Figma 1455:262). */
+  lg: { height: 48, paddingInline: 22, fontSize: 'base', radius: 'full', fontWeight: 'bold' },
 } satisfies Record<ButtonSize, ButtonSizeSpec>
 
 /**
@@ -98,6 +102,8 @@ const SIZE = {
  */
 const VARIANT = {
   primary: { background: 'textPrimary', label: 'bgBase' },
+  /** 회색 면 — 저장 · 프로필 같은 보조 행동. 시안 v3 `Kind=secondary`. */
+  secondary: { background: 'bgAlt', label: 'textPrimary' },
   ghost: { background: 'transparent', label: 'textPrimary' },
   accent: { background: 'actionPrimary', label: 'actionOnPrimary' },
   outline: {
@@ -118,7 +124,7 @@ export const BUTTON_SPEC = {
   disabledOpacity: 0.4,
   /** `shape="pill"` 의 모서리. 크기 축의 `radius` 를 덮는다. */
   pillRadius: 'full' satisfies RadiusKey,
-  /** 세 크기 공통. */
+  /** 기본 굵기. 크기가 `fontWeight` 를 가지면 그쪽이 이긴다. */
   fontWeight: 'medium' satisfies FontWeightKey,
   size: SIZE,
   variant: VARIANT,

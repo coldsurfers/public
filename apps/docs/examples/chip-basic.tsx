@@ -14,6 +14,10 @@ export default function Example() {
           {label}
         </Chip>
       ))}
+      <Chip size="lg" active>
+        공연
+      </Chip>
+      <Chip size="lg">전시</Chip>
       <Chip as="span" size="sm">
         슈게이즈
       </Chip>

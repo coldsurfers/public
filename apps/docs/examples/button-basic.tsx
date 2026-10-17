@@ -6,6 +6,7 @@ export default function Example() {
     <>
       <Button>취향 이어보기</Button>
       <Button variant="accent">티켓 예매</Button>
+      <Button variant="secondary">저장</Button>
       <Button variant="outline">공유</Button>
       <Button variant="ghost">읽기 →</Button>
       <Button variant="danger">탈퇴하기</Button>
