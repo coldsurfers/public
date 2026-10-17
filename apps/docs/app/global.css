@@ -23,6 +23,39 @@ html {
   scrollbar-gutter: stable;
 }
 
+/*
+ * 문서 크롬 색을 시안 v3 light 면(Figma 1455:250)에 맞춘다 — **값을 옮겨 적지 않고 DS 변수를 문다.**
+ *
+ * `--surf-*` 는 DS 토큰 `:root` 블록이 정의하고, 그 청크는 모든 페이지에 실린다(위 글꼴과 같은 근거).
+ * 토큰이 바뀌면 문서 크롬도 따라 바뀐다.
+ *
+ * 다크는 v3 에 짝이 없다 — ink 면은 `:root` 가 아니라 `data-surface="ink"` 안에만 있어서 크롬이
+ * 물 변수가 없다. 그래서 다크는 fumadocs 기본을 두고 주 색 하나만 v3 파랑으로 맞춘다.
+ * `:not(.dark)` 인 이유: fumadocs 의 `.dark` 와 명시도가 같아 뒤에 오는 이쪽이 다크를 덮는다.
+ */
+:root:not(.dark) {
+  --color-fd-background: var(--surf-bg-base);
+  --color-fd-foreground: var(--surf-text-primary);
+  --color-fd-muted: var(--surf-bg-alt);
+  --color-fd-muted-foreground: var(--surf-text-secondary);
+  --color-fd-popover: var(--surf-surface-raised);
+  --color-fd-popover-foreground: var(--surf-text-primary);
+  --color-fd-card: var(--surf-bg-alt);
+  --color-fd-card-foreground: var(--surf-text-primary);
+  --color-fd-border: var(--surf-line-divider);
+  --color-fd-secondary: var(--surf-bg-alt);
+  --color-fd-secondary-foreground: var(--surf-text-primary);
+  --color-fd-accent: var(--surf-state-hover);
+  --color-fd-accent-foreground: var(--surf-text-primary);
+}
+
+:root,
+.dark {
+  --color-fd-primary: var(--surf-action-primary);
+  --color-fd-primary-foreground: var(--surf-action-on-primary);
+  --color-fd-ring: var(--surf-action-primary);
+}
+
 html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
