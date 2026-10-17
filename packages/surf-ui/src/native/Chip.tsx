@@ -44,16 +44,30 @@ export interface ChipProps extends ComponentPropsWithRef<typeof TouchableOpacity
 }
 
 /** `CHIP_SPEC` 의 색 표와 1:1 — 비활성일 때만 size 로 갈린다. */
+const IDLE = {
+  md: { fill: 'rowFill', line: 'lineDivider', label: 'textPrimary' },
+  sm: { fill: 'panelFill', line: null, label: 'textSecondary' },
+  lg: { fill: 'bgAlt', line: null, label: 'textPrimary' },
+} satisfies Record<
+  ChipSize,
+  { fill: keyof ColorScheme; line: keyof ColorScheme | null; label: keyof ColorScheme }
+>
+
 const surfaceFor = (scheme: ColorScheme, size: ChipSize, active: boolean): ViewStyle => {
   if (active) return { backgroundColor: scheme.selectedFill, borderColor: 'transparent' }
-  return size === 'md'
-    ? { backgroundColor: scheme.rowFill, borderColor: scheme.lineDivider }
-    : { backgroundColor: scheme.panelFill, borderColor: 'transparent' }
+  const idle = IDLE[size]
+  return {
+    backgroundColor: scheme[idle.fill],
+    borderColor: idle.line ? scheme[idle.line] : 'transparent',
+  }
 }
 
-const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): string => {
-  if (active) return scheme.selectedText
-  return size === 'md' ? scheme.textPrimary : scheme.textSecondary
+const labelColorFor = (scheme: ColorScheme, size: ChipSize, active: boolean): string =>
+  active ? scheme.selectedText : scheme[IDLE[size].label]
+
+const fontSizeFor = (size: ChipSize): number => {
+  const value = spec.size[size].fontSize
+  return typeof value === 'number' ? value : nativeFontSize[value]
 }
 
 /** 라벨이 자기 서식을 어디서 읽는지 — 필이 정하고 슬롯이 받는다. */
@@ -85,7 +99,7 @@ const Root = styled.TouchableOpacity<{
  */
 const Label = styled.Text<{ $color: string; $size: ChipSize }>(({ $color, $size }) => ({
   color: $color,
-  fontSize: nativeFontSize[spec.size[$size].fontSize],
+  fontSize: fontSizeFor($size),
   fontWeight: fontWeight[spec.size[$size].fontWeight],
   includeFontPadding: false,
 }))

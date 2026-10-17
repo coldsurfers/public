@@ -11,7 +11,7 @@ import type { fontSize, fontWeight, radius } from '../tokens'
  * 다만 **어느 축에서 어느 색을 읽는가**는 갈리면 안 되므로 그 표는 두 구현의 주석이 아니라
  * 아래 `CHIP_SPEC` 옆 표에 적어 둔다.
  */
-export type ChipSize = 'sm' | 'md'
+export type ChipSize = 'sm' | 'md' | 'lg'
 
 type RadiusKey = keyof typeof radius
 type FontSizeKey = keyof typeof fontSize
@@ -22,7 +22,7 @@ type ChipSizeSpec = {
   paddingInline: number
   borderWidth: number
   radius: RadiusKey
-  fontSize: FontSizeKey
+  fontSize: FontSizeKey | number
   fontWeight: FontWeightKey
 }
 
@@ -77,6 +77,15 @@ export const CHIP_SPEC = {
       radius: 'md',
       fontSize: 'xs',
       fontWeight: 'semibold',
+    },
+    /** 알약 — 주제 · 동네 고르기. 테두리 없이 회색 면, 켜지면 잉크. 시안 v3 `v3/Chip`(Figma 1455:255). */
+    lg: {
+      height: 38,
+      paddingInline: 16,
+      borderWidth: 0,
+      radius: 'full',
+      fontSize: 15,
+      fontWeight: 'bold',
     },
   } satisfies Record<ChipSize, ChipSizeSpec>,
 } as const

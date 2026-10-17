@@ -33,4 +33,5 @@ export {
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
 export { MediaRow, type MediaRowProps } from './MediaRow'
 export { PickCard, type PickCardProps, PickRow, type PickRowProps } from './PickCard'
+export { PinCard, type PinCardProps } from './PinCard'
 export { PosterThumb, type PosterThumbProps } from './PosterThumb'
