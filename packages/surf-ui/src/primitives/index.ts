@@ -1,5 +1,5 @@
 /**
- * React primitives — Button · IconButton · TextButton · Chip · Badge · Field · Modal · …
+ * React primitives — Button · IconButton · TextButton · Chip · Field · Modal · …
  *
  * ⚠️ **흡수에는 상한이 있다.** 시안 컨트롤 높이가 34/35/36/46/48 다섯 종이라 그대로 받으면
  *    `Button.size` 가 7종이 된다 — 그건 추상화가 아니라 목록이다. variant 를 늘리기 전에
@@ -8,19 +8,15 @@
  * 무엇이 들어오는가: 도메인 타입 · 라우터 · i18n 을 props/slot 으로 밀어낼 수 있고
  * 두 곳 이상에서 쓰이면 옮긴다. 한 곳뿐이면 두 번째 소비처가 생길 때까지 보류.
  */
-export { Badge, type BadgeProps } from './Badge'
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
 export { Callout, type CalloutProps, type CalloutTone } from './Callout'
 export { Checkbox, type CheckboxProps } from './Checkbox'
 export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
-export { CornerLabel, type CornerLabelProps } from './CornerLabel'
 export { CoverBlock, type CoverBlockProps, coverTone } from './CoverBlock'
 export { cx } from './cx'
-export { EmptyState, type EmptyStateProps } from './EmptyState'
 export { Eyebrow, type EyebrowProps } from './Eyebrow'
 export { Field, type FieldProps } from './Field'
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
-export { KeyValueRow, type KeyValueRowProps } from './KeyValueRow'
 export { Modal, type ModalPlacement, type ModalProps } from './Modal'
 export { Note, type NoteProps, type NoteTone } from './Note'
 export { POPOVER_MENU_CLS, Popover, type PopoverProps } from './Popover'
@@ -32,7 +28,6 @@ export {
   type ReactionItem,
 } from './ReactionBar'
 export { RowAction, type RowActionProps } from './RowAction'
-export { Select, type SelectOption, type SelectProps } from './Select'
 export { Sheet, type SheetProps } from './Sheet'
 export {
   Skeleton,
@@ -43,16 +38,7 @@ export {
 export { Spinner, type SpinnerProps } from './Spinner'
 export { StatPill, type StatPillProps, type StatPillTone } from './StatPill'
 export { useSurfaceMode } from './surface-mode'
-export {
-  Text,
-  type TextProps,
-  type TextStyleName,
-  type TextTag,
-  type TextTone,
-} from './Text'
 export { TextButton, type TextButtonProps, type TextButtonTone } from './TextButton'
-export { ThinkingDots, type ThinkingDotsProps } from './ThinkingDots'
-export { Ticket, type TicketOrientation, type TicketProps, ticketGround } from './Ticket'
 export {
   type ToastApi,
   type ToastOptions,
@@ -60,10 +46,4 @@ export {
   type ToastTone,
   useToast,
 } from './Toast'
-export { TypewriterText, type TypewriterTextProps } from './TypewriterText'
-export {
-  UnderlineTab,
-  type UnderlineTabProps,
-  UnderlineTabs,
-} from './UnderlineTabs'
 export { type UseDialogBehaviorOptions, useDialogBehavior } from './useDialogBehavior'

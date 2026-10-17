@@ -9,7 +9,7 @@ type Child = ReactElement<{ className?: string; children?: ReactNode }>
  * 빈 `<a />` 가 생기지 않는다(스크린 리더 · `useAnchorContent` 린트).
  *
  * ```tsx
- * <InfoRow asChild meta="동대문구"><Link to="/venue/x">경희대 평화의전당</Link></InfoRow>
+ * <MediaRow asChild meta="경희대 평화의전당"><Link to="/event/x">인터스텔라 필름콘서트</Link></MediaRow>
  * ```
  */
 export function renderAsChild(

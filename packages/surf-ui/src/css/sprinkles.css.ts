@@ -103,7 +103,7 @@ const staticProperties = defineProperties({
      * Pretendard 는 위 여백이 아래보다 커서(11px 기준 10 : 3) 상자만 가운데 두면 글자가 0.5–1px 뜬다.
      *
      * ⚠️ flex · grid 상자 자신에는 안 먹는다 — 안쪽 블록 한 겹(`display: 'block'`)에 건다.
-     * 선례는 `Badge` 의 `badgeLabel`. 미지원 브라우저(Firefox)는 자르지 않은 원래 상자로 남는다.
+     * 미지원 브라우저(Firefox)는 자르지 않은 원래 상자로 남는다.
      */
     textBox: { cap: 'trim-both cap alphabetic' },
   },
