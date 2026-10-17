@@ -1,15 +1,21 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared'
-import { appName, gitConfig } from './shared'
+import { SurfLogo } from '@/components/surf-logo'
+import { gitConfig } from './shared'
 
 /**
- * `brandMorph` 를 켠 레이아웃에서만 nav 타이틀이 view-transition 이름을 쥔다.
- *
- * 홈은 같은 이름을 `<h1>` 이 쥐고 있다(`app/(home)/page.tsx`). 홈 레이아웃까지 켜면
- * 한 문서에 이름이 둘이 되고, 그러면 브라우저가 전환을 통째로 건너뛴다.
+ * 홈과 문서가 같은 nav 를 쓴다. 로고가 view-transition 이름을 쥐어 라우트를 건너도 제자리에 남는다.
+ * 이름은 한 문서에 하나뿐이어야 해서 다른 곳에 `vt-brand` 를 두지 않는다.
  */
-export function baseOptions({ brandMorph = false } = {}): BaseLayoutProps {
+export function baseOptions(): BaseLayoutProps {
   return {
-    nav: { title: brandMorph ? <span className="vt-brand">{appName}</span> : appName },
+    nav: {
+      title: (
+        <span className="vt-brand inline-flex items-center gap-2">
+          <SurfLogo className="text-lg" />
+          <span className="text-xs font-medium text-fd-muted-foreground">by COLDSURF</span>
+        </span>
+      ),
+    },
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   }
 }
