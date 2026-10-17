@@ -12,7 +12,6 @@
  * 한 장에 함께 실린다.
  */
 export { ArticleCard, type ArticleCardProps } from './ArticleCard'
-export { ChipCard, ChipCardItem, type ChipCardItemProps, type ChipCardProps } from './ChipCard'
 export {
   type BareConcertCardProps,
   ConcertCard,
@@ -31,18 +30,7 @@ export {
   type ConcertCardSkeletonProps,
   type ConcertCardSkeletonSlotProps,
 } from './ConcertCardSkeleton'
-export { FeatureCard, type FeatureCardProps } from './FeatureCard'
-export { InfoRow, type InfoRowProps } from './InfoRow'
 export { LeadFeature, type LeadFeatureProps } from './LeadFeature'
-export { LinkBand, type LinkBandProps } from './LinkBand'
 export { MediaRow, type MediaRowProps } from './MediaRow'
-export { PhotoHero, type PhotoHeroProps } from './PhotoHero'
 export { PickCard, type PickCardProps, PickRow, type PickRowProps } from './PickCard'
-export {
-  PosterShelf,
-  PosterShelfItem,
-  type PosterShelfItemProps,
-  type PosterShelfProps,
-} from './PosterShelf'
 export { PosterThumb, type PosterThumbProps } from './PosterThumb'
-export { PosterTile, type PosterTileProps } from './PosterTile'

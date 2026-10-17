@@ -1,18 +1,11 @@
 {
   "title": "Patterns",
   "pages": [
-    "photo-hero",
     "article-card",
     "concert-card",
     "lead-feature",
     "pick-card",
     "media-row",
-    "info-row",
-    "link-band",
-    "poster-tile",
-    "poster-thumb",
-    "poster-shelf",
-    "chip-card",
-    "feature-card"
+    "poster-thumb"
   ]
 }

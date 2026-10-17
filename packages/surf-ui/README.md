@@ -20,7 +20,7 @@ COLDSURF 디자인 시스템 — 토큰 값 · CSS 계약 · React primitives �
 | `.` | `vars`(CSS 변수 계약) · `media` · `@layer` 이름 | ✗ |
 | `./tokens` | 토큰 값(순수 데이터) · 이름 규칙 · `coverToneFor` | ✗ |
 | `./sprinkles` | 원자 유틸. JS 38 kB 라 배럴에서 갈랐다 | ✗ |
-| `./primitives` | Button · Chip · Badge · … | ✓ |
+| `./primitives` | Button · Chip · Sheet · … | ✓ |
 | `./cards` | ConcertCard · ArticleCard · LeadFeature · … | ✓ |
 | `./layers` | `@layer` 이름·순서만. CSS 를 안 물어 **Node 에서 그냥 열린다** | ✗ |
 | `./tokens.css` | 변수만 담은 `:root` 한 장. Tailwind·비-VE 앱이 문다 | ✗ |

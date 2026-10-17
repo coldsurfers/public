@@ -33,7 +33,7 @@ import { surfaceStyle } from './button-surface'
  * 높이로 선다. 시안 대조도 라벨 길이·폰트에 따라 흔들린다.
  *
  * 그래서 `height` 를 박고 padding 은 좌우만 준다. base 의 `inline-flex` + `center` 정렬이
- * 라벨을 세로 가운데로 잡아주므로 세로 padding 은 필요 없다. `Chip`·`Select` 도 같은 규율.
+ * 라벨을 세로 가운데로 잡아주므로 세로 padding 은 필요 없다. `Chip` 도 같은 규율.
  */
 
 /**

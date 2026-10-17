@@ -1,5 +1,5 @@
 'use client'
-import { Badge, CoverBlock } from '@coldsurfers/surf-ui/primitives'
+import { CoverBlock } from '@coldsurfers/surf-ui/primitives'
 import { COVER_TONES } from '@coldsurfers/surf-ui/tokens'
 
 export default function Example() {
@@ -11,7 +11,7 @@ export default function Example() {
           tone={tone}
           style={{ width: 120, height: 120, display: 'grid', placeItems: 'center' }}
         >
-          <Badge>{tone}</Badge>
+          {tone}
         </CoverBlock>
       ))}
     </>

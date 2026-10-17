@@ -5,7 +5,7 @@ import { popoverAnchor, popoverMenu } from './Popover.css'
 import { useSurfaceMode } from './surface-mode'
 
 /**
- * 트리거 + 팝오버 뼈대 — `Select`(버튼+옵션 listbox)·`BSideGroupChip`(Chip+링크 menu)이 공유하던
+ * 트리거 + 팝오버 뼈대 — `BSideGroupChip`(Chip+링크 menu)이 쓰던
  * open 상태·바깥클릭/Escape 닫기·위치잡기·뷰포트 maxHeight 를 한 어휘로 수렴한다.
  *
  * 위치잡기는 `createPortal(document.body)` + `position: fixed`(트리거 rect 측정) 한 전략으로 통일 —

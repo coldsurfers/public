@@ -64,7 +64,7 @@ type ButtonVariantSpec = {
 
 /**
  * **높이를 `height` 로 박고 padding 은 좌우만 준다** — 규율의 정본은 `Button.css.ts` 의
- * §높이다(`Chip`·`Select` 도 같은 규율이고 거기를 가리킨다). RN 에서는 더 강한 이유가
+ * §높이다(`Chip` 도 같은 규율이고 거기를 가리킨다). RN 에서는 더 강한 이유가
  * 하나 더 있다: 세로 padding 으로 높이를 만들면 폰트 메트릭이 다른 iOS/Android 에서
  * 같은 버튼이 다른 높이로 선다.
  *

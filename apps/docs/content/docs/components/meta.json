@@ -6,27 +6,17 @@
     "row-action",
     "stat-pill",
     "reaction-bar",
-    "key-value-row",
-    "badge",
-    "text",
     "eyebrow",
-    "corner-label",
     "callout",
     "note",
-    "empty-state",
     "field",
     "checkbox",
-    "select",
     "popover",
     "modal",
     "sheet",
     "toast",
-    "underline-tabs",
-    "ticket",
     "cover-block",
     "skeleton",
-    "spinner",
-    "thinking-dots",
-    "typewriter-text"
+    "spinner"
   ]
 }

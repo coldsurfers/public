@@ -17,7 +17,7 @@ const pulseFrames = keyframes({
  *
  * `prefers-reduced-motion: reduce` 면 맥동을 끄고 **한 톤 죽인 정지 상태**로 둔다. 자리표시자는
  * "아직 안 왔다" 를 알리는 게 일이라, 애니메이션을 지우면서 불투명도까지 1 로 되돌리면 실제
- * 내용과 구분이 안 된다. `ThinkingDots` 와 같은 처리다.
+ * 내용과 구분이 안 된다.
  */
 export const pulse = style(
   inComponentsLayer({

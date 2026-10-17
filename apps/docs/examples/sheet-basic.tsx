@@ -1,6 +1,6 @@
 'use client'
 import { MediaRow } from '@coldsurfers/surf-ui/cards'
-import { Button, KeyValueRow, Sheet } from '@coldsurfers/surf-ui/primitives'
+import { Button, Sheet } from '@coldsurfers/surf-ui/primitives'
 import { useRef, useState } from 'react'
 
 const TIERS = [
@@ -40,11 +40,14 @@ export default function Example() {
           </Button>
         }
       >
-        <div>
+        <dl>
           {TIERS.map(([label, value]) => (
-            <KeyValueRow key={label} label={label} value={value} />
+            <div key={label} style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </Sheet>
     </>
   )
