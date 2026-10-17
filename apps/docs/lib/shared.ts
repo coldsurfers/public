@@ -1,5 +1,3 @@
-export const appName = 'COLDSURF Design System'
-
 /**
  * 사이트의 절대 주소 — sitemap 이 `<loc>` 에 쓴다. 상대 경로로는 sitemap 을 쓸 수 없다.
  *
