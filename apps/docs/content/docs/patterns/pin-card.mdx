@@ -1,0 +1,15 @@
+---
+title: PinCard
+description: 포스터 원래 비율 · 제목 두 줄 · 출처 한 줄의 핀 한 장.
+---
+
+<Preview name="pin-card" />
+
+시안 v3 `v3/PinCard`(Figma `1455:263`)입니다. 제목에 링크 하나를 넣으면 그 링크가 카드 전체를 덮고,
+`action`(담기 ＋)만 그 위에 뜹니다. `action` 은 링크 밖 형제라 단추를 넣어도 됩니다.
+
+포스터가 없으면 3:4 회색 자리에 `fallback` 을 그립니다. 다단 그리드(`column-count`)는 소비처 몫입니다.
+
+## Props
+
+<Props of="PinCard" dir="cards" />
