@@ -1,5 +1,11 @@
 # @coldsurfers/api-sdk
 
+## 4.9.0
+
+### Minor Changes
+
+- [#291](https://github.com/coldsurfers/public/pull/291) [`7ed0443`](https://github.com/coldsurfers/public/commit/7ed0443891b6883af2bc9585398df3cfafc5d085) Thanks [@yungblud](https://github.com/yungblud)! - 핀 · 보드 · 관심 · 동네 · 토픽 알림 래퍼를 더하고 서버 계약을 다시 덤프한다
+
 ## 4.8.0
 
 ### Minor Changes
