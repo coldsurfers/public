@@ -7,6 +7,7 @@ export {
   type FetchOptions,
   getApiClient,
   type NotificationFeedEntityType,
+  type PinFeedQuery,
 } from './api-sdk'
 export { OpenApiError } from './error'
 export * from './types/api.gen'
