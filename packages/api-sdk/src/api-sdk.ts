@@ -36,6 +36,18 @@ export type NotificationFeedEntityType = NonNullable<
   paths['/v1/notifications']['get']['parameters']['query']['type']
 >
 
+/** 핀 피드 쿼리 — offset 쪽 넘김 · 주제(`category`) · 동네(`area`) · 태그 · 보드 씨앗(`board`). */
+export type PinFeedQuery = NonNullable<paths['/v1/pins']['get']['parameters']['query']>
+
+type JsonBody<T> = T extends { content: { 'application/json': infer B } } ? B : never
+type ApiErrorBody = components['schemas']['ErrorResponseDTOSchema']
+
+/** openapi-fetch 응답에서 data 를 꺼내고, 에러면 `OpenApiError` 로 던진다. */
+const unwrap = <D>(response: { data?: D; error?: unknown }): D => {
+  if (response.error) throw new OpenApiError(response.error as ApiErrorBody)
+  return response.data as D
+}
+
 export const getApiClient = (baseFetchClient: FetchClient) => {
   const apiClient = {
     feed: {
@@ -1829,6 +1841,182 @@ export const getApiClient = (baseFetchClient: FetchClient) => {
         }
         return response.data
       },
+    },
+    pin: {
+      queryKeys: {
+        all: ['v1', 'pin'] as const,
+        list: (query: PinFeedQuery) => ['v1', 'pin', 'list', query] as const,
+        detail: (code: string) => ['v1', 'pin', 'detail', code] as const,
+        related: (code: string, size?: number) => ['v1', 'pin', 'related', code, { size }] as const,
+        chips: ['v1', 'pin', 'chips'] as const,
+        reason: ['v1', 'pin', 'reason'] as const,
+        categories: ['v1', 'pin', 'categories'] as const,
+      },
+      getList: async (query: PinFeedQuery) =>
+        unwrap(await baseFetchClient.GET('/v1/pins', { params: { query } })),
+      getDetail: async (code: string) =>
+        unwrap(await baseFetchClient.GET('/v1/pins/{code}', { params: { path: { code } } })),
+      /** 비슷한 핀 — `code` 는 핀 code 또는 공연 id. */
+      getRelated: async (code: string, size?: number) =>
+        unwrap(
+          await baseFetchClient.GET('/v1/pins/{code}/related', {
+            params: { path: { code }, query: { size } },
+          }),
+        ),
+      /** 홈 칩 줄 — 내 보드. 로그인 전용. */
+      getChips: async () => unwrap(await baseFetchClient.GET('/v1/feed/chips')),
+      /** 홈 이유 줄. 취향 신호가 없으면 null. */
+      getReason: async () => unwrap(await baseFetchClient.GET('/v1/feed/reason')),
+      getCategories: async () => unwrap(await baseFetchClient.GET('/v1/categories')),
+      create: async (body: JsonBody<paths['/v1/pins']['post']['requestBody']>) =>
+        unwrap(await baseFetchClient.POST('/v1/pins', { body })),
+      update: async (
+        code: string,
+        body: JsonBody<paths['/v1/pins/{code}']['patch']['requestBody']>,
+      ) =>
+        unwrap(
+          await baseFetchClient.PATCH('/v1/pins/{code}', { params: { path: { code } }, body }),
+        ),
+      remove: async (code: string) =>
+        unwrap(await baseFetchClient.DELETE('/v1/pins/{code}', { params: { path: { code } } })),
+      /** 링크 읽기 — 제목 · 사진 후보 · 출처. */
+      getLinkPreview: async (
+        body: JsonBody<paths['/v2/host/link-preview']['post']['requestBody']>,
+      ) => unwrap(await baseFetchClient.POST('/v2/host/link-preview', { body })),
+      /** 링크 사진을 축소본으로 저장소에 복사한다. */
+      copyImage: async (body: JsonBody<paths['/v2/host/pin-images']['post']['requestBody']>) =>
+        unwrap(await baseFetchClient.POST('/v2/host/pin-images', { body })),
+    },
+    board: {
+      queryKeys: {
+        all: ['v2', 'board'] as const,
+        mine: ['v2', 'board', 'mine'] as const,
+        items: (boardId: string) => ['v2', 'board', 'items', boardId] as const,
+        byHandle: (handle: string, slug: string) =>
+          ['v2', 'board', 'handle', handle, slug] as const,
+        follows: ['v2', 'board', 'follows'] as const,
+      },
+      getMine: async () => unwrap(await baseFetchClient.GET('/v2/users/me/boards')),
+      create: async (body: JsonBody<paths['/v2/users/me/boards']['post']['requestBody']>) =>
+        unwrap(await baseFetchClient.POST('/v2/users/me/boards', { body })),
+      update: async (
+        boardId: string,
+        body: JsonBody<paths['/v2/boards/{boardId}']['patch']['requestBody']>,
+      ) =>
+        unwrap(
+          await baseFetchClient.PATCH('/v2/boards/{boardId}', {
+            params: { path: { boardId } },
+            body,
+          }),
+        ),
+      remove: async (boardId: string) =>
+        unwrap(
+          await baseFetchClient.DELETE('/v2/boards/{boardId}', { params: { path: { boardId } } }),
+        ),
+      getItems: async (boardId: string) =>
+        unwrap(
+          await baseFetchClient.GET('/v2/boards/{boardId}/items', {
+            params: { path: { boardId } },
+          }),
+        ),
+      /** 운영 계정 보드 `/{handle}/{slug}`. */
+      getByHandle: async (handle: string, slug: string) =>
+        unwrap(
+          await baseFetchClient.GET('/v2/users/{handle}/boards/{slug}', {
+            params: { path: { handle, slug } },
+          }),
+        ),
+      /** 공연 담기 · 빼기 — 멱등. */
+      putConcert: async (boardId: string, concertId: string) =>
+        unwrap(
+          await baseFetchClient.PUT('/v2/boards/{boardId}/items/{concertId}', {
+            params: { path: { boardId, concertId } },
+          }),
+        ),
+      deleteConcert: async (boardId: string, concertId: string) =>
+        unwrap(
+          await baseFetchClient.DELETE('/v2/boards/{boardId}/items/{concertId}', {
+            params: { path: { boardId, concertId } },
+          }),
+        ),
+      /** 핀 담기 · 빼기 — 멱등. */
+      putPin: async (boardId: string, pinId: string) =>
+        unwrap(
+          await baseFetchClient.PUT('/v2/boards/{boardId}/pins/{pinId}', {
+            params: { path: { boardId, pinId } },
+          }),
+        ),
+      deletePin: async (boardId: string, pinId: string) =>
+        unwrap(
+          await baseFetchClient.DELETE('/v2/boards/{boardId}/pins/{pinId}', {
+            params: { path: { boardId, pinId } },
+          }),
+        ),
+      getFollows: async () => unwrap(await baseFetchClient.GET('/v2/users/me/board-follows')),
+      follow: async (
+        boardId: string,
+        body: JsonBody<paths['/v2/boards/{boardId}/follow']['put']['requestBody']>,
+      ) =>
+        unwrap(
+          await baseFetchClient.PUT('/v2/boards/{boardId}/follow', {
+            params: { path: { boardId } },
+            body,
+          }),
+        ),
+      notify: async (
+        boardId: string,
+        body: JsonBody<paths['/v2/boards/{boardId}/notify']['put']['requestBody']>,
+      ) =>
+        unwrap(
+          await baseFetchClient.PUT('/v2/boards/{boardId}/notify', {
+            params: { path: { boardId } },
+            body,
+          }),
+        ),
+      markSeen: async (boardId: string) =>
+        unwrap(
+          await baseFetchClient.PUT('/v2/boards/{boardId}/seen', {
+            params: { path: { boardId } },
+          }),
+        ),
+    },
+    interest: {
+      queryKeys: { mine: ['v1', 'interest', 'mine'] as const },
+      getMine: async () => unwrap(await baseFetchClient.GET('/v1/users/me/interests')),
+      /** 통째로 덮어쓴다. 빈 배열 = 건너뛰기. */
+      putMine: async (body: JsonBody<paths['/v1/users/me/interests']['put']['requestBody']>) =>
+        unwrap(await baseFetchClient.PUT('/v1/users/me/interests', { body })),
+    },
+    area: {
+      queryKeys: { list: ['v2', 'area', 'list'] as const, mine: ['v2', 'area', 'mine'] as const },
+      getList: async () => unwrap(await baseFetchClient.GET('/v2/areas')),
+      getMine: async () => unwrap(await baseFetchClient.GET('/v2/users/me/area')),
+      putMine: async (body: JsonBody<paths['/v2/users/me/area']['put']['requestBody']>) =>
+        unwrap(await baseFetchClient.PUT('/v2/users/me/area', { body })),
+    },
+    /** 종류 · 토픽 알림 — 보드 새 공연 · 취향 업데이트. 옛 `notification`(Feed 기반)과 다른 원천이다. */
+    topicNotification: {
+      queryKeys: {
+        all: ['v2', 'topic-notification'] as const,
+        detail: (id: string) => ['v2', 'topic-notification', id] as const,
+      },
+      getList: async () => unwrap(await baseFetchClient.GET('/v2/users/me/notifications')),
+      /** 취향 업데이트 착지 — 열면 읽음. */
+      getDetail: async (id: string) =>
+        unwrap(
+          await baseFetchClient.GET('/v2/users/me/notifications/{id}', {
+            params: { path: { id } },
+          }),
+        ),
+      remove: async (id: string) =>
+        unwrap(
+          await baseFetchClient.DELETE('/v2/users/me/notifications/{id}', {
+            params: { path: { id } },
+          }),
+        ),
+      /** 푸시 기기 등록 — endpoint 로 upsert. */
+      putDevice: async (body: JsonBody<paths['/v2/users/me/devices']['put']['requestBody']>) =>
+        unwrap(await baseFetchClient.PUT('/v2/users/me/devices', { body })),
     },
   } as const
   return apiClient
