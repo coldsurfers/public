@@ -199,6 +199,26 @@ test('다른 미니앱의 매니페스트 자리면 거절한다', async () => {
   )
 })
 
+test('번들에 비밀 값이 보이면 아무것도 올리지 않고, allow 에 적으면 올린다', async () => {
+  const key = `AKIA${'Q'.repeat(16)}`
+  await write('src/index.ts', source(key))
+
+  const blocked = memoryStorage()
+  await assert.rejects(
+    runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(blocked.storage) }),
+    /비밀 값으로 보이는 문자열/,
+  )
+  assert.equal(blocked.writes.length, 0)
+
+  const allowed = memoryStorage()
+  const result = await runDeploy({
+    cwd: projectDir,
+    channel: 'staging',
+    config: { ...configWith(allowed.storage), scan: { allow: [key] } },
+  })
+  assert.equal(result.uploaded, true)
+})
+
 test('config 는 default export 를 읽고, 없으면 찾은 후보를 댄다', async () => {
   await write('react-native-mf.config.mjs', "export default { name: 'settings', prefix: 'apps' }\n")
   assert.equal((await loadConfig(projectDir)).name, 'settings')

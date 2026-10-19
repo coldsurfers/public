@@ -13,6 +13,7 @@ import {
   rollback,
 } from '../manifest'
 import type { DeployConfig, DeployStorage } from './config'
+import { formatFindings, scanBundle } from './scan'
 
 /** 버전마다 경로가 달라서 한 번 올린 번들은 바뀌지 않는다 */
 const BUNDLE_CACHE = 'public, max-age=31536000, immutable'
@@ -90,6 +91,8 @@ export async function runDeploy(input: {
     blockScoping: build.blockScoping ?? true,
   })
   const code = await readFile(outFile, 'utf8')
+  const findings = scanBundle(code, config.scan?.allow)
+  if (findings.length > 0) throw new Error(formatFindings(outFile, findings))
 
   const stored = await config.storage.read(bKey)
   if (stored !== null && stored !== code) {
