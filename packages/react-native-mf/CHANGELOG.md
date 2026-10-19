@@ -1,5 +1,15 @@
 # @coldsurfers/react-native-mf
 
+## 0.5.0
+
+### Minor Changes
+
+- [#295](https://github.com/coldsurfers/public/pull/295) [`57afee6`](https://github.com/coldsurfers/public/commit/57afee6a701e7dee9d4e43b10807549ba1fd5c5b) Thanks [@yungblud](https://github.com/yungblud)! - 미니앱 배포 `deploy` · `rollback` 명령과 `./deploy` 진입점(`defineConfig` · `s3Storage`)을 연다. 채널마다 `manifest.json` 한 장에 릴리스(`version` · `requires` · `enabled`)를 쌓는다. bin 을 `dist/bin.js` 로 떼어 `run` 이 공유 청크로 옮겨져도 실행되게 한다.
+
+- [#297](https://github.com/coldsurfers/public/pull/297) [`f2ccc77`](https://github.com/coldsurfers/public/commit/f2ccc779b94fb160554eff17592a87ccf957811b) Thanks [@yungblud](https://github.com/yungblud)! - 런타임에 `createManifestResolver` 를 연다. 채널 매니페스트에서 켜져 있고 `requires` 를 호스트가 다 내놓는 최신 릴리스를 고르고, 매니페스트를 못 받으면 캐시된 최신 버전으로 연다. `Manifest` · `Release` 타입을 내보낸다.
+
+- [#296](https://github.com/coldsurfers/public/pull/296) [`67f53db`](https://github.com/coldsurfers/public/commit/67f53db8710dca710d8feced33cb9993567e9dfa) Thanks [@yungblud](https://github.com/yungblud)! - `deploy` 가 올리기 전에 번들에서 비밀 값으로 보이는 문자열(AWS · PEM 개인 키 · GitHub · Slack · Stripe · Google · Anthropic · OpenAI)을 찾으면 멈춘다. 공개 값은 config `scan.allow` 로 통과시킨다.
+
 ## 0.4.1
 
 ### Patch Changes
