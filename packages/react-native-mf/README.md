@@ -197,6 +197,18 @@ react-native-mf rollback -c production --to 1.2.0
 | 같은 버전 | 같은 채널이면 굽기 전에 거절. 다른 채널이면 번들을 다시 굽고 **내용이 같을 때만** 그대로 쓴다(staging → production) |
 | 중간에 죽으면 | 번들 → 매니페스트 순서라 다시 돌리면 끝난다 |
 | 되돌리기 | 번들은 지우지 않고 `enabled: false`. 켜진 릴리스가 하나도 안 남는 되돌리기는 거절 |
+| 비밀 값 검사 | 굽고 나서 올리기 전에 번들을 훑는다. 걸리면 아무것도 올리지 않고 규칙 · 줄:칸 · 앞 네 글자만 찍는다 |
+
+앱에 실린 번들은 누구나 꺼내 본다. 검사는 형식이 뚜렷한 키만 잡는다 — AWS 액세스 키,
+본문이 붙은 PEM 개인 키, GitHub · Slack 토큰, Stripe live 비밀 키, Google API 키, Anthropic · OpenAI
+API 키. 앱에 실어도 되는 공개 값(지도 키 등)은 글자 그대로 `scan.allow` 에 적는다.
+
+```ts
+export default defineConfig({
+  // ...
+  scan: { allow: [process.env.MAPS_API_KEY ?? ''] },
+})
+```
 
 ⚠️ **S3 버킷에 `s3:ListBucket` 이 있어야 한다.** 없으면 없는 키가 `NoSuchKey` 대신
 `AccessDenied` 로 와서 첫 배포가 멈춘다.

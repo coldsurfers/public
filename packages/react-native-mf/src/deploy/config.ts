@@ -34,6 +34,8 @@ export type DeployConfig = {
   prefix: string
   storage: DeployStorage
   build?: DeployBuildConfig
+  /** 올리기 전 번들 검사. `allow` 는 앱에 실어도 되는 공개 값을 글자 그대로 적는다 */
+  scan?: { allow?: string[] }
 }
 
 export function defineConfig(config: DeployConfig): DeployConfig {
