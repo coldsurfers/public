@@ -414,7 +414,7 @@ scriptManager.addResolver(
 
 | 상황 | 고르는 것 |
 | --- | --- |
-| 매니페스트를 받음 | `enabled` 이고 `requires` 를 호스트가 다 `registerShared` 한 첫 릴리스(최신이 앞) |
+| 매니페스트를 받음 | `enabled` 이고 `requires` 를 호스트가 다 `registerShared` 한 첫 릴리스(최신이 앞). `storage` 에서 이 이름의 다른 버전은 지운다 — 되돌린 버전이 오프라인 부팅에 다시 열리지 않게 |
 | 받았는데 맞는 게 없음 | 던진다. 캐시로 넘어가지 않는다 — 되돌린 버전을 다시 열지 않게 |
 | 못 받음(오프라인 · `timeoutMs` 기본 5초 · 모양 틀림) | `storage` 에 캐시된 이 이름의 가장 높은 버전. `onError` 로 원인을 알린다. 캐시도 없으면 던진다 |
 

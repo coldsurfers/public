@@ -1,6 +1,6 @@
 import { bundleKey, type Manifest, manifestKey, parseManifest, type Release } from '../manifest'
 import type { ScriptLocator, ScriptResolver } from './script-manager'
-import { parseStorageKey, type ScriptStorage } from './script-storage'
+import { parseStorageKey, type ScriptStorage, storageKey } from './script-storage'
 import { hasShared } from './shared-scope'
 
 export type ManifestResolverOptions = {
@@ -53,9 +53,29 @@ function pickRelease(manifest: Manifest): Release {
   )
 }
 
+/** semver 프리릴리스 규칙 — 숫자 칸은 숫자로, 숫자 칸이 글자 칸보다 낮고, 앞이 같으면 짧은 쪽이 낮다 */
+function comparePrerelease(a: string, b: string): number {
+  const partsA = a.split('.')
+  const partsB = b.split('.')
+  for (let index = 0; index < Math.min(partsA.length, partsB.length); index += 1) {
+    const [x, y] = [partsA[index], partsB[index]]
+    if (x === y) continue
+    const [numericX, numericY] = [/^\d+$/.test(x), /^\d+$/.test(y)]
+    if (numericX && numericY) return Number(x) - Number(y)
+    if (numericX !== numericY) return numericX ? -1 : 1
+    return x < y ? -1 : 1
+  }
+  return partsA.length - partsB.length
+}
+
+function splitVersion(version: string): [core: string, prerelease: string | undefined] {
+  const at = version.indexOf('-')
+  return at < 0 ? [version, undefined] : [version.slice(0, at), version.slice(at + 1)]
+}
+
 function compareVersions(a: string, b: string): number {
-  const [coreA, preA] = a.split('-', 2)
-  const [coreB, preB] = b.split('-', 2)
+  const [coreA, preA] = splitVersion(a)
+  const [coreB, preB] = splitVersion(b)
   const partsA = coreA.split('.').map(Number)
   const partsB = coreB.split('.').map(Number)
   for (let index = 0; index < Math.max(partsA.length, partsB.length); index += 1) {
@@ -65,15 +85,26 @@ function compareVersions(a: string, b: string): number {
   if (preA === preB) return 0
   if (preA === undefined) return 1
   if (preB === undefined) return -1
-  return preA < preB ? -1 : 1
+  return comparePrerelease(preA, preB)
 }
 
-async function latestCached(storage: ScriptStorage, name: string): Promise<string | undefined> {
-  const versions = (await storage.list()).flatMap((key) => {
+async function cachedVersions(storage: ScriptStorage, name: string): Promise<string[]> {
+  return (await storage.list()).flatMap((key) => {
     const parsed = parseStorageKey(key)
     return parsed?.name === name ? [parsed.version] : []
   })
-  return versions.sort(compareVersions)[versions.length - 1]
+}
+
+async function latestCached(storage: ScriptStorage, name: string): Promise<string | undefined> {
+  const versions = (await cachedVersions(storage, name)).sort(compareVersions)
+  return versions[versions.length - 1]
+}
+
+/** 매니페스트가 고른 버전만 남긴다. 되돌린 버전이 캐시에 남으면 다음 오프라인 부팅이 그걸 연다 */
+async function pruneCache(storage: ScriptStorage, name: string, keep: string): Promise<void> {
+  for (const version of await cachedVersions(storage, name)) {
+    if (version !== keep) await storage.remove(storageKey(name, version))
+  }
 }
 
 /**
@@ -81,6 +112,7 @@ async function latestCached(storage: ScriptStorage, name: string): Promise<strin
  *
  * 매니페스트를 받았는데 맞는 릴리스가 없으면 던진다. 캐시로 넘어가지 않는다 — 되돌린 버전을 다시 열지 않게.
  * 매니페스트를 못 받으면(오프라인 · 시간 초과 · 모양 틀림) `storage` 에 캐시된 최신 버전으로 연다.
+ * 그래서 매니페스트로 고른 뒤에는 이 이름의 다른 캐시 버전을 지운다.
  */
 export function createManifestResolver(options: ManifestResolverOptions): ScriptResolver {
   const base = options.baseUrl.replace(/\/+$/, '')
@@ -105,6 +137,9 @@ export function createManifestResolver(options: ManifestResolverOptions): Script
       return locate(name, cached)
     }
 
-    return locate(name, pickRelease(manifest).version)
+    const { version } = pickRelease(manifest)
+    // 지우기 실패로 로드를 깨지 않는다. 캐시는 정본이 아니다
+    if (options.storage) await pruneCache(options.storage, name, version).catch(() => undefined)
+    return locate(name, version)
   }
 }

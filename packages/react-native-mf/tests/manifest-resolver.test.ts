@@ -123,6 +123,26 @@ test('매니페스트를 못 받으면 이 이름의 가장 높은 캐시 버전
   assert.deepEqual(reported, ['settings: offline'])
 })
 
+test('캐시 버전은 semver 프리릴리스 순서로 비교한다', async () => {
+  stubFetch({ [MANIFEST_URL]: new Error('offline') })
+  const latest = async (keys: string[]) =>
+    (await resolverWith({ storage: cacheWith(keys) })('settings'))?.version
+
+  assert.equal(await latest(['settings@1.2.0-beta.2', 'settings@1.2.0-beta.10']), '1.2.0-beta.10')
+  assert.equal(await latest(['settings@1.2.0-beta.10', 'settings@1.2.0']), '1.2.0')
+  assert.equal(await latest(['settings@1.2.0-beta', 'settings@1.2.0-1']), '1.2.0-beta')
+})
+
+test('매니페스트로 고르면 이 이름의 다른 캐시 버전을 지운다', async () => {
+  registerShared({ react: {} })
+  stubFetch({ [MANIFEST_URL]: manifestReply([release('1.2.0', ['react'])]) })
+  const storage = cacheWith(['settings@1.3.0', 'settings@1.2.0', 'profile@1.0.0'])
+
+  await resolverWith({ storage })('settings')
+
+  assert.deepEqual(await storage.list(), ['settings@1.2.0', 'profile@1.0.0'])
+})
+
 test('시간 안에 못 받아도 캐시로 넘어간다', async () => {
   stubFetch({ [MANIFEST_URL]: 'hang' })
   const locator = await resolverWith({
