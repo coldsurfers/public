@@ -394,6 +394,30 @@ scriptManager.addResolver(async (name) => {
 resolver 는 `await` 를 품어도 된다(위의 `getManifest`). 부팅에서 등록만 하고 **실제 호출은
 첫 `load` 때**라, 배선이 네트워크를 기다리지 않는다.
 
+`deploy` 로 낸 미니앱이면 resolver 를 손으로 쓰지 않는다. `createManifestResolver` 가 채널
+매니페스트를 읽어 고른다.
+
+```ts
+import { createManifestResolver, scriptManager } from '@coldsurfers/react-native-mf'
+
+scriptManager.addResolver(
+  createManifestResolver({
+    baseUrl: CDN,
+    prefix: 'mini-apps',
+    channel: 'production',
+    names: ['settings'],
+    storage,
+    onError: (error, name) => report(error, { name }),
+  }),
+)
+```
+
+| 상황 | 고르는 것 |
+| --- | --- |
+| 매니페스트를 받음 | `enabled` 이고 `requires` 를 호스트가 다 `registerShared` 한 첫 릴리스(최신이 앞) |
+| 받았는데 맞는 게 없음 | 던진다. 캐시로 넘어가지 않는다 — 되돌린 버전을 다시 열지 않게 |
+| 못 받음(오프라인 · `timeoutMs` 기본 5초 · 모양 틀림) | `storage` 에 캐시된 이 이름의 가장 높은 버전. `onError` 로 원인을 알린다. 캐시도 없으면 던진다 |
+
 ### 2. 화면에서 — Suspense
 
 `load` 는 약속을, `getRemote` 는 값을 돌려준다. 그 둘을 Suspense 계약으로 접은 게 `useRemote` 다.

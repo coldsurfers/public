@@ -5,6 +5,9 @@
  * 가른 것이다 — 앱이 esbuild 를 물면 안 된다.
  */
 
+export type { Manifest, Release } from './manifest'
+export type { ManifestResolverOptions } from './runtime/manifest-resolver'
+export { createManifestResolver } from './runtime/manifest-resolver'
 export {
   getRemote,
   hasRemote,
