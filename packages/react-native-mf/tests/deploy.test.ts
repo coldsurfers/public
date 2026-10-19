@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path'
 import { after, beforeEach, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { type DeployConfig, type DeployStorage, loadConfig } from '../src/deploy/config'
-import { runDeploy, runRollback } from '../src/deploy/deploy'
+import { runDeploy, runPromote, runRollback } from '../src/deploy/deploy'
 import { parseManifest } from '../src/manifest'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -223,4 +223,86 @@ test('config 는 default export 를 읽고, 없으면 찾은 후보를 댄다', 
   await write('react-native-mf.config.mjs', "export default { name: 'settings', prefix: 'apps' }\n")
   assert.equal((await loadConfig(projectDir)).name, 'settings')
   await assert.rejects(loadConfig(join(projectDir, 'src')), /config 를 찾을 수 없다/)
+})
+
+test('promote 는 굽지 않고 다른 채널의 릴리스를 그대로 더한다 — 소스가 바뀐 뒤에도', async () => {
+  const { storage, files, writes } = memoryStorage()
+  await runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) })
+  const staged = manifestOf(files, 'staging').releases[0]
+  await write('src/index.ts', source('changed after staging'))
+  await setVersion('1.3.0')
+  const before = writes.length
+
+  const result = await runPromote({
+    from: 'staging',
+    channel: 'production',
+    config: configWith(storage),
+    now: new Date('2026-10-20T00:00:00.000Z'),
+  })
+
+  assert.equal(result?.version, '1.2.0')
+  assert.deepEqual(
+    writes.slice(before).map((w) => w.key),
+    ['apps/settings/production/manifest.json'],
+  )
+  assert.deepEqual(manifestOf(files, 'production').releases, [
+    { ...staged, deployedAt: '2026-10-20T00:00:00.000Z' },
+  ])
+})
+
+test('promote --version 은 그 버전을, 없으면 켜진 최신을 올린다. 꺼진 버전은 거절한다', async () => {
+  const { storage, files } = memoryStorage()
+  await runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) })
+  await write('src/index.ts', source('two'))
+  await setVersion('1.2.1')
+  await runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) })
+  await runRollback({ channel: 'staging', config: configWith(storage) })
+
+  await assert.rejects(
+    runPromote({
+      from: 'staging',
+      channel: 'production',
+      config: configWith(storage),
+      version: '1.2.1',
+    }),
+    /꺼져 있다/,
+  )
+  const latest = await runPromote({
+    from: 'staging',
+    channel: 'production',
+    config: configWith(storage),
+  })
+  assert.equal(latest?.version, '1.2.0')
+  assert.deepEqual(
+    manifestOf(files, 'production').releases.map((r) => r.version),
+    ['1.2.0'],
+  )
+})
+
+test('promote 는 이미 있는 버전 · 없는 번들 · 확인 거절이면 매니페스트를 쓰지 않는다', async () => {
+  const { storage, files, writes } = memoryStorage()
+  await runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) })
+  const config = configWith(storage)
+
+  assert.equal(
+    await runPromote({
+      from: 'staging',
+      channel: 'production',
+      config,
+      confirm: async () => false,
+    }),
+    null,
+  )
+  assert.ok(!files.has('apps/settings/production/manifest.json'), '거절했는데 썼다')
+
+  await runPromote({ from: 'staging', channel: 'production', config })
+  await assert.rejects(
+    runPromote({ from: 'staging', channel: 'production', config }),
+    /이미 이 채널에 있다/,
+  )
+
+  files.delete('apps/settings/1.2.0/index.bundle.js')
+  const before = writes.length
+  await assert.rejects(runPromote({ from: 'staging', channel: 'beta', config }), /저장소에 없다/)
+  assert.equal(writes.length, before)
 })

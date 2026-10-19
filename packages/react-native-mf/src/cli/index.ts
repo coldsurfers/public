@@ -15,6 +15,7 @@ const USAGE = `react-native-mf <command>
   build     미니앱 엔트리를 원격 번들로 굽는다
   deploy    굽고 저장소에 올린 뒤 채널 매니페스트에 더한다(react-native-mf.config.ts)
   rollback  채널 매니페스트에서 최신 릴리스를 끈다
+  promote   다른 채널에 낸 릴리스를 굽지 않고 이 채널 매니페스트에 더한다
 
 build 옵션
   -o, --out-file <path>     산출물 경로 (필수)
@@ -28,11 +29,13 @@ build 옵션
       --babel-config <path> 미니앱 babel config. 생략하면 cwd 에서 찾는다
       --no-block-scoping    Hermes 용 let/const 제거 후처리를 끈다
 
-deploy · rollback 옵션
+deploy · rollback · promote 옵션
   -c, --channel <name>      채널 (필수) — staging · production 등
-  -i, --interactive         deploy 전에 버전 올리기 · 확인을 묻는다
+  -i, --interactive         deploy 는 버전 올리기 · 확인을, promote 는 확인을 묻는다
       --config <path>       config 경로 (기본: react-native-mf.config.{ts,mjs,js})
       --to <version>        rollback 이 켤 버전 (기본: 켜진 것 중 두 번째)
+      --from <channel>      promote 가 읽을 채널 (promote 필수)
+      --version <version>   promote 할 버전 (기본: --from 에서 켜진 최신)
 `
 
 export async function run(argv: string[]): Promise<number> {
@@ -43,7 +46,7 @@ export async function run(argv: string[]): Promise<number> {
     return command ? 0 : 1
   }
 
-  if (command === 'deploy' || command === 'rollback') {
+  if (command === 'deploy' || command === 'rollback' || command === 'promote') {
     const parsedDeploy = parseDeployArgs(command, rest)
     if (!parsedDeploy.ok) {
       process.stderr.write(`[react-native-mf] ${parsedDeploy.error}\n\n${USAGE}`)

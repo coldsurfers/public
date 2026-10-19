@@ -10,6 +10,7 @@ import {
   type Manifest,
   manifestKey,
   parseManifest,
+  type Release,
   rollback,
 } from '../manifest'
 import type { DeployConfig, DeployStorage } from './config'
@@ -132,4 +133,66 @@ export async function runRollback(input: {
   const next = rollback(await readManifest(config.storage, key, config.name), input.to)
   await writeManifest(config.storage, key, next)
   return next
+}
+
+export type PromoteResult = { version: string; requires: string[]; manifestKey: string }
+
+/**
+ * `from` 채널에 이미 낸 릴리스를 굽지 않고 `channel` 매니페스트에 더한다. 번들 · `requires` 가
+ * 그대로라 staging 에서 본 것이 그대로 나간다.
+ *
+ * `version` 이 없으면 `from` 에서 켜진 최신. 꺼진 릴리스는 올리지 않는다 — 되돌린 버전이다.
+ * `confirm` 이 `false` 를 주면 아무것도 쓰지 않는다.
+ */
+export async function runPromote(input: {
+  from: string
+  channel: string
+  config: DeployConfig
+  version?: string
+  now?: Date
+  confirm?: (release: Release) => Promise<boolean>
+}): Promise<PromoteResult | null> {
+  const { from, channel, config } = input
+  if (from === channel) {
+    throw new Error(`[react-native-mf] --from 과 -c 가 같은 채널이다: ${channel}`)
+  }
+
+  const source = await readManifest(
+    config.storage,
+    manifestKey(config.prefix, config.name, from),
+    config.name,
+  )
+  const release =
+    input.version === undefined
+      ? source.releases.find((candidate) => candidate.enabled)
+      : source.releases.find((candidate) => candidate.version === input.version)
+  if (release === undefined) {
+    throw new Error(
+      input.version === undefined
+        ? `[react-native-mf] ${config.name} 의 ${from} 에 켜진 릴리스가 없다.`
+        : `[react-native-mf] ${config.name}@${input.version} 은 ${from} 에 없다.`,
+    )
+  }
+  if (!release.enabled) {
+    throw new Error(
+      `[react-native-mf] ${config.name}@${release.version} 은 ${from} 에서 꺼져 있다(되돌린 버전).`,
+    )
+  }
+
+  const bKey = bundleKey(config.prefix, config.name, release.version)
+  if ((await config.storage.read(bKey)) === null) {
+    throw new Error(`[react-native-mf] ${bKey} 가 저장소에 없다.`)
+  }
+
+  const mKey = manifestKey(config.prefix, config.name, channel)
+  const next = addRelease(await readManifest(config.storage, mKey, config.name), {
+    version: release.version,
+    requires: release.requires,
+    enabled: true,
+    deployedAt: (input.now ?? new Date()).toISOString(),
+  })
+  if (input.confirm && !(await input.confirm(release))) return null
+
+  await writeManifest(config.storage, mKey, next)
+  return { version: release.version, requires: release.requires, manifestKey: mKey }
 }
