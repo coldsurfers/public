@@ -28,6 +28,17 @@ test('PEM 머리 상수만 있으면 잡지 않는다', () => {
   assert.deepEqual(scanBundle(`var H = "-----BEGIN ${'PRIVATE'} KEY-----";`), [])
 })
 
+test('끝 글자가 - 나 _ 인 Google 키도 잡는다', () => {
+  for (const last of ['-', '_']) {
+    const key = `AIza${'x'.repeat(34)}${last}`
+    assert.deepEqual(
+      scanBundle(`"${key}"`).map((finding) => finding.rule),
+      ['google-api-key'],
+      `끝 글자 ${last}`,
+    )
+  }
+})
+
 test('allow 에 적은 값은 통과한다', () => {
   assert.deepEqual(scanBundle(`"${googleKey}"`, [googleKey]), [])
 })

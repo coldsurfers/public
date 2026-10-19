@@ -25,7 +25,7 @@ const RULES: ReadonlyArray<{ rule: string; pattern: RegExp }> = [
   },
   { rule: 'slack-token', pattern: /\bxox[abprs]-[A-Za-z0-9-]{10,}/g },
   { rule: 'stripe-secret-key', pattern: /\b[rs]k_live_[A-Za-z0-9]{20,}\b/g },
-  { rule: 'google-api-key', pattern: /\bAIza[0-9A-Za-z_-]{35}\b/g },
+  { rule: 'google-api-key', pattern: /\bAIza[0-9A-Za-z_-]{35}(?![0-9A-Za-z_-])/g },
   { rule: 'anthropic-api-key', pattern: /\bsk-ant-[A-Za-z0-9_-]{20,}/g },
   { rule: 'openai-api-key', pattern: /\bsk-(?:proj|svcacct|admin)-[A-Za-z0-9_-]{20,}/g },
 ]
