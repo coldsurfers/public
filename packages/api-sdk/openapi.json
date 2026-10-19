@@ -3459,6 +3459,9 @@
           "image": {
             "type": "string"
           },
+          "aiImage": {
+            "type": "boolean"
+          },
           "url": {
             "type": "string",
             "nullable": true
@@ -3556,6 +3559,7 @@
           "code",
           "title",
           "image",
+          "aiImage",
           "url",
           "description",
           "category",
@@ -4367,33 +4371,63 @@
         ]
       },
       "PutDeviceBodyDTO": {
-        "type": "object",
-        "properties": {
-          "endpoint": {
-            "type": "string",
-            "format": "uri"
-          },
-          "keys": {
+        "anyOf": [
+          {
             "type": "object",
             "properties": {
-              "p256dh": {
+              "kind": {
                 "type": "string",
-                "minLength": 1
+                "enum": [
+                  "WEB"
+                ]
               },
-              "auth": {
+              "endpoint": {
+                "type": "string",
+                "format": "uri"
+              },
+              "keys": {
+                "type": "object",
+                "properties": {
+                  "p256dh": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "auth": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "p256dh",
+                  "auth"
+                ]
+              }
+            },
+            "required": [
+              "endpoint",
+              "keys"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "IOS",
+                  "ANDROID"
+                ]
+              },
+              "token": {
                 "type": "string",
                 "minLength": 1
               }
             },
             "required": [
-              "p256dh",
-              "auth"
+              "kind",
+              "token"
             ]
           }
-        },
-        "required": [
-          "endpoint",
-          "keys"
         ]
       },
       "CreatePinDTOSchema": {
@@ -16783,7 +16817,7 @@
           "v2",
           "notifications"
         ],
-        "summary": "웹 푸시 기기 등록(인증 필수) — endpoint 로 upsert",
+        "summary": "푸시 기기 등록(인증 필수) — 웹은 endpoint · 앱은 FCM 토큰으로 upsert",
         "security": [
           {
             "AccessTokenAuth": []

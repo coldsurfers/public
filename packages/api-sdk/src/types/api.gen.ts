@@ -11092,7 +11092,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** 웹 푸시 기기 등록(인증 필수) — endpoint 로 upsert */
+        /** 푸시 기기 등록(인증 필수) — 웹은 endpoint · 앱은 FCM 토큰으로 upsert */
         put: {
             parameters: {
                 query?: never;
@@ -14015,6 +14015,7 @@ export interface components {
             views: number;
         };
         PinDTOSchema: {
+            aiImage: boolean;
             category: {
                 id: string;
                 name: string;
@@ -14116,6 +14117,12 @@ export interface components {
                 auth: string;
                 p256dh: string;
             };
+            /** @enum {string} */
+            kind?: "WEB";
+        } | {
+            /** @enum {string} */
+            kind: "IOS" | "ANDROID";
+            token: string;
         };
         PutMyAreaBodyDTOSchema: {
             areaId: string;
