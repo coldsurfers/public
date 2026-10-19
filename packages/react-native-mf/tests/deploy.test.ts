@@ -4,7 +4,7 @@
  * 픽스처 자리는 `cli-build.test.ts` 와 같은 이유로 패키지 안 · `node_modules` 밖이다.
  */
 import assert from 'node:assert/strict'
-import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { after, beforeEach, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -107,6 +107,19 @@ test('같은 채널에 같은 버전은 굽기 전에 거절한다', async () =>
     /이미 이 채널에 있다/,
   )
   assert.equal(writes.length, 2)
+})
+
+test('경로 칸에 못 쓰는 버전은 굽기 전에 거절한다', async () => {
+  await rm(join(projectDir, 'build'), { recursive: true, force: true })
+  await setVersion('1.2.0+build.1')
+  const { storage, writes } = memoryStorage()
+
+  await assert.rejects(
+    runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) }),
+    /version 은 경로 한 칸/,
+  )
+  assert.equal(writes.length, 0)
+  await assert.rejects(stat(join(projectDir, 'build/out/index.bundle.js')), /ENOENT/)
 })
 
 test('다른 채널로 올리면 같은 번들을 다시 쓰고 매니페스트만 더한다', async () => {

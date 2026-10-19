@@ -70,8 +70,10 @@ export async function runDeploy(input: {
   const version = await readPackageVersion(cwd)
   const mKey = manifestKey(config.prefix, config.name, channel)
   const manifest = await readManifest(config.storage, mKey, config.name)
-  // 굽기 전에 막는다. 같은 버전을 다시 내려는 건 대개 버전 올리기를 잊은 것이다
+  // 굽기 전에 막는다. 같은 버전을 다시 내려는 건 대개 버전 올리기를 잊은 것이다.
+  // 버전이 경로 칸 규칙에 안 맞는 것도 `bundleKey` 가 여기서 던진다
   addRelease(manifest, { version, requires: [], enabled: true, deployedAt: '' })
+  const bKey = bundleKey(config.prefix, config.name, version)
 
   const build = config.build ?? {}
   const shared = build.sharedFrom
@@ -89,7 +91,6 @@ export async function runDeploy(input: {
   })
   const code = await readFile(outFile, 'utf8')
 
-  const bKey = bundleKey(config.prefix, config.name, version)
   const stored = await config.storage.read(bKey)
   if (stored !== null && stored !== code) {
     throw new Error(
