@@ -1,5 +1,5 @@
 /**
- * `deploy` · `rollback` — 인자 해석과 묻기만 여기 있다. 하는 일은 `../deploy/deploy`.
+ * `deploy` · `rollback` · `promote` — 인자 해석과 묻기만 여기 있다. 하는 일은 `../deploy/deploy`.
  *
  * `../deploy/*` 는 부를 때 연다. 거기서 `./build` 를 통해 esbuild · babel 을 문다.
  */
@@ -7,26 +7,35 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createInterface } from 'node:readline'
 
-export type DeployArgs = {
-  command: 'deploy' | 'rollback'
-  channel: string
-  interactive: boolean
-  config?: string
-  to?: string
-}
+export type DeployArgs = { channel: string; interactive: boolean; config?: string } & (
+  | { command: 'deploy' }
+  | { command: 'rollback'; to?: string }
+  | { command: 'promote'; from: string; version?: string }
+)
 
-const FLAGS = new Map<string, 'channel' | 'config' | 'to'>([
+type Flag = 'channel' | 'config' | 'to' | 'from' | 'version'
+
+const FLAGS = new Map<string, Flag>([
   ['-c', 'channel'],
   ['--channel', 'channel'],
   ['--config', 'config'],
   ['--to', 'to'],
+  ['--from', 'from'],
+  ['--version', 'version'],
 ])
+
+/** 명령마다 받는 옵션. 여기 없는 옵션은 다른 명령의 것이다 */
+const OWNED: Record<'to' | 'from' | 'version', DeployArgs['command']> = {
+  to: 'rollback',
+  from: 'promote',
+  version: 'promote',
+}
 
 export function parseDeployArgs(
   command: DeployArgs['command'],
   argv: readonly string[],
 ): { ok: true; args: DeployArgs } | { ok: false; error: string } {
-  const values: Partial<Record<'channel' | 'config' | 'to', string>> = {}
+  const values: Partial<Record<Flag, string>> = {}
   let interactive = false
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -46,12 +55,17 @@ export function parseDeployArgs(
   }
 
   if (!values.channel) return { ok: false, error: '-c, --channel 은 필수다' }
-  if (command === 'deploy' && values.to) return { ok: false, error: '--to 는 rollback 에만 쓴다' }
-
-  return {
-    ok: true,
-    args: { command, channel: values.channel, interactive, config: values.config, to: values.to },
+  for (const [flag, owner] of Object.entries(OWNED)) {
+    if (values[flag as keyof typeof OWNED] !== undefined && owner !== command) {
+      return { ok: false, error: `--${flag} 는 ${owner} 에만 쓴다` }
+    }
   }
+
+  const common = { channel: values.channel, interactive, config: values.config }
+  if (command === 'deploy') return { ok: true, args: { ...common, command } }
+  if (command === 'rollback') return { ok: true, args: { ...common, command, to: values.to } }
+  if (!values.from) return { ok: false, error: '--from 은 필수다' }
+  return { ok: true, args: { ...common, command, from: values.from, version: values.version } }
 }
 
 const BUMPS = ['patch', 'minor', 'major'] as const
@@ -66,8 +80,10 @@ export function bumpVersion(version: string, bump: Bump): string {
   return `${major}.${minor}.${patch + 1}`
 }
 
+type Ask = (question: string) => Promise<string>
+
 /** 고른 버전을 돌려준다. 쓰지는 않는다 — 다음 확인에서 그만두면 파일이 그대로여야 한다 */
-async function askVersion(current: string, ask: (q: string) => Promise<string>) {
+async function askVersion(current: string, ask: Ask) {
   const choices = BUMPS.map((bump) => `${bump} → ${bumpVersion(current, bump)}`)
   const answer = (await ask(`버전 ${current} — keep · ${choices.join(' · ')} [patch] `)).trim()
   const choice = answer === '' ? 'patch' : answer
@@ -84,9 +100,27 @@ async function writePackageVersion(cwd: string, version: string) {
   await writeFile(path, `${JSON.stringify({ ...pkg, version }, null, 2)}\n`)
 }
 
+async function withPrompt<T>(use: (ask: Ask) => Promise<T>): Promise<T> {
+  const prompt = createInterface({ input: process.stdin })
+  // `question()` 대신 줄을 하나씩 꺼낸다. 입력이 파이프면 readline 이 줄을 한꺼번에 읽고 닫아서
+  // 두 번째 `question()` 이 "readline was closed" 로 끝난다
+  const lines = prompt[Symbol.asyncIterator]()
+  try {
+    return await use(async (question) => {
+      process.stdout.write(question)
+      const next = await lines.next()
+      return next.done ? '' : next.value
+    })
+  } finally {
+    prompt.close()
+  }
+}
+
 export async function runDeployCommand(args: DeployArgs, cwd: string): Promise<number> {
   const { loadConfig } = await import('../deploy/config')
-  const { readPackageVersion, runDeploy, runRollback } = await import('../deploy/deploy')
+  const { readPackageVersion, runDeploy, runPromote, runRollback } = await import(
+    '../deploy/deploy'
+  )
   const config = await loadConfig(cwd, args.config)
   const out = (line: string) => process.stdout.write(`[react-native-mf] ${line}\n`)
 
@@ -97,27 +131,44 @@ export async function runDeployCommand(args: DeployArgs, cwd: string): Promise<n
     return 0
   }
 
-  if (args.interactive) {
-    const prompt = createInterface({ input: process.stdin })
-    // `question()` 대신 줄을 하나씩 꺼낸다. 입력이 파이프면 readline 이 줄을 한꺼번에 읽고 닫아서
-    // 두 번째 `question()` 이 "readline was closed" 로 끝난다
-    const lines = prompt[Symbol.asyncIterator]()
-    const ask = async (question: string) => {
-      process.stdout.write(question)
-      const next = await lines.next()
-      return next.done ? '' : next.value
+  if (args.command === 'promote') {
+    const { from } = args
+    const result = await runPromote({
+      from,
+      channel: args.channel,
+      config,
+      version: args.version,
+      confirm: args.interactive
+        ? (release) =>
+            withPrompt(async (ask) => {
+              const answer = await ask(
+                `${config.name}@${release.version} 를 ${from} → ${args.channel} 에 올린다. 계속? [y/N] `,
+              )
+              return answer.trim().toLowerCase() === 'y'
+            })
+        : undefined,
+    })
+    if (result === null) {
+      out('그만둔다')
+      return 1
     }
-    try {
+    out(`${config.name}@${result.version} → ${args.channel} (${from} 번들 그대로)`)
+    out(`manifest ${result.manifestKey}`)
+    return 0
+  }
+
+  if (args.interactive) {
+    const proceed = await withPrompt(async (ask) => {
       const current = await readPackageVersion(cwd)
       const version = await askVersion(current, ask)
       const answer = await ask(`${config.name}@${version} 를 ${args.channel} 에 낸다. 계속? [y/N] `)
-      if (answer.trim().toLowerCase() !== 'y') {
-        out('그만둔다')
-        return 1
-      }
+      if (answer.trim().toLowerCase() !== 'y') return false
       if (version !== current) await writePackageVersion(cwd, version)
-    } finally {
-      prompt.close()
+      return true
+    })
+    if (!proceed) {
+      out('그만둔다')
+      return 1
     }
   }
 

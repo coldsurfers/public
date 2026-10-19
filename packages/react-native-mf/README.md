@@ -15,7 +15,7 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 | --- | --- | --- |
 | `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 · `scriptManager` |
 | `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | ✅ shared 치환 · self-register |
-| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` · `deploy` · `rollback` |
+| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` · `deploy` · `rollback` · `promote` |
 | `@coldsurfers/react-native-mf/deploy` | 빌드 머신 (Node) | ✅ `defineConfig` · `s3Storage` — `react-native-mf.config.ts` 가 import 한다 |
 
 `esbuild` · `@babel/core` · `@babel/plugin-transform-block-scoping` · `@aws-sdk/client-s3` 는
@@ -161,7 +161,7 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 | `build/.probe/index.js` | `"use strict";` |
 | `node_modules/.cache/probe/index.js` | `var __E__ = (() => {` |
 
-## 배포 — `deploy` · `rollback`
+## 배포 — `deploy` · `rollback` · `promote`
 
 앱 본체 OTA(hot-updater 등)와 따로 미니앱을 낸다. 서버 없이 저장소에 파일 두 종류만 둔다.
 
@@ -187,6 +187,8 @@ react-native-mf deploy -c staging -i       # 버전 올리기 · 확인을 묻�
 react-native-mf deploy -c production       # package.json 버전 그대로
 react-native-mf rollback -c production     # 켜진 최신을 끈다
 react-native-mf rollback -c production --to 1.2.0
+react-native-mf promote --from staging -c production -i   # staging 에 낸 것을 굽지 않고 올린다
+react-native-mf promote --from staging -c production --version 1.2.0
 ```
 
 | 하는 일 | 어떻게 |
@@ -197,6 +199,7 @@ react-native-mf rollback -c production --to 1.2.0
 | 같은 버전 | 같은 채널이면 굽기 전에 거절. 다른 채널이면 번들을 다시 굽고 **내용이 같을 때만** 그대로 쓴다(staging → production) |
 | 중간에 죽으면 | 번들 → 매니페스트 순서라 다시 돌리면 끝난다 |
 | 되돌리기 | 번들은 지우지 않고 `enabled: false`. 켜진 릴리스가 하나도 안 남는 되돌리기는 거절 |
+| 승격 | `promote` 는 굽지 않는다. `--from` 매니페스트의 릴리스(`version` · `requires`)를 그대로 옮긴다 — 그 뒤에 소스 · `package.json` 이 바뀌었어도 된다. `--version` 이 없으면 켜진 최신, 꺼진 릴리스 · 저장소에 없는 번들 · 이미 있는 버전은 거절 |
 | 비밀 값 검사 | 굽고 나서 올리기 전에 번들을 훑는다. 걸리면 아무것도 올리지 않고 규칙 · 줄:칸 · 앞 네 글자만 찍는다 |
 
 앱에 실린 번들은 누구나 꺼내 본다. 검사는 형식이 뚜렷한 키만 잡는다 — AWS 액세스 키,
