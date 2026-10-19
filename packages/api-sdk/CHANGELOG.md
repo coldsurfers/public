@@ -1,5 +1,11 @@
 # @coldsurfers/api-sdk
 
+## 4.10.0
+
+### Minor Changes
+
+- [#293](https://github.com/coldsurfers/public/pull/293) [`14f58b5`](https://github.com/coldsurfers/public/commit/14f58b5d58d65fd4ac0a1f2cc08db047335fab23) Thanks [@yungblud](https://github.com/yungblud)! - 푸시 기기 등록 본문에 앱(FCM) 갈래를 더하고 핀에 aiImage 를 싣는다
+
 ## 4.9.0
 
 ### Minor Changes
