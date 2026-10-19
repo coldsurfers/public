@@ -185,7 +185,17 @@ export async function runPromote(input: {
   }
 
   const mKey = manifestKey(config.prefix, config.name, channel)
-  const next = addRelease(await readManifest(config.storage, mKey, config.name), {
+  const target = await readManifest(config.storage, mKey, config.name)
+  const existing = target.releases.find((candidate) => candidate.version === release.version)
+  if (existing) {
+    // `addRelease` 의 "버전을 올린다" 는 deploy 용 안내다. 승격에서는 다시 켜는 길을 알려준다
+    throw new Error(
+      existing.enabled
+        ? `[react-native-mf] ${config.name}@${release.version} 은 이미 ${channel} 에 있다.`
+        : `[react-native-mf] ${config.name}@${release.version} 은 ${channel} 에서 꺼져 있다. 다시 켜려면 rollback -c ${channel} --to ${release.version}`,
+    )
+  }
+  const next = addRelease(target, {
     version: release.version,
     requires: release.requires,
     enabled: true,

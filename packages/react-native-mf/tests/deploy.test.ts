@@ -298,11 +298,32 @@ test('promote 는 이미 있는 버전 · 없는 번들 · 확인 거절이면 �
   await runPromote({ from: 'staging', channel: 'production', config })
   await assert.rejects(
     runPromote({ from: 'staging', channel: 'production', config }),
-    /이미 이 채널에 있다/,
+    /이미 production 에 있다/,
   )
 
   files.delete('apps/settings/1.2.0/index.bundle.js')
   const before = writes.length
   await assert.rejects(runPromote({ from: 'staging', channel: 'beta', config }), /저장소에 없다/)
   assert.equal(writes.length, before)
+})
+
+test('promote 대상 채널에서 꺼진 버전이면 다시 켜는 rollback --to 를 알려준다', async () => {
+  const { storage } = memoryStorage()
+  await runDeploy({ cwd: projectDir, channel: 'staging', config: configWith(storage) })
+  await storage.write(
+    'apps/settings/production/manifest.json',
+    JSON.stringify({
+      name: 'settings',
+      releases: [
+        { version: '1.2.0', requires: [], enabled: false, deployedAt: 'x' },
+        { version: '1.1.0', requires: [], enabled: true, deployedAt: 'x' },
+      ],
+    }),
+    { contentType: 'application/json', cacheControl: '' },
+  )
+
+  await assert.rejects(
+    runPromote({ from: 'staging', channel: 'production', config: configWith(storage) }),
+    /꺼져 있다\. 다시 켜려면 rollback -c production --to 1\.2\.0/,
+  )
 })
