@@ -14,7 +14,7 @@ import { mkdir, readdir, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import { withSelfRegister } from '../esbuild/register'
-import { sharedScopePlugin } from '../esbuild/shared-scope'
+import { SHARED_NAMESPACE, sharedScopePlugin } from '../esbuild/shared-scope'
 import type { BuildOptions } from './build-options'
 
 /**
@@ -118,7 +118,10 @@ async function transpileTree(options: BuildOptions, outDir: string): Promise<voi
  *
  * `format`·`globalName`·`footer` 는 `withSelfRegister` 가 잡으므로 여기서 정하지 않는다.
  */
-async function bundle(options: BuildOptions, entryPath: string): Promise<string> {
+async function bundle(
+  options: BuildOptions,
+  entryPath: string,
+): Promise<{ code: string; requires: string[] }> {
   const esbuild = await loadEsbuild()
 
   const result = await esbuild.build({
@@ -134,13 +137,20 @@ async function bundle(options: BuildOptions, entryPath: string): Promise<string>
     // RN 코드가 `global` 을 짚는다. 원격 번들은 호스트 런타임 위에서 도는데 그 이름이
     // 있고 없고가 런타임마다 갈려서 `globalThis` 로 고정한다.
     define: { global: 'globalThis' },
+    metafile: true,
     ...withSelfRegister({ name: options.name }),
   })
 
   const [output] = result.outputFiles ?? []
   if (!output) throw new Error('[react-native-mf] esbuild 가 산출물을 내지 않았다.')
 
-  return output.text
+  const sharedPrefix = `${SHARED_NAMESPACE}:`
+  const requires = Object.keys(result.metafile?.inputs ?? {})
+    .filter((input) => input.startsWith(sharedPrefix))
+    .map((input) => input.slice(sharedPrefix.length))
+    .sort()
+
+  return { code: output.text, requires }
 }
 
 /**
@@ -194,6 +204,8 @@ export type BuildResult = {
   /** 실제로 쓴 절대 경로 */
   outFile: string
   bytes: number
+  /** 번들이 실제로 읽는 shared specifier. 호스트가 이 키를 다 `registerShared` 해야 돈다 */
+  requires: string[]
 }
 
 export async function runBuild(options: BuildOptions): Promise<BuildResult> {
@@ -204,11 +216,11 @@ export async function runBuild(options: BuildOptions): Promise<BuildResult> {
   const entryPath = join(transpileDir, options.entry.replace(SOURCE_EXTENSION, '.js'))
 
   const bundled = await bundle(options, entryPath)
-  const code = options.blockScoping ? await stripBlockScoping(bundled) : bundled
+  const code = options.blockScoping ? await stripBlockScoping(bundled.code) : bundled.code
 
   const outFile = resolve(options.cwd, options.outFile)
   await mkdir(dirname(outFile), { recursive: true })
   await writeFile(outFile, code)
 
-  return { outFile, bytes: Buffer.byteLength(code) }
+  return { outFile, bytes: Buffer.byteLength(code), requires: bundled.requires }
 }

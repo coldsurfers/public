@@ -15,10 +15,11 @@ React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼�
 | --- | --- | --- |
 | `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 · `scriptManager` |
 | `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | ✅ shared 치환 · self-register |
-| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` — babel transpile → 번들 → block-scoping |
+| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` · `deploy` · `rollback` |
+| `@coldsurfers/react-native-mf/deploy` | 빌드 머신 (Node) | ✅ `defineConfig` · `s3Storage` — `react-native-mf.config.ts` 가 import 한다 |
 
-`esbuild` · `@babel/core` · `@babel/plugin-transform-block-scoping` 은 **optional peer** 다.
-런타임 레인만 쓰는 앱은 셋 다 안 깔아도 된다 — CLI 는 실제로 부를 때 연다.
+`esbuild` · `@babel/core` · `@babel/plugin-transform-block-scoping` · `@aws-sdk/client-s3` 는
+**optional peer** 다. 런타임 레인만 쓰는 앱은 넷 다 안 깔아도 된다 — CLI 는 실제로 부를 때 연다.
 
 ## 실제로 꽂히는 자리 — `globalThis` 두 칸
 
@@ -159,6 +160,49 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 | --- | --- |
 | `build/.probe/index.js` | `"use strict";` |
 | `node_modules/.cache/probe/index.js` | `var __E__ = (() => {` |
+
+## 배포 — `deploy` · `rollback`
+
+앱 본체 OTA(hot-updater 등)와 따로 미니앱을 낸다. 서버 없이 저장소에 파일 두 종류만 둔다.
+
+```
+{prefix}/{name}/{version}/index.bundle.js   불변 · Cache-Control 1년 immutable
+{prefix}/{name}/{channel}/manifest.json     가변 · Cache-Control 60초
+```
+
+```ts
+// react-native-mf.config.ts — 미니앱 루트
+import { defineConfig, s3Storage } from '@coldsurfers/react-native-mf/deploy'
+
+export default defineConfig({
+  name: 'settings',
+  prefix: 'mini-apps',
+  storage: s3Storage({ bucket: 'my-bucket', region: 'ap-northeast-2' }),
+  build: { sharedFrom: '../../apps/host/shared-modules.json' },
+})
+```
+
+```bash
+react-native-mf deploy -c staging -i       # 버전 올리기 · 확인을 묻는다
+react-native-mf deploy -c production       # package.json 버전 그대로
+react-native-mf rollback -c production     # 켜진 최신을 끈다
+react-native-mf rollback -c production --to 1.2.0
+```
+
+| 하는 일 | 어떻게 |
+| --- | --- |
+| 버전 | `package.json` 의 `version`. `-i` 면 고르게 하고 **확인 뒤에** 쓴다. 커밋은 사람이 한다 |
+| 매니페스트 | 채널마다 한 장. 릴리스는 최신이 앞이고 `{ version, requires, enabled, deployedAt }` |
+| `requires` | 번들이 실제로 읽는 shared specifier. esbuild metafile 에서 뽑는다 — 호스트는 이걸 다 `registerShared` 했을 때만 받는다 |
+| 같은 버전 | 같은 채널이면 굽기 전에 거절. 다른 채널이면 번들을 다시 굽고 **내용이 같을 때만** 그대로 쓴다(staging → production) |
+| 중간에 죽으면 | 번들 → 매니페스트 순서라 다시 돌리면 끝난다 |
+| 되돌리기 | 번들은 지우지 않고 `enabled: false`. 켜진 릴리스가 하나도 안 남는 되돌리기는 거절 |
+
+⚠️ **S3 버킷에 `s3:ListBucket` 이 있어야 한다.** 없으면 없는 키가 `NoSuchKey` 대신
+`AccessDenied` 로 와서 첫 배포가 멈춘다.
+
+⚠️ **config 를 `.ts` 로 두려면 Node 22.18+** 다(type stripping). 미니앱 `package.json` 에
+`"type": "module"` 이 없으면 Node 가 재해석 경고를 한 줄 낸다 — 동작은 같다.
 
 ## 직접 esbuild 를 부를 때
 

@@ -7,7 +7,9 @@ import dts from 'vite-plugin-dts'
  * 진입점은 **실행 환경**으로 가른다. 배럴 하나로 묶으면 RN 앱이 esbuild 를 물게 된다:
  *   `.`         호스트(RN)에서 도는 런타임 — shared scope 등록·원격 회수
  *   `./esbuild` 빌드 머신(Node)에서 도는 번들러 플러그인
- *   `./cli`     bin. `./esbuild` 를 감싸는 얇은 껍데기
+ *   `./cli`     `run` — `build` · `deploy` · `rollback` 명령. `./esbuild` 를 감싸는 껍데기
+ *   `bin`       exports 밖. `run` 을 실행만 한다(`package.json` `bin`)
+ *   `./deploy`  `react-native-mf.config.ts` 가 import 하는 `defineConfig` · `s3Storage`
  *
  * `esbuild` 는 optional peer 다 — 런타임 레인만 쓰는 소비자(앱)는 안 깔아도 된다.
  *
@@ -23,17 +25,19 @@ export default defineConfig({
         index: 'src/index.ts',
         esbuild: 'src/esbuild/index.ts',
         cli: 'src/cli/index.ts',
+        bin: 'src/cli/bin.ts',
+        deploy: 'src/deploy/index.ts',
       },
       formats: ['es'],
     },
     rollupOptions: {
       // optional peer 와 node 빌트인은 번들에 말아넣지 않는다. `@babel/*` 는 CLI 가
       // 동적으로 여는데, 여기 없으면 롤업이 통째로 삼켜서 optional 이 아니게 된다.
-      external: [/^node:/, /^@babel\//, 'esbuild'],
+      external: [/^node:/, /^@babel\//, /^@aws-sdk\//, 'esbuild'],
       output: {
         // bin 은 node 가 직접 실행하므로 shebang 이 필요하다. 엔트리가 여럿이라
         // 전역 banner 를 쓰면 런타임 배럴에도 들어가므로 청크를 골라 붙인다.
-        banner: (chunk) => (chunk.name === 'cli' ? '#!/usr/bin/env node' : ''),
+        banner: (chunk) => (chunk.name === 'bin' ? '#!/usr/bin/env node' : ''),
       },
     },
   },

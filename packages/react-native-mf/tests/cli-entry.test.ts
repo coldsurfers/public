@@ -4,7 +4,9 @@
  * 조용히 되돌아갈 수 있는 종류라 테스트로 박는다.
  */
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 
 test('import 만으로는 process.exitCode 를 건드리지 않는다', async () => {
   const before = process.exitCode
@@ -51,4 +53,15 @@ test('매니페스트 오류도 ./build 를 열기 전에 끝난다', async () =
     ]),
     1,
   )
+})
+
+test('bin 은 실제 프로세스로 실행되고 종료 코드를 남긴다', () => {
+  const bin = fileURLToPath(new URL('../src/cli/bin.ts', import.meta.url))
+  const spawn = (args: string[]) =>
+    spawnSync(process.execPath, ['--import', 'tsx', bin, ...args], { encoding: 'utf8' })
+
+  const help = spawn(['--help'])
+  assert.equal(help.status, 0)
+  assert.match(help.stdout, /deploy/)
+  assert.equal(spawn(['deploy']).status, 1, '-c 없는 deploy 가 실패로 끝나지 않았다')
 })

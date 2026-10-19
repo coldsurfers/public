@@ -13,7 +13,7 @@
   "author": "yungblud <killi8n@gmail.com>",
   "type": "module",
   "sideEffects": [
-    "./dist/cli.js"
+    "./dist/bin.js"
   ],
   "homepage": "https://github.com/coldsurfers/public/tree/main/packages/react-native-mf",
   "bugs": "https://github.com/coldsurfers/public/issues",
@@ -30,7 +30,7 @@
     "dist"
   ],
   "bin": {
-    "react-native-mf": "./dist/cli.js"
+    "react-native-mf": "./dist/bin.js"
   },
   "exports": {
     ".": {
@@ -45,6 +45,10 @@
       "types": "./dist/cli.d.ts",
       "default": "./dist/cli.js"
     },
+    "./deploy": {
+      "types": "./dist/deploy.d.ts",
+      "default": "./dist/deploy.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -55,11 +59,15 @@
     "test": "node --import tsx --test tests/*.test.ts"
   },
   "peerDependencies": {
+    "@aws-sdk/client-s3": ">=3.188.0",
     "@babel/core": ">=7.20.0",
     "@babel/plugin-transform-block-scoping": ">=7.20.0",
     "esbuild": ">=0.21.0"
   },
   "peerDependenciesMeta": {
+    "@aws-sdk/client-s3": {
+      "optional": true
+    },
     "@babel/core": {
       "optional": true
     },
@@ -72,6 +80,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@aws-sdk/client-s3": "^3.1152.0",
     "@babel/core": "^7.26.0",
     "@babel/plugin-transform-block-scoping": "^7.25.9",
     "@babel/preset-typescript": "^7.26.0",
