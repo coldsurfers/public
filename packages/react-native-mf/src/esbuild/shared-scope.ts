@@ -25,7 +25,8 @@ export type SharedScopePluginOptions = {
   globalKey?: string
 }
 
-const NAMESPACE = 'react-native-mf-shared'
+/** 치환된 모듈이 이 네임스페이스로 들어간다. metafile 입력 키가 `${SHARED_NAMESPACE}:${specifier}` 다 */
+export const SHARED_NAMESPACE = 'react-native-mf-shared'
 
 /** 이름을 정규식 리터럴로 쓰기 전에 메타문자를 죽인다 — `@gorhom/bottom-sheet` 의 `/`, `.` 등 */
 function escapeForRegExp(name: string): string {
@@ -60,9 +61,9 @@ export function sharedScopePlugin(options: SharedScopePluginOptions = {}): Plugi
     setup(build) {
       if (names.length === 0) return
 
-      build.onResolve({ filter }, (args) => ({ path: args.path, namespace: NAMESPACE }))
+      build.onResolve({ filter }, (args) => ({ path: args.path, namespace: SHARED_NAMESPACE }))
 
-      build.onLoad({ filter: /.*/, namespace: NAMESPACE }, (args) => {
+      build.onLoad({ filter: /.*/, namespace: SHARED_NAMESPACE }, (args) => {
         const name = JSON.stringify(args.path)
         const key = JSON.stringify(globalKey)
 
