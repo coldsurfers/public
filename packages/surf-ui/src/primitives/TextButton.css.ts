@@ -20,6 +20,7 @@ export const textButton = recipe({
     transitionDuration: '150ms',
     selectors: {
       '&:disabled': { opacity: spec.disabledOpacity, cursor: 'not-allowed' },
+      '&:active:not(:disabled)': { opacity: spec.pressedOpacity },
     },
   }),
 

@@ -22,7 +22,8 @@ export const iconButton = recipe({
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
       '&:disabled': { opacity: spec.disabledOpacity, cursor: 'not-allowed' },
-      '&:active:not(:disabled)': { opacity: spec.pressedOpacity },
+      // 누르는 쪽은 바로 — 떼는 쪽만 base 의 150ms 로 돌아온다.
+      '&:active:not(:disabled)': { opacity: spec.pressedOpacity, transitionDuration: '0ms' },
     },
   }),
 
