@@ -1,9 +1,10 @@
 import { style } from '@vanilla-extract/css'
 import { recipe } from '@vanilla-extract/recipes'
+import { TOAST_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
-import { alpha } from '../css/style-utils'
+import { colorSchemes } from '../tokens'
 
 /**
  * 하단 중앙 pill 토스트 — Figma Page 7 `Toast — 규격·변형`(990:2).
@@ -23,13 +24,14 @@ export const toast = recipe({
     width: 'max-content',
     maxWidth: 'min(92vw, 420px)',
     alignItems: 'center',
-    gap: 8,
-    borderRadius: vars.radius.full,
+    gap: spec.gap.single,
+    borderRadius: vars.radius[spec.radius.single],
     background: vars.color.textPrimary,
     color: vars.color.bgBase,
-    padding: '11px 18px',
-    fontWeight: vars.fontWeight.medium,
-    fontSize: 13.5,
+    paddingBlock: spec.paddingBlock,
+    paddingInline: spec.paddingInline,
+    fontWeight: vars.fontWeight[spec.message.fontWeight],
+    fontSize: vars.fontSize[spec.message.fontSize],
     boxShadow: vars.shadow.md,
     pointerEvents: 'none',
     transitionProperty: 'opacity, transform, visibility',
@@ -50,15 +52,14 @@ export const toast = recipe({
       }),
     },
     /**
-     * 두 줄(`description`) 상자 — Figma `3743:1364`. 알약 모서리는 두 줄 높이에서 타원이 되므로
-     * 16 으로 접고, 폭을 상한까지 편다(액션이 오른쪽 끝에 붙는다).
+     * 두 줄(`description`) 상자 — Figma `3743:1364`. 폭을 상한까지 편다(액션이 오른쪽 끝에
+     * 붙는다).
      */
     stacked: {
       true: inComponentsLayer({
         width: 'min(92vw, 420px)',
-        gap: 12,
-        borderRadius: 16,
-        padding: '14px 18px',
+        gap: spec.gap.stacked,
+        borderRadius: spec.radius.stacked,
       }),
       false: {},
     },
@@ -70,8 +71,8 @@ export const toast = recipe({
 /** error 톤의 선행 점. */
 export const toastErrorDot = style(
   inComponentsLayer({
-    width: 7,
-    height: 7,
+    width: spec.dotSize,
+    height: spec.dotSize,
     flexShrink: 0,
     borderRadius: vars.radius.full,
     background: vars.color.actionPrimary,
@@ -84,7 +85,7 @@ export const toastCopy = style(
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    gap: 3,
+    gap: spec.copyGap,
     minWidth: 0,
   }),
 )
@@ -103,9 +104,9 @@ export const toastDescription = style(
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    color: alpha(vars.color.bgBase, 70),
-    fontWeight: vars.fontWeight.regular,
-    fontSize: 13,
+    color: colorSchemes.ink.textSecondary,
+    fontWeight: vars.fontWeight[spec.description.fontWeight],
+    fontSize: vars.fontSize[spec.description.fontSize],
   }),
 )
 
@@ -119,9 +120,9 @@ export const toastAction = style(
     border: 'none',
     background: 'transparent',
     padding: 0,
-    color: vars.color.actionPrimary,
-    fontWeight: vars.fontWeight.semibold,
-    fontSize: 13,
+    color: colorSchemes.ink.kicker,
+    fontWeight: vars.fontWeight[spec.action.fontWeight],
+    fontSize: vars.fontSize[spec.action.fontSize],
     cursor: 'pointer',
     pointerEvents: 'auto',
   }),

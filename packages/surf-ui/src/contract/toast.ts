@@ -1,9 +1,10 @@
+import type { fontSize, fontWeight, radius } from '../tokens'
+
 /**
  * `Toast` 의 계약. 규율은 `./index.ts`.
  *
- * ⚠️ 값은 **이미 갈라져 있다** — padding(`11px 18px` ↔ `12/16`) · fontSize(`13.5` ↔ `14`) ·
- * dot height(`7` ↔ `6`). 의도인지 사고인지 코드로 구분되지 않는 상태다. 치수 쪽 `TOAST_SPEC` 을
- * 올릴 때 어느 쪽이 정본인지부터 사람이 정해야 한다. 시간만 먼저 `TOAST_TIMING` 으로 올렸다.
+ * 치수는 `TOAST_SPEC`, 시간은 `TOAST_TIMING`. 한때 웹(`11px 18px` · 13.5 · 점 7)과 RN(12/16 ·
+ * 14 · 점 6)이 갈려 있었고, RN 값을 정본으로 골랐다(2026-10-20, Figma `v3/Toast` 와 여백이 같다).
  *
  * ## 색은 여기 없다 — 어느 축을 읽는지만 적는다
  *
@@ -16,11 +17,13 @@
  * | pill 바탕 | `text` |
  * | pill 글자 | `bg` |
  * | `error` 선행 점 | `accent` |
- * | 둘째 줄(`description`) | `palette.haze` |
- * | 액션 | `ink.accent` |
+ * | 둘째 줄(`description`) | `ink.textSecondary` |
+ * | 액션 | `ink.kicker` |
  *
  * 둘째 줄과 액션은 스킴 축이 아니라 **잉크 밴드 색**을 읽는다. pill 바탕이 스킴이 하나뿐인 지금
  * 언제나 Deep Night 이라, 그 위 보조 글자·링크는 `ink` 밴드와 같은 자리다(Figma `3743:1364`).
+ * 액션이 `actionPrimary`(#2563ff)가 아닌 이유도 대비다 — #111111 위에서 3.9:1 로 13px 글자 하한
+ * 4.5:1 을 못 넘는다. `ink.kicker`(#9ec2ff)는 10:1 이다. 한때 웹만 `actionPrimary` 였다.
  *
  * `error` 점이 상태색(`statusDanger`)이 **아닌** 이유는 대비다. pill 바탕이 `text`(ink #111111)라
  * `statusDanger`(#b8221c)는 그 위에서 2.95:1 이고, 비텍스트 그래픽 하한 3:1 을 못 넘는다 —
@@ -50,4 +53,32 @@ export interface ToastOptions {
 export const TOAST_TIMING = {
   dismissMs: 1600,
   actionDismissMs: 4000,
+} as const
+
+type FontSizeKey = keyof typeof fontSize
+type FontWeightKey = keyof typeof fontWeight
+type RadiusKey = keyof typeof radius
+type TextSpec = { fontSize: FontSizeKey; fontWeight: FontWeightKey }
+
+/** 한 줄 알약 ↔ 둘째 줄(`description`)이 있는 상자. */
+export type ToastLayout = 'single' | 'stacked'
+
+/**
+ * 치수 — 두 레인이 같이 읽는다. 바닥에서 띄우는 거리는 여기 없다 — 탭바 · 홈 인디케이터처럼
+ * 플랫폼이 가진 바닥이 달라서 각 레인이 정한다.
+ *
+ * `stacked` 모서리 16 — 두 줄 높이에선 알약이 타원이 된다.
+ */
+export const TOAST_SPEC = {
+  paddingBlock: 12,
+  paddingInline: 16,
+  gap: { single: 8, stacked: 12 } satisfies Record<ToastLayout, number>,
+  radius: { single: 'full', stacked: 16 } satisfies Record<ToastLayout, RadiusKey | number>,
+  /** 메시지 ↔ 둘째 줄. */
+  copyGap: 3,
+  /** `error` 선행 점 지름. */
+  dotSize: 6,
+  message: { fontSize: 'sm', fontWeight: 'regular' } satisfies TextSpec,
+  description: { fontSize: 'xs', fontWeight: 'regular' } satisfies TextSpec,
+  action: { fontSize: 'xs', fontWeight: 'semibold' } satisfies TextSpec,
 } as const
