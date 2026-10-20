@@ -1,5 +1,15 @@
 # @coldsurfers/design-system
 
+## 0.44.0
+
+### Minor Changes
+
+- [#303](https://github.com/coldsurfers/public/pull/303) [`a4b8309`](https://github.com/coldsurfers/public/commit/a4b83093f920f83924859696853c94aa9f3a7833) Thanks [@yungblud](https://github.com/yungblud)! - `Button` · `IconButton` · `TextButton`(웹) 이 누르는 동안 투명도 `BUTTON_SPEC.pressedOpacity`(0.7)로 흐려진다 — 웹 `:active` · RN `activeOpacity` 가 같은 값을 읽고, 웹은 누르는 순간 바로 흐려진다(떼는 쪽만 150ms). RN 은 `TouchableOpacity` 기본값 0.2 에서 0.7 로 덜 사라진다.
+
+- [#305](https://github.com/coldsurfers/public/pull/305) [`4de6b5c`](https://github.com/coldsurfers/public/commit/4de6b5c14a8b464e5c2f5365769000d185bd0f53) Thanks [@yungblud](https://github.com/yungblud)! - `SHEET_SPEC`(`modal` · `map` 두 종류의 모서리 · 아래 여백, 손잡이 크기)을 계약에 올리고 shape 토큰 `radiusSheetMap`(24px, Figma `radius/sheet-map`)을 더한다. 웹 `Sheet` 는 `modal` 값을 읽는다 — 화면 변화 없음. `map` 은 다음 RN `BottomSheet` 가 처음 읽는다.
+
+- [#304](https://github.com/coldsurfers/public/pull/304) [`4c0c57d`](https://github.com/coldsurfers/public/commit/4c0c57db0a04f2552668de66ee10889196435362) Thanks [@yungblud](https://github.com/yungblud)! - `TOAST_SPEC` 을 계약에 올리고 웹 · RN `Toast` 가 같이 읽는다. 정본은 RN 값이다 — 웹 토스트가 여백 `12/16` · 글자 `sm` regular · 점 6 · 둘째 줄과 액션 `xs` 로 바뀐다. 웹 액션 색이 `actionPrimary`([#111](https://github.com/coldsurfers/public/issues/111) 위 3.9:1)에서 RN 과 같은 `ink.kicker`(10:1)로, 둘째 줄이 `ink.textSecondary` 로 맞춰진다.
+
 ## 0.43.1
 
 ### Patch Changes
