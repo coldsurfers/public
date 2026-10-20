@@ -22,6 +22,7 @@ export const iconButton = recipe({
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
       '&:disabled': { opacity: spec.disabledOpacity, cursor: 'not-allowed' },
+      '&:active:not(:disabled)': { opacity: spec.pressedOpacity },
     },
   }),
 
@@ -30,27 +31,27 @@ export const iconButton = recipe({
       /** 바탕이 없어 hover 를 면으로 보인다 — 글자색만 바꾸면 아이콘에선 안 보인다. */
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
-        selectors: { '&:hover:not(:disabled)': { background: vars.color.stateHover } },
+        selectors: { '&:hover:not(:disabled, :active)': { background: vars.color.stateHover } },
       }),
       primary: inComponentsLayer({
         ...surfaceStyle('primary'),
-        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled, :active)': { opacity: 0.9 } },
       }),
       secondary: inComponentsLayer({
         ...surfaceStyle('secondary'),
-        selectors: { '&:hover:not(:disabled)': { background: vars.color.stateHover } },
+        selectors: { '&:hover:not(:disabled, :active)': { background: vars.color.stateHover } },
       }),
       accent: inComponentsLayer({
         ...surfaceStyle('accent'),
-        selectors: { '&:hover:not(:disabled)': { filter: 'brightness(1.08)' } },
+        selectors: { '&:hover:not(:disabled, :active)': { filter: 'brightness(1.08)' } },
       }),
       outline: inComponentsLayer({
         ...surfaceStyle('outline'),
-        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.textPrimary } },
+        selectors: { '&:hover:not(:disabled, :active)': { borderColor: vars.color.textPrimary } },
       }),
       danger: inComponentsLayer({
         ...surfaceStyle('danger'),
-        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled, :active)': { opacity: 0.9 } },
       }),
     },
 

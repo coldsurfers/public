@@ -22,7 +22,8 @@ import { surfaceStyle } from './button-surface'
  * 계약이 아니다.
  *
  * `:hover` 는 `:not(:disabled)` 에만 건다 — 잠긴 `accent` 에 올리면 `accentHover` 로 짙어져
- * 눌릴 것처럼 보인다.
+ * 눌릴 것처럼 보인다. 누르는 동안(`:active`)에도 비킨다 — 같은 명시도라 뒤에 오는 variant 의
+ * hover `opacity` 가 base 의 `pressedOpacity` 를 덮는다.
  *
  * ## 높이는 `height` 로 박는다 — 컨트롤 공통 규율
  *
@@ -65,6 +66,7 @@ export const button = recipe({
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
       '&:disabled': { opacity: spec.disabledOpacity, cursor: 'not-allowed' },
+      '&:active:not(:disabled)': { opacity: spec.pressedOpacity },
     },
   }),
 
@@ -72,15 +74,15 @@ export const button = recipe({
     variant: {
       primary: inComponentsLayer({
         ...surfaceStyle('primary'),
-        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled, :active)': { opacity: 0.9 } },
       }),
       secondary: inComponentsLayer({
         ...surfaceStyle('secondary'),
-        selectors: { '&:hover:not(:disabled)': { background: vars.color.stateHover } },
+        selectors: { '&:hover:not(:disabled, :active)': { background: vars.color.stateHover } },
       }),
       ghost: inComponentsLayer({
         ...surfaceStyle('ghost'),
-        selectors: { '&:hover:not(:disabled)': { color: vars.color.actionPrimary } },
+        selectors: { '&:hover:not(:disabled, :active)': { color: vars.color.actionPrimary } },
       }),
       /**
        * 주 행동 — 깊은 파랑 그라데이션 + 테두리 + 그림자(Figma `action/primary-top` · `-bottom` ·
@@ -91,7 +93,7 @@ export const button = recipe({
         background: `linear-gradient(180deg, ${vars.color.actionPrimaryTop}, ${vars.color.actionPrimaryBottom})`,
         border: `1px solid ${vars.color.actionPrimaryLine}`,
         boxShadow: `0 8px 24px ${vars.color.actionPrimaryShadow}`,
-        selectors: { '&:hover:not(:disabled)': { filter: 'brightness(1.08)' } },
+        selectors: { '&:hover:not(:disabled, :active)': { filter: 'brightness(1.08)' } },
       }),
       /**
        * 되돌릴 수 없는 액션. hover 는 `accentHover` 같은 짝 토큰이 없어 `primary` 와 같은
@@ -99,11 +101,11 @@ export const button = recipe({
        */
       danger: inComponentsLayer({
         ...surfaceStyle('danger'),
-        selectors: { '&:hover:not(:disabled)': { opacity: 0.9 } },
+        selectors: { '&:hover:not(:disabled, :active)': { opacity: 0.9 } },
       }),
       outline: inComponentsLayer({
         ...surfaceStyle('outline'),
-        selectors: { '&:hover:not(:disabled)': { borderColor: vars.color.textPrimary } },
+        selectors: { '&:hover:not(:disabled, :active)': { borderColor: vars.color.textPrimary } },
       }),
     },
 
