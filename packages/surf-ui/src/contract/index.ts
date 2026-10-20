@@ -57,6 +57,7 @@ export {
   type ConcertCardCoverRatio,
   type ConcertCardVariant,
 } from './concert-card'
+export { SHEET_SPEC, type SheetKind } from './sheet'
 export { SKELETON_SPEC, type SkeletonTone } from './skeleton'
 export { getSpinnerGeometry, SPINNER_SPEC } from './spinner'
 export {

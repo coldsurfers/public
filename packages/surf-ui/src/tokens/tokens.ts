@@ -580,6 +580,7 @@ export const layout: Record<'mobile' | 'desktop', LayoutScale> = {
 export const shape = {
   radiusPanel: '20px',
   radiusSheet: '28px',
+  radiusSheetMap: '24px',
   radiusPoster: '16px',
   radiusRow: '12px',
   radiusRowAction: '8px',
