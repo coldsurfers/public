@@ -5,6 +5,7 @@ import { PIN_CARD_SPEC as spec } from '../contract'
 import { nativeShape } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
+import { usePressScale } from './usePressScale'
 import { useReducedMotion } from './useReducedMotion'
 
 /**
@@ -17,6 +18,7 @@ import { useReducedMotion } from './useReducedMotion'
  * | — | 포스터 페이드인 | 웹은 `onLoad` 상태가 필요해 `'use client'` 가 되므로 안 연다 |
  * | `className` | 없음 | 폭은 래핑 `View` 가 준다 |
  *
+ * 누름 축소는 `PRESS_SPEC.scale.large` — 버튼류와 같은 `usePressScale` 이다.
  * 모션은 RN 코어 `Animated` 로 낸다 — `Skeleton` 과 같은 판단(reanimated 를 peer 로 강제하지 않는다).
  */
 export interface PinCardProps {
@@ -66,20 +68,6 @@ function usePoster(poster: string | null | undefined, reduced: boolean) {
   return { ratio: cached ?? spec.posterFallbackRatio, opacity, onLoad }
 }
 
-function usePressScale(reduced: boolean) {
-  const scale = useRef(new Animated.Value(1)).current
-  const to = (value: number) => () => {
-    if (reduced) return
-    Animated.spring(scale, {
-      toValue: value,
-      speed: 40,
-      bounciness: 0,
-      useNativeDriver: true,
-    }).start()
-  }
-  return { scale, onPressIn: to(spec.pressedScale), onPressOut: to(1) }
-}
-
 const PosterBox = styled.View({ position: 'relative' })
 
 const Poster = styled.View<{ $bg: string }>(({ $bg }) => ({
@@ -119,12 +107,12 @@ export const PinCard = memo(function PinCard({
   const scheme = useScheme()
   const reduced = useReducedMotion()
   const image = usePoster(poster, reduced)
-  const press = usePressScale(reduced)
+  const press = usePressScale('large', {})
 
   return (
     <Pressable onPress={onPress} onPressIn={press.onPressIn} onPressOut={press.onPressOut}>
       {({ pressed }) => (
-        <Animated.View style={{ transform: [{ scale: press.scale }] }}>
+        <Animated.View style={press.style}>
           <PosterBox style={{ opacity: pressed ? spec.pressedDim : 1 }}>
             <Poster
               $bg={scheme.bgAlt}

@@ -3,6 +3,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { type ButtonSize, BUTTON_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { pressable } from '../css/style-utils'
 import { surfaceStyle } from './button-surface'
 
 /**
@@ -61,7 +62,7 @@ export const button = recipe({
     fontWeight: vars.fontWeight[spec.fontWeight],
     border: 'none',
     cursor: 'pointer',
-    transitionProperty: 'color, background-color, border-color, opacity, filter',
+    transitionProperty: 'color, background-color, border-color, opacity, filter, scale',
     transitionDuration: '150ms',
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
@@ -111,11 +112,12 @@ export const button = recipe({
     },
 
     size: {
-      sm: inComponentsLayer(sizeStyle('sm')),
-      md: inComponentsLayer(sizeStyle('md')),
+      // 누름 축소는 크기를 따른다 — 넓은 `cta`·`lg` 는 덜 줄인다(`PRESS_SPEC`).
+      sm: inComponentsLayer({ ...sizeStyle('sm'), ...pressable('small') }),
+      md: inComponentsLayer({ ...sizeStyle('md'), ...pressable('small') }),
       /** 랜딩 히어로 CTA — Figma `1128:119`·`1128:121`. 시안 일치의 전부는 `height` 다. */
-      cta: inComponentsLayer(sizeStyle('cta')),
-      lg: inComponentsLayer(sizeStyle('lg')),
+      cta: inComponentsLayer({ ...sizeStyle('cta'), ...pressable('large') }),
+      lg: inComponentsLayer({ ...sizeStyle('lg'), ...pressable('large') }),
     },
 
     /**

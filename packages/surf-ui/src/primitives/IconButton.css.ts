@@ -2,6 +2,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { ICON_BUTTON_SPEC as icon, BUTTON_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { pressable } from '../css/style-utils'
 import { surfaceStyle } from './button-surface'
 
 /**
@@ -17,7 +18,7 @@ export const iconButton = recipe({
     border: 'none',
     borderRadius: vars.radius[icon.radius],
     cursor: 'pointer',
-    transitionProperty: 'color, background-color, border-color, opacity',
+    transitionProperty: 'color, background-color, border-color, opacity, scale',
     transitionDuration: '150ms',
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     selectors: {
@@ -25,6 +26,7 @@ export const iconButton = recipe({
       // 누르는 쪽은 바로 — 떼는 쪽만 base 의 150ms 로 돌아온다.
       '&:active:not(:disabled)': { opacity: spec.pressedOpacity, transitionDuration: '0ms' },
     },
+    ...pressable('small'),
   }),
 
   variants: {

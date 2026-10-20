@@ -1,6 +1,7 @@
 import { style } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { pressable } from '../css/style-utils'
 
 /** 줄 행동 버튼 — Figma `821:65`. 키커색 14% 면 + 키커색 글자. */
 export const rowAction = style(
@@ -22,7 +23,8 @@ export const rowAction = style(
     whiteSpace: 'nowrap',
     textDecoration: 'none',
     cursor: 'pointer',
-    transition: 'filter 150ms',
+    transition: 'filter 150ms, scale 150ms',
     selectors: { '&:hover': { filter: 'brightness(0.96)' } },
+    ...pressable('small'),
   }),
 )

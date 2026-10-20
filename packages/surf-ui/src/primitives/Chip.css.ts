@@ -2,6 +2,7 @@ import { recipe } from '@vanilla-extract/recipes'
 import { CHIP_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { pressable } from '../css/style-utils'
 
 /**
  * Pill — 시안의 4 맥락을 한 어휘로 덮는다.
@@ -27,8 +28,9 @@ export const chip = recipe({
     gap: spec.gap,
     whiteSpace: 'nowrap',
     cursor: 'pointer',
-    transitionProperty: 'color, background-color, border-color',
+    transitionProperty: 'color, background-color, border-color, scale',
     transitionDuration: '150ms',
+    ...pressable('small'),
   }),
 
   variants: {

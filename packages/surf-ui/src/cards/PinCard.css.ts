@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 import { PIN_CARD_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
-import { lineClamp } from '../css/style-utils'
+import { lineClamp, pressable } from '../css/style-utils'
 
 /**
  * 핀 한 장 — Figma `1455:263`. 포스터 원래 비율 · 아래 제목 두 줄 · 출처 한 줄.
@@ -15,9 +15,8 @@ export const root = style(
     display: 'inline-block',
     width: '100%',
     verticalAlign: 'top',
-    transition: 'transform 120ms ease-out',
-    selectors: { '&:active': { transform: `scale(${spec.pressedScale})` } },
-    '@media': { '(prefers-reduced-motion: reduce)': { transition: 'none' } },
+    transition: 'scale 150ms ease-out',
+    ...pressable('large'),
   }),
 )
 

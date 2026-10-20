@@ -1,6 +1,7 @@
 import { style } from '@vanilla-extract/css'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
+import { pressable } from '../css/style-utils'
 
 /** 반응 줄 — Figma `1028:400`. 같은 폭 버튼 N개, 켠 것은 `selected` 면. */
 export const bar = style(
@@ -28,7 +29,7 @@ export const item = style(
     fontWeight: vars.fontWeight.bold,
     whiteSpace: 'nowrap',
     cursor: 'pointer',
-    transition: 'background 150ms, color 150ms',
+    transition: 'background 150ms, color 150ms, scale 150ms',
     selectors: {
       '&[aria-pressed="true"]': {
         background: vars.color.selectedFill,
@@ -37,6 +38,7 @@ export const item = style(
       },
       '&:disabled': { cursor: 'default', opacity: 0.5 },
     },
+    ...pressable('small'),
   }),
 )
 
