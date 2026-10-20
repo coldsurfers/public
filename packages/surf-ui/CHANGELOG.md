@@ -1,5 +1,13 @@
 # @coldsurfers/design-system
 
+## 0.45.0
+
+### Minor Changes
+
+- [#307](https://github.com/coldsurfers/public/pull/307) [`414d0d3`](https://github.com/coldsurfers/public/commit/414d0d3e800e7bf10a910c4ddc0f22cedf780897) Thanks [@yungblud](https://github.com/yungblud)! - 웹 · RN 한 벌의 `Masonry` 와 native `PinCard` 를 더한다. 간격 · 카드 치수는 `MASONRY_SPEC` · `PIN_CARD_SPEC` 이 정본이다. 웹 `PinCard` 는 누르는 동안 0.97 로 줄어든다. native `Masonry` 는 `@shopify/flash-list` ≥2 를 optional peer 로 문다(`./native/Masonry` 서브패스 전용).
+
+- [#308](https://github.com/coldsurfers/public/pull/308) [`269dbdb`](https://github.com/coldsurfers/public/commit/269dbdbd0b03473b21dbc30b382d4cb6674b2b2f) Thanks [@yungblud](https://github.com/yungblud)! - 누를 수 있는 것은 누르는 동안 살짝 줄어든다 — `PRESS_SPEC`(넓은 면 0.97 · 작은 컨트롤 0.94). 웹 Button · IconButton · Chip · RowAction · ReactionBar · TextButton · PinCard, native Button · IconButton · Chip · PinCard. `style-utils` 에 `pressable` 을 연다. native 버튼류의 props 타입은 그대로다. `TextButton` 은 `inline-block` 이 된다.
+
 ## 0.44.0
 
 ### Minor Changes
