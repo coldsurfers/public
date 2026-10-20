@@ -82,8 +82,7 @@ const Label = styled.Text<{ $color: string; $size: ButtonSize }>(({ $color, $siz
  * 치수와 variant→색 배정은 `contract/button.ts` 의 `BUTTON_SPEC` 이 정본이라 여기 숫자를
  * 손으로 적지 않는다. 축을 늘려야 하면 웹부터 늘리고 그다음 계약에 올린다.
  *
- * 웹의 `:hover` 자리는 `TouchableOpacity` 의 누름 투명도가 대신한다 — RN 엔 hover 가 없고,
- * 누름 피드백은 플랫폼이 이미 갖고 있다.
+ * 웹의 `:hover` 는 짝이 없다 — RN 엔 hover 가 없다. 누름 투명도는 `BUTTON_SPEC.pressedOpacity`.
  *
  * ref 는 `ComponentPropsWithRef` 로 딸려 온다 — React 19 는 함수 컴포넌트에도 `ref` 를 그냥
  * prop 으로 넘기므로 `forwardRef` 가 필요 없다. 웹 `primitives` 는 아직 `forwardRef` 인데,
@@ -108,6 +107,7 @@ export function Button({
       $shape={shape}
       $disabled={disabled ?? false}
       disabled={disabled}
+      activeOpacity={spec.pressedOpacity}
       accessibilityRole="button"
       {...rest}
     >

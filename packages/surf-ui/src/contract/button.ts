@@ -96,9 +96,9 @@ const SIZE = {
  * | `outline` | `surfaceRaised` | `lineDivider` 1px | `textPrimary` |
  * | `danger` | `statusDanger` | 없음 | 흰색(리터럴) |
  *
- * 웹의 `:hover`(→`opacity`·`accentHover`·`strong`)와 `transition` 은 RN 에 짝이 없다 —
- * 누름 피드백은 `TouchableOpacity` 의 투명도가 이미 준다. 짝이 없으면 계약이 아니므로
- * 웹 `.css.ts` 에 남는다. `disabled` 투명도는 두 레인에 다 있어서 `BUTTON_SPEC` 에 올린다.
+ * 웹의 `:hover`(→`opacity`·`accentHover`·`strong`)와 `transition` 은 RN 에 짝이 없어
+ * 웹 `.css.ts` 에 남는다. `disabled` · `pressed` 투명도는 두 레인에 다 있어서 `BUTTON_SPEC` 에
+ * 올린다.
  */
 const VARIANT = {
   primary: { background: 'textPrimary', label: 'bgBase' },
@@ -122,6 +122,12 @@ export const BUTTON_SPEC = {
    * 모양이 같았다(소비처가 글자로 대신 알렸다).
    */
   disabledOpacity: 0.4,
+  /**
+   * 누르는 동안의 투명도 — 모든 variant 공통. 웹 `:active` · RN `activeOpacity` 가 같이 읽는다.
+   * 한때 RN 은 `TouchableOpacity` 기본값 0.2 로 거의 사라졌고 웹은 누름 표시가 없었다.
+   * Figma `v3/Button` `State=pressed`.
+   */
+  pressedOpacity: 0.7,
   /** `shape="pill"` 의 모서리. 크기 축의 `radius` 를 덮는다. */
   pillRadius: 'full' satisfies RadiusKey,
   /** 기본 굵기. 크기가 `fontWeight` 를 가지면 그쪽이 이긴다. */

@@ -53,6 +53,7 @@ export function IconButton({
       $size={size}
       $disabled={disabled ?? false}
       disabled={disabled}
+      activeOpacity={BUTTON_SPEC.pressedOpacity}
       accessibilityRole="button"
       accessibilityLabel={label}
       {...rest}
