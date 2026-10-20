@@ -10,6 +10,7 @@ import {
 import { type ColorScheme, fontWeight, nativeFontSize, nativeRadius } from '../tokens/native'
 import { colorFor, surfaceFor } from './button-style'
 import { useScheme } from './scheme'
+import { AnimatedTouchable, usePressScale } from './usePressScale'
 
 export type { ButtonShape, ButtonSize, ButtonVariant }
 
@@ -45,7 +46,7 @@ function radiusFor(size: ButtonSize, shape: ButtonShape): number {
   return typeof value === 'number' ? value : nativeRadius[value]
 }
 
-const Root = styled.TouchableOpacity<{
+const Root = styled(AnimatedTouchable)<{
   $scheme: ColorScheme
   $variant: ButtonVariant
   $size: ButtonSize
@@ -82,7 +83,8 @@ const Label = styled.Text<{ $color: string; $size: ButtonSize }>(({ $color, $siz
  * 치수와 variant→색 배정은 `contract/button.ts` 의 `BUTTON_SPEC` 이 정본이라 여기 숫자를
  * 손으로 적지 않는다. 축을 늘려야 하면 웹부터 늘리고 그다음 계약에 올린다.
  *
- * 웹의 `:hover` 는 짝이 없다 — RN 엔 hover 가 없다. 누름 투명도는 `BUTTON_SPEC.pressedOpacity`.
+ * 웹의 `:hover` 는 짝이 없다 — RN 엔 hover 가 없다. 누름 투명도는 `BUTTON_SPEC.pressedOpacity`,
+ * 누름 축소는 `PRESS_SPEC` — 넓은 `cta`·`lg` 는 `large`, 나머지는 `small`.
  *
  * ref 는 `ComponentPropsWithRef` 로 딸려 온다 — React 19 는 함수 컴포넌트에도 `ref` 를 그냥
  * prop 으로 넘기므로 `forwardRef` 가 필요 없다. 웹 `primitives` 는 아직 `forwardRef` 인데,
@@ -96,9 +98,17 @@ export function Button({
   trailingIcon,
   disabled,
   children,
+  onPressIn,
+  onPressOut,
+  style,
   ...rest
 }: ButtonProps) {
   const scheme = useScheme()
+  const press = usePressScale(size === 'cta' || size === 'lg' ? 'large' : 'small', {
+    onPressIn,
+    onPressOut,
+    style,
+  })
   return (
     <Root
       $scheme={scheme}
@@ -110,6 +120,7 @@ export function Button({
       activeOpacity={spec.pressedOpacity}
       accessibilityRole="button"
       {...rest}
+      {...press}
     >
       {leadingIcon}
       {typeof children === 'string' ? (

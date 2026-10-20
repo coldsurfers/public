@@ -1,0 +1,29 @@
+---
+title: 누름
+description: 누를 수 있는 것은 누르는 동안 살짝 줄어든다. 웹 · RN 이 같은 값을 쓴다.
+---
+
+<Preview name="button-sizes" />
+
+위 버튼을 눌러 보세요. 투명도(`BUTTON_SPEC.pressedOpacity`)에 더해 **살짝 줄어듭니다.**
+값은 `PRESS_SPEC` 하나라 웹 `:active` 와 RN 스프링이 같은 비율로 줄어듭니다.
+
+| 크기 | 비율 | 쓰는 곳 |
+| --- | --- | --- |
+| `large` | 0.97 | `PinCard` · `cta`·`lg` 버튼 — 넓은 면은 조금만 줄여야 흔들려 보이지 않는다 |
+| `small` | 0.94 | `sm`·`md` 버튼 · `IconButton` · `Chip` · `RowAction` · `ReactionBar` · `TextButton` |
+
+동작 줄이기 설정(`prefers-reduced-motion` · iOS/Android 접근성)이면 두 레인 다 줄이지 않습니다.
+
+## 직접 만든 버튼에 붙이기
+
+웹은 `@coldsurfers/surf-ui/style-utils` 의 `pressable` 을 스타일에 펼칩니다. 돌아오는 애니메이션은
+`transition` 에 `scale` 을 더해야 붙습니다.
+
+```ts
+import { pressable } from '@coldsurfers/surf-ui/style-utils'
+
+export const myButton = style({ transition: 'scale 150ms', ...pressable('small') })
+```
+
+`pressable` 은 `@media` 하나를 돌려줍니다. 받는 규칙에 이미 `@media` 가 있으면 덮어쓰므로 `style([a, b])` 로 합칩니다.

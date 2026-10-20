@@ -5,6 +5,7 @@ import { BUTTON_SPEC, type ButtonVariant, ICON_BUTTON_SPEC, type IconButtonSize 
 import { type ColorScheme, nativeRadius } from '../tokens/native'
 import { surfaceFor } from './button-style'
 import { useScheme } from './scheme'
+import { AnimatedTouchable, usePressScale } from './usePressScale'
 
 /**
  * 아이콘만 있는 정사각 액션. `Button` 과 **같은 variant 축**을 쓴다. 치수 정본은 `ICON_BUTTON_SPEC`
@@ -22,7 +23,7 @@ export interface IconButtonProps extends ComponentPropsWithRef<typeof TouchableO
   children: ReactNode
 }
 
-const Root = styled.TouchableOpacity<{
+const Root = styled(AnimatedTouchable)<{
   $scheme: ColorScheme
   $variant: ButtonVariant
   $size: IconButtonSize
@@ -43,9 +44,13 @@ export function IconButton({
   label,
   disabled,
   children,
+  onPressIn,
+  onPressOut,
+  style,
   ...rest
 }: IconButtonProps) {
   const scheme = useScheme()
+  const press = usePressScale('small', { onPressIn, onPressOut, style })
   return (
     <Root
       $scheme={scheme}
@@ -57,6 +62,7 @@ export function IconButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       {...rest}
+      {...press}
     >
       {children}
     </Root>

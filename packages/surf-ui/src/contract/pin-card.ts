@@ -25,8 +25,6 @@ export const PIN_CARD_SPEC = {
   metaLineHeight: 16,
   /** 누르는 동안(native) · hover(웹) 포스터 밝기. 웹은 `brightness`, RN 은 투명도로 낸다. */
   pressedDim: 0.88,
-  /** 누르는 동안 카드 축소 — 웹 `:active` · RN 스프링. */
-  pressedScale: 0.97,
   /** 포스터가 도착했을 때 페이드인(native). 모션 감소 설정이면 생략한다. */
   posterFadeMs: 180,
   /** 시안 열 폭 — `pinCardHeight` 가 px 캡션을 열 폭 비율로 바꿀 때 쓴다. */

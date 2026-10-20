@@ -59,6 +59,7 @@ export {
 } from './concert-card'
 export { MASONRY_SPEC, placeInColumns } from './masonry'
 export { PIN_CARD_SPEC, pinCardHeight } from './pin-card'
+export { PRESS_SPEC, type PressSize } from './press'
 export { SHEET_SPEC, type SheetKind } from './sheet'
 export { SKELETON_SPEC, type SkeletonTone } from './skeleton'
 export { getSpinnerGeometry, SPINNER_SPEC } from './spinner'

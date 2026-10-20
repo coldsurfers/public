@@ -4,6 +4,7 @@ import type { TextProps, TouchableOpacity, ViewStyle } from 'react-native'
 import { type ChipSize, CHIP_SPEC as spec } from '../contract'
 import { type ColorScheme, fontWeight, nativeFontSize, nativeRadius } from '../tokens/native'
 import { useScheme } from './scheme'
+import { AnimatedTouchable, usePressScale } from './usePressScale'
 
 /**
  * Pill — **웹 `primitives/Chip` 과 같은 축**이다(size 2 · active). 치수와 색 배정은
@@ -76,7 +77,7 @@ const ChipContext = createContext<{ size: ChipSize; active: boolean }>({
   active: false,
 })
 
-const Root = styled.TouchableOpacity<{
+const Root = styled(AnimatedTouchable)<{
   $scheme: ColorScheme
   $size: ChipSize
   $active: boolean
@@ -104,8 +105,17 @@ const Label = styled.Text<{ $color: string; $size: ChipSize }>(({ $color, $size 
   includeFontPadding: false,
 }))
 
-export function Chip({ size = 'md', active = false, children, ...rest }: ChipProps) {
+export function Chip({
+  size = 'md',
+  active = false,
+  children,
+  onPressIn,
+  onPressOut,
+  style,
+  ...rest
+}: ChipProps) {
   const scheme = useScheme()
+  const press = usePressScale('small', { onPressIn, onPressOut, style })
   return (
     <ChipContext.Provider value={{ size, active }}>
       <Root
@@ -115,6 +125,7 @@ export function Chip({ size = 'md', active = false, children, ...rest }: ChipPro
         accessibilityRole="button"
         accessibilityState={{ selected: active }}
         {...rest}
+        {...press}
       >
         {typeof children === 'string' ? <ChipLabel>{children}</ChipLabel> : children}
       </Root>
