@@ -12,6 +12,9 @@
  * 축을 늘려야 하면 **웹부터 늘린다.** 여기서 먼저 늘리면 계약이 갈라진다.
  * 예외는 **웹에 짝이 생길 수 없는 표면**(`PullToRefresh`·`TabBar`) 하나뿐이고,
  * 판정은 `docs/native-lane-porting.md` 의 「웹에 짝이 생길 수 없는 표면」이 정본이다.
+ *
+ * `Masonry` 는 여기 없다 — `@shopify/flash-list` 를 무는데, 배럴에 넣으면 안 쓰는 소비처도 그걸 설치해야
+ * 배럴이 열린다. `@coldsurfers/surf-ui/native/Masonry` 로만 연다.
  */
 export { AnimatedTabBar, type AnimatedTabBarProps } from './AnimatedTabBar'
 export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button'
@@ -19,6 +22,7 @@ export { Chip, ChipLabel, type ChipProps, type ChipSize } from './Chip'
 export { ConcertCard, type ConcertCardProps } from './ConcertCard'
 export { IconButton, type IconButtonProps, type IconButtonSize } from './IconButton'
 export { Modal, type ModalProps } from './Modal'
+export { PinCard, type PinCardProps } from './PinCard'
 export {
   PullToRefresh,
   type PullToRefreshProps,

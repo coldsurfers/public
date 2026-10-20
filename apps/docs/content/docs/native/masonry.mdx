@@ -1,0 +1,58 @@
+---
+title: Masonry · PinCard
+description: FlashList v2 위의 다단 그리드와 핀 카드 한 장.
+---
+
+```tsx
+import { Masonry } from '@coldsurfers/surf-ui/native/Masonry'
+import { PinCard } from '@coldsurfers/surf-ui/native/PinCard'
+
+function Feed() {
+  return (
+    <Masonry
+      items={pins}
+      keyOf={(pin) => pin.id}
+      paddingHorizontal={16}
+      header={<FeedHeader />}
+      footer={isFetchingNextPage ? <Spinner /> : null}
+      onEndReached={() => hasNextPage && fetchNextPage()}
+      renderItem={(pin) => (
+        <PinCard poster={pin.poster} title={pin.title} meta={pin.source} onPress={() => open(pin)} />
+      )}
+    />
+  )
+}
+```
+
+<Callout title="그리드 미리보기가 없는 이유">
+  FlashList v2 는 react-native-web 에서 열 폭을 재지 못해 셀이 폭 0 으로 섭니다. 카드 한 장은 아래에서 그립니다.
+</Callout>
+
+웹 [`Masonry`](/docs/patterns/masonry) 와 간격(열 12 · 줄 16)이 같습니다 — `MASONRY_SPEC`.
+다른 점은 배치입니다. 웹은 추정 높이로 놓고, 여기는 FlashList `masonry` 가 **재서** 놓으므로
+`heightOf` 가 없습니다. 화면 밖 카드는 그리지 않습니다.
+
+## 스크롤을 소유한다
+
+다른 `ScrollView` 안에 넣으면 가상화가 꺼집니다. 위 콘텐츠는 `header`, 다음 쪽 스피너는 `footer`,
+다음 쪽 받기는 `onEndReached` 로 줍니다.
+
+## 설치
+
+소비처가 `@shopify/flash-list` ≥2 (New Architecture) 를 들고 있어야 합니다. JS 전용이라 네이티브 빌드는
+필요 없습니다. 배럴(`/native`)에는 없고 `@coldsurfers/surf-ui/native/Masonry` 로만 엽니다 —
+FlashList 없는 소비처도 배럴을 열 수 있게.
+
+## PinCard
+
+<NativePreview name="native-pin-card" />
+
+웹 `PinCard` 와 치수가 같습니다 — `PIN_CARD_SPEC`. 포스터가 도착하면 페이드인하고, 누르는 동안
+살짝 줄어듭니다. 동작 줄이기 설정이면 둘 다 끕니다. 한 번 받은 포스터 비율은 기억해 두어,
+카드가 재활용돼도 3:4 에서 덜컥 늘어나지 않습니다.
+
+## Props
+
+<Props of="Masonry" dir="native" />
+
+<Props of="PinCard" dir="native" />

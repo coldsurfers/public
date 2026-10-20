@@ -1,0 +1,19 @@
+---
+title: Masonry
+description: 카드를 가장 낮은 열에 차례로 놓는 다단 그리드. 웹 · RN 이 같은 간격을 쓴다.
+---
+
+<Preview name="masonry" />
+
+항목을 가장 낮은 열에 차례로 놓습니다. 다음 쪽이 붙어도 이미 놓인 카드는 다른 열로 옮기지 않습니다 —
+CSS `column-count` 와 다른 점입니다. 높이는 `heightOf`(열 폭 = 1)로 추정하고, 핀 카드면 `pinCardHeight` 를 씁니다.
+
+간격(열 12 · 줄 16)은 `MASONRY_SPEC` 이 정본이라 native 와 같습니다.
+
+## native
+
+RN 판은 [Native › Masonry · PinCard](/docs/native/masonry) — FlashList v2 위에 서고 높이를 재서 놓습니다.
+
+## Props
+
+<Props of="Masonry" dir="cards" />
