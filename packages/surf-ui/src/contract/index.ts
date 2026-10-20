@@ -65,4 +65,10 @@ export {
   type TextStyleSpec,
   type TextTone,
 } from './text-style'
-export { TOAST_TIMING, type ToastOptions, type ToastTone } from './toast'
+export {
+  TOAST_SPEC,
+  TOAST_TIMING,
+  type ToastLayout,
+  type ToastOptions,
+  type ToastTone,
+} from './toast'

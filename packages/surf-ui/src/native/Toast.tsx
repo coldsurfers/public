@@ -1,6 +1,6 @@
 import styled from '@emotion/native'
 import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from 'react'
-import { TOAST_TIMING, type ToastOptions, type ToastTone } from '../contract'
+import { TOAST_SPEC as spec, TOAST_TIMING, type ToastOptions, type ToastTone } from '../contract'
 import { type ColorScheme, nativeColor, nativeRadius, nativeSpacing } from '../tokens/native'
 import { useScheme } from './scheme'
 import { Text } from './Text'
@@ -41,11 +41,10 @@ const Layer = styled.View({
 const Pill = styled.View<{ $scheme: ColorScheme; $stacked: boolean }>(({ $scheme, $stacked }) => ({
   flexDirection: 'row',
   alignItems: 'center',
-  gap: $stacked ? nativeSpacing[3] : nativeSpacing[2],
-  paddingHorizontal: nativeSpacing[4],
-  paddingVertical: nativeSpacing[3],
-  // 두 줄 높이에선 알약이 타원이 되므로 16 으로 접는다 — 웹 `stacked` 와 같은 값.
-  borderRadius: $stacked ? 16 : nativeRadius.full,
+  gap: spec.gap[$stacked ? 'stacked' : 'single'],
+  paddingHorizontal: spec.paddingInline,
+  paddingVertical: spec.paddingBlock,
+  borderRadius: $stacked ? spec.radius.stacked : nativeRadius[spec.radius.single],
   backgroundColor: $scheme.textPrimary,
   ...($stacked ? { alignSelf: 'stretch', marginHorizontal: nativeSpacing[4] } : null),
 }))
@@ -53,7 +52,7 @@ const Pill = styled.View<{ $scheme: ColorScheme; $stacked: boolean }>(({ $scheme
 // `flex: 1` 은 두 줄일 때만 — RN 에선 `flexBasis: 0` 까지 걸려서, 내용 폭만큼 잡히는 한 줄 pill
 // 안에선 이 칸이 0 으로 접히거나 끝까지 늘어난다.
 const Copy = styled.View<{ $stacked: boolean }>(({ $stacked }) => ({
-  gap: 3,
+  gap: spec.copyGap,
   minWidth: 0,
   ...($stacked ? { flex: 1 } : null),
 }))
@@ -61,8 +60,8 @@ const Copy = styled.View<{ $stacked: boolean }>(({ $stacked }) => ({
 const Action = styled.TouchableOpacity({ flexShrink: 0 })
 
 const ErrorDot = styled.View<{ $scheme: ColorScheme }>(({ $scheme }) => ({
-  width: 6,
-  height: 6,
+  width: spec.dotSize,
+  height: spec.dotSize,
   borderRadius: nativeRadius.full,
   // 상태색이 아니라 `accent` 인 이유는 ink pill 위 대비다 — `contract/toast.ts` 의 색 표.
   backgroundColor: $scheme.actionPrimary,
@@ -98,6 +97,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast ? (
         <Layer accessibilityLiveRegion="polite">
+          {/* 보조 글자 · 링크의 `nativeColor.ink.*` 는 스킴이 light 로 잠긴 전제다 — 잠금이 풀리면 pill 밝기를 따라 고른다(contract/toast.ts 색 표). */}
           <Pill $scheme={scheme} $stacked={Boolean(toast.description)}>
             {toast.tone === 'success' ? (
               <Text size="sm" style={{ color: scheme.bgBase }}>
@@ -106,11 +106,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             ) : null}
             {toast.tone === 'error' ? <ErrorDot $scheme={scheme} /> : null}
             <Copy $stacked={Boolean(toast.description)}>
-              <Text size="sm" numberOfLines={1} style={{ color: scheme.bgBase }}>
+              <Text
+                size={spec.message.fontSize}
+                weight={spec.message.fontWeight}
+                numberOfLines={1}
+                style={{ color: scheme.bgBase }}
+              >
                 {toast.message}
               </Text>
               {toast.description ? (
-                <Text size="xs" numberOfLines={1} style={{ color: nativeColor.ink.textSecondary }}>
+                <Text
+                  size={spec.description.fontSize}
+                  weight={spec.description.fontWeight}
+                  numberOfLines={1}
+                  style={{ color: nativeColor.ink.textSecondary }}
+                >
                   {toast.description}
                 </Text>
               ) : null}
@@ -123,7 +133,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   action?.onPress()
                 }}
               >
-                <Text size="xs" weight="semibold" style={{ color: nativeColor.ink.kicker }}>
+                <Text
+                  size={spec.action.fontSize}
+                  weight={spec.action.fontWeight}
+                  style={{ color: nativeColor.ink.kicker }}
+                >
                   {toast.action.label}
                 </Text>
               </Action>
