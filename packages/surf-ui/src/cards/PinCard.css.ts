@@ -23,16 +23,29 @@ export const root = style(
 /** ＋ 를 포스터 오른쪽 아래에 붙이는 기준. */
 export const posterBox = style(inComponentsLayer({ position: 'relative', display: 'block' }))
 
-/** 받기 전엔 3:4 회색 자리, 받으면 원래 비율 — 열이 덜컥 밀리지 않게 한다. */
+/** 받은 포스터가 3:4 자리에서 원래 비율로 옮겨 가는 시간(ms). 웹 전용이라 계약에 없다. */
+export const POSTER_SETTLE_MS = 240
+
+/**
+ * 받기 전엔 3:4 회색 자리, 받으면 원래 비율 — JS 없이도(서버가 그린 첫 화면) 그렇다.
+ * 그려진 뒤에 받은 포스터는 `PinCard` 가 인라인 `aspectRatio` 로 3:4 에서 원래 비율로 옮겨 간다.
+ * 동작 줄이기 설정이면 바로 바뀐다.
+ */
 export const poster = style(
   inComponentsLayer({
     display: 'block',
     width: '100%',
     height: 'auto',
     aspectRatio: `auto ${spec.posterFallbackRatio}`,
+    objectFit: 'cover',
     borderRadius: vars.shape.radiusPoster,
     background: vars.color.bgAlt,
     selectors: { [`${root}:hover &`]: { filter: `brightness(${spec.pressedDim})` } },
+    '@media': {
+      '(prefers-reduced-motion: no-preference)': {
+        transition: `aspect-ratio ${POSTER_SETTLE_MS}ms ease-out`,
+      },
+    },
   }),
 )
 
