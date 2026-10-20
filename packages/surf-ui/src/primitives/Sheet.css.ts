@@ -1,8 +1,12 @@
 import { keyframes, style } from '@vanilla-extract/css'
+import { SHEET_SPEC } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { media } from '../css/media'
 import { alpha } from '../css/style-utils'
+
+const modal = SHEET_SPEC.kind.modal
+const radius = vars.shape[modal.radius]
 
 /** 퇴장 시간(ms) — 이만큼 그린 채로 두었다가 내린다. */
 export const EXIT_MS = 200
@@ -49,12 +53,12 @@ export const overlayClosing = style(
 export const panel = style(
   inComponentsLayer({
     overflow: 'hidden',
-    borderRadius: `${vars.shape.radiusSheet} ${vars.shape.radiusSheet} 0 0`,
+    borderRadius: `${radius} ${radius} 0 0`,
     animation: `${slideIn} ${ENTER}`,
     '@media': {
       [media.desktop]: {
         maxWidth: 560,
-        borderRadius: vars.shape.radiusSheet,
+        borderRadius: radius,
         animation: `${popIn} ${ENTER}`,
       },
       [REDUCED]: { animation: 'none' },
@@ -97,8 +101,8 @@ export const handle = style(
   inComponentsLayer({
     alignSelf: 'center',
     display: 'block',
-    width: 36,
-    height: 4,
+    width: SHEET_SPEC.grab.width,
+    height: SHEET_SPEC.grab.height,
     borderRadius: vars.shape.radiusPill,
     background: vars.color.textTertiary,
     opacity: 0.5,
@@ -124,7 +128,9 @@ export const content = style(
       },
     },
     selectors: {
-      '&:last-child': { paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' },
+      '&:last-child': {
+        paddingBottom: `calc(${modal.paddingBottom}px + env(safe-area-inset-bottom))`,
+      },
     },
   }),
 )
