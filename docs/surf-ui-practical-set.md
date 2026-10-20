@@ -24,8 +24,8 @@ surf-ui 의 상당수가 곧 내릴 web-next 만 쓴다. 반대로 시안에서 
 | Text | `text()` | ✅ | ✅ `TEXT_STYLE_SPEC` | 유지 |
 | IconButton | ✅ | ✅ | ❌ | 계약 `ICON_BUTTON_SPEC` 올리기 |
 | Field | ✅ `Field` | ✅ `TextInput` | ❌ | 이름을 `Field` 로 맞추고 계약 |
-| Toast | ✅ | ✅ | 시간만 | 치수 정본 결정(패딩 · 글자 · 점이 이미 갈림) → `TOAST_SPEC`. yellownmusk `shared/ui/toast` 를 이걸로 바꾼다 |
-| **BottomSheet** | `Sheet`(web-next 만) | ❌ | ❌ | **새 계약 `SHEET_SPEC`** — Kind `modal`(radius/sheet 28 · 아래 24) · `map`(24 · 16), 손잡이 36×4. RN = `@gorhom/bottom-sheet` 감싸기, 웹 = `Sheet` 다시 쓰기. `Modal` 은 흡수할지 판단 |
+| Toast | ✅ | ✅ | ✅ `TOAST_SPEC`(#304, RN 값이 정본) | yellownmusk `shared/ui/toast` 를 이걸로 바꾼다 |
+| **BottomSheet** | `Sheet`(web-next 만) | ❌ | ✅ `SHEET_SPEC`(#305) | Kind `modal`(radius/sheet 28 · 아래 24) · `map`(24 · 16), 손잡이 36×4. RN = `@gorhom/bottom-sheet` 감싸기, 웹 = `Sheet` 다시 쓰기. `Modal` 은 흡수할지 판단 |
 | PinCard | ✅ | ❌ | ❌ | RN 포팅 + 계약. RN `ConcertCard` 는 import 0 → 지운다 |
 | TabBar | ❌ (yellownmusk `app-shell` 로컬) | ✅ `AnimatedTabBar` | ❌ | 계약 + 웹 올리기. RN `TabBar` 본체는 import 0(`useTabBarHeight` 만) → 정리 |
 | Badge | `StatPill`(web-next) | ❌ | ❌ | yellownmusk `ai-badge` + `StatPill` → `Badge` 하나로 두 레인 |
@@ -46,12 +46,13 @@ surf-ui 의 상당수가 곧 내릴 web-next 만 쓴다. 반대로 시안에서 
 ## 같이 고칠 것
 
 - **색 기본 모드.** `surf-ui / color` 기본이 `ink`(다크)인데 COLDSURF 는 라이트 고정이다. Figma 에서 `bg/base` 를 묶었더니 시트가 검게 그려졌다 → 기본을 `light` 로
-- **지도 시트 모서리 24** — 토큰이 없다. `radius/poster` 를 빌릴지 `radius/sheet-map` 을 만들지
+- ~~지도 시트 모서리 24~~ — `radius/sheet-map` 을 새로 만들었다(#305). 포스터와 따로 움직일 값이라 빌리지 않았다
+- **`radiusPoster` 가 갈려 있다** — 코드 16 · Figma 변수 24. 시안 PinCard 는 16
 
 ## 순서
 
 ```
-1 계약 값 정본 결정(사람) — Toast 치수 · Sheet map 모서리   → 검증: contract/*.ts 에 표 한 장씩
+1 ✅ 계약 값 정본 결정 — Toast 치수(#304) · Sheet map 모서리(#305) · Button 누름(#303)
 2 BottomSheet 두 레인                                      → 검증: billets-app 5곳 · yellownmusk login-dialog 를 바꿔 끼워 typecheck · 화면
 3 Toast 통일                                              → 검증: yellownmusk 로컬 toast 삭제 후 화면
 4 PinCard RN · TabBar 웹 · Badge · DateBlock              → 검증: docs playground 두 레인 나란히
