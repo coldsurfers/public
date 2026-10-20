@@ -5,6 +5,7 @@
     "scheme",
     "icon-button",
     "text-input",
+    "masonry",
     "tab-bar",
     "animated-tab-bar",
     "pull-to-refresh"

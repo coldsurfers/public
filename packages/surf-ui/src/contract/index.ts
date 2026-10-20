@@ -7,7 +7,7 @@
  * | 층 | 무엇 | 여기 |
  * | --- | --- | --- |
  * | 타입 | `ButtonVariant` 같은 유니온 축 | ✅ 지금 |
- * | 값 | 축 → 치수·토큰키 표 | ✅ `BUTTON_SPEC` · `CHIP_SPEC` · `CONCERT_CARD_BARE_SPEC` … |
+ * | 값 | 축 → 치수·토큰키 표 | ✅ `BUTTON_SPEC` · `CHIP_SPEC` · `CONCERT_CARD_BARE_SPEC` · `PIN_CARD_SPEC` … |
  * | 스타일 | VE recipe · emotion 객체 | ❌ 각 구현 |
  *
  * 스타일이 못 넘어오는 이유는 `native/index.ts` 에 적혀 있다 — VE 의 산출물은 CSS 문자열이고
@@ -57,6 +57,8 @@ export {
   type ConcertCardCoverRatio,
   type ConcertCardVariant,
 } from './concert-card'
+export { MASONRY_SPEC, placeInColumns } from './masonry'
+export { PIN_CARD_SPEC, pinCardHeight } from './pin-card'
 export { SHEET_SPEC, type SheetKind } from './sheet'
 export { SKELETON_SPEC, type SkeletonTone } from './skeleton'
 export { getSpinnerGeometry, SPINNER_SPEC } from './spinner'

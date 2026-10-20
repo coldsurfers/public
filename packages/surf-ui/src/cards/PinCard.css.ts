@@ -1,10 +1,12 @@
 import { style } from '@vanilla-extract/css'
+import { PIN_CARD_SPEC as spec } from '../contract'
 import { inComponentsLayer } from '../css/component-layer'
 import { vars } from '../css/contract.css'
 import { lineClamp } from '../css/style-utils'
 
 /**
  * 핀 한 장 — Figma `1455:263`. 포스터 원래 비율 · 아래 제목 두 줄 · 출처 한 줄.
+ * 치수는 `contract/pin-card.ts` 의 `PIN_CARD_SPEC` — native `PinCard` 와 같은 표를 읽는다.
  * @remarks `inline-block` 인 이유: 다단(`column-count`) 그리드에서 `break-inside: avoid` 를 쓰면 iOS Safari 가 열 높이를 크게 잡아 덩이 밑에 빈자리를 남긴다.
  */
 export const root = style(
@@ -13,6 +15,9 @@ export const root = style(
     display: 'inline-block',
     width: '100%',
     verticalAlign: 'top',
+    transition: 'transform 120ms ease-out',
+    selectors: { '&:active': { transform: `scale(${spec.pressedScale})` } },
+    '@media': { '(prefers-reduced-motion: reduce)': { transition: 'none' } },
   }),
 )
 
@@ -25,20 +30,20 @@ export const poster = style(
     display: 'block',
     width: '100%',
     height: 'auto',
-    aspectRatio: 'auto 3 / 4',
+    aspectRatio: `auto ${spec.posterFallbackRatio}`,
     borderRadius: vars.shape.radiusPoster,
     background: vars.color.bgAlt,
-    selectors: { [`${root}:hover &`]: { filter: 'brightness(0.88)' } },
+    selectors: { [`${root}:hover &`]: { filter: `brightness(${spec.pressedDim})` } },
   }),
 )
 
 export const posterEmpty = style([
   poster,
   inComponentsLayer({
-    aspectRatio: '3 / 4',
+    aspectRatio: `${spec.posterFallbackRatio}`,
     display: 'grid',
     placeItems: 'center',
-    padding: 16,
+    padding: spec.posterEmptyPadding,
     fontWeight: vars.fontWeight.bold,
     textAlign: 'center',
   }),
@@ -48,8 +53,8 @@ export const posterEmpty = style([
 export const action = style(
   inComponentsLayer({
     position: 'absolute',
-    right: 8,
-    bottom: 8,
+    right: spec.actionInset,
+    bottom: spec.actionInset,
     zIndex: 1,
     '@media': {
       '(hover: hover)': {
@@ -62,13 +67,13 @@ export const action = style(
 
 export const title = style(
   inComponentsLayer({
-    paddingInline: 4,
-    marginTop: 8,
-    fontSize: 14,
+    paddingInline: spec.captionInset,
+    marginTop: spec.captionGap,
+    fontSize: spec.titleFontSize,
     fontWeight: vars.fontWeight.bold,
-    lineHeight: 1.35,
+    lineHeight: `${spec.titleLineHeight}px`,
     color: vars.color.textPrimary,
-    ...lineClamp(2),
+    ...lineClamp(spec.titleLines),
   }),
 )
 
@@ -83,9 +88,10 @@ export const titleLink = style(
 export const meta = style(
   inComponentsLayer({
     display: 'block',
-    marginTop: 2,
-    paddingInline: 4,
-    fontSize: 12,
+    marginTop: spec.metaGap,
+    paddingInline: spec.captionInset,
+    fontSize: spec.metaFontSize,
+    lineHeight: `${spec.metaLineHeight}px`,
     color: vars.color.textSecondary,
   }),
 )

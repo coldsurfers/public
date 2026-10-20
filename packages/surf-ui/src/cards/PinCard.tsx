@@ -16,7 +16,7 @@ export interface PinCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chil
 }
 
 /**
- * 핀 한 장 — 시안 v3 `v3/PinCard`. 여러 장을 놓는 다단 그리드는 소비처 몫이다.
+ * 핀 한 장 — 시안 v3 `v3/PinCard`. 여러 장을 놓는 다단 그리드는 `Masonry`.
  * @example
  * <PinCard poster={src} meta="ticketlink.co.kr" action={<SaveButton />}>
  *   <Link href="/pin/x">MOBO 인디 뮤직 페스티벌</Link>

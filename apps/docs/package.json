@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@coldsurfers/api-sdk": "workspace:*",
-    "@coldsurfers/surf-ui": "workspace:*",
     "@coldsurfers/screens": "workspace:*",
+    "@coldsurfers/surf-ui": "workspace:*",
     "cnfast": "^0.1.0",
     "fumadocs-core": "^16.15.4",
     "fumadocs-mdx": "^15.4.0",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@emotion/native": "11.11.0",
     "@emotion/react": "11.10.6",
+    "@shopify/flash-list": "2.3.3",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/mdx": "^2.0.14",
     "@types/node": "^22.10.0",

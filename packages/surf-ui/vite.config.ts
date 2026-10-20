@@ -179,7 +179,9 @@ export default defineConfig({
         'native-Chip': 'src/native/Chip.tsx',
         'native-ConcertCard': 'src/native/ConcertCard.tsx',
         'native-IconButton': 'src/native/IconButton.tsx',
+        'native-Masonry': 'src/native/Masonry.tsx',
         'native-Modal': 'src/native/Modal.tsx',
+        'native-PinCard': 'src/native/PinCard.tsx',
         'native-PullToRefresh': 'src/native/PullToRefresh.tsx',
         'native-Skeleton': 'src/native/Skeleton.tsx',
         'native-Spinner': 'src/native/Spinner.tsx',
@@ -208,6 +210,8 @@ export default defineConfig({
         'react-native-safe-area-context',
         'react-native-svg',
         'react-native-worklets',
+        // native `Masonry` 가 문다 — optional peer.
+        '@shopify/flash-list',
         '@emotion/native',
         '@emotion/react',
       ],

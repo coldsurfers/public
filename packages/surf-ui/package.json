@@ -77,9 +77,17 @@
       "types": "./dist/native-IconButton.d.ts",
       "default": "./dist/native-IconButton.js"
     },
+    "./native/Masonry": {
+      "types": "./dist/native-Masonry.d.ts",
+      "default": "./dist/native-Masonry.js"
+    },
     "./native/Modal": {
       "types": "./dist/native-Modal.d.ts",
       "default": "./dist/native-Modal.js"
+    },
+    "./native/PinCard": {
+      "types": "./dist/native-PinCard.d.ts",
+      "default": "./dist/native-PinCard.js"
     },
     "./native/PullToRefresh": {
       "types": "./dist/native-PullToRefresh.d.ts",
@@ -147,6 +155,7 @@
   "peerDependencies": {
     "@emotion/native": "^11",
     "@emotion/react": "^11",
+    "@shopify/flash-list": ">=2",
     "react": "^19",
     "react-dom": "^19",
     "react-native": ">=0.81",
@@ -161,6 +170,9 @@
       "optional": true
     },
     "@emotion/react": {
+      "optional": true
+    },
+    "@shopify/flash-list": {
       "optional": true
     },
     "react-dom": {
@@ -189,6 +201,7 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@emotion/native": "11.11.0",
     "@emotion/react": "11.10.6",
+    "@shopify/flash-list": "2.3.3",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/vite-plugin": "^5.1.1",
