@@ -97,6 +97,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast ? (
         <Layer accessibilityLiveRegion="polite">
+          {/* 보조 글자 · 링크의 `nativeColor.ink.*` 는 스킴이 light 로 잠긴 전제다 — 잠금이 풀리면 pill 밝기를 따라 고른다(contract/toast.ts 색 표). */}
           <Pill $scheme={scheme} $stacked={Boolean(toast.description)}>
             {toast.tone === 'success' ? (
               <Text size="sm" style={{ color: scheme.bgBase }}>

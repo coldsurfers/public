@@ -20,8 +20,9 @@ import type { fontSize, fontWeight, radius } from '../tokens'
  * | 둘째 줄(`description`) | `ink.textSecondary` |
  * | 액션 | `ink.kicker` |
  *
- * 둘째 줄과 액션은 스킴 축이 아니라 **잉크 밴드 색**을 읽는다. pill 바탕이 스킴이 하나뿐인 지금
- * 언제나 Deep Night 이라, 그 위 보조 글자·링크는 `ink` 밴드와 같은 자리다(Figma `3743:1364`).
+ * 둘째 줄과 액션은 스킴 축이 아니라 **pill 의 밝기**를 따른다 — pill 이 어두우면(light 면) `ink`
+ * 값, 밝아지면(ink 면 · OS 다크의 auto) `light` 값. 웹은 면을 따라 뒤집히고, RN 은 스킴이
+ * `light` 하나로 잠겨 있어(`native/scheme.tsx`) 언제나 `ink` 값이다(Figma `3743:1364`).
  * 액션이 `actionPrimary`(#2563ff)가 아닌 이유도 대비다 — #111111 위에서 3.9:1 로 13px 글자 하한
  * 4.5:1 을 못 넘는다. `ink.kicker`(#9ec2ff)는 10:1 이다. 한때 웹만 `actionPrimary` 였다.
  *

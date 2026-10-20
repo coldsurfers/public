@@ -68,6 +68,32 @@ export const toast = recipe({
   defaultVariants: { visible: false, stacked: false },
 })
 
+type InverseKey = 'textSecondary' | 'kicker'
+
+/**
+ * pill 위 보조 글자 · 링크 색. pill 은 면과 반대색이라 **pill 이 어두운 면에선 ink 값, pill 이
+ * 밝아지는 면(ink 조상 · OS 다크의 auto)에선 light 값**을 읽는다. 스킴 var 를 그대로 읽으면
+ * 어두운 pill 위에 light 값(#2563ff, 3.9:1)이 앉는다.
+ *
+ * `light` 규칙이 `ink` 뒤에 와야 한다 — ink 안에 다시 연 light 면에선 둘 다 맞고 뒤가 이긴다.
+ */
+function onPill(key: InverseKey) {
+  const dark = colorSchemes.ink[key]
+  const light = colorSchemes.light[key]
+  return {
+    color: dark,
+    selectors: {
+      '[data-surface="ink"] &': { color: light },
+      '[data-surface="light"] &': { color: dark },
+    },
+    '@media': {
+      '(prefers-color-scheme: dark)': {
+        selectors: { '[data-surface="auto"] &': { color: light } },
+      },
+    },
+  }
+}
+
 /** error 톤의 선행 점. */
 export const toastErrorDot = style(
   inComponentsLayer({
@@ -104,7 +130,7 @@ export const toastDescription = style(
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    color: colorSchemes.ink.textSecondary,
+    ...onPill('textSecondary'),
     fontWeight: vars.fontWeight[spec.description.fontWeight],
     fontSize: vars.fontSize[spec.description.fontSize],
   }),
@@ -120,7 +146,7 @@ export const toastAction = style(
     border: 'none',
     background: 'transparent',
     padding: 0,
-    color: colorSchemes.ink.kicker,
+    ...onPill('kicker'),
     fontWeight: vars.fontWeight[spec.action.fontWeight],
     fontSize: vars.fontSize[spec.action.fontSize],
     cursor: 'pointer',
