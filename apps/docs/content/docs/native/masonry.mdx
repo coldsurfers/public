@@ -38,6 +38,10 @@ function Feed() {
 다음 쪽 받기는 `onEndReached` 로 줍니다. 바텀시트 안이면 시트의 스크롤을 `renderScrollComponent` 로
 줍니다 — `@gorhom/bottom-sheet` 5.2 는 `useBottomSheetScrollableCreator()` 가 그 값을 만듭니다.
 
+끝에 이어 붙는 목록만 다룹니다. 앞에 끼워 넣어도 보던 자리를 붙잡는 FlashList
+`maintainVisibleContentPosition` 은 꺼 두었습니다 — 켜 두면 먼 아래에서 맨 위로(`scrollToTop`)가
+몇 pt 못 미쳐 멈춥니다.
+
 ## 설치
 
 소비처가 `@shopify/flash-list` ≥2 (New Architecture) 를 들고 있어야 합니다. JS 전용이라 네이티브 빌드는
