@@ -8,7 +8,7 @@ import { MASONRY_SPEC as spec } from '../contract'
  * 웹 `cards/Masonry` 와 간격(`MASONRY_SPEC`)이 같다. 웹은 추정 높이(`heightOf`)로 놓지만 여기는 재서 놓으므로 그 prop 이 없다.
  *
  * **스크롤을 소유한다.** 위에 얹을 것은 `header`, 아래는 `footer`, 다음 쪽은 `onEndReached` 로 준다 —
- * 다른 `ScrollView` 안에 넣으면 가상화가 꺼진다.
+ * 다른 `ScrollView` 안에 넣으면 가상화가 꺼진다. 바텀시트 안이면 `renderScrollComponent` 로 시트의 스크롤을 준다.
  *
  * ⚠️ `@shopify/flash-list` ≥2 (New Architecture) 를 소비처가 들고 있어야 한다 — optional peer.
  */
@@ -23,6 +23,8 @@ export interface MasonryProps<T>
     | 'contentContainerStyle'
     | 'ListEmptyComponent'
     | 'showsVerticalScrollIndicator'
+    | 'keyboardShouldPersistTaps'
+    | 'renderScrollComponent'
   > {
   items: readonly T[]
   /** 항목의 고유 키 — 재활용 · 배치의 열쇠. */

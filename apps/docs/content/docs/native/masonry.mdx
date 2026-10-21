@@ -35,7 +35,8 @@ function Feed() {
 ## 스크롤을 소유한다
 
 다른 `ScrollView` 안에 넣으면 가상화가 꺼집니다. 위 콘텐츠는 `header`, 다음 쪽 스피너는 `footer`,
-다음 쪽 받기는 `onEndReached` 로 줍니다.
+다음 쪽 받기는 `onEndReached` 로 줍니다. 바텀시트 안이면 시트의 스크롤을 `renderScrollComponent` 로
+줍니다 — `@gorhom/bottom-sheet` 5.2 는 `useBottomSheetScrollableCreator()` 가 그 값을 만듭니다.
 
 ## 설치
 
