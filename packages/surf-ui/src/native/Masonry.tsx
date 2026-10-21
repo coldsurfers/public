@@ -10,6 +10,9 @@ import { MASONRY_SPEC as spec } from '../contract'
  * **스크롤을 소유한다.** 위에 얹을 것은 `header`, 아래는 `footer`, 다음 쪽은 `onEndReached` 로 준다 —
  * 다른 `ScrollView` 안에 넣으면 가상화가 꺼진다. 바텀시트 안이면 `renderScrollComponent` 로 시트의 스크롤을 준다.
  *
+ * 끝에 이어 붙는 목록만 다룬다. `maintainVisibleContentPosition` 은 끈다 — 켜 두면 먼 아래에서
+ * `scrollToTop` 이 위 카드 높이 보정에 밀려 0 에 못 미친다.
+ *
  * ⚠️ `@shopify/flash-list` ≥2 (New Architecture) 를 소비처가 들고 있어야 한다 — optional peer.
  */
 export interface MasonryProps<T>
@@ -64,6 +67,7 @@ export function Masonry<T>({
       ref={ref}
       masonry
       optimizeItemArrangement
+      maintainVisibleContentPosition={{ disabled: true }}
       numColumns={columnCount}
       data={items}
       keyExtractor={keyOf}
