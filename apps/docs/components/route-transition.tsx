@@ -14,6 +14,16 @@ function isHome(pathname: string) {
 }
 
 /**
+ * 파일인가. `/llms.txt` · `/sitemap.xml` 처럼 확장자로 끝나면 페이지가 아니라 라우트 핸들러가 구운 파일이다.
+ *
+ * 파일은 `router.push` 로 열 수 없다. 정적 내보내기에선 RSC 페이로드(`/llms.txt.txt`)를 찾다 404 를 받고,
+ * `.txt` 를 뗀 `/llms` 로 하드 이동한다.
+ */
+function isFile(pathname: string) {
+  return /\.\w+$/.test(pathname)
+}
+
+/**
  * 라우트 전환에 View Transition 을 건다.
  *
  * App Router 의 이동은 SPA 라 CSS `@view-transition { navigation: auto }` 가 안 걸린다.
@@ -57,6 +67,7 @@ export function RouteTransition() {
 
       const url = new URL(anchor.href, window.location.href)
       if (url.origin !== window.location.origin) return
+      if (isFile(url.pathname)) return
       // 브랜드가 실제로 자리를 옮기는 이동에서만 연다 — 홈 ↔ 문서가 그 하나다.
       //
       // 문서 → 문서는 타이틀이 사이드바에 그대로 있어 morph 가 없고, 본문 크로스페이드만
