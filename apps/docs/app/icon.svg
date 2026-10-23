@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>surf-ui</title>
+  <rect width="32" height="32" rx="10" fill="#2457ff"/>
+  <path d="M6 19c3.3 0 3.3-4 6.7-4s3.3 4 6.6 4 3.4-4 6.7-4" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+</svg>
