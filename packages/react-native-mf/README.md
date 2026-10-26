@@ -3,37 +3,71 @@
 React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼워넣는** 레이어.
 
 미니앱이 새 의존성을 쓸 때마다 호스트를 고쳐 스토어에 다시 올려야 하는 구조를 끊는 것이 목표다.
+미니앱은 따로 굽고 따로 배포한다. 호스트는 부팅 뒤에 그 번들을 받아 실행하고, React 와
+`react-native` 는 호스트의 사본 하나를 같이 쓴다.
 
-> 🚧 **Phase 1 · 1.5.** 런타임 · 번들러 플러그인 · 로더(`scriptManager`) · 빌드 CLI 가 동작한다.
-> 로드맵: [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85)
+> 🚧 빌드 · 배포 · 로드가 끝까지 돈다. 바이트코드 레인(네이티브 로더)은 아직이다.
+> 단계별 상태는 [진행 상황](#진행-상황), 로드맵은 [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85).
 
-## 레인
+## 설치
 
-실행 환경이 달라서 진입점을 가른다 — 배럴 하나로 묶으면 RN 앱이 esbuild 를 물게 된다.
+GitHub Packages 에 발행된다. 레지스트리 설정(`.npmrc`)은 [루트 README](../../README.md#쓰기) 를 따른다.
 
-| 진입점 | 어디서 도나 | 상태 |
-| --- | --- | --- |
-| `@coldsurfers/react-native-mf` | 호스트 (React Native) | ✅ shared scope · 원격 레지스트리 · `scriptManager` |
-| `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | ✅ shared 치환 · self-register |
-| `@coldsurfers/react-native-mf/cli` | bin | ✅ `build` · `deploy` · `rollback` · `promote` |
-| `@coldsurfers/react-native-mf/deploy` | 빌드 머신 (Node) | ✅ `defineConfig` · `s3Storage` — `react-native-mf.config.ts` 가 import 한다 |
+```bash
+# 호스트 앱 — 런타임만 쓴다
+pnpm add @coldsurfers/react-native-mf
 
-`esbuild` · `@babel/core` · `@babel/plugin-transform-block-scoping` · `@aws-sdk/client-s3` 는
-**optional peer** 다. 런타임 레인만 쓰는 앱은 넷 다 안 깔아도 된다 — CLI 는 실제로 부를 때 연다.
+# 미니앱 — build · deploy 를 부른다
+pnpm add -D @coldsurfers/react-native-mf esbuild @babel/core @babel/plugin-transform-block-scoping @aws-sdk/client-s3
+```
 
-## 실제로 꽂히는 자리 — `globalThis` 두 칸
+peer 넷은 전부 **optional** 이다. 호스트 앱은 하나도 안 깔아도 되고, CLI 는 명령을 실제로 부를 때 연다.
 
-호스트와 원격 번들은 **모듈 그래프가 다르다.** 따로 번들돼서 서로를 `import` 할 수 없다.
-둘이 만날 수 있는 곳은 런타임 전역 하나뿐이고, 그래서 칸이 둘이다.
+| peer | 필요한 때 |
+| --- | --- |
+| `esbuild` | `build` · `deploy` · `./esbuild` 직접 호출 |
+| `@babel/core` · `@babel/plugin-transform-block-scoping` | `build` · `deploy` |
+| `@aws-sdk/client-s3` | `s3Storage` 로 올릴 때 |
+
+## 사용원리
+
+### 한 장으로
+
+```
+미니앱 레포 (빌드 머신 · Node)
+  react-native-mf deploy -c production
+    ① babel      미니앱 자기 babel config 로 소스 트리를 transpile
+    ② esbuild    import 'react'  →  globalThis.__RN_MF_SHARED__['react'] 읽기로 바꿔치기
+                 번들 끝에 self-register footer 두 줄
+    ③ 후처리     let · const 제거 (Hermes 런타임 컴파일러 대응)
+    ④ 올리기     mini-apps/settings/1.2.0/index.bundle.js         불변
+                 mini-apps/settings/production/manifest.json      릴리스를 맨 앞에 더한다
+                                  │
+                                  ▼  HTTP
+호스트 앱 (React Native 런타임)
+  부팅   registerShared({ react, 'react-native', … })   →  __RN_MF_SHARED__ 를 채운다
+         scriptManager.addResolver(createManifestResolver(…))
+  화면   useRemote('settings')
+    ⑤ resolve    manifest.json 에서 켜져 있고 requires 가 호스트와 맞는 최신 릴리스를 고른다
+    ⑥ download   storage 캐시를 먼저 보고, 없으면 fetch 해서 캐시에 쓴다
+    ⑦ execute    new Function(source)()  →  footer 가 __RN_MF_REMOTES__['settings'] 에 자기를 넣는다
+    ⑧ 회수       getRemote('settings')  →  { default: SettingsApp }  →  렌더
+```
+
+미니앱 번들은 React 를 들고 오지 않고(②), 호스트는 미니앱을 `import` 하지 않는다(⑦).
+둘은 따로 번들돼서 **모듈 그래프가 다르다.** 만날 수 있는 곳은 런타임 전역 하나뿐이고, 그래서
+칸이 둘이다.
+
+### 만나는 곳 — `globalThis` 두 칸
 
 | 전역 키 | 쓰는 쪽 | 읽는 쪽 |
 | --- | --- | --- |
-| `__RN_MF_SHARED__` | 호스트 — `registerShared()` | 원격 번들 (빌드타임 치환된 코드) |
+| `__RN_MF_SHARED__` | 호스트 — `registerShared()` | 원격 번들 (② 에서 바꿔치기된 코드) |
 | `__RN_MF_REMOTES__` | 원격 번들 — footer 가 자기를 넣는다 | 호스트 — `getRemote()` |
 
 **방향이 반대인 일방통행 둘이다.** 호스트가 의존성을 내려주고, 미니앱이 자기를 올려준다.
 
-### ① 미니앱 → shared 를 읽는다 (빌드타임 치환)
+#### ② 미니앱이 shared 를 읽는다 — 빌드타임 치환
 
 `sharedScopePlugin` 이 `import` 를 **모듈 소스째로 갈아끼운다**. 산출물에 `require("react")` 가
 남지 않는 이유다.
@@ -55,7 +89,7 @@ module.exports = mod;
 
 조회 키는 **미니앱이 쓴 specifier 그대로**다 — `react/jsx-runtime` 은 `react/jsx-runtime` 으로 찾는다.
 
-### ② 미니앱 → 자기를 꽂는다 (footer)
+#### ② 미니앱이 자기를 꽂는다 — footer
 
 `withSelfRegister` 가 esbuild 를 `iife` + `globalName` 으로 돌리고, 산출물 끝에 두 줄을 붙인다.
 
@@ -68,44 +102,213 @@ globalThis["__RN_MF_REMOTES__"]["settings"] = __RN_MF_REMOTE_ENTRY__;
 **"꽂는다" 가 일어나는 물리적 지점이 이 두 줄이다.** 호스트는 아무것도 안 한다 — 번들을
 실행하기만 하고, 올라오는 건 번들이 스스로 한다.
 
-### ③ 호스트 → 실행시킨다
+#### ⑦ 호스트가 실행시킨다
 
 `scriptManager.load` 안의 한 줄이 전부다.
 
 ```ts
-new Function(`${source}\n//# sourceURL=${locator.url}`)()   // ← ②의 두 줄이 여기서 돈다
+new Function(`${source}\n//# sourceURL=${locator.url}`)()   // ← footer 두 줄이 여기서 돈다
 const remote = getRemote(name)                               // ← 그래서 바로 회수된다
 ```
 
 `require` 를 주입하지 않는다. 주입하던 시절엔 호스트가 모듈 이름을 손으로 나열한
-화이트리스트를 들어야 했는데, ①의 치환이 그 자리를 없앴다.
+화이트리스트를 들어야 했는데, ② 의 치환이 그 목록을 없앴다.
 
-### 부트 순서는 상관없다
+#### 부트 순서 — shared 가 먼저
 
-두 칸 다 **먼저 만지는 쪽이 만든다**(`globalRecord` 의 지연 생성). 원격 번들이 호스트보다
-먼저 실행돼도, 반대여도 같은 칸을 본다.
+`__RN_MF_REMOTES__` 는 **먼저 만지는 쪽이 만든다**(`globalRecord` 의 지연 생성 · footer 의 `|| {}`).
+원격 번들이 호스트보다 먼저 실행돼도, 반대여도 같은 칸을 본다.
 
-## 호스트 배선
+`__RN_MF_SHARED__` 는 다르다. 원격 번들은 이 칸을 읽기만 하고, 키가 없으면 실행 시점에 던진다.
+그래서 `registerShared` 는 어떤 원격 번들보다 먼저 돈다.
 
-호스트가 **자기 사본**을 노출한다. 원격 번들이 `react` 를 자기 안에 번들해 오면 런타임에
-React 가 둘이 되어 훅이 깨지는데, 그걸 막는 자리다.
+### 이름 하나가 잇는다
+
+미니앱을 "꽂는다" 는 건 **같은 문자열을 여러 곳에 두는 것**이다. 그 밖에 호스트가 미니앱을
+아는 방법은 없다 — import 도, 등록 테이블도 없다.
+
+| 위치 | 코드 | 누가 |
+| --- | --- | --- |
+| 미니앱 config | `defineConfig({ name: 'settings' })` (또는 `build -n settings`) | 미니앱 |
+| 저장소 경로 | `mini-apps/settings/production/manifest.json` | `deploy` |
+| 번들 footer | `globalThis["__RN_MF_REMOTES__"]["settings"] = …` | 번들이 실행되며 스스로 |
+| resolver | `createManifestResolver({ names: ['settings'], … })` | 호스트 부팅 |
+| 화면 | `useRemote('settings')` | 호스트 화면 |
+
+어긋나면 이렇게 드러난다.
+
+| 어긋난 곳 | 결과 |
+| --- | --- |
+| resolver 가 그 이름을 안 맡음 | `"settings" 을 맡는 resolver 가 없다` 로 던진다 |
+| 저장소 경로에 매니페스트가 없음(404) · 받은 매니페스트의 `name` 이 다름 | 캐시가 있으면 `onError` 로 알리고 **캐시된 버전을 조용히 연다.** 캐시가 없을 때만 던진다 |
+| 실행한 번들이 다른 이름으로 등록됨 | `실행한 번들이 "settings" 으로 등록되지 않았다` 로 던진다 |
+
+⚠️ 가운데 줄은 화면에서 안 보인다. config 의 `name` 을 바꿨는데 호스트는 그대로면, 캐시가 있는
+기기는 옛 버전을 계속 연다. `onError` 를 로깅에 꼭 잇는다.
+
+### 버전은 경로에, 고르는 건 매니페스트
+
+`deploy` 는 서버 없이 저장소에 파일 두 종류만 둔다. 번들은 버전마다 경로가 달라서 **한 번 올리면
+안 바뀌고**, 어느 버전을 열지는 채널마다 한 장인 매니페스트가 정한다.
+
+```jsonc
+// mini-apps/settings/production/manifest.json — 최신이 앞
+{
+  "name": "settings",
+  "releases": [
+    { "version": "1.2.0", "requires": ["react", "react-native", "react/jsx-runtime"], "enabled": false, "deployedAt": "…" },
+    { "version": "1.1.0", "requires": ["react", "react-native", "react/jsx-runtime"], "enabled": true, "deployedAt": "…" }
+  ]
+}
+```
+
+1.2.0 을 되돌린 상태다. 호스트는 1.1.0 을 연다. 되돌리기는 배포가 아니라 **매니페스트의 `enabled`
+한 칸**이고, 번들은 지우지 않는다.
+
+`requires` 는 번들이 실제로 읽는 shared specifier 다. 호스트는 이걸 **다 `registerShared` 했을
+때만** 그 릴리스를 연다. 스토어에 아직 옛 바이너리가 깔린 기기는 새 shared 를 요구하는 릴리스를
+건너뛰고, 자기가 열 수 있는 가장 새 릴리스로 내려간다.
+
+**버전은 그 미니앱을 처음 `load` 할 때 고른다.** 부팅 때가 아니다. 그래서 아직 그 미니앱을 안 연
+세션은 새 버전을 바로 받는다. 이미 실행된 번들은 이번 세션에서 안 바뀐다 — JS 런타임에 올라간
+모듈을 내리는 방법이 없다. `s3Storage` 는 매니페스트를 `Cache-Control` 60초로 올리므로, 배포하고
+1분이 지나면 그 뒤의 첫 `load` 가 새 버전을 고른다.
+
+## 빠른 시작 — settings 미니앱 하나를 꽂는다
+
+### 1. 호스트 — shared 를 노출하고 목록을 파일로 낸다
+
+목록은 호스트에 한 벌만 둔다.
 
 ```ts
-// index.js — AppRegistry 등록보다 먼저
-import { registerShared } from '@coldsurfers/react-native-mf'
-
-registerShared({
+// apps/host/src/shared-modules.ts — 사람이 쓰는 유일한 목록
+export const SHARED_MODULES = {
   react: require('react'),
   'react/jsx-runtime': require('react/jsx-runtime'),
   'react-native': require('react-native'),
+}
+```
+
+`index.js` 에서, `AppRegistry` 등록보다 먼저 부른다.
+
+```ts
+import { registerShared } from '@coldsurfers/react-native-mf'
+import { SHARED_MODULES } from './src/shared-modules'
+
+registerShared(SHARED_MODULES)
+```
+
+미니앱 빌드는 같은 키를 JSON 배열로 읽는다. 이 파일은 손으로 따로 쓰지 않고 `SHARED_MODULES` 의
+키에서 생성한다. billets-app 은 소스에서 키를 뽑아 생성하고, 커밋된 파일이 최신인지 검사한다.
+
+```jsonc
+// apps/host/shared-modules.json — 생성물. SHARED_MODULES 의 키 그대로
+["react", "react/jsx-runtime", "react-native"]
+```
+
+두 벌을 손으로 들면 갈라지고, 갈라진 방향마다 증상이 다르다.
+
+| 갈라진 방향 | 증상 |
+| --- | --- |
+| JSON 에만 있는 키 | 그 키를 읽는 릴리스를 `createManifestResolver` 가 건너뛴다 |
+| `registerShared` 에만 있는 패키지 | 치환되지 않아 미니앱 번들에 사본이 들어간다. 로드는 되고 React 가 둘이 된다 |
+
+### 2. 미니앱 — config 를 두고 배포한다
+
+미니앱은 평범한 RN 컴포넌트를 `export default` 한다. 호스트를 모른다.
+
+```tsx
+// settings-mini-app/src/index.tsx
+export default function SettingsApp(props: Props) { ... }
+```
+
+미니앱 루트에 `babel.config.js` 가 있어야 한다([아래 ⚠️](#미니앱-빌드--build)). 그 옆에 config 를 둔다.
+
+```ts
+// settings-mini-app/react-native-mf.config.ts
+import { defineConfig, s3Storage } from '@coldsurfers/react-native-mf/deploy'
+
+export default defineConfig({
+  name: 'settings',
+  prefix: 'mini-apps',
+  storage: s3Storage({ bucket: 'my-bucket', region: 'ap-northeast-2' }),
+  build: { entry: 'index.tsx', sharedFrom: '../../apps/host/shared-modules.json' },
 })
 ```
 
-키는 **원격 번들이 쓴 specifier 그대로**다 — `react/jsx-runtime` 을 부모 `react` 에서
-유도하지 않는다. 원격 번들은 `import` 대신 이 전역을 읽고, 치환은 빌드타임에 `./esbuild`
-플러그인이 한다. 그래서 호스트 쪽에 모듈 이름을 손으로 나열하는 화이트리스트가 남지 않는다.
+```bash
+react-native-mf deploy -c staging -i                       # 버전을 고르고 확인한 뒤 올린다
+react-native-mf promote --from staging -c production -i    # staging 에서 본 번들을 그대로 올린다
+```
+
+### 3. 호스트 — 부팅에 저장소와 resolver 를 단다
+
+`registerShared` 바로 뒤, React 트리 **밖**이다.
+
+```ts
+import { createManifestResolver, scriptManager } from '@coldsurfers/react-native-mf'
+
+scriptManager.setStorage(storage) // ScriptStorage — 아래 「스토리지는 소비처가 준다」
+scriptManager.addResolver(
+  createManifestResolver({
+    baseUrl: 'https://cdn.example.com', // {baseUrl}/mini-apps/settings/production/manifest.json 을 읽는다
+    prefix: 'mini-apps',
+    channel: 'production',
+    names: ['settings'],
+    storage,
+    onError: (error, name) => report(error, { name }), // 캐시로 넘어갈 때 원인을 받는다
+  }),
+)
+```
+
+dev 에서는 소스를 레지스트리에 바로 꽂는다. 이미 등록된 이름이면 `load` 는 받지도 실행하지도 않는다.
+
+```ts
+import { registerRemote } from '@coldsurfers/react-native-mf'
+
+if (__DEV__) registerRemote('settings', require('../mini-apps/settings/src')) // 경로는 레포 구조를 따른다
+```
+
+⚠️ 그래서 dev 에서는 빌드(①~④)도 로드(⑤~⑦)도 안 돈다. shared 치환이 없으니 `registerShared`
+누락이나 번들 안의 사본도 dev 에서는 안 보인다. 원격 경로는 staging 채널로 확인한다.
+
+### 4. 화면 — `useRemote`
+
+```tsx
+import { resetRemote, useRemote } from '@coldsurfers/react-native-mf'
+
+function SettingsScreen(props: Props) {
+  const { default: MiniApp } = useRemote<{ default: FC<Props> }>('settings')
+
+  return <MiniApp {...props} />
+}
+```
+
+```tsx
+<ErrorBoundary onReset={() => resetRemote('settings')} fallback={<LoadFailed />}>
+  <Suspense fallback={<Spinner />}>
+    <SettingsScreen />
+  </Suspense>
+</ErrorBoundary>
+```
+
+여기서 미니앱이 처음 실행된다. 각 단계의 세부는 아래 레퍼런스에 있다.
+
+## 진입점
+
+실행 환경이 달라서 진입점을 가른다 — 배럴 하나로 묶으면 RN 앱이 esbuild 를 물게 된다.
+
+| 진입점 | 어디서 도나 | 주로 쓰는 것 |
+| --- | --- | --- |
+| `@coldsurfers/react-native-mf` | 호스트 (React Native) | `registerShared` · `getRemote` · `registerRemote` · `scriptManager` · `createManifestResolver` · `useRemote` · `resetRemote` |
+| `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | `sharedScopePlugin` · `withSelfRegister` · `DEFAULT_SHARED_MODULES` |
+| `@coldsurfers/react-native-mf/deploy` | 빌드 머신 (Node) | `defineConfig` · `s3Storage` — `react-native-mf.config.ts` 가 import 한다 |
+| `@coldsurfers/react-native-mf/cli` | 빌드 머신 (Node) | `run(argv)` — bin 을 코드에서 부를 때 |
+| `react-native-mf` (bin) | 빌드 머신 (Node) | `build` · `deploy` · `rollback` · `promote` |
 
 ## 미니앱 빌드 — `build`
+
+`deploy` 가 안에서 부르는 것과 같다. 올리지 않고 굽기만 할 때 쓴다.
 
 ```jsonc
 // settings-mini-app/package.json
@@ -119,7 +322,7 @@ registerShared({
 | | 무엇을 | 왜 |
 | --- | --- | --- |
 | ① babel transpile | 소스 트리 전체를 미니앱 **자기** config 로 | esbuild 는 AST 를 다시 쓰는 babel 플러그인(reanimated worklet 등)을 못 돈다 |
-| ② esbuild bundle | shared 치환 + self-register footer | 아래 `./esbuild` 레인 그대로 |
+| ② esbuild bundle | shared 치환 + self-register footer | 위 [사용원리](#사용원리) 의 ② 그대로 |
 | ③ block-scoping | 산출물의 `let`/`const` 제거 | Hermes **런타임 컴파일러** — 아래 ⚠️ |
 
 | 옵션 | |
@@ -144,9 +347,9 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 만들지 않아 클로저가 마지막 값을 붙든다. esbuild 가 CJS 인터롭용으로 넣는 `__copyProps` 가
 정확히 그 모양이라, shared 모듈의 **모든 프로퍼티가 마지막 export 하나로** 읽혔다
 (`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
-없앤다 — 미니앱 자기 코드가 같은 자리를 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
+없앤다 — 미니앱 자기 코드가 같은 패턴을 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
 
-중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 자리 조건이 둘이다.
+중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 위치 조건이 둘이다.
 
 - **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
   레포 밖(`os.tmpdir()`)에 두면 미니앱 의존성이 통째로 안 잡힌다
@@ -170,6 +373,10 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 {prefix}/{name}/{channel}/manifest.json     가변 · Cache-Control 60초
 ```
 
+config 는 미니앱 루트의 `react-native-mf.config.{ts,mjs,js}` 다. `build` 는 `build` 명령의 플래그와
+같은 뜻이고 경로는 미니앱 루트 기준이다. 산출물 기본 경로는 `build/out/index.bundle.js`.
+하나만 다르다. `sharedFrom` 과 `shared` 를 같이 주면 CLI 처럼 거절하지 않고 `sharedFrom` 을 쓴다.
+
 ```ts
 // react-native-mf.config.ts — 미니앱 루트
 import { defineConfig, s3Storage } from '@coldsurfers/react-native-mf/deploy'
@@ -186,7 +393,7 @@ export default defineConfig({
 react-native-mf deploy -c staging -i       # 버전 올리기 · 확인을 묻는다
 react-native-mf deploy -c production       # package.json 버전 그대로
 react-native-mf rollback -c production     # 켜진 최신을 끈다
-react-native-mf rollback -c production --to 1.2.0
+react-native-mf rollback -c production --to 1.2.0   # 1.2.0 보다 새 것을 끄고 1.2.0 을 켠다
 react-native-mf promote --from staging -c production -i   # staging 에 낸 것을 굽지 않고 올린다
 react-native-mf promote --from staging -c production --version 1.2.0
 ```
@@ -213,36 +420,23 @@ export default defineConfig({
 })
 ```
 
+저장소는 `read` · `write` 두 메서드 계약(`DeployStorage`)이다. S3 밖의 저장소도 그 둘만 구현하면
+꽂힌다. 조건이 둘이다.
+
+- **`read` 는 없는 키에 `null` 을 돌려준다.** 던지면 배포가 멈춘다
+- **`write` 는 `meta.cacheControl` 을 저장소에 그대로 싣는다.** 안 실으면 번들 1년 · 매니페스트 60초가
+  CDN 에 안 닿고 CDN 기본 TTL 을 탄다. 그러면 배포와 되돌리기가 언제 호스트에 닿을지 모른다
+
 ⚠️ **S3 버킷에 `s3:ListBucket` 이 있어야 한다.** 없으면 없는 키가 `NoSuchKey` 대신
 `AccessDenied` 로 와서 첫 배포가 멈춘다.
+
+⚠️ **같은 채널에 두 배포를 동시에 돌리지 않는다.** 매니페스트를 잠그지 않아서 늦게 쓴 쪽이
+이긴다. 한 사람이 로컬에서 내는 흐름을 전제로 했다.
 
 ⚠️ **config 를 `.ts` 로 두려면 Node 22.18+** 다(type stripping). 미니앱 `package.json` 에
 `"type": "module"` 이 없으면 Node 가 재해석 경고를 한 줄 낸다 — 동작은 같다.
 
-## 직접 esbuild 를 부를 때
-
-CLI 가 안 맞으면 두 조각을 자기 esbuild 옵션에 얹는다. 빌드 머신에서만 도는 레인이다.
-
-```ts
-import { sharedScopePlugin, withSelfRegister } from '@coldsurfers/react-native-mf/esbuild'
-
-await esbuild.build({
-  entryPoints: ['src/index.tsx'],
-  outfile: 'dist/index.bundle.js',
-  bundle: true,
-  plugins: [sharedScopePlugin()],
-  ...withSelfRegister({ name: 'settings' }),
-})
-```
-
-`sharedScopePlugin` 이 shared 이름을 글로벌 참조로 바꾸고, `withSelfRegister` 가
-`iife` + footer 로 **실행되면 스스로 등록하는** 번들을 만든다. 산출물엔 `require("react")` 가
-남지 않는다.
-
-호스트가 노출하지 않은 이름을 원격 번들이 읽으면 **로드 시점에 던진다.** 조용히 `undefined` 를
-넘기면 원격 번들 안에서 터져서 원인이 안 보인다.
-
-## shared 목록은 소비처가 정한다
+## shared 목록은 호스트가 정한다
 
 기본값은 **둘뿐**이다 — `react` · `react-native` (`DEFAULT_SHARED_MODULES`).
 RN 마이크로프론트엔드라면 무조건인 것만 남겼다.
@@ -272,7 +466,7 @@ sharedScopePlugin({
 react-native-mf build -o out.js -n settings --shared-from ../../apps/host/shared-modules.json
 ```
 
-**치환 필터는 CLI 가 파생한다.** 두 자리가 쓰는 모양이 다르기 때문이다.
+**치환 필터는 CLI 가 파생한다.** 두 곳이 쓰는 모양이 다르기 때문이다.
 
 | | 모양 | 예 |
 | --- | --- | --- |
@@ -293,7 +487,8 @@ react-native-mf build -o out.js -n settings --shared-from ../../apps/host/shared
 
 ⚠️ **덮는 것과 접는 것은 다르다.** `react/jsx-runtime` 이 치환되면 호스트는 **그 이름으로**
 `registerShared` 해야 한다 — 조회 키는 원격 번들이 쓴 specifier 그대로고, 부모 패키지로
-접지 않는다. 빠뜨리면 로드 시점에 그 이름을 대며 던진다.
+접지 않는다. 빠뜨리면 `createManifestResolver` 가 그 릴리스를 건너뛰고, 손으로 쓴 resolver 면
+로드 시점에 그 이름을 대며 던진다.
 
 ## 회수
 
@@ -307,11 +502,11 @@ const settings = getRemote<{ default: React.FC }>('settings')
 const MiniApp = settings?.default
 ```
 
-아직 실행 전이면 `undefined` 다 — 던지지 않는다. 번들을 실행할지 말지는 로더가 판단하는
-자리라, 있는지만 묻고 싶으면 `hasRemote(name)` 을 쓴다.
+아직 실행 전이면 `undefined` 다 — 던지지 않는다. 번들을 실행할지 말지는 로더가 판단하므로,
+있는지만 묻고 싶으면 `hasRemote(name)` 을 쓴다.
 
-번들이 실행되면 스스로 등록한다([3] self-register). 실행 방식이 소스 eval 이든 바이트코드든
-회수 지점은 이 한 곳이다.
+번들은 실행되면 footer 로 스스로 등록한다([사용원리](#사용원리) ②). 실행 방식이 소스 eval 이든
+바이트코드든 회수 지점은 이 한 곳이다.
 
 ## 로드 — `scriptManager`
 
@@ -321,81 +516,10 @@ React 밖이라 부팅 프리페치 · 탭 진입 전 프리로드가 마운트�
 **배선과 로드는 시점이 다르다.** 배선은 부팅에 한 번, 로드는 화면이 필요할 때다. 한 블록처럼
 보이면 resolver 를 컴포넌트 안에서 등록하게 되고, 그러면 마운트마다 resolver 가 쌓인다.
 
-### 이름 하나가 넷을 잇는다
+### 1. 부팅에 한 번 — resolver
 
-미니앱을 "꽂는다" 는 건 **같은 문자열을 네 자리에 두는 것**이다. 그 외에 호스트가 미니앱을
-아는 방법은 없다 — import 도, 등록 테이블도 없다.
-
-| 자리 | 코드 | 누가 |
-| --- | --- | --- |
-| 미니앱 빌드 | `withSelfRegister({ name: 'settings' })` | 미니앱 CI |
-| 번들 footer 의 자기등록 | `registerRemote('settings', ns)` | 번들이 실행되며 스스로 |
-| resolver 가 받는 인자 | `(name) => name === 'settings' ? {...} : undefined` | 호스트 부팅 |
-| 화면 | `useRemote('settings')` | 호스트 화면 |
-
-어긋나면 **번들은 받아지고 실행도 되는데 회수에서 던진다.** 그 에러가 이름을 대준다
-(`실행한 번들이 "settings" 으로 등록되지 않았다`).
-
-### 끝까지 한 번 — settings 미니앱
-
-**① 미니앱**: 평범한 RN 컴포넌트다. 호스트를 모른다.
-
-```tsx
-// settings-mini-app/src/index.tsx
-export default function SettingsApp(props: Props) { ... }
-```
-
-```ts
-// settings-mini-app/build.mjs
-await esbuild.build({
-  entryPoints: ['src/index.tsx'],
-  outfile: `dist/v${version}/index.bundle.js`,
-  bundle: true,
-  plugins: [sharedScopePlugin({ include: SHARED_MODULES })],
-  ...withSelfRegister({ name: 'settings' }),
-})
-```
-
-**② 올리기**: 산출물은 `dist/v1.1.2/index.bundle.js` 하나. 버전을 **경로에** 두고, 어느 버전이
-최신인지는 호스트가 매니페스트로 묻는다.
-
-```json
-{ "settings": { "latestVersion": "1.1.2" } }
-```
-
-경로에 버전이 있어야 롤백이 배포가 아니라 **매니페스트 한 줄**이 된다.
-
-**③ 호스트 부팅**: 이름 하나를 URL 로 바꾸는 자리 — 아래 `1. 부팅에 한 번` 의 resolver 다.
-
-**④ 화면**: `useRemote('settings')`. 여기서 미니앱이 처음 실행된다.
-
-**⑤ 새 버전**: 매니페스트가 `1.1.3` 을 가리키면 resolver 가 새 URL·새 캐시 키를 준다.
-**이미 실행된 번들은 이번 세션에서 안 바뀐다** — JS 런타임에 올라간 모듈을 내리는 방법이 없다.
-다음 부팅에 `1.1.3` 이 뜨고, 그때 `invalidate({ keep: ['1.1.3'], name: 'settings' })` 로 옛 파일을 지운다.
-
-### 1. 부팅에 한 번 — 배선
-
-`index.js`, `registerShared` 옆자리. React 트리 **밖**이다.
-
-```ts
-import { registerShared, scriptManager } from '@coldsurfers/react-native-mf'
-
-registerShared(SHARED_MODULES)
-scriptManager.setStorage(storage)
-
-scriptManager.addResolver(async (name) => {
-  if (__DEV__) return { url: `http://localhost:8081/${name}.bundle`, cache: false }
-
-  const { latestVersion } = (await getManifest())[name]
-  return { url: `${CDN}/${name}/v${latestVersion}/index.bundle.js`, version: latestVersion }
-})
-```
-
-**dev/prod 는 resolver 한 자리에서 갈린다.** 채널·롤백도 같은 자리다 — URL 결정이 컴포넌트
-계층에 있으면 그게 세 곳으로 흩어진다.
-
-resolver 는 `await` 를 품어도 된다(위의 `getManifest`). 부팅에서 등록만 하고 **실제 호출은
-첫 `load` 때**라, 배선이 네트워크를 기다리지 않는다.
+resolver 는 이름 하나를 받아 번들 위치(`ScriptLocator`)를 돌려준다. 등록 순서대로 묻고
+**처음 locator 를 주는 쪽**이 이긴다. 못 맡는 이름이면 `undefined` 를 돌려 다음 resolver 로 넘긴다.
 
 `deploy` 로 낸 미니앱이면 resolver 를 손으로 쓰지 않는다. `createManifestResolver` 가 채널
 매니페스트를 읽어 고른다.
@@ -421,6 +545,27 @@ scriptManager.addResolver(
 | 받았는데 맞는 게 없음 | 던진다. 캐시로 넘어가지 않는다 — 되돌린 버전을 다시 열지 않게 |
 | 못 받음(오프라인 · `timeoutMs` 기본 5초 · 모양 틀림) | `storage` 에 캐시된 이 이름의 가장 높은 버전. `onError` 로 원인을 알린다. 캐시도 없으면 던진다 |
 
+`deploy` 를 안 쓰면 locator 를 직접 돌려준다. resolver 는 `await` 를 품어도 된다. 부팅에서 등록만
+하고 **실제 호출은 첫 `load` 때**라, 배선이 네트워크를 기다리지 않는다.
+
+```ts
+scriptManager.addResolver(async (name) => {
+  if (name !== 'settings') return undefined
+
+  const version = await fetchLatestVersion(name)
+  return { url: `${CDN}/${name}/${version}/index.bundle.js`, version }
+})
+```
+
+| `ScriptLocator` | |
+| --- | --- |
+| `url` | 번들을 받을 곳. 실행한 코드의 `sourceURL` 로도 쓴다 |
+| `version` | 캐시 키에 들어간다. **없으면 캐시하지 않는다** |
+| `cache` | 기본 `true`. 매번 새로 받아야 하면 `false` |
+
+**채널 · 롤백 판단은 resolver 하나에 모인다.** URL 결정이 컴포넌트 계층에 있으면 그 판단이 화면마다
+흩어진다.
+
 ### 2. 화면에서 — Suspense
 
 `load` 는 약속을, `getRemote` 는 값을 돌려준다. 그 둘을 Suspense 계약으로 접은 게 `useRemote` 다.
@@ -443,7 +588,7 @@ function SettingsScreen(props: Props) {
 </ErrorBoundary>
 ```
 
-로딩·에러 상태를 손으로 들 자리가 사라진다 — 상태 셋(`loading`/`error`/`data`)이 Suspense
+로딩·에러 상태를 손으로 들 필요가 없다 — 상태 셋(`loading`/`error`/`data`)이 Suspense
 경계와 ErrorBoundary 로 옮겨간다.
 
 ⚠️ **`onReset` 에서 `resetRemote(name)` 를 부른다.** 실패는 기억되고, 지워줘야 다음 렌더가
@@ -489,10 +634,14 @@ requestIdleCallback(() => {
 - `prefetch(name)` — 디스크까지만 데운다. **실행하지 않는다** — 실행은 미니앱 top-level 을 도는
   일이라 이 이름 뒤에 숨기지 않는다
 - `invalidate({ keep, name })` — 옛 버전 파일을 지운다. **디스크만** 비운다: 이미 실행된 번들을
-  런타임에서 내리는 방법은 없다. 새 버전은 다음 부팅에 실행된다
+  런타임에서 내리는 방법은 없다. `createManifestResolver` 를 쓰면 고른 버전 밖의 캐시를 resolver 가
+  지우므로 따로 부를 일이 없다
 
 `load` 자체는 실패를 기억하지 않는다 — 다시 부르면 다시 받는다. 기억하는 건 `useRemote` 쪽이고
 `resetRemote` 가 지운다. **이미 실행된 번들의 교체는 어느 쪽 재시도로도 안 된다**(위 `invalidate`).
+
+`scriptManager` 는 호스트에 하나면 된다. 테스트처럼 격리가 필요하면 `createScriptManager()` 로
+따로 만든다. `useRemote` 는 기본 `scriptManager` 만 본다.
 
 ## 스토리지는 소비처가 준다
 
@@ -514,3 +663,47 @@ const storage: ScriptStorage = {
 `invalidate` 만 안다. 소비처가 그 규칙을 다시 만들면 규칙이 두 곳으로 갈린다.
 
 읽기·쓰기가 던져도 로드는 안 깨진다 — 캐시는 최적화지 정본이 아니다.
+
+## 직접 esbuild 를 부를 때
+
+CLI 가 안 맞으면 두 조각을 자기 esbuild 옵션에 얹는다. 빌드 머신에서만 도는 레인이다.
+
+```ts
+import { sharedScopePlugin, withSelfRegister } from '@coldsurfers/react-native-mf/esbuild'
+
+await esbuild.build({
+  entryPoints: ['src/index.tsx'],
+  outfile: 'dist/index.bundle.js',
+  bundle: true,
+  plugins: [sharedScopePlugin()],
+  ...withSelfRegister({ name: 'settings' }),
+})
+```
+
+`sharedScopePlugin` 이 shared 이름을 글로벌 참조로 바꾸고, `withSelfRegister` 가
+`iife` + footer 로 **실행되면 스스로 등록하는** 번들을 만든다. 산출물엔 `require("react")` 가
+남지 않는다.
+
+호스트가 노출하지 않은 이름을 원격 번들이 읽으면 **로드 시점에 던진다.** 조용히 `undefined` 를
+넘기면 원격 번들 안에서 터져서 원인이 안 보인다.
+
+⚠️ 이 경로엔 `build` 의 ① babel 과 ③ block-scoping 이 없다. babel 플러그인(reanimated worklet 등)이
+필요하거나 Hermes 런타임 컴파일러 문제([build](#미니앱-빌드--build) ⚠️)를 피해야 하면 `build` 를 쓴다.
+
+## 진행 상황
+
+정본은 [#85](https://github.com/coldsurfers/public/issues/85) 다. 여기는 요약이다.
+
+| 단계 | 무엇 | 상태 |
+| --- | --- | --- |
+| A | 패키지 골격 · 진입점 레인 | ✅ 0.1.0 |
+| 1 | shared 치환 · self-register (0.2.0) · `build` CLI (0.4.0). 호스트 손목록 `requireFn` 25 → 0 | ✅ |
+| 1.5 | 로더 `scriptManager` · `useRemote` | ✅ 0.3.0 |
+| 1.6 | 정적 채널 매니페스트 배포 — `deploy` · `rollback` · `createManifestResolver` (0.5.0) · `promote` (0.6.0) | ✅ |
+| 1 잔여 | `hermesc` 바이트코드 산출 · reanimated · gesture-handler · react-query 싱글턴 실기기 검증 | ⬜ |
+| 1.5 잔여 | dev 에서도 원격 경로를 태운다 — 지금은 `registerRemote` 로 바로 올린다 | ⬜ |
+| 1.6 잔여 | CI 배포를 둘지 · 서버 매니페스트 라우트와 `RemoteAppManifestDTO` 를 지울지 판정 | ⬜ |
+| 0 | bridgeless 에서 `jsi::Runtime` 에 닿는 경로 스파이크 | ⬜ |
+| 2 | 네이티브 바이트코드 로더 (iOS) | ⬜ |
+| 3 | 로더에서 `new Function` 제거 · 기동 · 파싱 비용 측정 | ⬜ |
+| 4 · 5 | OTA 결합 · Android | 선택 |
