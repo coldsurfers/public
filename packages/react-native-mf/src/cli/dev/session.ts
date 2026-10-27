@@ -100,12 +100,16 @@ export function answer(state: DevState, cursor: Cursor): Reply | undefined {
     [...state.modules]
       .filter(([, { changedAt }]) => changedAt > version)
       .map(([id, { code }]) => [id, code])
-  if (cursor.have.epoch !== state.epoch) return { kind: 'snapshot', stamp, modules: since(0) }
+  const requires = [...state.requires]
+  if (cursor.have.epoch !== state.epoch) {
+    return { kind: 'snapshot', stamp, modules: since(0), requires }
+  }
   return {
     kind: 'update',
     stamp,
     modules: since(cursor.have.version),
     removed: [...state.removedAt].filter(([, at]) => at > cursor.have.version).map(([id]) => id),
+    requires,
   }
 }
 

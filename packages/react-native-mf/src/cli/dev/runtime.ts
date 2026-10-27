@@ -260,6 +260,9 @@ export function bootDevRemote(boot: Boot, host: Host): void {
         )
         return
       }
+      // 갱신이 새로 읽는 shared 키도 부팅처럼 돌리기 전에 한꺼번에 본다. 던지면 아무것도 바꾸지 않는다
+      const missing = reply.requires.filter((spec) => shared?.[spec] === undefined)
+      if (missing.length > 0) throw notShared(missing)
       if (reply.kind === 'update') {
         apply(refresh, reply.modules, reply.removed)
       } else {

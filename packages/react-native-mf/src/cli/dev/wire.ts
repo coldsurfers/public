@@ -52,8 +52,16 @@ export type PassError = { file: string; message: string }
  * - `update` — `have` 이후 바뀐 모듈과 지워진 id. 놓친 버전은 한 번에 접힌다
  * - `snapshot` — epoch 이 다르다(서버를 다시 띄웠다). 모듈 전부. 기기가 글자로 비교해 바뀐 것만 돌린다
  * - `error` — 마지막 굽기가 실패했다. 오류 전부. 고칠 때까지 모듈은 하나도 보내지 않는다
+ *
+ * `requires` 는 부팅의 그것처럼 지금 굽기의 shared specifier 전부다. 기기가 적용하기 전에 본다
  */
 export type Reply =
-  | { kind: 'update'; stamp: Stamp; modules: ModuleSource[]; removed: ModuleId[] }
-  | { kind: 'snapshot'; stamp: Stamp; modules: ModuleSource[] }
+  | {
+      kind: 'update'
+      stamp: Stamp
+      modules: ModuleSource[]
+      removed: ModuleId[]
+      requires: string[]
+    }
+  | { kind: 'snapshot'; stamp: Stamp; modules: ModuleSource[]; requires: string[] }
   | { kind: 'error'; stamp: Stamp; errors: PassError[] }

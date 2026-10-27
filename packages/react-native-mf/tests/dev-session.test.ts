@@ -127,6 +127,7 @@ test('answer 는 have 뒤에 바뀐 모듈과 지워진 id 만 낸다', () => {
     stamp: at('e', 3),
     modules: [['./b.ts', 'b2']],
     removed: ['./c.ts'],
+    requires: [],
   })
 })
 
@@ -141,6 +142,7 @@ test('answer 는 놓친 버전을 한 번에 접는다', () => {
       ['./b.ts', 'b2'],
     ],
     removed: ['./c.ts'],
+    requires: [],
   })
 })
 
@@ -154,6 +156,7 @@ test('answer 는 epoch 이 다르면 모듈 전부를 스냅숏으로 낸다', (
       ['./a.ts', 'a2'],
       ['./b.ts', 'b2'],
     ],
+    requires: [],
   })
 })
 
@@ -180,6 +183,27 @@ test('answer 는 고친 뒤 have 이후 전부를 낸다. 실패 사이 버전�
     stamp: at('e', 5),
     modules: [['./a.ts', 'a3']],
     removed: [],
+    requires: [],
+  })
+})
+
+test('answer 는 갱신에도 스냅숏에도 지금 굽기의 shared specifier 전부를 싣는다', () => {
+  const v1 = commit(emptyState('e'), pass({ './a.ts': 'a1' }, ['react']))
+  const v2 = commit(v1, pass({ './a.ts': 'a2' }, ['react', 'react-native-svg']))
+  const requires = ['react', 'react-native-svg']
+
+  assert.deepEqual(answer(v2, cursor(at('e', 1))), {
+    kind: 'update',
+    stamp: at('e', 2),
+    modules: [['./a.ts', 'a2']],
+    removed: [],
+    requires,
+  })
+  assert.deepEqual(answer(v2, cursor(at('old', 1))), {
+    kind: 'snapshot',
+    stamp: at('e', 2),
+    modules: [['./a.ts', 'a2']],
+    requires,
   })
 })
 
@@ -246,6 +270,7 @@ test('next 는 줄 것이 생길 때까지 붙들고, 상태를 바꾼 굽기가
     stamp: at('e', 2),
     modules: [['./a.ts', 'a2']],
     removed: [],
+    requires: [],
   } satisfies Reply)
 })
 
@@ -269,6 +294,7 @@ test('next 는 오류 굽기에 오류로 깨고, 그 오류를 본 커서는 �
     stamp: at('e', 3),
     modules: [['./a.ts', 'a2']],
     removed: [],
+    requires: [],
   } satisfies Reply)
 })
 
@@ -280,6 +306,7 @@ test('next 는 이미 줄 것이 있으면 바로 낸다', async () => {
     kind: 'snapshot',
     stamp: at('e', 1),
     modules: [['./a.ts', 'a1']],
+    requires: [],
   })
 })
 

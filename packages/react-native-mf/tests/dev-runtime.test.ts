@@ -131,11 +131,17 @@ async function until(condition: () => boolean, what: string) {
   }
 }
 
-const update = (version: number, modules: ModuleSource[], removed: ModuleId[] = []): Reply => ({
+const update = (
+  version: number,
+  modules: ModuleSource[],
+  removed: ModuleId[] = [],
+  requires: string[] = [],
+): Reply => ({
   kind: 'update',
   stamp: { epoch: 'e', version },
   modules,
   removed,
+  requires,
 })
 
 /** 돌 때 `trace` 에 id 를 남기는 모듈 */
@@ -595,7 +601,9 @@ test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번�
 
 test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
   const remote = host(app(), {
-    replies: [{ kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app() }],
+    replies: [
+      { kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app(), requires: [] },
+    ],
   })
   remote.boot()
   const booted = remote.trace.length
@@ -621,6 +629,7 @@ test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면
         {
           kind: 'snapshot',
           stamp: { epoch: 'r', version: 1 },
+          requires: [],
           modules: [
             mod('./index.ts', 'require("./screen.tsx");'),
             component('./screen.tsx', 'Screen', 'return require("./old.ts").old;'),
@@ -638,6 +647,48 @@ test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면
     remote.latest('./screen.tsx Screen'),
     /shared 모듈 "\.\/old\.ts" 이 등록돼 있지 않다/,
   )
+})
+
+test('shared 에 없는 키를 새로 읽는 갱신은 빠진 키를 전부 이름 대고 아무것도 돌리지 않는다', async () => {
+  let registered = (_reply: Reply) => {}
+  const svg = component(
+    './screen.tsx',
+    'Screen',
+    'return svg.marker + "/" + lottie.marker;',
+    'var svg = require("react-native-svg"); var lottie = require("lottie-react-native");',
+  )
+  const requires = ['react', 'react-native-svg', 'lottie-react-native']
+  const remote = host(app(), {
+    requires: ['react'],
+    replies: [
+      update(2, [svg], [], requires),
+      new Promise<Reply>((resolve) => {
+        registered = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.equal(remote.errors.length, 1)
+  assert.match(String(remote.errors[0][0]), /"settings" 에 v2 을 적용하지 못했다/)
+  assert.match(
+    (remote.errors[0][1] as Error).message,
+    /shared 모듈 "react-native-svg", "lottie-react-native" 이 등록돼 있지 않다/,
+  )
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.1&seen=e.2')
+
+  vm.runInContext(
+    `Object.assign(globalThis[${JSON.stringify(SHARED_SCOPE_KEY)}], { "react-native-svg": { marker: "SVG" }, "lottie-react-native": { marker: "LOTTIE" } })`,
+    remote.realm,
+  )
+  registered(update(3, [svg], [], requires))
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'SVG/LOTTIE')
 })
 
 test('갱신 하나로 파일 이름을 바꾸면 새 모듈로 돌고, 옛 id 는 지워져 더는 풀리지 않는다', async () => {

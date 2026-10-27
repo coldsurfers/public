@@ -248,6 +248,7 @@ test('붙든 hot 요청은 상태를 바꾼 굽기가 깨우고, 그 굽기의 �
     stamp: { epoch: 'test', version: 2 },
     modules: [['./index.ts', '/* build #2 */']],
     removed: [],
+    requires: [],
   })
   assert.match(
     lines.find((line) => line.startsWith('hot ')) ?? '',
