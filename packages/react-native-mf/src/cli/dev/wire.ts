@@ -21,14 +21,34 @@ export type ModuleId = `./${string}` | `vendor:${string}`
  */
 export type ModuleSource = readonly [id: ModuleId, code: string]
 
+/** `epoch` 은 dev 프로세스마다 하나(base36), `version` 은 코드나 오류를 바꾸는 굽기마다 하나 오른다 */
+export type Stamp = { readonly epoch: string; readonly version: number }
+
 export type Boot = {
   name: string
   entry: ModuleId
+  /** 이 번들이 구운 상태. 기기 커서가 여기서 시작한다 */
+  stamp: Stamp
   modules: ModuleSource[]
   /** 어느 모듈이든 읽는 shared specifier. 첫 모듈을 돌리기 전에 한꺼번에 본다 */
   requires: string[]
   /** `${origin}/${name}/`. 모듈마다 붙는 `//# sourceURL` 의 앞자리. origin 은 번들 요청의 Host 다 */
   sourceRoot: string
+  /** `${origin}/${name}/hot`. 같은 서버가 구운 런타임만 부르므로 dev 주소(`dev-address.ts`)에 두지 않는다 */
+  hotUrl: string
   /** `REMOTE_REGISTRY_KEY` · `SHARED_SCOPE_KEY`. 런타임이 상수 사본을 들지 않는다 */
   keys: { registry: string; shared: string }
 }
+
+/** `have` — 기기 모듈이 반영한 상태. `seen` — 서버가 마지막으로 알려준 상태 */
+export type Cursor = { have: Stamp; seen: Stamp }
+
+/**
+ * 기기가 받을 것. 서버 상태와 커서에서 매번 새로 계산한다 — 이벤트 기록을 쌓지 않는다.
+ *
+ * - `update` — `have` 이후 바뀐 모듈과 지워진 id. 놓친 버전은 한 번에 접힌다
+ * - `snapshot` — epoch 이 다르다(서버를 다시 띄웠다). 모듈 전부. 기기가 글자로 비교해 바뀐 것만 돌린다
+ */
+export type Reply =
+  | { kind: 'update'; stamp: Stamp; modules: ModuleSource[]; removed: ModuleId[] }
+  | { kind: 'snapshot'; stamp: Stamp; modules: ModuleSource[] }

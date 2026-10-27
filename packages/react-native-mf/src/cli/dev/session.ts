@@ -1,13 +1,16 @@
 /**
- * dev 서버가 드는 상태 하나(`DevState`)와, 요청마다 그 상태에서 번들을 내는 길.
+ * dev 서버가 드는 상태 하나(`DevState`)와, 그 상태에서 번들과 hot 응답을 내는 길.
  *
  * 상태는 `commit` 만 바꾸고 굽기는 한 번에 하나만 돈다. 같은 굽기를 두 번 넣어도 상태도 버전도
  * 그대로고, 실패한 굽기는 모듈을 건드리지 않는다. 고친 뒤의 굽기가 따로 길을 갖지 않는다.
+ *
+ * 기기마다 무엇을 보냈는지는 적지 않는다. 기기가 커서를 들고 오고, 답은 `answer(state, cursor)` 다.
  */
+import { segment } from '../../manifest'
 import { REMOTE_REGISTRY_KEY } from '../../runtime/registry'
 import { SHARED_SCOPE_KEY } from '../../runtime/shared-scope'
 import { bundleText, type ModuleBuild, type PassError, type PassResult } from './modules'
-import type { Boot, ModuleId } from './wire'
+import type { Boot, Cursor, ModuleId, ModuleSource, Reply, Stamp } from './wire'
 
 export type DevState = Readonly<{
   /** dev 프로세스마다 하나 */
@@ -81,6 +84,50 @@ function sameErrors(a: readonly PassError[], b: readonly PassError[]): boolean {
 }
 
 /**
+ * 기기가 받을 것. `undefined` 면 붙든다.
+ *
+ * 아직 넣은 굽기가 없는 상태(v0)는 붙든다. 서버를 다시 띄운 직후 빈 상태로 스냅숏을 내면 기기가
+ * 모듈을 전부 지운다. 오류가 있는 동안도 붙든다 — 기기는 마지막 성공 코드로 계속 돈다.
+ */
+export function answer(state: DevState, cursor: Cursor): Reply | undefined {
+  if (state.version === 0 || state.errors) return undefined
+  const stamp: Stamp = { epoch: state.epoch, version: state.version }
+  if (cursor.seen.epoch === stamp.epoch && cursor.seen.version === stamp.version) return undefined
+
+  const since = (version: number): ModuleSource[] =>
+    [...state.modules]
+      .filter(([, { changedAt }]) => changedAt > version)
+      .map(([id, { code }]) => [id, code])
+  if (cursor.have.epoch !== state.epoch) return { kind: 'snapshot', stamp, modules: since(0) }
+  return {
+    kind: 'update',
+    stamp,
+    modules: since(cursor.have.version),
+    removed: [...state.removedAt].filter(([, at]) => at > cursor.have.version).map(([id]) => id),
+  }
+}
+
+/** 서버가 내는 epoch 은 `Date.now().toString(36)` 이다 */
+const STAMP = /^([0-9a-z]+)\.(0|[1-9][0-9]*)$/
+
+/** `have=<epoch>.<version>&seen=<epoch>.<version>`. 그 밖은 `undefined` 다 */
+export function parseCursor(query: URLSearchParams): Cursor | undefined {
+  const have = parseStamp(query.get('have'))
+  const seen = parseStamp(query.get('seen'))
+  return have && seen ? { have, seen } : undefined
+}
+
+function parseStamp(value: string | null): Stamp | undefined {
+  const match = STAMP.exec(value ?? '')
+  if (!match) return undefined
+  const version = Number(match[2])
+  return Number.isSafeInteger(version) ? { epoch: match[1], version } : undefined
+}
+
+/** `/settings/hot`. 번들 경로와 같은 이름 규칙이다 */
+export const hotPath = (name: string) => `/${segment(name, 'name')}/hot`
+
+/**
  * 칸이 둘인 큐. 도는 것(`running`)과 그다음(`next`).
  *
  * 부른 쪽은 **자기가 부른 뒤 시작한 한 번만** 받는다. 도는 중에 부른 쪽은 모두 `next` 하나를 나눠
@@ -115,12 +162,24 @@ export function createLatestQueue<T>(task: () => Promise<T>): () => Promise<T> {
 
 /** 요청 하나가 받는 굽기. 실패도 값이다. 응답과 터미널 로그가 같은 값에서 나온다 */
 export type Bake =
-  | { ok: true; code: string; ms: number }
+  | { ok: true; code: string; ms: number; version: number }
   | { ok: false; message: string; ms: number }
 
 export type DevSession = {
   /** 부른 뒤 시작한 굽기 하나를 기다려, `origin`(기기가 부른 주소)에 맞춘 번들을 낸다 */
   bundle(origin: string): Promise<Bake>
+  /** 커서에 줄 것이 생길 때까지 붙든다. `timeoutMs` 가 지나도 없으면 `undefined` 다 */
+  next(cursor: Cursor, timeoutMs: number): Promise<Reply | undefined>
+  /** 소스가 바뀌었다는 신호. 굽기가 도는 중이면 그다음 굽기 하나로 모인다 */
+  changed(): void
+  /** 붙든 요청을 전부 `undefined` 로 놓는다 */
+  close(): void
+}
+
+type Parked = {
+  cursor: Cursor
+  resolve: (reply: Reply | undefined) => void
+  timer: ReturnType<typeof setTimeout>
 }
 
 export function createDevSession(input: {
@@ -130,22 +189,41 @@ export function createDevSession(input: {
   compile: () => Promise<PassResult>
   /** 기기 런타임 글자. 첫 번들에서 한 번 부른다 */
   runtime: () => Promise<string>
+  /** 상태를 바꾼 굽기마다 한 줄 */
+  log: (line: string) => void
 }): DevSession {
   let state = emptyState(input.epoch)
   let runtime: Promise<string> | undefined
+  const parked = new Set<Parked>()
+
+  const release = (entry: Parked, reply: Reply | undefined) => {
+    clearTimeout(entry.timer)
+    parked.delete(entry)
+    entry.resolve(reply)
+  }
 
   const pass = createLatestQueue(async () => {
     const startedAt = performance.now()
-    state = commit(state, await input.compile())
+    const before = state
+    state = commit(before, await input.compile())
+    if (state !== before) {
+      input.log(describeCommit(state, performance.now() - startedAt))
+      for (const entry of parked) {
+        const reply = answer(state, entry.cursor)
+        if (reply) release(entry, reply)
+      }
+    }
     return { state, startedAt }
   })
 
   const boot = (committed: DevState, origin: string): Boot => ({
     name: input.name,
     entry: input.entry,
+    stamp: { epoch: committed.epoch, version: committed.version },
     modules: [...committed.modules].map(([id, { code }]) => [id, code] as const),
     requires: [...committed.requires],
     sourceRoot: `${origin}/${input.name}/`,
+    hotUrl: `${origin}${hotPath(input.name)}`,
     keys: { registry: REMOTE_REGISTRY_KEY, shared: SHARED_SCOPE_KEY },
   })
 
@@ -155,20 +233,62 @@ export function createDevSession(input: {
       try {
         const { state: committed, startedAt } = await pass()
         const ms = () => performance.now() - startedAt
-        if (committed.errors) {
-          const message = committed.errors
-            .map(({ file, message }) => (file ? `${file}: ${message}` : message))
-            .join('\n\n')
-          return { ok: false, message, ms: ms() }
-        }
+        if (committed.errors)
+          return { ok: false, message: formatErrors(committed.errors), ms: ms() }
         runtime ??= input.runtime()
         const code = bundleText(boot(committed, origin), await runtime)
-        return { ok: true, code, ms: ms() }
+        return { ok: true, code, ms: ms(), version: committed.version }
       } catch (error) {
         // esbuild 를 못 여는 것처럼 파일에 매이지 않는 실패. 서버는 살고 다음 요청이 다시 굽는다
-        const message = error instanceof Error ? error.message : String(error)
-        return { ok: false, message, ms: performance.now() - calledAt }
+        return { ok: false, message: messageOf(error), ms: performance.now() - calledAt }
       }
+    },
+
+    next(cursor, timeoutMs) {
+      const reply = answer(state, cursor)
+      if (reply) return Promise.resolve(reply)
+      return new Promise((resolve) => {
+        const entry: Parked = {
+          cursor,
+          resolve,
+          timer: setTimeout(() => release(entry, undefined), timeoutMs),
+        }
+        parked.add(entry)
+      })
+    },
+
+    changed() {
+      pass().catch((error: unknown) => input.log(`굽지 못했다 · ${messageOf(error)}`))
+    },
+
+    close() {
+      for (const entry of parked) release(entry, undefined)
     },
   }
 }
+
+/** `v3 · settings-menu-list/settings-menu-list.tsx · 19 ms`. 넷 이상이면 개수만 적는다 */
+function describeCommit(state: DevState, ms: number): string {
+  const took = `${Math.round(ms)} ms`
+  if (state.errors)
+    return `v${state.version} · 굽지 못했다 · ${took}\n${formatErrors(state.errors)}`
+  const shown = (id: ModuleId) => id.replace(/^\.\//, '')
+  const names = [
+    ...[...state.modules].filter(([, m]) => m.changedAt === state.version).map(([id]) => shown(id)),
+    ...[...state.removedAt]
+      .filter(([, at]) => at === state.version)
+      .map(([id]) => `${shown(id)} 지움`),
+  ]
+  const what =
+    names.length === 0
+      ? '오류를 걷었다'
+      : names.length <= 3
+        ? names.join(', ')
+        : `모듈 ${names.length}개`
+  return `v${state.version} · ${what} · ${took}`
+}
+
+const formatErrors = (errors: readonly PassError[]) =>
+  errors.map(({ file, message }) => (file ? `${file}: ${message}` : message)).join('\n\n')
+
+const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error))

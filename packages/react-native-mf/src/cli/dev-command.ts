@@ -142,6 +142,7 @@ export async function runDevCommand(args: DevArgs, cwd: string): Promise<number>
         epoch: Date.now().toString(36),
         compile: createModuleCompiler(resolveOptions),
         runtime: () => buildRuntime({ blockScoping: options.blockScoping }),
+        log: out,
       }),
       port: DEV_PORT,
       log: out,
