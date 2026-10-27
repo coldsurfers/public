@@ -104,7 +104,13 @@ export function createScriptManager(init: { storage?: ScriptStorage } = {}): Scr
       if (cached !== null) return { locator, source: cached }
     }
 
-    const response = await fetch(locator.url)
+    // RN 의 fetch 는 서버에 닿지 못하면 주소 없이 `Network request failed` 로만 거절한다
+    const response = await fetch(locator.url).catch((cause: unknown) => {
+      throw new Error(
+        `[react-native-mf] "${name}" 번들을 받지 못했다 (${String(cause)} ${locator.url}).`,
+        { cause },
+      )
+    })
     if (!response.ok) {
       throw new Error(
         `[react-native-mf] "${name}" 번들을 받지 못했다 (${response.status} ${locator.url}).`,
