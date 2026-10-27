@@ -230,6 +230,25 @@ test('실패한 로드를 기억하지 않는다 — 다시 부르면 다시 받
   assert.equal(loaded.default, 'v1')
 })
 
+test('네트워크에서 실패해도 어느 번들 · 어느 주소였는지 싣는다', async () => {
+  // RN 의 fetch 는 서버에 닿지 못하면 주소 없이 이 한 줄로 거절한다
+  const offline = new TypeError('Network request failed')
+  stubFetch(() => offline)
+  const manager = createScriptManager()
+  manager.addResolver(() => ({ url: 'http://localhost:8082/index.bundle.js' }))
+
+  await assert.rejects(
+    () => manager.load('settings'),
+    (error: Error) => {
+      assert.match(error.message, /"settings" 번들을 받지 못했다/)
+      assert.match(error.message, /http:\/\/localhost:8082\/index\.bundle\.js/)
+      assert.match(error.message, /Network request failed/)
+      assert.equal(error.cause, offline)
+      return true
+    },
+  )
+})
+
 test('실행했는데 등록되지 않으면 던진다', async () => {
   stubFetch(() => remoteSource('settings', 'v1'))
   const manager = createScriptManager()
