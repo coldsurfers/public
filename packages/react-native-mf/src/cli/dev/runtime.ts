@@ -209,6 +209,16 @@ export function bootDevRemote(boot: Boot, host: Host): void {
 
     const receive = (reply: Reply) => {
       seen = reply.stamp
+      // `have` 를 옮기지 않는다. 고친 뒤의 갱신이 그 사이 바뀐 모듈까지 싣는다
+      if (reply.kind === 'error') {
+        const errors = reply.errors.map(({ file, message }) =>
+          file ? `${file}: ${message}` : message,
+        )
+        host.console.error(
+          `[react-native-mf] "${boot.name}" 를 굽지 못했다. 고칠 때까지 마지막 성공 코드로 돈다\n\n${errors.join('\n\n')}`,
+        )
+        return
+      }
       if (reply.kind === 'update') {
         apply(refresh, reply.modules, reply.removed)
       } else {

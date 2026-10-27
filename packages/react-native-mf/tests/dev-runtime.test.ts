@@ -356,6 +356,54 @@ test('새 글자 하나가 깨졌으면 아무 모듈도 바꾸지 않고, 오�
   assert.equal(remote.refreshes(), 1)
 })
 
+test('error 응답은 오류 전부를 console.error 로 한 번 띄우고 모듈은 그대로 둔다. 고친 뒤 갱신이 그 사이 몫을 싣는다', async () => {
+  let fixed = (_reply: Reply) => {}
+  const remote = host(app(), {
+    replies: [
+      {
+        kind: 'error',
+        stamp: { epoch: 'e', version: 3 },
+        errors: [
+          { file: 'src/screen.tsx', message: 'Unexpected token (3:1)' },
+          { file: '', message: 'Could not resolve "./gone"' },
+        ],
+      },
+      new Promise<Reply>((resolve) => {
+        fixed = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.errors, [
+    [
+      '[react-native-mf] "settings" 를 굽지 못했다. 고칠 때까지 마지막 성공 코드로 돈다\n\nsrc/screen.tsx: Unexpected token (3:1)\n\nCould not resolve "./gone"',
+    ],
+  ])
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.refreshes(), 0)
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.1&seen=e.3')
+
+  fixed(
+    update(4, [
+      component(
+        './screen.tsx',
+        'Screen',
+        'return "v4/" + api.label;',
+        'var api = require("./api.ts").api;',
+      ),
+      app('v2')[2],
+    ]),
+  )
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v4/v2')
+  assert.equal(remote.fetches[2], 'http://localhost:8082/settings/hot?have=e.4&seen=e.4')
+})
+
 test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
   const remote = host(app(), {
     replies: [{ kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app() }],

@@ -43,12 +43,17 @@ export type Boot = {
 /** `have` — 기기 모듈이 반영한 상태. `seen` — 서버가 마지막으로 알려준 상태 */
 export type Cursor = { have: Stamp; seen: Stamp }
 
+/** 굽기 오류 하나. `file` 은 미니앱 루트 기준. 파일에 매이지 않는 오류(엔트리를 못 찾음)는 빈 글자다 */
+export type PassError = { file: string; message: string }
+
 /**
  * 기기가 받을 것. 서버 상태와 커서에서 매번 새로 계산한다 — 이벤트 기록을 쌓지 않는다.
  *
  * - `update` — `have` 이후 바뀐 모듈과 지워진 id. 놓친 버전은 한 번에 접힌다
  * - `snapshot` — epoch 이 다르다(서버를 다시 띄웠다). 모듈 전부. 기기가 글자로 비교해 바뀐 것만 돌린다
+ * - `error` — 마지막 굽기가 실패했다. 오류 전부. 고칠 때까지 모듈은 하나도 보내지 않는다
  */
 export type Reply =
   | { kind: 'update'; stamp: Stamp; modules: ModuleSource[]; removed: ModuleId[] }
   | { kind: 'snapshot'; stamp: Stamp; modules: ModuleSource[] }
+  | { kind: 'error'; stamp: Stamp; errors: PassError[] }

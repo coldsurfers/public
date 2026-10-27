@@ -53,7 +53,7 @@ export type DevServer = { url: string; close(): Promise<void> }
  *
  *   GET devBundlePath(name)  구웠다   → 200 application/javascript · no-store
  *                            못 구웠다 → 500 text/plain · ANSI 를 걷은 오류. 터미널엔 색 그대로
- *   GET hotPath(name)        줄 것이 있다       → 200 application/json · `Reply`
+ *   GET hotPath(name)        줄 것이 있다       → 200 application/json · `Reply`. 오류는 ANSI 를 걷는다
  *       ?have=<E>.<V>        `holdMs` 동안 없다 → 204
  *       &seen=<E>.<V>        커서가 틀렸다      → 400 text/plain
  *   그 밖                              → 404 text/plain · 이 서버가 굽는 이름
@@ -95,7 +95,7 @@ export async function startDevServer(input: {
         response.writeHead(204).end()
         return
       }
-      const body = JSON.stringify(reply)
+      const body = JSON.stringify(plain(reply))
       log(
         `hot v${reply.stamp.version} → ${host.replace(/:\d+$/, '')} · ${describe(reply)} · ${kB(body)}`,
       )
@@ -152,9 +152,23 @@ export async function startDevServer(input: {
 const kB = (text: string) => `${(Buffer.byteLength(text) / 1024).toFixed(1)} kB`
 
 const describe = (reply: Reply) =>
-  reply.kind === 'snapshot'
-    ? `스냅숏 · 모듈 ${reply.modules.length}개`
-    : `모듈 ${reply.modules.length}개${reply.removed.length > 0 ? ` · 지움 ${reply.removed.length}개` : ''}`
+  reply.kind === 'error'
+    ? `오류 ${reply.errors.length}개`
+    : reply.kind === 'snapshot'
+      ? `스냅숏 · 모듈 ${reply.modules.length}개`
+      : `모듈 ${reply.modules.length}개${reply.removed.length > 0 ? ` · 지움 ${reply.removed.length}개` : ''}`
+
+/** 기기로 가는 오류는 500 본문처럼 ANSI 를 걷는다. 터미널엔 색 그대로 남는다 */
+const plain = (reply: Reply): Reply =>
+  reply.kind === 'error'
+    ? {
+        ...reply,
+        errors: reply.errors.map(({ file, message }) => ({
+          file,
+          message: stripVTControlCharacters(message),
+        })),
+      }
+    : reply
 
 /**
  * dev 한 벌 — 세션 · HTTP · src 감시. 듣자마자 첫 굽기를 시작한다. babel 콜드 스타트(수백 ms)가

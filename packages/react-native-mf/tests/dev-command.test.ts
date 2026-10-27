@@ -255,6 +255,41 @@ test('붙든 hot 요청은 상태를 바꾼 굽기가 깨우고, 그 굽기의 �
   )
 })
 
+test('붙든 hot 요청은 실패한 굽기가 ANSI 를 걷은 오류 전부로 깨운다', async () => {
+  let compiled = 0
+  const { url, lines } = await serve(async () => {
+    compiled += 1
+    if (compiled === 1) return build(1)
+    return {
+      ok: false,
+      errors: [
+        { file: 'src/index.ts', message: '\u001b[31mUnexpected token (3:1)\u001b[39m' },
+        { file: 'src/menu.ts', message: 'Could not resolve "./gone"' },
+      ],
+    }
+  })
+  await fetch(url)
+
+  const held = fetch(hotUrl(url, 'have=test.1&seen=test.1'))
+  await new Promise((resolve) => setTimeout(resolve, 30))
+  await fetch(url)
+  const response = await held
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), {
+    kind: 'error',
+    stamp: { epoch: 'test', version: 2 },
+    errors: [
+      { file: 'src/index.ts', message: 'Unexpected token (3:1)' },
+      { file: 'src/menu.ts', message: 'Could not resolve "./gone"' },
+    ],
+  })
+  assert.match(
+    lines.find((line) => line.startsWith('hot ')) ?? '',
+    /^hot v2 → localhost · 오류 2개 · \d+\.\d kB$/,
+  )
+})
+
 /** `srcDir` 의 `index.ts` 를 읽어 엔트리 하나로 굽는 dev */
 async function startWatching(srcDir: string, lines: string[]) {
   const server = await startDev({
