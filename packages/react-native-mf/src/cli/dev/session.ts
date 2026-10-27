@@ -176,6 +176,11 @@ export type DevSession = {
   bundle(origin: string): Promise<Bake>
   /** 커서에 줄 것이 생길 때까지 붙든다. `timeoutMs` 가 지나도 없으면 `undefined` 다 */
   next(cursor: Cursor, timeoutMs: number): Promise<Reply | undefined>
+  /**
+   * 기기가 도는 모듈 글자(`code`). `path` 는 모듈 `sourceURL` 에서 `/<name>/` 뒤다 — 런타임이 id 에서
+   * `./` 를 뗀 자리라 그 반대로 푼다. 없으면 `undefined`
+   */
+  moduleCode(path: string): string | undefined
   /** 소스가 바뀌었다는 신호. 굽기가 도는 중이면 그다음 굽기 하나로 모인다 */
   changed(): void
   /** 붙든 요청을 전부 `undefined` 로 놓는다 */
@@ -261,6 +266,11 @@ export function createDevSession(input: {
         }
         parked.add(entry)
       })
+    },
+
+    moduleCode(path) {
+      const id = (path.startsWith('vendor:') ? path : `./${path}`) as ModuleId
+      return state.modules.get(id)?.code
     },
 
     changed() {

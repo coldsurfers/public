@@ -291,6 +291,63 @@ test('붙든 hot 요청은 실패한 굽기가 ANSI 를 걷은 오류 전부로 
   )
 })
 
+/** 모듈 넷. 디렉터리 · 공백 · 의존 청크 id 가 `sourceURL` 경로로 오가는지 본다 */
+const sources: PassResult = {
+  ok: true,
+  modules: new Map([
+    ['./index.ts', { source: '', code: '/* index */' }],
+    ['./settings screen/메뉴.tsx', { source: '', code: '/* 메뉴 */' }],
+    ['vendor:', { source: '', code: '/* vendor */' }],
+    ['vendor:@scope/pkg', { source: '', code: '/* @scope/pkg */' }],
+  ]),
+  requires: [],
+}
+
+test('번들에 실린 모듈마다 그 sourceURL 이 모듈의 지금 글자를 text/javascript 로, 캐시 없이 낸다', async () => {
+  const { url, lines } = await serve(async () => sources)
+  const boot = bootOf(await (await fetch(url)).text())
+
+  for (const [id, code] of boot.modules) {
+    // 런타임이 `//# sourceURL=` 에 적는 그대로다
+    const response = await fetch(`${boot.sourceRoot}${id.replace(/^\.\//, '')}`)
+    assert.equal(response.status, 200, id)
+    assert.equal(response.headers.get('content-type'), 'text/javascript; charset=utf-8')
+    assert.equal(response.headers.get('cache-control'), 'no-store')
+    assert.equal(await response.text(), code, id)
+  }
+  assert.ok(lines.includes('GET /settings/vendor: 200 · 0.0 kB'), lines.join('\n'))
+})
+
+test('모듈 경로가 번들 · hot 과 같으면 번들 · hot 이 먼저고, 없는 모듈과 깨진 경로는 404 다', async () => {
+  const { url } = await serve(async () => ({
+    ok: true,
+    modules: new Map([
+      ['./index.ts', { source: '', code: '/* index */' }],
+      ['./index.bundle.js', { source: '', code: '/* module */' }],
+      ['./hot', { source: '', code: '/* module */' }],
+    ]),
+    requires: [],
+  }))
+
+  await fetch(url)
+
+  // 첫 요청이 구운 상태에 `./index.bundle.js` 모듈이 있다. 두 번째 요청도 번들이어야 한다
+  const bundle = await fetch(url)
+  assert.equal(bundle.headers.get('content-type'), 'application/javascript')
+  assert.ok((await bundle.text()).startsWith('/* runtime */'))
+  assert.equal((await fetch(hotUrl(url, ''))).status, 400)
+  for (const missing of [
+    '/settings/gone.ts',
+    '/settings/%E0%A4%A',
+    '/settings/',
+    '/other/index.ts',
+  ]) {
+    const response = await fetch(new URL(missing, url))
+    assert.equal(response.status, 404, missing)
+    assert.match(await response.text(), /"settings" 만 굽는다\(\/settings\/index\.bundle\.js\)/)
+  }
+})
+
 /** `srcDir` 의 `index.ts` 를 읽어 엔트리 하나로 굽는 dev */
 async function startWatching(srcDir: string, lines: string[]) {
   const server = await startDev({
