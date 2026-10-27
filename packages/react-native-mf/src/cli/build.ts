@@ -10,9 +10,10 @@
  * ①이 왜 필요한가: esbuild 도 TS·JSX 를 먹지만 **AST 를 다시 쓰는 babel 플러그인**은 못 돈다.
  * reanimated 의 worklet 이 대표고, 그건 미니앱의 `babel.config.js` 에 적혀 있다.
  */
-import { mkdir, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
+import type { PluginItem } from '@babel/core'
 import { withSelfRegister } from '../esbuild/register'
 import { SHARED_NAMESPACE, sharedScopePlugin } from '../esbuild/shared-scope'
 import type { BuildOptions, CompileOptions } from './build-options'
@@ -49,7 +50,7 @@ export const TRANSPILE_ROOT = {
   dev: 'build/.transpiled-dev',
 } as const satisfies Record<Lane, string>
 
-const SOURCE_EXTENSION = /\.(?:tsx?|jsx?)$/
+export const SOURCE_EXTENSION = /\.(?:tsx?|jsx?)$/
 
 /**
  * optional peer 를 **부를 때** 연다.
@@ -58,7 +59,7 @@ const SOURCE_EXTENSION = /\.(?:tsx?|jsx?)$/
  * babel 에도 그대로 걸린다. 최상단에서 import 하면 `--help` 조차 셋을 다 깔아야 돌고,
  * `./cli` 를 import 만 한 쪽이 모듈 로드에서 터진다.
  */
-async function loadEsbuild() {
+export async function loadEsbuild() {
   try {
     return await import('esbuild')
   } catch (cause) {
@@ -80,17 +81,40 @@ async function loadBabel() {
 }
 
 /**
- * ① 소스 트리를 통째로 babel 에 태운다.
+ * ① 파일 하나를 babel 에 태운다. 소스 글자는 부르는 쪽이 읽어 넘긴다.
  *
  * **config 는 미니앱 것을 쓴다.** 이 패키지가 RN 프리셋을 들고 있으면 RN 이나 reanimated 가
  * 올라갈 때마다 여기가 발행돼야 하고, 공개 패키지가 소비자에게 `react-native-reanimated/plugin`
- * 을 강요하게 된다 — shared 목록에서 그은 선과 같은 선이다.
+ * 을 강요하게 된다 — shared 목록에서 그은 선과 같은 선이다. `plugins` 는 그 위에 얹는다.
  *
  * `configFile` 을 안 주면 babel 이 `cwd` 에서 `babel.config.*` 를 찾는다. 못 찾으면 변환이
  * 아무것도 안 걸려서 TS 문법에서 **파싱이 터진다** — 조용히 지나가지 않는다.
  */
+export async function transpileFile(
+  options: CompileOptions,
+  relativePath: string,
+  source: string,
+  plugins: PluginItem[] = [],
+): Promise<string> {
+  const { transformAsync } = await loadBabel()
+
+  const result = await transformAsync(source, {
+    filename: join(resolve(options.cwd, options.src), relativePath),
+    root: options.cwd,
+    cwd: options.cwd,
+    configFile: options.babelConfig,
+    plugins,
+  })
+
+  if (result?.code == null) {
+    throw new Error(`[react-native-mf] babel 이 "${relativePath}" 를 변환하지 못했다.`)
+  }
+
+  return result.code
+}
+
+/** ① 소스 트리를 통째로 `transpileFile` 에 태워 `outDir` 에 쓴다 */
 async function transpileTree(options: CompileOptions, outDir: string): Promise<void> {
-  const { transformFileAsync } = await loadBabel()
   const srcDir = resolve(options.cwd, options.src)
 
   await rm(outDir, { recursive: true, force: true })
@@ -106,18 +130,10 @@ async function transpileTree(options: CompileOptions, outDir: string): Promise<v
       const filePath = join(srcDir, relativePath)
       const outputPath = join(outDir, relativePath.replace(SOURCE_EXTENSION, '.js'))
 
-      const result = await transformFileAsync(filePath, {
-        root: options.cwd,
-        cwd: options.cwd,
-        configFile: options.babelConfig,
-      })
-
-      if (result?.code == null) {
-        throw new Error(`[react-native-mf] babel 이 "${relativePath}" 를 변환하지 못했다.`)
-      }
+      const code = await transpileFile(options, relativePath, await readFile(filePath, 'utf8'))
 
       await mkdir(dirname(outputPath), { recursive: true })
-      await writeFile(outputPath, result.code)
+      await writeFile(outputPath, code)
     }),
   )
 
@@ -177,7 +193,7 @@ async function bundle(options: CompileOptions, entryPath: string): Promise<Compi
  * 그래도 **옵션**인 이유: 이건 Hermes 런타임 컴파일러의 사실이지 이 CLI 의 사실이 아니다.
  * 바이트코드로 미리 굽거나 다른 엔진에 올리는 소비처는 `--no-block-scoping` 으로 끈다.
  */
-async function stripBlockScoping(code: string): Promise<string> {
+export async function stripBlockScoping(code: string): Promise<string> {
   const { transformAsync } = await loadBabel()
 
   // 플러그인을 **이 패키지 위치에서** 해석한다. optional peer 라 소비처 트리에 깔리는데,

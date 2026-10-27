@@ -38,6 +38,11 @@ function toPattern(name: string): string {
   return `${escapeForRegExp(name)}(?:\\/.+)?`
 }
 
+/** shared 로 볼 specifier 를 고르는 규칙 하나. 이 플러그인과 dev 의 모듈 링크가 같이 쓴다 */
+export function sharedMatcher(names: readonly string[]): RegExp {
+  return new RegExp(`^(?:${names.map(toPattern).join('|')})$`)
+}
+
 /**
  * [2] `react` / `react-native` 같은 shared 모듈을 **글로벌 참조로 치환**한다.
  *
@@ -54,7 +59,7 @@ function toPattern(name: string): string {
 export function sharedScopePlugin(options: SharedScopePluginOptions = {}): Plugin {
   const names = options.include ?? DEFAULT_SHARED_MODULES
   const globalKey = options.globalKey ?? SHARED_SCOPE_KEY
-  const filter = new RegExp(`^(?:${names.map(toPattern).join('|')})$`)
+  const filter = sharedMatcher(names)
 
   return {
     name: 'react-native-mf/shared-scope',
