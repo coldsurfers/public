@@ -19,7 +19,7 @@ import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
 import { compileBundle, runBuild, TRANSPILE_ROOT } from '../src/cli/build'
-import type { BuildOptions } from '../src/cli/build-options'
+import { type BuildOptions, resolveConfigBuild } from '../src/cli/build-options'
 import { REMOTE_REGISTRY_KEY } from '../src/runtime/registry'
 import { SHARED_SCOPE_KEY } from '../src/runtime/shared-scope'
 
@@ -198,4 +198,15 @@ test('babel config 는 미니앱 것을 쓴다', async () => {
     runBuild(options({ babelConfig: join(projectDir, 'babel.empty.cjs') })),
     /Unexpected token|Missing semicolon|SyntaxError/,
   )
+})
+
+test('config 의 babelConfig 는 미니앱 루트 기준 파일이다', async () => {
+  // babel 에 그대로 넘기면 `babel.empty.cjs` 를 모듈 이름으로 찾다가 못 찾는다. 프리셋 없는 config 가
+  // 실제로 읽혔다면 TS 문법에서 터진다
+  const options = await resolveConfigBuild(
+    { name: 'settings', build: { babelConfig: 'babel.empty.cjs', outFile: 'build/relative.js' } },
+    projectDir,
+  )
+
+  await assert.rejects(runBuild(options), /Unexpected token|Missing semicolon|SyntaxError/)
 })

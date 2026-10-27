@@ -163,7 +163,8 @@ export async function resolveConfigBuild(
     shared: build.sharedFrom
       ? await readSharedManifest(resolve(cwd, build.sharedFrom))
       : (build.shared ?? BUILD_DEFAULTS.shared),
-    babelConfig: build.babelConfig,
+    // babel 은 `configFile` 을 모듈 이름처럼 푼다. `babel.config.cjs` 를 node_modules 에서 찾다 못 찾는다
+    babelConfig: build.babelConfig ? resolve(cwd, build.babelConfig) : undefined,
     blockScoping: build.blockScoping ?? BUILD_DEFAULTS.blockScoping,
   }
 }
