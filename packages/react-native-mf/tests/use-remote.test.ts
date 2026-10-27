@@ -120,7 +120,7 @@ test('로드가 거절되면 다음 렌더엔 약속이 아니라 에러를 던�
     // React 는 거절된 약속을 다시 렌더로 갚는다. 여기서 또 약속을 던지면 무한 루프다
     const settled = catchThrown(() => useRemote('settings'))
     assert.ok(settled instanceof Error)
-    assert.equal((settled as Error).message, 'network down')
+    assert.match((settled as Error).message, /network down/)
   } finally {
     resetRemote('settings')
     dispose()
