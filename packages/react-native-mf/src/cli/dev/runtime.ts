@@ -2,19 +2,31 @@
  * dev 번들의 기기 쪽. `./modules` 의 `buildRuntime` 이 이 파일을 esbuild 로 한 번 묶고, 서버는 그
  * 글자를 번들 앞에 싣는다. 호스트의 `new Function` 이 돌린다.
  *
+ * 부팅하고 나면 hot 요청을 하나씩 이어 걸고, 받은 모듈을 갈아 끼운다. 기기가 어디까지 받았는지(커서)는
+ * 여기에만 있다.
+ *
  * Hermes 런타임 컴파일러가 받는 문법만 쓴다 — async · class · generator 가 없다. import 는 타입만
  * 한다. 묶은 글자에 Node 가 섞이면 기기에서 터진다.
  */
-import type { Boot, ModuleId } from './wire'
+import type { Boot, ModuleId, ModuleSource, Reply, Stamp } from './wire'
 
-/** RN dev 호스트가 전역에 거는 `__ReactRefresh` 에서 이 단계가 쓰는 둘. 릴리스 호스트엔 없다 */
+/** RN dev 호스트가 전역에 거는 `__ReactRefresh`. 릴리스 호스트엔 없다 */
 type Refresh = {
   register(type: unknown, id: string): void
   createSignatureFunctionForTransform(): (type?: unknown) => unknown
+  isLikelyComponentType(type: unknown): boolean
+  performReactRefresh(): void
+  /** RN 은 `DevSettings.reload(reason)` 이다 */
+  performFullRefresh(reason: string): void
 }
 
 /** 런타임이 만지는 전부. 번들은 `globalThis` 를, 테스트는 vm realm 의 전역을 넘긴다 */
-type Host = { console: Pick<Console, 'warn'>; [key: string]: unknown }
+type Host = {
+  console: Pick<Console, 'warn' | 'error'>
+  fetch(url: string): Promise<{ status: number; json(): Promise<unknown> }>
+  setTimeout(callback: () => void, ms: number): unknown
+  [key: string]: unknown
+}
 
 /**
  * 모듈 몸통을 감싼 함수. `$RefreshReg$` · `$RefreshSig$` 가 **매개변수**다. Metro 가 전역에 거는
@@ -62,21 +74,25 @@ export function bootDevRemote(boot: Boot, host: Host): void {
 
   const records = new Map<string, ModuleRecord>()
   for (const [id, code] of boot.modules) {
-    const sourceURL = `${boot.sourceRoot}${id.replace(/^\.\//, '')}`
     records.set(id, {
       code,
-      factory: new Function(
-        'require',
-        'module',
-        'exports',
-        '$RefreshReg$',
-        '$RefreshSig$',
-        `${code}\n//# sourceURL=${sourceURL}`,
-      ) as Factory,
+      factory: compile(id, code),
       status: 'defined',
       exports: undefined,
       importers: new Set(),
     })
+  }
+
+  function compile(id: ModuleId, code: string): Factory {
+    const sourceURL = `${boot.sourceRoot}${id.replace(/^\.\//, '')}`
+    return new Function(
+      'require',
+      'module',
+      'exports',
+      '$RefreshReg$',
+      '$RefreshSig$',
+      `${code}\n//# sourceURL=${sourceURL}`,
+    ) as Factory
   }
 
   function load(spec: string, importer?: ModuleId): unknown {
@@ -116,9 +132,151 @@ export function bootDevRemote(boot: Boot, host: Host): void {
     }
   }
 
+  /**
+   * 바뀐 모듈을 갈아 끼우고 그 위 refresh 경계까지 다시 돌린다. Metro 의 Fast Refresh 와 같은 규칙이다.
+   *
+   * 새 글자는 먼저 전부 함수로 묶는다. 하나라도 깨졌으면 아무것도 바꾸기 전에 던진다. 경계는 바꾸기
+   * 전 exports 로 판정한다. 경계 아래 모듈은 경계가 다시 돌며 require 할 때 새로 돌고, 경계 위는 돌지
+   * 않는다 — 위에 쥔 옛 컴포넌트는 react-refresh 가 새 것으로 잇는다. 경계를 못 만나고 importer 가
+   * 없는 모듈(엔트리)에 닿으면 호스트를 다시 띄운다.
+   */
+  function apply(refresh: Refresh, incoming: readonly ModuleSource[], removed: readonly string[]) {
+    const changed = incoming.filter(([id, code]) => records.get(id)?.code !== code)
+    const gone = removed.filter((id) => records.has(id))
+    if (changed.length === 0 && gone.length === 0) return
+    const factories = changed.map(([id, code]) => compile(id, code))
+
+    for (const id of gone) {
+      records.delete(id)
+      for (const record of records.values()) record.importers.delete(id as ModuleId)
+    }
+
+    // 새 모듈과 아직 돈 적 없는 모듈은 오르지 않는다. 처음 require 될 때 새 글자로 돈다
+    const queue = changed
+      .map(([id]) => id)
+      .filter((id) => (records.get(id)?.status ?? 'defined') !== 'defined')
+    const rerun = new Set<ModuleId>()
+    const roots: ModuleId[] = []
+    while (queue.length > 0) {
+      const id = queue.shift() as ModuleId
+      if (rerun.has(id)) continue
+      rerun.add(id)
+      const record = records.get(id) as ModuleRecord
+      if (isBoundary(refresh, record.exports)) {
+        roots.push(id)
+      } else if (record.importers.size === 0) {
+        refresh.performFullRefresh(
+          `[react-native-mf] "${boot.name}" 의 ${id} 위로 Fast Refresh 경계가 없다`,
+        )
+        return
+      } else {
+        for (const importer of record.importers) queue.push(importer)
+      }
+    }
+
+    changed.forEach(([id, code], index) => {
+      const record = records.get(id)
+      if (record) {
+        record.code = code
+        record.factory = factories[index]
+      } else {
+        records.set(id, {
+          code,
+          factory: factories[index],
+          status: 'defined',
+          exports: undefined,
+          importers: new Set(),
+        })
+      }
+    })
+    for (const id of rerun) (records.get(id) as ModuleRecord).status = 'defined'
+    for (const id of roots) load(id)
+    registry[boot.name] = load(boot.entry)
+    refresh.performReactRefresh()
+  }
+
+  /**
+   * hot 요청을 늘 하나만 걸어 둔다. 응답을 받으면 적용하고 곧바로 다시 건다.
+   *
+   * fetch 가 거절되면(서버가 꺼졌다) 그때마다 한 번 경고하고 250 ms 부터 두 배씩, 5 s 까지 물러난다.
+   * 붙으면 처음으로 돌아간다.
+   */
+  function startClient(refresh: Refresh) {
+    let have: Stamp = boot.stamp
+    let seen: Stamp = boot.stamp
+    let failures = 0
+    const cursor = () => `have=${have.epoch}.${have.version}&seen=${seen.epoch}.${seen.version}`
+
+    const receive = (reply: Reply) => {
+      seen = reply.stamp
+      if (reply.kind === 'update') {
+        apply(refresh, reply.modules, reply.removed)
+      } else {
+        const kept = new Set<string>(reply.modules.map(([id]) => id))
+        apply(
+          refresh,
+          reply.modules,
+          [...records.keys()].filter((id) => !kept.has(id)),
+        )
+      }
+      have = reply.stamp
+    }
+
+    const poll = () => {
+      host
+        .fetch(`${boot.hotUrl}?${cursor()}`)
+        .then((response) => {
+          if (response.status === 204) return undefined
+          if (response.status !== 200) throw new Error(`HTTP ${response.status}`)
+          return response.json() as Promise<Reply>
+        })
+        .then(
+          (reply) => {
+            failures = 0
+            if (reply) {
+              try {
+                receive(reply)
+              } catch (error) {
+                host.console.error(
+                  `[react-native-mf] "${boot.name}" 에 v${reply.stamp.version} 을 적용하지 못했다`,
+                  error,
+                )
+              }
+            }
+            poll()
+          },
+          (error: unknown) => {
+            if (failures === 0) {
+              host.console.warn(
+                `[react-native-mf] "${boot.name}" dev 서버에서 갱신을 받지 못했다(${error instanceof Error ? error.message : String(error)}). 물러나며 다시 부른다`,
+              )
+            }
+            host.setTimeout(poll, Math.min(5000, 250 * 2 ** failures))
+            failures += 1
+          },
+        )
+    }
+    poll()
+  }
+
   const registry = (host[boot.keys.registry] ?? {}) as Record<string, unknown>
   host[boot.keys.registry] = registry
   registry[boot.name] = load(boot.entry)
+  if (refresh) startClient(refresh)
+}
+
+/**
+ * exports 가 컴포넌트뿐이면 경계다. esbuild 의 CJS exports 는 getter 라 값을 읽어 본다 — getter 는
+ * 지역 바인딩을 돌려줄 뿐이다.
+ */
+function isBoundary(refresh: Refresh, exports: unknown): boolean {
+  if (refresh.isLikelyComponentType(exports)) return true
+  if (exports === null || typeof exports !== 'object') return false
+  const names = Object.keys(exports).filter((name) => name !== '__esModule')
+  return (
+    names.length > 0 &&
+    names.every((name) => refresh.isLikelyComponentType((exports as Record<string, unknown>)[name]))
+  )
 }
 
 function notShared(specs: string[]): Error {

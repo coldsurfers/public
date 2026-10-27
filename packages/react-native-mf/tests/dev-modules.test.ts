@@ -129,6 +129,8 @@ async function boot(result: PassResult, compileOptions: CompileOptions) {
   const registered: string[] = []
   const realm = vm.createContext({
     console,
+    // 부팅 뒤 hot 요청을 건다. 이 테스트는 받지 않는다
+    fetch: () => new Promise(() => {}),
     [SHARED_SCOPE_KEY]: {
       react: { useState: (value: unknown) => [value] },
       'react-native': { marker: 'HOST_RN' },

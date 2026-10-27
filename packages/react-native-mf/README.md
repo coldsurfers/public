@@ -507,9 +507,9 @@ export default defineConfig({
 
 ## dev 번들 서버 `dev`
 
-`deploy` 와 같은 config 를 읽고, 요청이 올 때마다 미니앱을 구워 메모리에서 내준다. 빠른 시작 3 의
+`deploy` 와 같은 config 를 읽고, 미니앱을 구워 메모리에서 내준다. 빠른 시작 3 의
 `registerRemote` 는 굽기도 로드도 건너뛴다. shared 치환 · self-register · 로드 오류는 이 서버를 거쳐
-로컬에서 본다. 파일 감시와 HMR 은 없다. 고친 뒤 앱을 리로드하면 그 요청이 새로 굽는다.
+로컬에서 본다. src 를 감시해서, 저장하면 바뀐 모듈만 기기로 보내 앱을 다시 띄우지 않고 갈아 끼운다.
 
 ```jsonc
 // settings-mini-app/package.json
@@ -521,9 +521,12 @@ export default defineConfig({
 ```
 $ pnpm dev
 [react-native-mf] dev settings → http://localhost:8082/settings/index.bundle.js
-[react-native-mf] 요청마다 다시 굽는다. config · babel config · 의존을 바꾸면 다시 띄운다
-[react-native-mf] GET /settings/index.bundle.js 200 · 0.3 s · 3.3 kB
-[react-native-mf] GET /settings/index.bundle.js 500 · 0.1 s
+[react-native-mf] 저장하면 바뀐 모듈만 기기로 보낸다. config · babel config · 의존을 바꾸면 다시 띄운다
+[react-native-mf] v1 · 모듈 19개 · 657 ms
+[react-native-mf] GET /settings/index.bundle.js 200 · 0.1 s · 55.5 kB · v1
+[react-native-mf] v2 · api-client/index.ts · 60 ms
+[react-native-mf] hot v2 → localhost · 모듈 1개 · 2.1 kB
+[react-native-mf] v3 · 굽지 못했다 · 31 ms
 src/index.tsx: Unterminated string constant. (4:22)
 ```
 
@@ -531,8 +534,9 @@ src/index.tsx: Unterminated string constant. (4:22)
 | --- | --- |
 | 이름 · 빌드 옵션 | config 의 `name` · `build` 를 `deploy` 와 똑같이 편다. 플래그는 `--config <path>` 하나다 |
 | 주소 | `http://<hostname>:8082/<name>/index.bundle.js` 하나. 포트와 경로는 패키지 상수라 config 로 열지 않는다 |
-| 굽는 때 | 요청마다. 요청은 **자기가 온 뒤 시작한 굽기만** 받는다. 굽는 중에 온 요청 여럿은 다음 굽기 하나를 나눠 받는다 |
-| 실패 | 500 `text/plain` 에 굽기 오류를 싣고, 터미널에는 색 그대로 찍는다. 서버는 살아 있고 옛 번들을 대신 내주지 않는다 |
+| 굽는 때 | 띄울 때 한 번, 그 뒤 src 아래 저장마다. 번들 요청은 **자기가 온 뒤 시작한 굽기만** 받는다. 굽는 중에 온 요청 여럿은 다음 굽기 하나를 나눠 받는다 |
+| 갱신 | 바뀐 모듈과 그 위 refresh 경계(컴포넌트만 내보내는 모듈)까지만 다시 돈다. `useState` 는 남고, 모듈 최상단 싱글턴은 그 모듈이나 그 모듈이 의존하는 모듈을 고쳤을 때만 다시 만들어진다. 경계 없이 엔트리에 닿으면 앱을 다시 띄운다. Metro 의 Fast Refresh 와 같은 규칙이다 |
+| 실패 | 500 `text/plain` 에 굽기 오류를 싣고, 터미널에는 색 그대로 찍는다. 서버는 살아 있고 옛 번들을 대신 내주지 않는다. 기기는 고칠 때까지 마지막 성공 코드로 돈다 |
 | 다른 경로 | 404. 이 서버가 굽는 이름과 경로를 본문에 적는다 |
 | 산출물 | 메모리에서 바로 내준다. `outFile` 도 중간 산출물도 쓰지 않아서 `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
 
