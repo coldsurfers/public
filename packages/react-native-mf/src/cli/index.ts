@@ -8,11 +8,13 @@
 import { resolve } from 'node:path'
 import { parseBuildOptions } from './build-options'
 import { parseDeployArgs, runDeployCommand } from './deploy-command'
+import { parseDevArgs, runDevCommand } from './dev-command'
 import { readSharedManifest } from './shared-manifest'
 
 const USAGE = `react-native-mf <command>
 
   build     미니앱 엔트리를 원격 번들로 굽는다
+  dev       요청마다 굽는 dev 번들 서버를 :8082 에 띄운다(react-native-mf.config.ts)
   deploy    굽고 저장소에 올린 뒤 채널 매니페스트에 더한다(react-native-mf.config.ts)
   rollback  채널 매니페스트에서 최신 릴리스를 끈다
   promote   다른 채널에 낸 릴리스를 굽지 않고 이 채널 매니페스트에 더한다
@@ -28,6 +30,9 @@ build 옵션
                             --shared 와 같이 쓸 수 없다
       --babel-config <path> 미니앱 babel config. 생략하면 cwd 에서 찾는다
       --no-block-scoping    Hermes 용 let/const 제거 후처리를 끈다
+
+dev 옵션
+      --config <path>       config 경로 (기본: react-native-mf.config.{ts,mjs,js})
 
 deploy · rollback · promote 옵션
   -c, --channel <name>      채널 (필수) — staging · production 등
@@ -54,6 +59,20 @@ export async function run(argv: string[]): Promise<number> {
     }
     try {
       return await runDeployCommand(parsedDeploy.args, process.cwd())
+    } catch (error) {
+      process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`)
+      return 1
+    }
+  }
+
+  if (command === 'dev') {
+    const parsedDev = parseDevArgs(rest)
+    if (!parsedDev.ok) {
+      process.stderr.write(`[react-native-mf] ${parsedDev.error}\n\n${USAGE}`)
+      return 1
+    }
+    try {
+      return await runDevCommand(parsedDev.args, process.cwd())
     } catch (error) {
       process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`)
       return 1

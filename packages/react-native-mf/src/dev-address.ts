@@ -19,7 +19,7 @@ export function devBundlePath(name: string): string {
   return `/${segment(name, 'name')}/${BUNDLE_FILE}`
 }
 
-/** 서버 배너와 호스트 resolver 가 이 함수 하나로 주소를 만든다 */
-export function devBundleUrl(hostname: string, name: string): string {
-  return `http://${hostname}:${DEV_PORT}${devBundlePath(name)}`
+/** 서버 배너와 호스트 resolver 가 이 함수 하나로 주소를 만든다. `port` 는 테스트가 띄운 서버만 준다 */
+export function devBundleUrl(hostname: string, name: string, port = DEV_PORT): string {
+  return `http://${hostname}:${port}${devBundlePath(name)}`
 }
