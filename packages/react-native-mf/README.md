@@ -1,13 +1,82 @@
 # @coldsurfers/react-native-mf
 
-React Native 앱이 **원격 번들을 호스트와 같은 JS 런타임에 끼워넣는** 레이어.
+React Native 앱에 **원격 미니앱을 붙이는 프레임워크**.
 
-미니앱이 새 의존성을 쓸 때마다 호스트를 고쳐 스토어에 다시 올려야 하는 구조를 끊는 것이 목표다.
-미니앱은 따로 굽고 따로 배포한다. 호스트는 부팅 뒤에 그 번들을 받아 실행하고, React 와
-`react-native` 는 호스트의 사본 하나를 같이 쓴다.
+미니앱을 굽고 · 띄우고 · 올리고 · 되돌리는 CLI 와, 호스트가 그 번들을 받아 같은 JS 런타임에서 실행하는
+런타임을 한 패키지로 낸다. 미니앱이 바뀌어도 호스트를 스토어에 다시 올리지 않고, React 와 `react-native` 는
+호스트의 사본 하나를 같이 쓴다.
 
-> 🚧 빌드 · 배포 · 로드가 끝까지 돈다. 바이트코드 레인(네이티브 로더)은 아직이다.
-> 단계별 상태는 [진행 상황](#진행-상황), 로드맵은 [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85).
+목표는 미니앱 하나를 붙일 때 **호스트와 미니앱이 손으로 쓰는 배선을 config 한 장과 몇 줄로 줄이는 것**이다.
+
+> 🚧 빌드 · 배포 · 로드는 끝까지 돌고, billets-app 스토어 빌드에서 설정 화면 미니앱 하나가 이 경로로 돈다.
+> 남은 일은 소비처가 아직 손으로 쓰는 배선을 가져오는 것이다. 로드맵 정본은 [coldsurfers/public#85](https://github.com/coldsurfers/public/issues/85).
+
+## 지금 어디까지 왔나
+
+2026-10-27 기준 한 장 요약이다. 어긋나면 #85 가 맞다.
+
+### 진척은 손배선 줄 수로 잰다
+
+billets-app 과 settings-mini-app 이 이 패키지 밖에서 손으로 쓰는 코드다. 줄 수는 `wc -l` 로 셌다.
+
+| 손으로 쓰는 것 | 줄 | 프레임워크가 낼 것 | 상태 |
+| --- | --- | --- | --- |
+| 미니앱 빌드 · 배포 스크립트 (옛 `react-native-esbuild-deploy` 21파일) | 0 | `build` · `deploy` · `rollback` · `promote` | ✅ |
+| dev 번들 서버 `scripts/serve-bundle.mjs` | 51 | `react-native-mf dev` | ⬜ |
+| 호스트 부팅 배선 `setup-remote-apps.ts` (dev/prod 분기 · 개발 메뉴 · resolver) | 75 | 호스트 프리셋 | ⬜ |
+| shared 목록 추출 · 검사 `scripts/extract-shared-modules.mjs` | 60 | CLI 명령 · Metro 헬퍼 | ⬜ |
+| 캐시 저장소 `script-storage.ts` (RNFS) | 39 | 저장소 어댑터 | ⬜ 선택 |
+
+지금 남은 손배선은 225줄이다. 그 밖에 shared 목록 자체(`shared-modules.ts`)와 Metro 설정 일부가 있다.
+결합의 예로, dev 서버 포트 `8082` 가 미니앱 서버와 호스트 배선에 따로 적혀 있다. 프레임워크 설정 하나가 이 둘을 합친다.
+
+### 기반은 섰다
+
+| 줄기 | 한 일 | 상태 |
+| --- | --- | --- |
+| 빌드 (Phase 1) | shared 를 전역 참조로 바꿔치기 · self-register · `build` CLI. 호스트 손목록 `requireFn` 25개를 0개로 | ✅ 0.2.0 · 0.4.0 |
+| 로드 (Phase 1.5) | `scriptManager` 의 resolver · 캐시 · 중복 실행 막기, React 바인딩 `useRemote` | ✅ 0.3.0 |
+| 배포 (Phase 1.6) | CDN 정적 매니페스트 · 채널 · `deploy` · `rollback` · `promote` | ✅ 0.5.0 · 0.6.0 |
+| 호스트 배선 | dev `local` 모드([surfers-root#1319](https://github.com/coldsurfers/surfers-root/pull/1319)) · Metro 가 shared 를 한 벌로 풀게 한 수정([surfers-root#1320](https://github.com/coldsurfers/surfers-root/pull/1320)) | ✅ |
+| 바이트코드 (Phase 0 · 2 · 3 · 5) | hermesc 와 네이티브 로더로 `new Function` 을 대체 | ⏸ 보류 |
+
+### 다음은 손배선을 위 표의 순서로 가져온다 (Phase F)
+
+1. `react-native-mf dev`. `serve-bundle.mjs` 를 흡수하고, 포트를 config 한 곳에 둔다
+2. 호스트 프리셋. dev/prod 분기 · 개발 메뉴 · resolver 를 한 호출로 묶는다. MMKV 처럼 앱마다 다른 의존은 주입받는다
+3. shared 목록 추출 · 검사를 CLI 명령으로, Metro 의 shared 해석을 헬퍼로 낸다
+4. 저장소 어댑터. 선택이다
+
+아무도 안 쓰는 기능(HMR · 여러 미니앱 조율)은 먼저 만들지 않는다.
+
+### 남은 검증과 판정
+
+**검증.**
+
+- [ ] shared 싱글턴을 릴리즈 빌드 · Android · bottom-sheet 같은 위층 라이브러리에서 확인한다. 지금은 iOS Debug 에서만 확인했다
+
+**진행 중.**
+
+- [ ] 번들 fetch 가 네트워크에서 거절돼도 에러에 이름과 URL 이 남는다([#319](https://github.com/coldsurfers/public/pull/319))
+
+**판정.** 실험으로 정해지지 않아서 사람이 고른다.
+
+- [ ] re.pack 으로 갈아탈지(#85 미결 2). 프레임워크가 되면 같은 자리에 선다. 우리 쪽 근거는 호스트 번들러를 Metro 그대로 두고 미니앱만 esbuild 로 굽는 것이다
+- [ ] 미니앱 배포 CI 를 둘지. 지금은 미니앱 레포에서 로컬로 `deploy -i` 를 부른다
+- [ ] 서버 매니페스트 라우트와 `RemoteAppManifestDTO` 를 지울지. 앱은 더는 읽지 않는다
+- [ ] Phase 4 OTA 결합을 닫을지. 채널은 이미 hot-updater 채널을 따른다
+
+### 바이트코드는 보류했다
+
+바이트코드로 아끼는 건 설정 화면에 들어갈 때 기기에서 하는 컴파일 한 번이고, 콜드 4.8ms 였다(iPhone 17 Pro 시뮬레이터 실측).
+그 대가는 네이티브 모듈 두 벌, Hermes 버전에 묶인 배포, gzip 기준 2.2배 다운로드다. 값이 안 맞아서 접었다.
+측정과 근거는 [결정 댓글](https://github.com/coldsurfers/public/issues/85#issuecomment-6432756280)에 있다.
+
+다시 여는 조건은 셋이다.
+
+- 미니앱 번들이 100 kB 를 넘는다
+- 미니앱이 앱 기동 경로에 올라간다
+- 실기기에서 잰 콜드 컴파일이 16ms 를 넘는다
 
 ## 설치
 
@@ -689,21 +758,3 @@ await esbuild.build({
 
 ⚠️ 이 경로엔 `build` 의 ① babel 과 ③ block-scoping 이 없다. babel 플러그인(reanimated worklet 등)이
 필요하거나 Hermes 런타임 컴파일러 문제([build](#미니앱-빌드--build) ⚠️)를 피해야 하면 `build` 를 쓴다.
-
-## 진행 상황
-
-정본은 [#85](https://github.com/coldsurfers/public/issues/85) 다. 여기는 요약이다.
-
-| 단계 | 무엇 | 상태 |
-| --- | --- | --- |
-| A | 패키지 골격 · 진입점 레인 | ✅ 0.1.0 |
-| 1 | shared 치환 · self-register (0.2.0) · `build` CLI (0.4.0). 호스트 손목록 `requireFn` 25 → 0 | ✅ |
-| 1.5 | 로더 `scriptManager` · `useRemote` | ✅ 0.3.0 |
-| 1.6 | 정적 채널 매니페스트 배포 — `deploy` · `rollback` · `createManifestResolver` (0.5.0) · `promote` (0.6.0) | ✅ |
-| 1 잔여 | `hermesc` 바이트코드 산출 · reanimated · gesture-handler · react-query 싱글턴 실기기 검증 | ⬜ |
-| 1.5 잔여 | dev 에서도 원격 경로를 태운다 — 지금은 `registerRemote` 로 바로 올린다 | ⬜ |
-| 1.6 잔여 | CI 배포를 둘지 · 서버 매니페스트 라우트와 `RemoteAppManifestDTO` 를 지울지 판정 | ⬜ |
-| 0 | bridgeless 에서 `jsi::Runtime` 에 닿는 경로 스파이크 | ⬜ |
-| 2 | 네이티브 바이트코드 로더 (iOS) | ⬜ |
-| 3 | 로더에서 `new Function` 제거 · 기동 · 파싱 비용 측정 | ⬜ |
-| 4 · 5 | OTA 결합 · Android | 선택 |
