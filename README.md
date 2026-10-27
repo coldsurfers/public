@@ -21,7 +21,7 @@ COLDSURF 이 밖으로 내보내는 패키지들이 사는 곳. 열이다.
 | [`api-sdk`](packages/api-sdk) | billets API 의 타입 세이프 SDK (`./client` · `./queries` · `./react`) |
 | [`auth-client`](packages/auth-client) | coldsurf-auth-server SDK. 토큰 저장소를 갈아끼운다(cookie · localStorage · expo-secure-store · memory) |
 | [`shared-utils`](packages/shared-utils) | 프레임워크 무관 헬퍼. 진입점이 곧 모듈이다(`./date` · `./slug` · `./seo-head` …) |
-| [`react-native-mf`](packages/react-native-mf) | RN 마이크로프론트엔드 — 원격 번들을 호스트 JS 런타임에 얹는다 |
+| [`react-native-mf`](packages/react-native-mf) | RN 미니앱 프레임워크. 원격 미니앱을 굽고 · 올리고 · 호스트 JS 런타임에 얹는다 |
 | [`paper`](packages/paper) | 마크다운 → PDF CLI. 디자인 시스템 토큰으로 찍는다 (`paper`) |
 
 문서 사이트는 [`apps/docs`](apps/docs) 다 — 발행되지 않는 워크스페이스고, 발행되는 `dist` 를

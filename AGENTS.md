@@ -88,13 +88,18 @@ biome, pre-push 에서 biome ci + check:type · `lefthook.yml`), `pnpm test` 는
 | 밀어낼 수 있으나 한 곳에서만 쓰인다 | 보류 — 두 번째 소비처가 생길 때 |
 | 밀어낼 수 없다 (그 자체가 도메인 조립) | 앱에 남는다 |
 
+**예외. `react-native-mf` 는 라이브러리가 아니라 프레임워크다.** 호스트와 미니앱이 손으로 쓰는 배선(dev 번들 서버 ·
+부팅 배선 · shared 목록 추출 · Metro 설정 · 저장소)은 소비처가 하나여도 흡수한다. 이 패키지의 기준은 「두 번째
+소비처」가 아니라 **「소비처가 지금 그 코드를 손으로 쓰고 있는가」**다. 아무도 안 쓰는 기능(HMR · 여러 미니앱 조율)은
+여전히 먼저 만들지 않는다. 결정은 [#85](https://github.com/coldsurfers/public/issues/85) 에 있다.
+
 **흡수에는 상한이 있다.** 시안 컨트롤 높이가 다섯 종이라 그대로 받으면 `Button.size` 가 7종이
 된다 — 그건 추상화가 아니라 목록이다. variant 를 늘리기 전에 *이 축이 이 컴포넌트의 것인가*를 묻는다.
 
 ## 지금 어디까지 왔나 — `design-system` 한 패키지
 
 **아래 P0~P5 는 레포 전체가 아니라 `design-system` 의 단계다.** 나머지 열둘은 여기 항목이 없고
-각자 README 나 이슈를 든다(예: `react-native-mf` 는 자기 README 의 Phase 표).
+각자 README 나 이슈를 든다(예: `react-native-mf` 는 자기 README 의 「지금 어디까지 왔나」).
 
 정본 로드맵은 사내 이슈 트래커에 있다.
 
