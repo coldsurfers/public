@@ -5,8 +5,13 @@
  *
  * 파서를 직접 쓴다. commander 를 물면 **런타임 레인만 쓰는 앱까지** 그 의존을 문다 —
  * 이 패키지가 `dependencies` 를 하나도 안 갖는 선을 플래그 일곱 개 때문에 깨지 않는다.
+ *
+ * config 의 `build` 를 펴는 것도 여기다. 플래그와 config 가 같은 기본값 표를 본다.
  */
+import { resolve } from 'node:path'
+import type { DeployConfig } from '../deploy/config'
 import { DEFAULT_SHARED_MODULES } from '../esbuild/shared-scope'
+import { readSharedManifest } from './shared-manifest'
 
 export type BuildOptions = {
   /** 미니앱 루트. CLI 는 `process.cwd()`, 테스트는 임시 프로젝트를 넣는다 */
@@ -26,6 +31,16 @@ export type BuildOptions = {
   /** Hermes 용 block-scoping 후처리를 돌릴지 */
   blockScoping: boolean
 }
+
+/** 플래그와 config 가 같이 보는 기본값. `outFile` 은 config 만 쓴다(플래그는 `-o` 가 필수다) */
+export const BUILD_DEFAULTS = {
+  src: 'src',
+  entry: 'index.ts',
+  outFile: 'build/out/index.bundle.js',
+  // 플러그인과 같은 목록이다. CLI 가 자기만의 기본 목록을 따로 들면 둘이 갈린다.
+  shared: DEFAULT_SHARED_MODULES,
+  blockScoping: true,
+} as const satisfies Pick<BuildOptions, 'src' | 'entry' | 'outFile' | 'shared' | 'blockScoping'>
 
 /**
  * `sharedFrom` 을 `BuildOptions` 안이 아니라 **형제로** 둔다. 매니페스트를 읽는 건 I/O 라
@@ -68,7 +83,7 @@ function collectShared(value: string, into: string[]): void {
 export function parseBuildOptions(argv: readonly string[], cwd: string): ParseResult {
   const values = new Map<ValueKey, string>()
   const shared: string[] = []
-  let blockScoping = true
+  let blockScoping: boolean = BUILD_DEFAULTS.blockScoping
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
@@ -113,15 +128,39 @@ export function parseBuildOptions(argv: readonly string[], cwd: string): ParseRe
     sharedFrom,
     options: {
       cwd,
-      src: values.get('src') ?? 'src',
-      entry: values.get('entry') ?? 'index.ts',
+      src: values.get('src') ?? BUILD_DEFAULTS.src,
+      entry: values.get('entry') ?? BUILD_DEFAULTS.entry,
       outFile,
       name,
-      // `--shared-from` 이면 `run` 이 매니페스트를 읽어 덮는다. 기본값은 플러그인과 같은
-      // 목록이다 — CLI 가 자기만의 기본 목록을 따로 들면 둘이 갈린다.
-      shared: shared.length > 0 ? shared : DEFAULT_SHARED_MODULES,
+      // `--shared-from` 이면 `run` 이 매니페스트를 읽어 덮는다.
+      shared: shared.length > 0 ? shared : BUILD_DEFAULTS.shared,
       babelConfig: values.get('babelConfig'),
       blockScoping,
     },
+  }
+}
+
+/**
+ * config 의 `build` 를 `BuildOptions` 로 편다. deploy 와 dev 가 같이 부른다.
+ *
+ * `sharedFrom` 이면 매니페스트를 **부를 때마다** 읽는다. dev 가 떠 있는 사이 호스트가 목록을
+ * 다시 내도 다음 굽기가 본다. `shared` 와 같이 주면 플래그처럼 거절하지 않고 `sharedFrom` 을 쓴다.
+ */
+export async function resolveConfigBuild(
+  config: Pick<DeployConfig, 'name' | 'build'>,
+  cwd: string,
+): Promise<BuildOptions> {
+  const build = config.build ?? {}
+  return {
+    cwd,
+    name: config.name,
+    src: build.src ?? BUILD_DEFAULTS.src,
+    entry: build.entry ?? BUILD_DEFAULTS.entry,
+    outFile: build.outFile ?? BUILD_DEFAULTS.outFile,
+    shared: build.sharedFrom
+      ? await readSharedManifest(resolve(cwd, build.sharedFrom))
+      : (build.shared ?? BUILD_DEFAULTS.shared),
+    babelConfig: build.babelConfig,
+    blockScoping: build.blockScoping ?? BUILD_DEFAULTS.blockScoping,
   }
 }
