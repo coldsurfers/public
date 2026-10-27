@@ -28,4 +28,5 @@ out/
 next-env.d.ts
 .wrangler/
 .tmp-cli-test/
+.tmp-dev-modules-test/
 .tmp-deploy-test/
