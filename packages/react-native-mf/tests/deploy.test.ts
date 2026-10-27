@@ -10,6 +10,7 @@ import { after, beforeEach, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { type DeployConfig, type DeployStorage, loadConfig } from '../src/deploy/config'
 import { runDeploy, runPromote, runRollback } from '../src/deploy/deploy'
+import { s3Storage } from '../src/deploy/s3'
 import { parseManifest } from '../src/manifest'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -325,5 +326,19 @@ test('promote 대상 채널에서 꺼진 버전이면 다시 켜는 rollback --t
   await assert.rejects(
     runPromote({ from: 'staging', channel: 'production', config: configWith(storage) }),
     /꺼져 있다\. 다시 켜려면 rollback -c production --to 1\.2\.0/,
+  )
+})
+
+test('s3Storage 는 bucket 없이도 만들어지고, 처음 쓸 때 SDK 를 열기 전에 던진다', async () => {
+  // dev 는 deploy 와 같은 config 를 import 한다. 배포 비밀이 없는 자리에서 config 가 떠야 한다
+  const storage = s3Storage({ bucket: undefined })
+
+  await assert.rejects(storage.read('apps/settings/staging/manifest.json'), /s3Storage 에 bucket/)
+  await assert.rejects(
+    storage.write('apps/settings/1.2.0/index.bundle.js', 'code', {
+      contentType: 'application/javascript',
+      cacheControl: 'no-store',
+    }),
+    /s3Storage 에 bucket/,
   )
 })
