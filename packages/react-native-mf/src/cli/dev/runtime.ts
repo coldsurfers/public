@@ -103,7 +103,8 @@ export function bootDevRemote(boot: Boot, host: Host): void {
       return found
     }
     if (importer) record.importers.add(importer)
-    if (record.status === 'ready' || record.status === 'running') return record.exports
+    // 던진 모듈은 다음 적용이 다시 돌릴 때까지 마지막 성공 값을 준다. 한 적용에서 두 번 돌지 않는다
+    if (record.status !== 'defined') return record.exports
     return run(spec as ModuleId, record)
   }
 
@@ -139,11 +140,18 @@ export function bootDevRemote(boot: Boot, host: Host): void {
    * 전 exports 로 판정한다. 경계 아래 모듈은 경계가 다시 돌며 require 할 때 새로 돌고, 경계 위는 돌지
    * 않는다 — 위에 쥔 옛 컴포넌트는 react-refresh 가 새 것으로 잇는다. 경계를 못 만나고 importer 가
    * 없는 모듈(엔트리)에 닿으면 호스트를 다시 띄운다.
+   *
+   * 다시 돌다 던진 모듈은 마지막 성공 값을 지키고, 그 적용은 refresh 를 부르지 않는다 — 화면이 마지막
+   * 성공 코드에 머문다. 던진 모듈은 다음 적용이 바뀐 모듈과 함께 다시 걷는다. 같은 글자는 바뀐 모듈로
+   * 치지 않으니 따로 걷지 않으면 원인을 다른 데서 고쳐도 다시 돌 길이 없다.
    */
   function apply(refresh: Refresh, incoming: readonly ModuleSource[], removed: readonly string[]) {
     const changed = incoming.filter(([id, code]) => records.get(id)?.code !== code)
     const gone = removed.filter((id) => records.has(id))
-    if (changed.length === 0 && gone.length === 0) return
+    const failed = [...records]
+      .filter(([id, record]) => record.status === 'failed' && !gone.includes(id))
+      .map(([id]) => id as ModuleId)
+    if (changed.length === 0 && gone.length === 0 && failed.length === 0) return
     const factories = changed.map(([id, code]) => compile(id, code))
 
     for (const id of gone) {
@@ -152,9 +160,12 @@ export function bootDevRemote(boot: Boot, host: Host): void {
     }
 
     // 새 모듈과 아직 돈 적 없는 모듈은 오르지 않는다. 처음 require 될 때 새 글자로 돈다
-    const queue = changed
-      .map(([id]) => id)
-      .filter((id) => (records.get(id)?.status ?? 'defined') !== 'defined')
+    const queue = [
+      ...changed
+        .map(([id]) => id)
+        .filter((id) => (records.get(id)?.status ?? 'defined') !== 'defined'),
+      ...failed,
+    ]
     const rerun = new Set<ModuleId>()
     const roots: ModuleId[] = []
     while (queue.length > 0) {
@@ -190,9 +201,20 @@ export function bootDevRemote(boot: Boot, host: Host): void {
       }
     })
     for (const id of rerun) (records.get(id) as ModuleRecord).status = 'defined'
-    for (const id of roots) load(id)
+    let threw = false
+    for (const id of roots) {
+      try {
+        load(id)
+      } catch (error) {
+        threw = true
+        host.console.error(
+          `[react-native-mf] "${boot.name}" 의 ${id} 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다`,
+          error,
+        )
+      }
+    }
     registry[boot.name] = load(boot.entry)
-    refresh.performReactRefresh()
+    if (!threw) refresh.performReactRefresh()
   }
 
   /**

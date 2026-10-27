@@ -102,6 +102,7 @@ function host(
   const polled = (n: number) => until(() => fetches.length >= n, `hot 요청 ${n} 번째`)
 
   return {
+    realm,
     boot,
     remote,
     global,
@@ -402,6 +403,81 @@ test('error 응답은 오류 전부를 console.error 로 한 번 띄우고 모�
 
   assert.equal(remote.latest('./screen.tsx Screen')(), 'v4/v2')
   assert.equal(remote.fetches[2], 'http://localhost:8082/settings/hot?have=e.4&seen=e.4')
+})
+
+/** `globalThis.ready` 가 서기 전엔 맨 위에서 던지는 api */
+const flakyApi = mod(
+  './api.ts',
+  'if (!globalThis.ready) throw new Error("not ready"); exports.api = { label: "v2" };',
+)
+
+test('갱신 중 던진 모듈은 마지막 성공 값을 지키고, 오류를 알리고, refresh 를 부르지 않는다', async () => {
+  const remote = host(app(), { replies: [update(2, [flakyApi])] })
+  remote.boot()
+
+  await remote.polled(2)
+
+  assert.equal(remote.errors.length, 1)
+  assert.match(
+    String(remote.errors[0][0]),
+    /"settings" 의 \.\/screen\.tsx 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다/,
+  )
+  assert.equal((remote.errors[0][1] as Error).message, 'not ready')
+  assert.equal(remote.refreshes(), 0)
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v1/1')
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.2&seen=e.2')
+})
+
+test('던진 모듈은 다음 메시지가 다시 돌린다. 그 메시지에 바뀐 모듈이 없어도 돈다', async () => {
+  let retry = (_reply: Reply) => {}
+  const remote = host(app(), {
+    replies: [
+      update(2, [flakyApi]),
+      new Promise<Reply>((resolve) => {
+        retry = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  await remote.polled(2)
+  vm.runInContext('globalThis.ready = true', remote.realm)
+
+  retry(update(3, []))
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2/1')
+  assert.equal(remote.refreshes(), 1)
+  assert.equal(remote.errors.length, 1, '다시 돈 적용이 또 오류를 냈다')
+})
+
+test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번만 돈다. 다른 경계는 그 마지막 성공 값으로 돈다', async () => {
+  const api = (label: string) =>
+    mod(
+      './api.ts',
+      `exports.api = { label: "${label}" }; if (globalThis.boom) throw new Error("boom");`,
+    )
+  const screen = (id: ModuleId, name: string) =>
+    component(id, name, 'return api.label;', 'var api = require("./api.ts").api;')
+  const remote = host(
+    [
+      mod('./index.ts', 'require("./a.tsx"); require("./b.tsx");'),
+      screen('./a.tsx', 'A'),
+      screen('./b.tsx', 'B'),
+      api('v1'),
+    ],
+    { replies: [update(2, [api('v2')])] },
+  )
+  remote.boot()
+  vm.runInContext('globalThis.boom = true', remote.realm)
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted).sort(), ['./a.tsx', './api.ts', './b.tsx'])
+  assert.equal(remote.errors.length, 1)
+  assert.equal(remote.latest('./a.tsx A')(), 'v1')
+  assert.equal(remote.latest('./b.tsx B')(), 'v1')
+  assert.equal(remote.refreshes(), 0)
 })
 
 test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
