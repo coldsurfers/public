@@ -32,6 +32,9 @@ export type BuildOptions = {
   blockScoping: boolean
 }
 
+/** 굽기에 드는 전부. 산출물 경로가 없다. 굽기는 파일을 쓰지 않는다 */
+export type CompileOptions = Omit<BuildOptions, 'outFile'>
+
 /** 플래그와 config 가 같이 보는 기본값. `outFile` 은 config 만 쓴다(플래그는 `-o` 가 필수다) */
 export const BUILD_DEFAULTS = {
   src: 'src',

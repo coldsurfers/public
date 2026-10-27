@@ -13,12 +13,12 @@
  * 뿐이라 tsc 시야 밖인 건 그대로다.
  */
 import assert from 'node:assert/strict'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
-import { runBuild, TRANSPILE_CACHE } from '../src/cli/build'
+import { compileBundle, runBuild, TRANSPILE_ROOT } from '../src/cli/build'
 import type { BuildOptions } from '../src/cli/build-options'
 import { REMOTE_REGISTRY_KEY } from '../src/runtime/registry'
 import { SHARED_SCOPE_KEY } from '../src/runtime/shared-scope'
@@ -133,7 +133,32 @@ test('산출물이 strict 모드다 — 중간 산출물을 node_modules 아래 
   const code = await readFile(outFile, 'utf8')
 
   assert.match(code.split('\n')[0], /^"use strict";$/, '최상위 "use strict" 가 사라졌다')
-  assert.ok(!TRANSPILE_CACHE.includes('node_modules'), '중간 산출물이 node_modules 아래다')
+  for (const [lane, root] of Object.entries(TRANSPILE_ROOT)) {
+    assert.ok(!root.includes('node_modules'), `${lane} 레인 중간 산출물이 node_modules 아래다`)
+  }
+})
+
+test('dev 레인 굽기는 build 레인 중간 산출물도 outFile 도 건드리지 않는다', async () => {
+  // dev 가 떠 있는 채로 deploy 하면 두 굽기가 겹친다. transpile 은 rm 부터 하므로 자리가 같으면
+  // 한쪽이 다른 쪽 중간 산출물을 지운다.
+  await runBuild(options({ outFile: 'build/lane.js' }))
+  const sentinel = join(projectDir, TRANSPILE_ROOT.build, 'settings', 'sentinel.txt')
+  await writeFile(sentinel, 'build 레인')
+
+  const devOptions = options({ outFile: 'build/dev-never-written.js' })
+  const { code } = await compileBundle(devOptions, 'dev')
+
+  assert.equal(
+    await readFile(sentinel, 'utf8'),
+    'build 레인',
+    'dev 굽기가 build 레인 자리를 지웠다',
+  )
+  await assert.rejects(
+    stat(join(projectDir, devOptions.outFile)),
+    /ENOENT/,
+    'dev 굽기가 파일을 썼다',
+  )
+  assert.equal(runInVm(code).settings.default('a').label, 'a0!')
 })
 
 test('block-scoping 후처리가 let 을 걷어낸다', async () => {
