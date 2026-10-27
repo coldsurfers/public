@@ -18,9 +18,6 @@ import { withSelfRegister } from '../esbuild/register'
 import { SHARED_NAMESPACE, sharedScopePlugin } from '../esbuild/shared-scope'
 import type { BuildOptions, CompileOptions } from './build-options'
 
-/** `build` · `deploy` 가 `build` 레인, `dev` 가 `dev` 레인에서 굽는다 */
-export type Lane = 'build' | 'dev'
-
 /**
  * transpile 중간 산출물 자리. 두 조건을 **동시에** 만족해야 한다.
  *
@@ -40,15 +37,9 @@ export type Lane = 'build' | 'dev'
  * | `node_modules/.cache/probe/index.js` | `var __E__ = (() => {` |
  *
  * 그래서 `build/` 아래다. 소비처는 대개 `build/` 를 이미 gitignore 한다 — 산출물
- * (`--out-file`)이 보통 거기 떨어지기 때문이다.
- *
- * 레인마다 자리가 따로다. `transpileTree` 가 `rm` 부터 하므로, 같은 자리면 dev 가 떠 있는 채로
- * deploy 할 때 한쪽이 다른 쪽의 중간 산출물을 지운다. 불변으로 올라갈 번들이 그걸 읽을 수 있다.
+ * (`--out-file`)이 보통 거기 떨어지기 때문이다. `dev` 는 이 자리를 쓰지 않는다(`./dev/modules`).
  */
-export const TRANSPILE_ROOT = {
-  build: 'build/.transpiled',
-  dev: 'build/.transpiled-dev',
-} as const satisfies Record<Lane, string>
+export const TRANSPILE_ROOT = 'build/.transpiled'
 
 export const SOURCE_EXTENSION = /\.(?:tsx?|jsx?)$/
 
@@ -124,7 +115,7 @@ async function transpileTree(options: CompileOptions, outDir: string): Promise<v
   const entries = await readdir(srcDir, { recursive: true })
   const sources = entries.filter((entry) => SOURCE_EXTENSION.test(entry))
 
-  // 다 끝난 뒤에 던진다. 먼저 던지면 남은 변환이 계속 써서 다음 굽기의 `rm` 과 겹친다(dev)
+  // 다 끝난 뒤에 던진다. 먼저 던지면 남은 변환이 계속 써서 같은 자리를 `rm` 하는 다음 굽기와 겹친다
   const results = await Promise.allSettled(
     sources.map(async (relativePath) => {
       const filePath = join(srcDir, relativePath)
@@ -231,9 +222,9 @@ export type Compiled = {
   requires: string[]
 }
 
-/** ①②③ 만 한다. 파일로 쓰지 않는다. dev 는 이 결과를 메모리에서 바로 내준다 */
-export async function compileBundle(options: CompileOptions, lane: Lane): Promise<Compiled> {
-  const transpileDir = join(resolve(options.cwd, TRANSPILE_ROOT[lane]), options.name)
+/** ①②③ 만 한다. 산출물을 파일로 쓰지 않는다 */
+export async function compileBundle(options: CompileOptions): Promise<Compiled> {
+  const transpileDir = join(resolve(options.cwd, TRANSPILE_ROOT), options.name)
   await transpileTree(options, transpileDir)
 
   // transpile 이 확장자를 `.js` 로 바꿔놨다 — 엔트리도 같은 규칙으로 따라간다.
@@ -254,7 +245,7 @@ export type BuildResult = {
 }
 
 export async function runBuild(options: BuildOptions): Promise<BuildResult> {
-  const { code, requires } = await compileBundle(options, 'build')
+  const { code, requires } = await compileBundle(options)
 
   const outFile = resolve(options.cwd, options.outFile)
   await mkdir(dirname(outFile), { recursive: true })

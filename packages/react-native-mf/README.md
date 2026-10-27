@@ -418,7 +418,7 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 (`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
 없앤다 — 미니앱 자기 코드가 같은 패턴을 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
 
-중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다(`dev` 는 `build/.transpiled-dev/<name>/`). 위치 조건이 둘이다.
+중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 위치 조건이 둘이다.
 
 - **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
   레포 밖(`os.tmpdir()`)에 두면 미니앱 의존성이 통째로 안 잡힌다
