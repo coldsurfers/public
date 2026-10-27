@@ -13,7 +13,7 @@
  * 뿐이라 tsc 시야 밖인 건 그대로다.
  */
 import assert from 'node:assert/strict'
-import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -159,6 +159,26 @@ test('dev 레인 굽기는 build 레인 중간 산출물도 outFile 도 건드�
     'dev 굽기가 파일을 썼다',
   )
   assert.equal(runInVm(code).settings.default('a').label, 'a0!')
+})
+
+test('실패한 굽기는 남은 변환이 다 쓴 뒤에 던진다. 다음 굽기의 rm 과 겹치지 않는다', async () => {
+  // dev 큐는 실패가 오면 바로 다음 굽기를 연다. 먼저 던지고 쓰기가 남으면 다음 굽기의
+  // rm 이 ENOTEMPTY 로 터지고, 지운 소스의 산출물이 다음 굽기 자리에 남는다.
+  await write('straggler-src/a.ts', 'export const a = (\n')
+  await write('straggler-src/index.ts', "import { a } from './a'\nexport default () => a\n")
+  const body = Array.from({ length: 50 }, (_, i) => `export const v${i}: number = ${i}`).join('\n')
+  for (let i = 0; i < 60; i += 1) await write(`straggler-src/many/x${i}.ts`, body)
+
+  const devDir = join(projectDir, TRANSPILE_ROOT.dev, 'settings')
+  await assert.rejects(compileBundle(options({ src: 'straggler-src' }), 'dev'))
+  const atRejection = await readdir(devDir, { recursive: true })
+  await new Promise((settle) => setTimeout(settle, 300))
+
+  assert.deepEqual(
+    (await readdir(devDir, { recursive: true })).sort(),
+    atRejection.sort(),
+    '던진 뒤에도 transpile 자리에 썼다',
+  )
 })
 
 test('block-scoping 후처리가 let 을 걷어낸다', async () => {

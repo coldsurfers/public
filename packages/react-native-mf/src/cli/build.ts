@@ -100,7 +100,8 @@ async function transpileTree(options: CompileOptions, outDir: string): Promise<v
   const entries = await readdir(srcDir, { recursive: true })
   const sources = entries.filter((entry) => SOURCE_EXTENSION.test(entry))
 
-  await Promise.all(
+  // 다 끝난 뒤에 던진다. 먼저 던지면 남은 변환이 계속 써서 다음 굽기의 `rm` 과 겹친다(dev)
+  const results = await Promise.allSettled(
     sources.map(async (relativePath) => {
       const filePath = join(srcDir, relativePath)
       const outputPath = join(outDir, relativePath.replace(SOURCE_EXTENSION, '.js'))
@@ -119,6 +120,9 @@ async function transpileTree(options: CompileOptions, outDir: string): Promise<v
       await writeFile(outputPath, result.code)
     }),
   )
+
+  const failed = results.find((settled) => settled.status === 'rejected')
+  if (failed) throw failed.reason
 }
 
 /**
