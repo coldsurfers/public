@@ -124,6 +124,7 @@ before(async () => {
   // 테스트가 끝난 뒤의 hot 요청과 물러남은 아무 데도 닿지 않게 한다
   realm = vm.createContext({
     console: { warn: () => {}, error: (...args: unknown[]) => errors.push(args) },
+    ErrorUtils: { reportError: (error: unknown) => errors.push([error]) },
     fetch: (url: string) => (stopped ? new Promise(() => {}) : fetch(url)),
     setTimeout: (callback: () => void, ms: number) => {
       if (!stopped) setTimeout(callback, ms)

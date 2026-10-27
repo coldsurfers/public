@@ -25,6 +25,11 @@ type Refresh = {
 /** 런타임이 만지는 전부. 번들은 `globalThis` 를, 테스트는 vm realm 의 전역을 넘긴다 */
 type Host = {
   console: Pick<Console, 'warn' | 'error'>
+  /**
+   * RN 이 부팅 때 거는 전역. `reportError` 는 그 오류의 스택을 LogBox 에 띄운다 — `console.error` 는
+   * 부른 자리의 스택을 띄워서 던진 모듈의 `sourceURL` 이 보이지 않는다
+   */
+  ErrorUtils: { reportError(error: unknown): void }
   fetch(url: string): Promise<{ status: number; json(): Promise<unknown> }>
   setTimeout(callback: () => void, ms: number): unknown
   [key: string]: unknown
@@ -217,10 +222,10 @@ export function bootDevRemote(boot: Boot, host: Host): void {
           load(id)
         } catch (error) {
           threw = true
-          host.console.error(
+          host.console.warn(
             `[react-native-mf] "${boot.name}" 의 ${id} 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다`,
-            error,
           )
+          host.ErrorUtils.reportError(error)
           continue
         }
         const record = records.get(id) as ModuleRecord

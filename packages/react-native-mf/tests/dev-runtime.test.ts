@@ -39,6 +39,7 @@ function host(
   const families = new Map<unknown, string>()
   const warnings: string[] = []
   const errors: unknown[][] = []
+  const reported: unknown[] = []
   const fetches: string[] = []
   const timers: { callback: () => void; ms: number }[] = []
   const fullRefreshes: string[] = []
@@ -49,6 +50,7 @@ function host(
       warn: (line: string) => warnings.push(line),
       error: (...args: unknown[]) => errors.push(args),
     },
+    ErrorUtils: { reportError: (error: unknown) => reported.push(error) },
     fetch: (url: string) => {
       fetches.push(url)
       const next = replies.shift()
@@ -115,6 +117,7 @@ function host(
     registered,
     warnings,
     errors,
+    reported,
     fetches,
     timers,
     fullRefreshes,
@@ -536,12 +539,15 @@ test('갱신 중 던진 모듈은 마지막 성공 값을 지키고, 오류를 �
 
   await remote.polled(2)
 
-  assert.equal(remote.errors.length, 1)
+  // 던진 오류 그대로라 LogBox 가 그 스택(모듈 sourceURL)을 띄운다
+  assert.deepEqual(
+    remote.reported.map((error) => (error as Error).message),
+    ['not ready'],
+  )
   assert.match(
-    String(remote.errors[0][0]),
+    remote.warnings.join('\n'),
     /"settings" 의 \.\/screen\.tsx 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다/,
   )
-  assert.equal((remote.errors[0][1] as Error).message, 'not ready')
   assert.equal(remote.refreshes(), 0)
   assert.equal(remote.latest('./screen.tsx Screen')(), 'v1/1')
   assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.2&seen=e.2')
@@ -566,7 +572,7 @@ test('던진 모듈은 다음 메시지가 다시 돌린다. 그 메시지에 �
 
   assert.equal(remote.latest('./screen.tsx Screen')(), 'v2/1')
   assert.equal(remote.refreshes(), 1)
-  assert.equal(remote.errors.length, 1, '다시 돈 적용이 또 오류를 냈다')
+  assert.equal(remote.reported.length, 1, '다시 돈 적용이 또 오류를 냈다')
 })
 
 test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번만 돈다. 다른 경계는 그 마지막 성공 값으로 돈다', async () => {
@@ -593,7 +599,7 @@ test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번�
   await remote.polled(2)
 
   assert.deepEqual(remote.trace.slice(booted).sort(), ['./a.tsx', './api.ts', './b.tsx'])
-  assert.equal(remote.errors.length, 1)
+  assert.equal(remote.reported.length, 1)
   assert.equal(remote.latest('./a.tsx A')(), 'v1')
   assert.equal(remote.latest('./b.tsx B')(), 'v1')
   assert.equal(remote.refreshes(), 0)
