@@ -257,3 +257,57 @@ test('실행했는데 등록되지 않으면 던진다', async () => {
 
   await assert.rejects(() => manager.load('setting'), /등록되지 않았다/)
 })
+
+/** 실패 응답 스텁. 실제 `Response` 처럼 `headers` 를 든다 */
+function stubFailure(status: number, contentType: string, text: () => Promise<string>) {
+  globals.fetch = (() =>
+    Promise.resolve({
+      ok: false,
+      status,
+      headers: new Headers({ 'content-type': contentType }),
+      text,
+    })) as unknown as typeof fetch
+}
+
+test('실패 응답이 text/plain 이면 본문을 에러에 싣는다. dev 서버의 굽기 오류가 기기에 뜬다', async () => {
+  const body = `settings 를 굽지 못했다\nsrc/index.ts: Unexpected token (3:1)\n${'x'.repeat(3000)}`
+  stubFailure(500, 'text/plain; charset=utf-8', () => Promise.resolve(body))
+  const manager = createScriptManager()
+  manager.addResolver(() => ({
+    url: 'http://localhost:8082/settings/index.bundle.js',
+    cache: false,
+  }))
+
+  await assert.rejects(
+    () => manager.load('settings'),
+    (error: Error) => {
+      assert.ok(
+        error.message.startsWith(
+          '[react-native-mf] "settings" 번들을 받지 못했다 (500 http://localhost:8082/settings/index.bundle.js).\nsettings 를 굽지 못했다\nsrc/index.ts: Unexpected token (3:1)\n',
+        ),
+        error.message,
+      )
+      assert.ok(error.message.endsWith(body.slice(0, 2000)), '본문 앞 2000자가 붙지 않았다')
+      assert.ok(!error.message.includes(body.slice(0, 2001)), '본문을 2000자에서 자르지 않았다')
+      return true
+    },
+  )
+})
+
+test('HTML · XML 에러 페이지는 싣지 않고, 본문을 못 읽어도 원래 에러를 던진다', async () => {
+  const bare = '[react-native-mf] "settings" 번들을 받지 못했다 (503 https://cdn/settings/v1.js).'
+  const manager = createScriptManager()
+  manager.addResolver(() => ({ url: 'https://cdn/settings/v1.js', version: '1' }))
+
+  for (const [contentType, text] of [
+    [
+      'text/html; charset=utf-8',
+      () => Promise.resolve('<html><body>Service Unavailable</body></html>'),
+    ],
+    ['application/xml', () => Promise.resolve('<Error><Code>SlowDown</Code></Error>')],
+    ['text/plain', () => Promise.reject(new TypeError('body stream already read'))],
+  ] as const) {
+    stubFailure(503, contentType, text)
+    await assert.rejects(() => manager.load('settings'), { message: bare }, contentType)
+  }
+})
