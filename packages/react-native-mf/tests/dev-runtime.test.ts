@@ -35,6 +35,8 @@ function host(
 ) {
   const registered: string[] = []
   const types = new Map<string, unknown>()
+  /** react-refresh 처럼 같은 id 로 등록한 함수는 같은 family 다. 여기선 id 가 곧 family 다 */
+  const families = new Map<unknown, string>()
   const warnings: string[] = []
   const errors: unknown[][] = []
   const fetches: string[] = []
@@ -65,7 +67,9 @@ function host(
         register: (type: unknown, id: string) => {
           registered.push(id)
           types.set(id, type)
+          families.set(type, id)
         },
+        getFamilyByType: (type: unknown) => families.get(type),
         createSignatureFunctionForTransform: () => (type: unknown) => type,
         isLikelyComponentType: (type: unknown) =>
           typeof type === 'function' && /^[A-Z]/.test(type.name),
@@ -321,6 +325,115 @@ test('경계를 못 만나고 엔트리에 닿으면 아무것도 돌리지 않�
   ])
   assert.deepEqual(remote.trace.slice(booted), [])
   assert.equal(remote.refreshes(), 0)
+})
+
+/** 엔트리 → 페이지(경계) → 위젯(경계). 페이지는 위젯이 내보내는 이름과 그 컴포넌트를 그린다 */
+const widget = (body: string) => mod('./widget.tsx', body)
+const page = (leaf: ModuleSource) => [
+  mod('./index.ts', 'exports.Page = require("./page.tsx").Page;'),
+  component(
+    './page.tsx',
+    'Page',
+    'return Object.keys(w).map(function (name) { return name + "=" + w[name](); }).join(",");',
+    'var w = require("./widget.tsx");',
+  ),
+  leaf,
+]
+const Widget =
+  'function Widget() { return "w"; } $RefreshReg$(Widget, "Widget"); exports.Widget = Widget;'
+const WidgetAndBadge = `${Widget} function Badge() { return "b"; } $RefreshReg$(Badge, "Badge"); exports.Badge = Badge;`
+
+test('다시 돈 경계가 내보내는 이름이 바뀌면 그 importer 경계도 다시 돌린다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [widget(WidgetAndBadge)])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w')
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx', './page.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w,Badge=b')
+  assert.equal(remote.refreshes(), 1)
+  assert.deepEqual(remote.fullRefreshes, [])
+})
+
+test('같은 이름이 다른 컴포넌트를 가리키게 돼도(family 가 바뀌면) importer 경계를 다시 돌린다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [
+      update(2, [
+        widget(
+          'function Other() { return "o"; } $RefreshReg$(Other, "Other"); exports.Widget = Other;',
+        ),
+      ]),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx', './page.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=o')
+})
+
+test('모양이 그대로인 경계는 위로 넘기지 않는다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [widget(Widget.replace('"w"', '"w2"'))])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx'])
+  assert.equal(remote.latest('./widget.tsx Widget')(), 'w2')
+})
+
+test('모양이 바뀐 경계 위로 경계 없이 엔트리에 닿으면 이유를 달아 호스트를 다시 띄운다', async () => {
+  const remote = host(
+    [
+      mod('./index.ts', 'exports.version = 1; exports.Widget = require("./widget.tsx").Widget;'),
+      widget(Widget),
+    ],
+    { replies: [update(2, [widget(`${Widget} exports.label = "w";`)])] },
+  )
+  remote.boot()
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fullRefreshes, [
+    '[react-native-mf] "settings" 의 ./index.ts 위로 Fast Refresh 경계가 없다',
+  ])
+  assert.equal(remote.refreshes(), 0)
+})
+
+test('경계인 엔트리의 모양이 바뀌면 호스트가 쥔 옛 값을 이을 수 없어 호스트를 다시 띄운다', async () => {
+  const remote = host([mod('./index.tsx', Widget)], {
+    replies: [update(2, [mod('./index.tsx', WidgetAndBadge)])],
+  })
+  remote.boot()
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fullRefreshes, [
+    '[react-native-mf] "settings" 의 ./index.tsx 위로 Fast Refresh 경계가 없다',
+  ])
+})
+
+test('모양이 바뀐 경계의 importer 가 같은 적용에서 이미 다시 돌았으면 또 돌리지 않는다', async () => {
+  const [id, code] = page(widget(Widget))[1]
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [[id, code.replace('join(",")', 'join(";")')], widget(WidgetAndBadge)])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted).sort(), ['./page.tsx', './widget.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w;Badge=b')
 })
 
 test('새 글자 하나가 깨졌으면 아무 모듈도 바꾸지 않고, 오류를 알리고, 다음 갱신이 그 몫까지 싣는다', async () => {

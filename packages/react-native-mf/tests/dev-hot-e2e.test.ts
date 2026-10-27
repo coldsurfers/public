@@ -42,7 +42,10 @@ const screen = (label: string) =>
 before(async () => {
   await rm(projectDir, { recursive: true, force: true })
   await write('babel.config.cjs', "module.exports = { presets: ['@babel/preset-typescript'] }\n")
-  await write('src/index.ts', "import { Screen } from './screen'\n\nexport default Screen\n")
+  await write(
+    'src/index.ts',
+    "import { Screen } from './screen'\n\nglobalThis.entries = (globalThis.entries ?? 0) + 1\n\nexport default Screen\n",
+  )
   await write('src/screen.ts', screen('v1'))
   await write(
     'src/store.ts',
@@ -100,7 +103,7 @@ after(async () => {
   await server?.close()
 })
 
-test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 함수로 바뀌고, 싱글턴 모듈은 다시 돌지 않는다', async () => {
+test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 함수로 바뀌고, 싱글턴 모듈도 그 위 엔트리도 다시 돌지 않는다', async () => {
   const options: CompileOptions = {
     cwd: projectDir,
     src: 'src',
@@ -151,6 +154,7 @@ test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 �
   assert.notEqual(family.current, booted.default)
   assert.equal(family.current(), 'v2:1')
   assert.equal(vm.runInContext('globalThis.stores', realm), 1, '싱글턴 모듈이 다시 돌았다')
+  assert.equal(vm.runInContext('globalThis.entries', realm), 1, '모양이 같은데 경계 위로 넘겼다')
   assert.ok(
     lines.some((line) => /^hot v2 → localhost · 모듈 1개 · /.test(line)),
     lines.join('\n'),
