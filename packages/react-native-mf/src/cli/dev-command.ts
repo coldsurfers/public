@@ -1,14 +1,15 @@
 /**
  * `dev`. 미니앱 번들을 요청마다 구워 메모리에서 내준다. 주소는 `../dev-address` 가 정한다.
+ * 번들은 모듈 단위다(`./dev/`). 굽기와 상태는 `./dev/session` 이 들고, 여기는 HTTP 와 터미널이다.
  *
- * `./build` · `../deploy/config` 는 부를 때 연다. 인자 오류는 optional peer 없이 끝나야 한다.
+ * `./dev/*` · `../deploy/config` 는 부를 때 연다. 인자 오류는 optional peer 없이 끝나야 한다.
  */
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { stripVTControlCharacters } from 'node:util'
 import { DEV_PORT, devBundlePath, devBundleUrl } from '../dev-address'
-import type { Compiled } from './build'
 import { resolveConfigBuild } from './build-options'
+import type { DevSession } from './dev/session'
 
 export type DevArgs = { config?: string }
 
@@ -33,53 +34,12 @@ export function parseDevArgs(
   return { ok: true, args: { config } }
 }
 
-/** 한 번 굽기. 실패도 값이다. 응답과 터미널 로그가 같은 값에서 나온다 */
-export type Bake =
-  | { ok: true; code: string; ms: number }
-  | { ok: false; error: unknown; ms: number }
-
-/**
- * 굽기 큐. 칸이 둘이다. 도는 것(`running`)과 그다음(`next`).
- *
- * 요청은 **자기가 도착한 뒤 시작한 굽기만** 받는다. 도는 중에 온 요청은 모두 `next` 하나를 나눠
- * 쓴다. 고친 뒤 리로드했는데 고치기 전 번들이 오는 일이 없고, transpile 자리를 같이 쓰는 굽기가
- * 겹쳐 돌지 않는다. 마지막 성공본을 들지 않으니 실패한 뒤 옛 번들을 내주지도 않는다.
- */
-export function createBakeQueue(compile: () => Promise<Compiled>): () => Promise<Bake> {
-  let running: Promise<Bake> | undefined
-  let next: Promise<Bake> | undefined
-
-  const start = () => {
-    const startedAt = performance.now()
-    const ms = () => performance.now() - startedAt
-    const baking = compile().then(
-      ({ code }): Bake => ({ ok: true, code, ms: ms() }),
-      (error: unknown): Bake => ({ ok: false, error, ms: ms() }),
-    )
-    running = baking
-    baking.then(() => {
-      if (running === baking) running = undefined
-    })
-    return baking
-  }
-
-  return () => {
-    if (next) return next
-    if (!running) return start()
-    next = running.then(() => {
-      next = undefined
-      return start()
-    })
-    return next
-  }
-}
-
 const PLAIN_TEXT = 'text/plain; charset=utf-8'
 
 export type DevServer = { url: string; close(): Promise<void> }
 
 /**
- * 테스트 이음새다. `compile` 을 주입받아 esbuild 없이 HTTP 동작을 판정하고, 테스트는 `port: 0` 을
+ * 테스트 이음새다. 세션의 굽기를 주입받아 esbuild 없이 HTTP 동작을 판정하고, 테스트는 `port: 0` 을
  * 준다. CLI 는 언제나 `DEV_PORT` 다.
  *
  *   GET devBundlePath(name)  구웠다   → 200 application/javascript · no-store
@@ -90,13 +50,12 @@ export type DevServer = { url: string; close(): Promise<void> }
  */
 export async function startDevServer(input: {
   name: string
-  compile: () => Promise<Compiled>
+  session: DevSession
   port: number
   log: (line: string) => void
 }): Promise<DevServer> {
-  const { name, log } = input
+  const { name, session, log } = input
   const path = devBundlePath(name)
-  const bake = createBakeQueue(input.compile)
 
   const server = createServer(async (request, response) => {
     const requested = `${request.method} ${request.url}`
@@ -107,7 +66,9 @@ export async function startDevServer(input: {
       return
     }
 
-    const result = await bake()
+    // 기기가 부른 주소 그대로 번들에 싣는다. iOS 시뮬레이터는 localhost, Android 에뮬레이터는 10.0.2.2 다
+    const host = request.headers.host ?? `localhost:${(server.address() as AddressInfo).port}`
+    const result = await session.bundle(`http://${host}`)
     const took = `${(result.ms / 1000).toFixed(1)} s`
     if (result.ok) {
       const size = `${(Buffer.byteLength(result.code) / 1024).toFixed(1)} kB`
@@ -118,11 +79,10 @@ export async function startDevServer(input: {
       return
     }
 
-    const message = result.error instanceof Error ? result.error.message : String(result.error)
-    log(`${requested} 500 · ${took}\n${message}`)
+    log(`${requested} 500 · ${took}\n${result.message}`)
     response
       .writeHead(500, { 'content-type': PLAIN_TEXT })
-      .end(`${name} 를 굽지 못했다\n${stripVTControlCharacters(message)}`)
+      .end(`${name} 를 굽지 못했다\n${stripVTControlCharacters(result.message)}`)
   })
 
   await new Promise<void>((resolve, reject) => {
@@ -167,12 +127,22 @@ export async function runDevCommand(args: DevArgs, cwd: string): Promise<number>
     return 1
   }
 
-  const { compileBundle } = await import('./build')
+  // 굽기마다 다시 푼다. `sharedFrom` 매니페스트를 호스트가 다시 내면 다음 굽기가 본다
+  const resolveOptions = () => resolveConfigBuild(config, cwd)
+  const options = await resolveOptions()
+  const { buildRuntime, createModuleCompiler, entryId } = await import('./dev/modules')
+  const { createDevSession } = await import('./dev/session')
   let server: DevServer
   try {
     server = await startDevServer({
       name: config.name,
-      compile: async () => compileBundle(await resolveConfigBuild(config, cwd), 'dev'),
+      session: createDevSession({
+        name: config.name,
+        entry: entryId(options),
+        epoch: Date.now().toString(36),
+        compile: createModuleCompiler(resolveOptions),
+        runtime: () => buildRuntime({ blockScoping: options.blockScoping }),
+      }),
       port: DEV_PORT,
       log: out,
     })

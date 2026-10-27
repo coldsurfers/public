@@ -524,7 +524,7 @@ $ pnpm dev
 [react-native-mf] 요청마다 다시 굽는다. config · babel config · 의존을 바꾸면 다시 띄운다
 [react-native-mf] GET /settings/index.bundle.js 200 · 0.3 s · 3.3 kB
 [react-native-mf] GET /settings/index.bundle.js 500 · 0.1 s
-/…/settings-mini-app/src/index.tsx: Unterminated string constant. (4:22)
+src/index.tsx: Unterminated string constant. (4:22)
 ```
 
 | 하는 일 | 어떻게 |
@@ -534,7 +534,7 @@ $ pnpm dev
 | 굽는 때 | 요청마다. 요청은 **자기가 온 뒤 시작한 굽기만** 받는다. 굽는 중에 온 요청 여럿은 다음 굽기 하나를 나눠 받는다 |
 | 실패 | 500 `text/plain` 에 굽기 오류를 싣고, 터미널에는 색 그대로 찍는다. 서버는 살아 있고 옛 번들을 대신 내주지 않는다 |
 | 다른 경로 | 404. 이 서버가 굽는 이름과 경로를 본문에 적는다 |
-| 산출물 | 메모리에서 바로 내준다. `outFile` 을 쓰지 않고 중간 산출물은 `build/.transpiled-dev/<name>/` 에 따로 둔다. `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
+| 산출물 | 메모리에서 바로 내준다. `outFile` 도 중간 산출물도 쓰지 않아서 `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
 
 ⚠️ **config 와 babel config 는 띄울 때 한 번 읽는다.** babel 은 한 프로세스에서 읽은 config 를 다시
 읽지 않는다. 실측으로, 같은 프로세스에서 `babel.config.cjs` 의 프리셋을 지워도 옛 프리셋으로 구웠다.
