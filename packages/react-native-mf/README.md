@@ -55,13 +55,9 @@ billets-app 과 settings-mini-app 이 이 패키지 밖에서 손으로 쓰는 �
 
 - [ ] shared 싱글턴을 릴리즈 빌드 · Android · bottom-sheet 같은 위층 라이브러리에서 확인한다. 지금은 iOS Debug 에서만 확인했다
 
-**진행 중.**
-
-- [ ] 번들 fetch 가 네트워크에서 거절돼도 에러에 이름과 URL 이 남는다([#319](https://github.com/coldsurfers/public/pull/319))
-
 **판정.** 실험으로 정해지지 않아서 사람이 고른다.
 
-- [ ] re.pack 으로 갈아탈지(#85 미결 2). 프레임워크가 되면 같은 자리에 선다. 우리 쪽 근거는 호스트 번들러를 Metro 그대로 두고 미니앱만 esbuild 로 굽는 것이다
+- [x] re.pack 으로 갈아타지 않는다(2026-10-27, #85 미결 2). 쓰는 기능(shared 한 벌 · 원격 번들 로드 · 배포 채널)에 비해 너무 크다. 호스트 번들러는 Metro 그대로 두고 미니앱만 esbuild 로 굽는다
 - [ ] 미니앱 배포 CI 를 둘지. 지금은 미니앱 레포에서 로컬로 `deploy -i` 를 부른다
 - [ ] 서버 매니페스트 라우트와 `RemoteAppManifestDTO` 를 지울지. 앱은 더는 읽지 않는다
 - [ ] Phase 4 OTA 결합을 닫을지. 채널은 이미 hot-updater 채널을 따른다
