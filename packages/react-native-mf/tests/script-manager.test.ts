@@ -311,3 +311,14 @@ test('HTML · XML 에러 페이지는 싣지 않고, 본문을 못 읽어도 원
     await assert.rejects(() => manager.load('settings'), { message: bare }, contentType)
   }
 })
+
+test('headers 가 없는 실패 스텁에도 원래 에러를 던진다', async () => {
+  // 소비처 jest mock 에 흔한 모양이다. 본문을 붙이려다 TypeError 로 바뀌면 안 된다
+  globals.fetch = (() => Promise.resolve({ ok: false, status: 500 })) as unknown as typeof fetch
+  const manager = createScriptManager()
+  manager.addResolver(() => ({ url: 'https://cdn/settings/v1.js', version: '1' }))
+
+  await assert.rejects(() => manager.load('settings'), {
+    message: '[react-native-mf] "settings" 번들을 받지 못했다 (500 https://cdn/settings/v1.js).',
+  })
+})

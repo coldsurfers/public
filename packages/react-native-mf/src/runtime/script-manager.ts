@@ -70,13 +70,17 @@ function share<T>(pending: Map<string, Promise<T>>, name: string, start: () => P
 
 /**
  * 실패 응답이 `text/plain` 이면 본문 앞 2000자를 에러에 붙인다. `react-native-mf dev` 의 굽기 오류가
- * 기기에 그대로 뜬다. CDN 의 HTML · XML 에러 페이지는 붙이지 않는다. 본문을 못 읽으면 안 붙일 뿐이다
+ * 기기에 그대로 뜬다. CDN 의 HTML · XML 에러 페이지는 붙이지 않는다. 헤더나 본문을 못 읽으면 안 붙일 뿐이다
  */
 async function plainTextBody(response: Response): Promise<string> {
-  const type = response.headers.get('content-type') ?? ''
-  if (!type.toLowerCase().startsWith('text/plain')) return ''
-  const body = await response.text().catch(() => '')
-  return body ? `\n${body.slice(0, 2000)}` : ''
+  try {
+    const type = response.headers.get('content-type') ?? ''
+    if (!type.toLowerCase().startsWith('text/plain')) return ''
+    const body = await response.text()
+    return body ? `\n${body.slice(0, 2000)}` : ''
+  } catch {
+    return ''
+  }
 }
 
 export function createScriptManager(init: { storage?: ScriptStorage } = {}): ScriptManager {
