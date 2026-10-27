@@ -7,7 +7,7 @@
  * 파일을 저장하고, 기기가 적용할 때까지 기다리고, react-refresh 가 본 것을 본다.
  */
 import assert from 'node:assert/strict'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import { after, before, test } from 'node:test'
@@ -38,22 +38,6 @@ const screen = (label: string) =>
     '}',
     '',
   ].join('\n')
-
-before(async () => {
-  await rm(projectDir, { recursive: true, force: true })
-  await write('babel.config.cjs', "module.exports = { presets: ['@babel/preset-typescript'] }\n")
-  await write(
-    'src/index.ts',
-    "import { Screen } from './screen'\n\nglobalThis.entries = (globalThis.entries ?? 0) + 1\n\nexport default Screen\n",
-  )
-  await write('src/screen.ts', screen('v1'))
-  await write(
-    'src/store.ts',
-    'globalThis.stores = (globalThis.stores ?? 0) + 1\n\nexport const store = { id: globalThis.stores }\n',
-  )
-})
-
-after(() => rm(projectDir, { recursive: true, force: true }))
 
 type Family = { current: () => string }
 type RefreshRuntime = {
@@ -95,15 +79,29 @@ async function until(condition: () => boolean, what: string) {
   }
 }
 
-let server: DevServer | undefined
+let server: DevServer
 let stopped = false
+const lines: string[] = []
+const errors: unknown[][] = []
+let hot: Awaited<ReturnType<typeof installRefresh>>
+let realm: vm.Context
+/** 부팅한 `Screen` 의 family. 저장할 때마다 `current` 가 새 함수로 바뀐다 */
+let family: Family
+let booted: () => string
 
-after(async () => {
-  stopped = true
-  await server?.close()
-})
+before(async () => {
+  await rm(projectDir, { recursive: true, force: true })
+  await write('babel.config.cjs', "module.exports = { presets: ['@babel/preset-typescript'] }\n")
+  await write(
+    'src/index.ts',
+    "import { Screen } from './screen'\n\nglobalThis.entries = (globalThis.entries ?? 0) + 1\n\nexport default Screen\n",
+  )
+  await write('src/screen.ts', screen('v1'))
+  await write(
+    'src/store.ts',
+    'globalThis.stores = (globalThis.stores ?? 0) + 1\n\nexport const store = { id: globalThis.stores }\n',
+  )
 
-test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 함수로 바뀌고, 싱글턴 모듈도 그 위 엔트리도 다시 돌지 않는다', async () => {
   const options: CompileOptions = {
     cwd: projectDir,
     src: 'src',
@@ -113,7 +111,6 @@ test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 �
     babelConfig: join(projectDir, 'babel.config.cjs'),
     blockScoping: true,
   }
-  const lines: string[] = []
   server = await startDev({
     name: 'settings',
     entry: entryId(options),
@@ -125,33 +122,44 @@ test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 �
   })
 
   // 테스트가 끝난 뒤의 hot 요청과 물러남은 아무 데도 닿지 않게 한다
-  const realm = vm.createContext({
-    console: { warn: () => {}, error: (...args: unknown[]) => assert.fail(String(args)) },
+  realm = vm.createContext({
+    console: { warn: () => {}, error: (...args: unknown[]) => errors.push(args) },
     fetch: (url: string) => (stopped ? new Promise(() => {}) : fetch(url)),
     setTimeout: (callback: () => void, ms: number) => {
       if (!stopped) setTimeout(callback, ms)
     },
     [SHARED_SCOPE_KEY]: {},
   })
-  const { runtime, refreshed, fullRefreshes } = await installRefresh(realm)
+  hot = await installRefresh(realm)
 
   const bundle = await fetch(server.url)
   assert.equal(bundle.status, 200)
   vm.runInContext(await bundle.text(), realm)
-  const booted = vm.runInContext(
+  booted = vm.runInContext(
     `globalThis[${JSON.stringify(REMOTE_REGISTRY_KEY)}].settings`,
     realm,
-  )
-  const family = runtime.getFamilyByType(booted.default)
-  assert.ok(family, '부팅한 컴포넌트가 family 로 등록되지 않았다')
+  ).default
+  const found = hot.runtime.getFamilyByType(booted)
+  assert.ok(found, '부팅한 컴포넌트가 family 로 등록되지 않았다')
+  family = found
+})
+
+after(async () => {
+  stopped = true
+  await server?.close()
+  await rm(projectDir, { recursive: true, force: true })
+})
+
+test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 함수로 바뀌고, 싱글턴 모듈도 그 위 엔트리도 다시 돌지 않는다', async () => {
   assert.equal(family.current(), 'v1:1')
 
   await write('src/screen.ts', screen('v2'))
-  await until(() => refreshed.length > 0, '저장한 컴포넌트 적용')
+  await until(() => hot.refreshed.length > 0, '저장한 컴포넌트 적용')
 
-  assert.deepEqual(fullRefreshes, [])
-  assert.ok(refreshed[0]?.updatedFamilies.has(family), 'state 를 지키는 갱신이 아니다')
-  assert.notEqual(family.current, booted.default)
+  assert.deepEqual(hot.fullRefreshes, [])
+  assert.deepEqual(errors, [])
+  assert.ok(hot.refreshed[0]?.updatedFamilies.has(family), 'state 를 지키는 갱신이 아니다')
+  assert.notEqual(family.current, booted)
   assert.equal(family.current(), 'v2:1')
   assert.equal(vm.runInContext('globalThis.stores', realm), 1, '싱글턴 모듈이 다시 돌았다')
   assert.equal(vm.runInContext('globalThis.entries', realm), 1, '모양이 같은데 경계 위로 넘겼다')
@@ -159,4 +167,42 @@ test('컴포넌트 파일을 저장하면 리로드 없이 그 family 가 새 �
     lines.some((line) => /^hot v2 → localhost · 모듈 1개 · /.test(line)),
     lines.join('\n'),
   )
+})
+
+test('파일을 더하고 · 지우고 · 이름을 바꿔도 리로드 없이 갈아 끼운다', async () => {
+  const importing = (from: string, name: string) =>
+    [
+      `import { ${name} } from './${from}'`,
+      "import { store } from './store'",
+      '',
+      'export function Screen(): string {',
+      `  return ${name}() + ':' + store.id`,
+      '}',
+      '',
+    ].join('\n')
+  const applied = (output: string) => until(() => family.current() === output, output)
+
+  await write('src/badge.ts', "export function badge(): string {\n  return 'badge'\n}\n")
+  await write('src/screen.ts', importing('badge', 'badge'))
+  await applied('badge:1')
+
+  await write('src/screen.ts', screen('v3'))
+  await rm(join(projectDir, 'src/badge.ts'))
+  await applied('v3:1')
+
+  await write('src/label.ts', "export function label(): string {\n  return 'label'\n}\n")
+  await write('src/screen.ts', importing('label', 'label'))
+  await applied('label:1')
+  await rename(join(projectDir, 'src/label.ts'), join(projectDir, 'src/tag.ts'))
+  await write('src/screen.ts', importing('tag', 'label'))
+  await applied('label:1')
+  await until(
+    () =>
+      lines.some((line) => / · tag\.ts.*label\.ts 지움 · | · label\.ts 지움.*tag\.ts/.test(line)),
+    'tag.ts 를 더하고 label.ts 를 지운 굽기',
+  )
+
+  assert.deepEqual(hot.fullRefreshes, [])
+  assert.equal(vm.runInContext('globalThis.stores', realm), 1, '싱글턴 모듈이 다시 돌았다')
+  assert.equal(vm.runInContext('globalThis.entries', realm), 1)
 })

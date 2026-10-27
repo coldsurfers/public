@@ -640,6 +640,39 @@ test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면
   )
 })
 
+test('갱신 하나로 파일 이름을 바꾸면 새 모듈로 돌고, 옛 id 는 지워져 더는 풀리지 않는다', async () => {
+  const screen = (from: string) =>
+    component('./screen.tsx', 'Screen', `return require("${from}").label;`, `require("${from}");`)
+  const remote = host(
+    [
+      // 엔트리의 require 를 밖으로 연다. 지운 id 가 아직 풀리는지 본다
+      mod(
+        './index.ts',
+        'require("./screen.tsx"); exports.reach = function (id) { return require(id); };',
+      ),
+      screen('./old.ts'),
+      mod('./old.ts', 'exports.label = "old";'),
+    ],
+    {
+      replies: [
+        update(2, [screen('./new.ts'), mod('./new.ts', 'exports.label = "new";')], ['./old.ts']),
+      ],
+    },
+  )
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./screen.tsx', './new.ts'])
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'new')
+  assert.throws(
+    () => remote.remote().settings.reach('./old.ts'),
+    /shared 모듈 "\.\/old\.ts" 이 등록돼 있지 않다/,
+  )
+  assert.equal(remote.refreshes(), 1)
+})
+
 test('fetch 가 거절되면 한 번 경고하고 250 ms 부터 5 s 까지 물러나며, 붙으면 처음으로 돌아간다', async () => {
   const outage = Array<Scripted>(6).fill('reject')
   const remote = host(app(), {
