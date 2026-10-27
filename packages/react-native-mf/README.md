@@ -557,8 +557,13 @@ import { createDevResolver, scriptManager } from '@coldsurfers/react-native-mf'
 // 기기에서 본 개발 머신. iOS 시뮬레이터는 localhost, Android 에뮬레이터는 10.0.2.2
 const hostname = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
 
-scriptManager.addResolver(createDevResolver({ hostname, names: ['settings'] }))
+// createManifestResolver 보다 먼저 단다. 빠른 시작 3 의 registerRemote 는 이 이름에 걸지 않는다
+if (__DEV__) scriptManager.addResolver(createDevResolver({ hostname, names: ['settings'] }))
 ```
+
+⚠️ **resolver 는 단 순서대로 묻고 처음 맡은 쪽이 이긴다.** manifest resolver 뒤에 달면 dev 서버를 한 번도
+부르지 않는다. `__DEV__` 로 막지 않으면 릴리스 빌드도 개발 머신으로 간다. 받기에 실패해도 다음 resolver 로
+넘어가지 않는다. `registerRemote` 로 이미 꽂은 이름은 `load` 가 받지 않으므로 둘을 같이 걸지 않는다.
 
 주소는 dev 서버와 같은 함수로 만들어서 호스트에 포트와 경로를 적지 않는다. `names` 에 없는 이름은 다음
 resolver 로 넘기고, 맡은 이름은 `cache: false` 라 리로드마다 새로 받는다. 굽기가 실패하면 `load` 가 던지는
