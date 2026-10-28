@@ -246,6 +246,38 @@ test('tsconfig paths 별칭으로 연 src 파일은 지역 모듈이다. 고치�
   assert.deepEqual({ ...remote }, { version: 2, same: true })
 })
 
+test('굽는 사이 저장한 글자는 그 굽기에 섞이지 않고 다음 굽기가 본다', async () => {
+  // babel 이 파일을 처음 변환하는 순간 깨진 글자로 저장한다. 굽기 한 번의 한가운데다
+  await write(
+    'save-mid-pass.cjs',
+    "module.exports = () => ({ visitor: { Program(_, state) { const save = globalThis.__devModulesSave; if (save?.file === state.filename) { globalThis.__devModulesSave = undefined; require('node:fs').writeFileSync(save.file, save.contents) } } } })\n",
+  )
+  await write(
+    'babel.save.cjs',
+    `module.exports = { presets: ['@babel/preset-typescript'], plugins: [${JSON.stringify(join(projectDir, 'save-mid-pass.cjs'))}] }\n`,
+  )
+  await write('race-src/index.ts', "import { value } from './value'\n\nexport default { value }\n")
+  await write('race-src/value.ts', 'export const value = 1\n')
+  const raceOptions = options({ src: 'race-src', babelConfig: join(projectDir, 'babel.save.cjs') })
+  const compile = createModuleCompiler(async () => raceOptions)
+  ;(globalThis as { __devModulesSave?: unknown }).__devModulesSave = {
+    file: join(projectDir, 'race-src/value.ts'),
+    contents: 'export const value = (\n',
+  }
+
+  const during = await compile()
+  const { remote } = await boot(during, raceOptions)
+  assert.equal(remote.value, 1)
+  assert.equal(compiled(during).modules.get('./value.ts')?.source, 'export const value = 1\n')
+
+  const next = await compile()
+  assert.ok(!next.ok)
+  assert.deepEqual(
+    next.errors.map(({ file }) => file),
+    ['race-src/value.ts'],
+  )
+})
+
 test('깨진 파일과 못 푸는 import 를 한 번에 파일마다 다 적는다', async () => {
   await write('broken-src/index.ts', "import './a'\nimport './b'\n")
   await write('broken-src/a.ts', 'export const a = (\n')

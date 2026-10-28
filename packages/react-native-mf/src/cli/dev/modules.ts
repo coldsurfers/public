@@ -111,8 +111,9 @@ export function createModuleCompiler(
             : { path: resolved.path }
         })
 
+        // 굽기 한 번에 파일은 한 번만 읽는다. 링크가 다시 읽으면 그 사이 저장한 글자가 그래프와 어긋난다
         build.onLoad({ filter: /.*/ }, async ({ path }) => {
-          const source = await readFile(path, 'utf8')
+          const source = sources.get(path) ?? (await readFile(path, 'utf8'))
           sources.set(path, source)
           if (!path.startsWith(`${srcDir}${sep}`) || !SOURCE_EXTENSION.test(path)) return undefined
           try {
@@ -165,9 +166,17 @@ export function createModuleCompiler(
       })
       const outputs = new Map(linked.outputFiles.map((output) => [output.path, output.text]))
       files.forEach((path, index) => {
-        const code = outputs.get(join(options.cwd, LINK_OUTDIR, `${index}.js`)) ?? ''
-        modules.set(toModuleId(srcDir, path), { source: sources.get(path) ?? '', code })
+        const code = outputs.get(join(options.cwd, LINK_OUTDIR, `${index}.js`))
+        if (code === undefined) {
+          errors.push({
+            file: relative(options.cwd, path),
+            message: 'esbuild 가 모듈을 내지 않았다',
+          })
+        } else {
+          modules.set(toModuleId(srcDir, path), { source: sources.get(path) ?? '', code })
+        }
       })
+      if (errors.length > 0) return { ok: false, errors }
 
       const specs = [...vendorSpecs].sort()
       if (specs.length > 0) {
@@ -186,7 +195,7 @@ export function createModuleCompiler(
         }
       }
     } catch (error) {
-      return { ok: false, errors: buildErrors(error) }
+      return { ok: false, errors: [...errors, ...buildErrors(error)] }
     }
 
     if (options.blockScoping) {
