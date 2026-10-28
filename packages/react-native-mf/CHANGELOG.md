@@ -1,5 +1,21 @@
 # @coldsurfers/react-native-mf
 
+## 0.7.0
+
+### Minor Changes
+
+- [#323](https://github.com/coldsurfers/public/pull/323) [`e54267c`](https://github.com/coldsurfers/public/commit/e54267c6805bc10063ed5c790d573e5560ffd162) Thanks [@yungblud](https://github.com/yungblud)! - `dev` 명령과 호스트용 `createDevResolver({ hostname, names })` 를 더한다. `dev` 는 `react-native-mf.config.*` 를 읽고 `http://<hostname>:8082/<name>/index.bundle.js` 에서 요청마다 미니앱을 구워 내준다. 굽기에 실패하면 오류를 500 `text/plain` 으로 보내고, `scriptManager` 는 실패 응답이 `text/plain` 이면 그 본문을 에러에 붙인다. `s3Storage` 는 `bucket` 이 비어 있어도 만들어지고, 읽거나 쓸 때 던진다.
+
+### Patch Changes
+
+- [#326](https://github.com/coldsurfers/public/pull/326) [`bc49244`](https://github.com/coldsurfers/public/commit/bc492447c4937ba14c125ec1f5331d4178d1c36c) Thanks [@yungblud](https://github.com/yungblud)! - `dev` 의 굽기가 실패하면 오류 전부가 기기 LogBox 에도 뜬다. 기기는 고칠 때까지 마지막 성공 코드로 돌고, 고친 뒤의 갱신이 그 사이 바뀐 모듈을 한 번에 싣는다. 갱신 중 다시 돈 모듈이 던지면 그 오류가 던진 자리의 스택과 함께 LogBox 에 뜨고, 그 모듈은 마지막 성공 값을 지키고, 화면은 refresh 없이 마지막 성공 코드에 머문다. 던진 모듈은 다음 갱신이 다시 돌린다. 고치지 않은 채 같은 오류로 계속 던지면 다시 띄우지 않고, 그동안 다른 파일 저장은 화면에 간다. 다시 돈 경계가 내보내는 이름이나 컴포넌트가 바뀌면 그 위 경계까지 한 번 더 오르고, 경계 없이 엔트리에 닿으면 앱을 다시 띄운다. 갱신이 호스트에 없는 shared 모듈을 새로 읽으면 빠진 키를 전부 이름 대고 아무것도 적용하지 않는다. 모듈마다 붙는 `sourceURL` 자리에서 그 모듈의 지금 글자를 내준다. 기기 스택과 LogBox 가 가리키는 그 주소는 curl · 브라우저로 열린다.
+
+- [#325](https://github.com/coldsurfers/public/pull/325) [`bbb1ac9`](https://github.com/coldsurfers/public/commit/bbb1ac9a414e8ac2c3047db0f371a10ce8229b4f) Thanks [@yungblud](https://github.com/yungblud)! - `dev` 가 src 를 감시한다. 저장하면 바뀐 모듈만 기기로 보내 앱을 다시 띄우지 않고 갈아 끼운다. `useState` 는 남고, 모듈 최상단 싱글턴(`new QueryClient` 같은)은 그 모듈이나 그 모듈이 의존하는 모듈을 고쳤을 때만 다시 만들어진다. 규칙은 Metro 의 Fast Refresh 와 같다 — 바뀐 모듈에서 컴포넌트만 내보내는 모듈(refresh 경계)까지 다시 돌고, 경계 없이 엔트리에 닿으면 앱을 다시 띄운다. 호스트 배선(`createDevResolver` 한 줄)은 그대로다. 갱신을 받는 코드는 dev 번들에 실려 온다. `dev` 는 띄우자마자 첫 굽기를 돌려서 babel 콜드 스타트가 첫 요청에 실리지 않는다. 굽기가 실패하면 기기는 고칠 때까지 마지막 성공 코드로 돈다.
+
+- [#324](https://github.com/coldsurfers/public/pull/324) [`2ac5a7c`](https://github.com/coldsurfers/public/commit/2ac5a7c1d6b0032e632900a4c8666b9bda45371e) Thanks [@yungblud](https://github.com/yungblud)! - `dev` 가 내는 번들이 모듈 단위로 바뀐다. 엔트리에서 닿는 소스 파일마다 CJS 모듈 하나가 되고, 번들 앞에 그 모듈을 돌리는 런타임이 실린다. 모듈은 react-refresh 로 컴포넌트를 등록한다 — `react-refresh/babel` 은 미니앱의 `react-native` 옆에서 찾는다. 번들은 첫 모듈을 돌리기 전에 빠진 shared 키를 한꺼번에 이름 대고, 굽기에 실패하면 500 본문에 깨진 파일과 못 푼 import 를 전부 적는다. `dev` 는 띄울 때 config 의 `build` 를 한 번 풀어서, `sharedFrom` 매니페스트를 못 읽으면 첫 요청이 아니라 띄울 때 실패한다.
+
+  **build 레인도 바뀐다.** config 의 `build.babelConfig` 를 상대 경로로 적으면 이제 미니앱 루트 기준 파일로 푼다. 전에는 babel 이 모듈 이름으로 찾아서 `babel.config.cjs` 처럼 `./` 없이 적으면 `Cannot find module` 로 실패했다. `build --babel-config` 플래그는 그대로다.
+
 ## 0.6.1
 
 ### Patch Changes
