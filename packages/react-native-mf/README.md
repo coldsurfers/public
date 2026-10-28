@@ -414,7 +414,7 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 (`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
 없앤다 — 미니앱 자기 코드가 같은 패턴을 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
 
-중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다(`dev` 는 `build/.transpiled-dev/<name>/`). 위치 조건이 둘이다.
+중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 위치 조건이 둘이다.
 
 - **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
   레포 밖(`os.tmpdir()`)에 두면 미니앱 의존성이 통째로 안 잡힌다
@@ -520,7 +520,7 @@ $ pnpm dev
 [react-native-mf] 요청마다 다시 굽는다. config · babel config · 의존을 바꾸면 다시 띄운다
 [react-native-mf] GET /settings/index.bundle.js 200 · 0.3 s · 3.3 kB
 [react-native-mf] GET /settings/index.bundle.js 500 · 0.1 s
-/…/settings-mini-app/src/index.tsx: Unterminated string constant. (4:22)
+src/index.tsx: Unterminated string constant. (4:22)
 ```
 
 | 하는 일 | 어떻게 |
@@ -530,7 +530,7 @@ $ pnpm dev
 | 굽는 때 | 요청마다. 요청은 **자기가 온 뒤 시작한 굽기만** 받는다. 굽는 중에 온 요청 여럿은 다음 굽기 하나를 나눠 받는다 |
 | 실패 | 500 `text/plain` 에 굽기 오류를 싣고, 터미널에는 색 그대로 찍는다. 서버는 살아 있고 옛 번들을 대신 내주지 않는다 |
 | 다른 경로 | 404. 이 서버가 굽는 이름과 경로를 본문에 적는다 |
-| 산출물 | 메모리에서 바로 내준다. `outFile` 을 쓰지 않고 중간 산출물은 `build/.transpiled-dev/<name>/` 에 따로 둔다. `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
+| 산출물 | 메모리에서 바로 내준다. `outFile` 도 중간 산출물도 쓰지 않아서 `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
 
 ⚠️ **config 와 babel config 는 띄울 때 한 번 읽는다.** babel 은 한 프로세스에서 읽은 config 를 다시
 읽지 않는다. 실측으로, 같은 프로세스에서 `babel.config.cjs` 의 프리셋을 지워도 옛 프리셋으로 구웠다.

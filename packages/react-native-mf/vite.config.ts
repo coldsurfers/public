@@ -10,6 +10,7 @@ import dts from 'vite-plugin-dts'
  *   `./cli`     `run` — `build` · `deploy` · `rollback` 명령. `./esbuild` 를 감싸는 껍데기
  *   `bin`       exports 밖. `run` 을 실행만 한다(`package.json` `bin`)
  *   `./deploy`  `react-native-mf.config.ts` 가 import 하는 `defineConfig` · `s3Storage`
+ *   `dev-runtime` exports 밖. dev 서버가 이 파일을 다시 묶어 기기로 보낸다(`src/cli/dev/modules.ts`)
  *
  * `esbuild` 는 optional peer 다 — 런타임 레인만 쓰는 소비자(앱)는 안 깔아도 된다.
  *
@@ -27,6 +28,7 @@ export default defineConfig({
         cli: 'src/cli/index.ts',
         bin: 'src/cli/bin.ts',
         deploy: 'src/deploy/index.ts',
+        'dev-runtime': 'src/cli/dev/runtime.ts',
       },
       formats: ['es'],
     },

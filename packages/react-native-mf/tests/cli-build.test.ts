@@ -13,13 +13,13 @@
  * 뿐이라 tsc 시야 밖인 건 그대로다.
  */
 import assert from 'node:assert/strict'
-import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { after, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
 import { compileBundle, runBuild, TRANSPILE_ROOT } from '../src/cli/build'
-import type { BuildOptions } from '../src/cli/build-options'
+import { type BuildOptions, resolveConfigBuild } from '../src/cli/build-options'
 import { REMOTE_REGISTRY_KEY } from '../src/runtime/registry'
 import { SHARED_SCOPE_KEY } from '../src/runtime/shared-scope'
 
@@ -133,49 +133,24 @@ test('산출물이 strict 모드다 — 중간 산출물을 node_modules 아래 
   const code = await readFile(outFile, 'utf8')
 
   assert.match(code.split('\n')[0], /^"use strict";$/, '최상위 "use strict" 가 사라졌다')
-  for (const [lane, root] of Object.entries(TRANSPILE_ROOT)) {
-    assert.ok(!root.includes('node_modules'), `${lane} 레인 중간 산출물이 node_modules 아래다`)
-  }
-})
-
-test('dev 레인 굽기는 build 레인 중간 산출물도 outFile 도 건드리지 않는다', async () => {
-  // dev 가 떠 있는 채로 deploy 하면 두 굽기가 겹친다. transpile 은 rm 부터 하므로 자리가 같으면
-  // 한쪽이 다른 쪽 중간 산출물을 지운다.
-  await runBuild(options({ outFile: 'build/lane.js' }))
-  const sentinel = join(projectDir, TRANSPILE_ROOT.build, 'settings', 'sentinel.txt')
-  await writeFile(sentinel, 'build 레인')
-
-  const devOptions = options({ outFile: 'build/dev-never-written.js' })
-  const { code } = await compileBundle(devOptions, 'dev')
-
-  assert.equal(
-    await readFile(sentinel, 'utf8'),
-    'build 레인',
-    'dev 굽기가 build 레인 자리를 지웠다',
-  )
-  await assert.rejects(
-    stat(join(projectDir, devOptions.outFile)),
-    /ENOENT/,
-    'dev 굽기가 파일을 썼다',
-  )
-  assert.equal(runInVm(code).settings.default('a').label, 'a0!')
+  assert.ok(!TRANSPILE_ROOT.includes('node_modules'), '중간 산출물이 node_modules 아래다')
 })
 
 test('실패한 굽기는 남은 변환이 다 쓴 뒤에 던진다. 다음 굽기의 rm 과 겹치지 않는다', async () => {
-  // dev 큐는 실패가 오면 바로 다음 굽기를 연다. 먼저 던지고 쓰기가 남으면 다음 굽기의
-  // rm 이 ENOTEMPTY 로 터지고, 지운 소스의 산출물이 다음 굽기 자리에 남는다.
+  // 한 프로세스에서 다시 구우면(이 파일의 테스트들처럼) 먼저 던지고 남은 쓰기가 다음 굽기의
+  // rm 을 ENOTEMPTY 로 터뜨리고, 지운 소스의 산출물이 다음 굽기 자리에 남는다.
   await write('straggler-src/a.ts', 'export const a = (\n')
   await write('straggler-src/index.ts', "import { a } from './a'\nexport default () => a\n")
   const body = Array.from({ length: 50 }, (_, i) => `export const v${i}: number = ${i}`).join('\n')
   for (let i = 0; i < 60; i += 1) await write(`straggler-src/many/x${i}.ts`, body)
 
-  const devDir = join(projectDir, TRANSPILE_ROOT.dev, 'settings')
-  await assert.rejects(compileBundle(options({ src: 'straggler-src' }), 'dev'))
-  const atRejection = await readdir(devDir, { recursive: true })
+  const transpileDir = join(projectDir, TRANSPILE_ROOT, 'settings')
+  await assert.rejects(compileBundle(options({ src: 'straggler-src' })))
+  const atRejection = await readdir(transpileDir, { recursive: true })
   await new Promise((settle) => setTimeout(settle, 300))
 
   assert.deepEqual(
-    (await readdir(devDir, { recursive: true })).sort(),
+    (await readdir(transpileDir, { recursive: true })).sort(),
     atRejection.sort(),
     '던진 뒤에도 transpile 자리에 썼다',
   )
@@ -198,4 +173,15 @@ test('babel config 는 미니앱 것을 쓴다', async () => {
     runBuild(options({ babelConfig: join(projectDir, 'babel.empty.cjs') })),
     /Unexpected token|Missing semicolon|SyntaxError/,
   )
+})
+
+test('config 의 babelConfig 는 미니앱 루트 기준 파일이다', async () => {
+  // babel 에 그대로 넘기면 `babel.empty.cjs` 를 모듈 이름으로 찾다가 못 찾는다. 프리셋 없는 config 가
+  // 실제로 읽혔다면 TS 문법에서 터진다
+  const options = await resolveConfigBuild(
+    { name: 'settings', build: { babelConfig: 'babel.empty.cjs', outFile: 'build/relative.js' } },
+    projectDir,
+  )
+
+  await assert.rejects(runBuild(options), /Unexpected token|Missing semicolon|SyntaxError/)
 })
