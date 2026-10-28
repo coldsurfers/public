@@ -39,7 +39,7 @@ const screen = (label: string) =>
     '',
   ].join('\n')
 
-const panel = (extra: string) =>
+const panel = (extra: string, label = 'panel') =>
   [
     "import { Box } from 'pkg-a'",
     extra,
@@ -48,7 +48,7 @@ const panel = (extra: string) =>
     'globalThis.panelBox = Box',
     '',
     'export function Panel(): string {',
-    "  return 'panel'",
+    `  return '${label}'`,
     '}',
     '',
   ].join('\n')
@@ -263,4 +263,22 @@ test('서드파티 import 를 더하고 빼도 실린 패키지와 다른 가지
   assert.equal(read('entries'), 1)
   assert.deepEqual(hot.fullRefreshes, [])
   assert.deepEqual(errors, [])
+})
+
+test('계속 던지는 모듈이 남아 있어도 다른 컴포넌트 저장은 화면에 가고, 같은 오류는 다시 알리지 않는다', async () => {
+  const before = hot.refreshed.length
+  await write('src/store.ts', "throw new Error('store down')\n")
+  await until(() => errors.length === 1, '던진 store 알림')
+  assert.equal(hot.refreshed.length, before, '던진 모듈을 고친 갱신이 refresh 했다')
+
+  for (const [index, label] of ['p2', 'p3'].entries()) {
+    await write('src/panel.ts', panel('', label))
+    await until(() => hot.refreshed.length === before + index + 1, `${label} 저장 적용`)
+    const updated = hot.refreshed[hot.refreshed.length - 1]?.updatedFamilies ?? []
+    assert.deepEqual(
+      [...updated].map((updatedFamily) => updatedFamily.current()),
+      [label],
+    )
+  }
+  assert.equal(errors.length, 1, '같은 오류를 다시 알렸다')
 })
