@@ -7,9 +7,9 @@
  */
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import type { PassError, PassResult } from '../src/cli/dev/modules'
+import type { PassResult } from '../src/cli/dev/modules'
 import { answer, commit, createDevSession, emptyState, parseCursor } from '../src/cli/dev/session'
-import type { Cursor, ModuleId, Reply, Stamp } from '../src/cli/dev/wire'
+import type { Cursor, ModuleId, PassError, Reply, Stamp } from '../src/cli/dev/wire'
 
 const pass = (modules: Record<string, string>, requires: string[] = []): PassResult => ({
   ok: true,
@@ -127,6 +127,7 @@ test('answer 는 have 뒤에 바뀐 모듈과 지워진 id 만 낸다', () => {
     stamp: at('e', 3),
     modules: [['./b.ts', 'b2']],
     removed: ['./c.ts'],
+    requires: [],
   })
 })
 
@@ -141,6 +142,7 @@ test('answer 는 놓친 버전을 한 번에 접는다', () => {
       ['./b.ts', 'b2'],
     ],
     removed: ['./c.ts'],
+    requires: [],
   })
 })
 
@@ -154,14 +156,22 @@ test('answer 는 epoch 이 다르면 모듈 전부를 스냅숏으로 낸다', (
       ['./a.ts', 'a2'],
       ['./b.ts', 'b2'],
     ],
+    requires: [],
   })
 })
 
-test('answer 는 오류가 있는 동안 붙든다. 스냅숏을 받을 기기도 붙든다', () => {
+test('answer 는 오류가 있는 동안 모듈 대신 오류 전부를 낸다. 스냅숏을 받을 기기도 같다', () => {
+  const broken = commit(history().v3, failed(syntax, unresolved))
+  const error: Reply = { kind: 'error', stamp: at('e', 4), errors: [syntax, unresolved] }
+
+  assert.deepEqual(answer(broken, cursor(at('e', 3))), error)
+  assert.deepEqual(answer(broken, cursor(at('old', 7))), error)
+})
+
+test('answer 는 이미 본 오류를 다시 내지 않고 붙든다', () => {
   const broken = commit(history().v3, failed(syntax))
 
-  assert.equal(answer(broken, cursor(at('e', 3))), undefined)
-  assert.equal(answer(broken, cursor(at('old', 7))), undefined)
+  assert.equal(answer(broken, cursor(at('e', 3), at('e', 4))), undefined)
 })
 
 test('answer 는 고친 뒤 have 이후 전부를 낸다. 실패 사이 버전을 건너뛰지 않는다', () => {
@@ -173,6 +183,27 @@ test('answer 는 고친 뒤 have 이후 전부를 낸다. 실패 사이 버전�
     stamp: at('e', 5),
     modules: [['./a.ts', 'a3']],
     removed: [],
+    requires: [],
+  })
+})
+
+test('answer 는 갱신에도 스냅숏에도 지금 굽기의 shared specifier 전부를 싣는다', () => {
+  const v1 = commit(emptyState('e'), pass({ './a.ts': 'a1' }, ['react']))
+  const v2 = commit(v1, pass({ './a.ts': 'a2' }, ['react', 'react-native-svg']))
+  const requires = ['react', 'react-native-svg']
+
+  assert.deepEqual(answer(v2, cursor(at('e', 1))), {
+    kind: 'update',
+    stamp: at('e', 2),
+    modules: [['./a.ts', 'a2']],
+    removed: [],
+    requires,
+  })
+  assert.deepEqual(answer(v2, cursor(at('old', 1))), {
+    kind: 'snapshot',
+    stamp: at('e', 2),
+    modules: [['./a.ts', 'a2']],
+    requires,
   })
 })
 
@@ -239,19 +270,32 @@ test('next 는 줄 것이 생길 때까지 붙들고, 상태를 바꾼 굽기가
     stamp: at('e', 2),
     modules: [['./a.ts', 'a2']],
     removed: [],
+    requires: [],
   } satisfies Reply)
 })
 
-test('next 는 오류 굽기에 깨지 않고, 고친 굽기에 깬다', async () => {
+test('next 는 오류 굽기에 오류로 깨고, 그 오류를 본 커서는 고친 굽기가 깨운다', async () => {
   const session = sessionOf(pass({ './a.ts': 'a1' }), failed(syntax), pass({ './a.ts': 'a2' }))
   await session.bundle('http://localhost:8082')
 
-  const reply = session.next(cursor(at('e', 1)), 5000)
+  const error = session.next(cursor(at('e', 1)), 5000)
   session.changed()
-  assert.equal(await within(reply, 30), PENDING, '오류 굽기가 깨웠다')
+  assert.deepEqual(await within(error, 1000), {
+    kind: 'error',
+    stamp: at('e', 2),
+    errors: [syntax],
+  } satisfies Reply)
 
+  const fixed = session.next(cursor(at('e', 1), at('e', 2)), 5000)
+  assert.equal(await within(fixed, 30), PENDING, '본 오류를 다시 냈다')
   session.changed()
-  assert.equal(((await reply) as Reply).stamp.version, 3)
+  assert.deepEqual(await fixed, {
+    kind: 'update',
+    stamp: at('e', 3),
+    modules: [['./a.ts', 'a2']],
+    removed: [],
+    requires: [],
+  } satisfies Reply)
 })
 
 test('next 는 이미 줄 것이 있으면 바로 낸다', async () => {
@@ -262,6 +306,7 @@ test('next 는 이미 줄 것이 있으면 바로 낸다', async () => {
     kind: 'snapshot',
     stamp: at('e', 1),
     modules: [['./a.ts', 'a1']],
+    requires: [],
   })
 })
 

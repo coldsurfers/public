@@ -9,8 +9,8 @@
 import { segment } from '../../manifest'
 import { REMOTE_REGISTRY_KEY } from '../../runtime/registry'
 import { SHARED_SCOPE_KEY } from '../../runtime/shared-scope'
-import { bundleText, type ModuleBuild, type PassError, type PassResult } from './modules'
-import type { Boot, Cursor, ModuleId, ModuleSource, Reply, Stamp } from './wire'
+import { bundleText, type ModuleBuild, type PassResult } from './modules'
+import type { Boot, Cursor, ModuleId, ModuleSource, PassError, Reply, Stamp } from './wire'
 
 export type DevState = Readonly<{
   /** dev 프로세스마다 하나 */
@@ -20,7 +20,7 @@ export type DevState = Readonly<{
   requires: readonly string[]
   modules: ReadonlyMap<ModuleId, ModuleBuild & { changedAt: number }>
   removedAt: ReadonlyMap<ModuleId, number>
-  /** 있으면 마지막 굽기가 실패했다. 번들은 500 이고, 그 밑에 마지막 성공 모듈이 그대로 있다 */
+  /** 있으면 마지막 굽기가 실패했다. 번들은 500, hot 은 `error` 고, 그 밑에 마지막 성공 모듈이 그대로 있다 */
   errors: readonly PassError[] | undefined
 }>
 
@@ -87,23 +87,29 @@ function sameErrors(a: readonly PassError[], b: readonly PassError[]): boolean {
  * 기기가 받을 것. `undefined` 면 붙든다.
  *
  * 아직 넣은 굽기가 없는 상태(v0)는 붙든다. 서버를 다시 띄운 직후 빈 상태로 스냅숏을 내면 기기가
- * 모듈을 전부 지운다. 오류가 있는 동안도 붙든다 — 기기는 마지막 성공 코드로 계속 돈다.
+ * 모듈을 전부 지운다. 오류가 있는 동안은 모듈 대신 오류를 낸다 — 기기는 오류를 띄우고 마지막 성공
+ * 코드로 계속 돈다. `have` 가 그대로라 고친 뒤의 갱신이 그 사이 몫을 다 싣는다.
  */
 export function answer(state: DevState, cursor: Cursor): Reply | undefined {
-  if (state.version === 0 || state.errors) return undefined
+  if (state.version === 0) return undefined
   const stamp: Stamp = { epoch: state.epoch, version: state.version }
   if (cursor.seen.epoch === stamp.epoch && cursor.seen.version === stamp.version) return undefined
+  if (state.errors) return { kind: 'error', stamp, errors: [...state.errors] }
 
   const since = (version: number): ModuleSource[] =>
     [...state.modules]
       .filter(([, { changedAt }]) => changedAt > version)
       .map(([id, { code }]) => [id, code])
-  if (cursor.have.epoch !== state.epoch) return { kind: 'snapshot', stamp, modules: since(0) }
+  const requires = [...state.requires]
+  if (cursor.have.epoch !== state.epoch) {
+    return { kind: 'snapshot', stamp, modules: since(0), requires }
+  }
   return {
     kind: 'update',
     stamp,
     modules: since(cursor.have.version),
     removed: [...state.removedAt].filter(([, at]) => at > cursor.have.version).map(([id]) => id),
+    requires,
   }
 }
 
@@ -170,6 +176,11 @@ export type DevSession = {
   bundle(origin: string): Promise<Bake>
   /** 커서에 줄 것이 생길 때까지 붙든다. `timeoutMs` 가 지나도 없으면 `undefined` 다 */
   next(cursor: Cursor, timeoutMs: number): Promise<Reply | undefined>
+  /**
+   * 기기가 도는 모듈 글자(`code`). `path` 는 모듈 `sourceURL` 에서 `/<name>/` 뒤다 — 런타임이 id 에서
+   * `./` 를 뗀 자리라 그 반대로 푼다. 없으면 `undefined`
+   */
+  moduleCode(path: string): string | undefined
   /** 소스가 바뀌었다는 신호. 굽기가 도는 중이면 그다음 굽기 하나로 모인다 */
   changed(): void
   /** 붙든 요청을 전부 `undefined` 로 놓는다 */
@@ -255,6 +266,11 @@ export function createDevSession(input: {
         }
         parked.add(entry)
       })
+    },
+
+    moduleCode(path) {
+      const id = (path.startsWith('vendor:') ? path : `./${path}`) as ModuleId
+      return state.modules.get(id)?.code
     },
 
     changed() {

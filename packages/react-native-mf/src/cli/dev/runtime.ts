@@ -15,6 +15,8 @@ type Refresh = {
   register(type: unknown, id: string): void
   createSignatureFunctionForTransform(): (type?: unknown) => unknown
   isLikelyComponentType(type: unknown): boolean
+  /** 등록한 적 없는 값이면 `undefined`. 같은 id 로 다시 등록한 새 함수는 같은 family 다 */
+  getFamilyByType(type: unknown): unknown
   performReactRefresh(): void
   /** RN 은 `DevSettings.reload(reason)` 이다 */
   performFullRefresh(reason: string): void
@@ -23,6 +25,11 @@ type Refresh = {
 /** 런타임이 만지는 전부. 번들은 `globalThis` 를, 테스트는 vm realm 의 전역을 넘긴다 */
 type Host = {
   console: Pick<Console, 'warn' | 'error'>
+  /**
+   * RN 이 부팅 때 거는 전역. `reportError` 는 그 오류의 스택을 LogBox 에 띄운다 — `console.error` 는
+   * 부른 자리의 스택을 띄워서 던진 모듈의 `sourceURL` 이 보이지 않는다
+   */
+  ErrorUtils: { reportError(error: unknown): void }
   fetch(url: string): Promise<{ status: number; json(): Promise<unknown> }>
   setTimeout(callback: () => void, ms: number): unknown
   [key: string]: unknown
@@ -103,7 +110,8 @@ export function bootDevRemote(boot: Boot, host: Host): void {
       return found
     }
     if (importer) record.importers.add(importer)
-    if (record.status === 'ready' || record.status === 'running') return record.exports
+    // 던진 모듈은 다음 적용이 다시 돌릴 때까지 마지막 성공 값을 준다. 한 적용에서 두 번 돌지 않는다
+    if (record.status !== 'defined') return record.exports
     return run(spec as ModuleId, record)
   }
 
@@ -135,45 +143,36 @@ export function bootDevRemote(boot: Boot, host: Host): void {
   /**
    * 바뀐 모듈을 갈아 끼우고 그 위 refresh 경계까지 다시 돌린다. Metro 의 Fast Refresh 와 같은 규칙이다.
    *
-   * 새 글자는 먼저 전부 함수로 묶는다. 하나라도 깨졌으면 아무것도 바꾸기 전에 던진다. 경계는 바꾸기
+   * 새 글자는 먼저 전부 함수로 묶는다. 하나라도 깨졌으면 아무것도 바꾸기 전에 던진다. 경계는 다시 돌기
    * 전 exports 로 판정한다. 경계 아래 모듈은 경계가 다시 돌며 require 할 때 새로 돌고, 경계 위는 돌지
-   * 않는다 — 위에 쥔 옛 컴포넌트는 react-refresh 가 새 것으로 잇는다. 경계를 못 만나고 importer 가
-   * 없는 모듈(엔트리)에 닿으면 호스트를 다시 띄운다.
+   * 않는다 — 위에 쥔 옛 컴포넌트는 react-refresh 가 새 것으로 잇는다. 다시 돈 경계의 모양(내보낸 이름과
+   * family)이 바뀌면 이을 수 없으니 그 importer 에서 한 번 더 오른다. 경계를 못 만나고 importer 가 없는
+   * 모듈(엔트리)에 닿으면 호스트를 다시 띄운다.
+   *
+   * 다시 돌다 던진 모듈은 마지막 성공 값을 지키고, 그 적용은 refresh 를 부르지 않는다 — 화면이 마지막
+   * 성공 코드에 머문다. 던진 모듈은 다음 적용이 바뀐 모듈과 함께 다시 걷는다. 같은 글자는 바뀐 모듈로
+   * 치지 않으니 따로 걷지 않으면 원인을 다른 데서 고쳐도 다시 돌 길이 없다.
    */
   function apply(refresh: Refresh, incoming: readonly ModuleSource[], removed: readonly string[]) {
     const changed = incoming.filter(([id, code]) => records.get(id)?.code !== code)
     const gone = removed.filter((id) => records.has(id))
-    if (changed.length === 0 && gone.length === 0) return
+    const failed = [...records]
+      .filter(([id, record]) => record.status === 'failed' && !gone.includes(id))
+      .map(([id]) => id as ModuleId)
+    if (changed.length === 0 && gone.length === 0 && failed.length === 0) return
     const factories = changed.map(([id, code]) => compile(id, code))
 
     for (const id of gone) {
       records.delete(id)
       for (const record of records.values()) record.importers.delete(id as ModuleId)
     }
-
     // 새 모듈과 아직 돈 적 없는 모듈은 오르지 않는다. 처음 require 될 때 새 글자로 돈다
-    const queue = changed
-      .map(([id]) => id)
-      .filter((id) => (records.get(id)?.status ?? 'defined') !== 'defined')
-    const rerun = new Set<ModuleId>()
-    const roots: ModuleId[] = []
-    while (queue.length > 0) {
-      const id = queue.shift() as ModuleId
-      if (rerun.has(id)) continue
-      rerun.add(id)
-      const record = records.get(id) as ModuleRecord
-      if (isBoundary(refresh, record.exports)) {
-        roots.push(id)
-      } else if (record.importers.size === 0) {
-        refresh.performFullRefresh(
-          `[react-native-mf] "${boot.name}" 의 ${id} 위로 Fast Refresh 경계가 없다`,
-        )
-        return
-      } else {
-        for (const importer of record.importers) queue.push(importer)
-      }
-    }
-
+    let from = [
+      ...changed
+        .map(([id]) => id)
+        .filter((id) => (records.get(id)?.status ?? 'defined') !== 'defined'),
+      ...failed,
+    ]
     changed.forEach(([id, code], index) => {
       const record = records.get(id)
       if (record) {
@@ -189,10 +188,57 @@ export function bootDevRemote(boot: Boot, host: Host): void {
         })
       }
     })
-    for (const id of rerun) (records.get(id) as ModuleRecord).status = 'defined'
-    for (const id of roots) load(id)
+
+    const fullRefresh = (id: ModuleId) =>
+      refresh.performFullRefresh(
+        `[react-native-mf] "${boot.name}" 의 ${id} 위로 Fast Refresh 경계가 없다`,
+      )
+    // 한 적용에서 모듈은 한 번만 걷는다. 앞서 다시 돈 모듈은 이미 새 exports 를 쥐었다
+    const walked = new Set<ModuleId>()
+    let threw = false
+    while (from.length > 0) {
+      const queue = from
+      const roots: ModuleId[] = []
+      while (queue.length > 0) {
+        const id = queue.shift() as ModuleId
+        if (walked.has(id)) continue
+        walked.add(id)
+        const record = records.get(id) as ModuleRecord
+        if (isBoundary(refresh, record.exports)) {
+          roots.push(id)
+        } else if (record.importers.size === 0) {
+          fullRefresh(id)
+          return
+        } else {
+          queue.push(...record.importers)
+        }
+        record.status = 'defined'
+      }
+
+      const before = roots.map((id) => shape(refresh, (records.get(id) as ModuleRecord).exports))
+      from = []
+      for (const [index, id] of roots.entries()) {
+        try {
+          load(id)
+        } catch (error) {
+          threw = true
+          host.console.warn(
+            `[react-native-mf] "${boot.name}" 의 ${id} 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다`,
+          )
+          host.ErrorUtils.reportError(error)
+          continue
+        }
+        const record = records.get(id) as ModuleRecord
+        if (sameShape(before[index], shape(refresh, record.exports))) continue
+        if (record.importers.size === 0) {
+          fullRefresh(id)
+          return
+        }
+        from.push(...record.importers)
+      }
+    }
     registry[boot.name] = load(boot.entry)
-    refresh.performReactRefresh()
+    if (!threw) refresh.performReactRefresh()
   }
 
   /**
@@ -209,6 +255,19 @@ export function bootDevRemote(boot: Boot, host: Host): void {
 
     const receive = (reply: Reply) => {
       seen = reply.stamp
+      // `have` 를 옮기지 않는다. 고친 뒤의 갱신이 그 사이 바뀐 모듈까지 싣는다
+      if (reply.kind === 'error') {
+        const errors = reply.errors.map(({ file, message }) =>
+          file ? `${file}: ${message}` : message,
+        )
+        host.console.error(
+          `[react-native-mf] "${boot.name}" 를 굽지 못했다. 고칠 때까지 마지막 성공 코드로 돈다\n\n${errors.join('\n\n')}`,
+        )
+        return
+      }
+      // 갱신이 새로 읽는 shared 키도 부팅처럼 돌리기 전에 한꺼번에 본다. 던지면 아무것도 바꾸지 않는다
+      const missing = reply.requires.filter((spec) => shared?.[spec] === undefined)
+      if (missing.length > 0) throw notShared(missing)
       if (reply.kind === 'update') {
         apply(refresh, reply.modules, reply.removed)
       } else {
@@ -264,6 +323,23 @@ export function bootDevRemote(boot: Boot, host: Host): void {
   registry[boot.name] = load(boot.entry)
   if (refresh) startClient(refresh)
 }
+
+/**
+ * 경계의 모양 — exports 자체와 내보낸 이름마다의 family. 다시 돈 뒤 이게 바뀌면(이름이 생기거나
+ * 사라졌다, 같은 이름이 다른 컴포넌트가 됐다) 위에서 쥔 옛 값을 react-refresh 가 이어 주지 못한다.
+ */
+function shape(refresh: Refresh, exports: unknown): unknown[] {
+  const own = [refresh.getFamilyByType(exports)]
+  if (exports === null || typeof exports !== 'object') return own
+  for (const name of Object.keys(exports)) {
+    if (name === '__esModule') continue
+    own.push(name, refresh.getFamilyByType((exports as Record<string, unknown>)[name]))
+  }
+  return own
+}
+
+const sameShape = (a: unknown[], b: unknown[]) =>
+  a.length === b.length && a.every((part, index) => part === b[index])
 
 /**
  * exports 가 컴포넌트뿐이면 경계다. esbuild 의 CJS exports 는 getter 라 값을 읽어 본다 — getter 는

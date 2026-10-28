@@ -18,12 +18,9 @@ import type { BuildOptions, Message, Plugin } from 'esbuild'
 import { sharedMatcher } from '../../esbuild/shared-scope'
 import { loadEsbuild, SOURCE_EXTENSION, stripBlockScoping, transpileFile } from '../build'
 import type { CompileOptions } from '../build-options'
-import type { Boot, ModuleId } from './wire'
+import type { Boot, ModuleId, PassError } from './wire'
 
 export type ModuleBuild = { source: string; code: string }
-
-/** `file` 은 미니앱 루트 기준. 파일에 매이지 않는 오류(엔트리를 못 찾음)는 빈 글자다 */
-export type PassError = { file: string; message: string }
 
 /** 굽기 한 번. 실패도 값이다. 실패는 모은 오류 전부를 든다 */
 export type PassResult =

@@ -53,10 +53,13 @@ export type DevServer = { url: string; close(): Promise<void> }
  *
  *   GET devBundlePath(name)  구웠다   → 200 application/javascript · no-store
  *                            못 구웠다 → 500 text/plain · ANSI 를 걷은 오류. 터미널엔 색 그대로
- *   GET hotPath(name)        줄 것이 있다       → 200 application/json · `Reply`
+ *   GET hotPath(name)        줄 것이 있다       → 200 application/json · `Reply`. 오류는 ANSI 를 걷는다
  *       ?have=<E>.<V>        `holdMs` 동안 없다 → 204
  *       &seen=<E>.<V>        커서가 틀렸다      → 400 text/plain
+ *   GET /<name>/<모듈 경로>  모듈 `sourceURL`   → 200 text/javascript · no-store · 그 모듈의 지금 글자
  *   그 밖                              → 404 text/plain · 이 서버가 굽는 이름
+ *
+ * 번들과 hot 이 모듈 경로보다 먼저다. 모듈 경로가 둘과 같으면 그 모듈은 소스를 못 내줄 뿐이다.
  *
  * 이름이 경로 한 칸에 안 맞으면 듣기 전에 거절한다. 포트를 이미 쓰고 있으면 `EADDRINUSE` 로 거절한다.
  * `close` 는 붙든 hot 요청도 놓는다.
@@ -72,6 +75,16 @@ export async function startDevServer(input: {
   const path = devBundlePath(name)
   const { hotPath, parseCursor } = await import('./dev/session')
   const hot = hotPath(name)
+  const sourceRoot = `/${name}/`
+  const moduleAt = (pathname: string) => {
+    if (!pathname.startsWith(sourceRoot)) return undefined
+    try {
+      return session.moduleCode(decodeURIComponent(pathname.slice(sourceRoot.length)))
+    } catch {
+      // 깨진 퍼센트 인코딩. 그런 이름의 모듈은 없다
+      return undefined
+    }
+  }
 
   const server = createServer(async (request, response) => {
     const requested = `${request.method} ${request.url}`
@@ -95,13 +108,25 @@ export async function startDevServer(input: {
         response.writeHead(204).end()
         return
       }
-      const body = JSON.stringify(reply)
+      const body = JSON.stringify(plain(reply))
       log(
         `hot v${reply.stamp.version} → ${host.replace(/:\d+$/, '')} · ${describe(reply)} · ${kB(body)}`,
       )
       response
         .writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' })
         .end(body)
+      return
+    }
+
+    const code = request.method === 'GET' && request.url !== path ? moduleAt(pathname) : undefined
+    if (code !== undefined) {
+      log(`${requested} 200 · ${kB(code)}`)
+      response
+        .writeHead(200, {
+          'content-type': 'text/javascript; charset=utf-8',
+          'cache-control': 'no-store',
+        })
+        .end(code)
       return
     }
 
@@ -152,9 +177,23 @@ export async function startDevServer(input: {
 const kB = (text: string) => `${(Buffer.byteLength(text) / 1024).toFixed(1)} kB`
 
 const describe = (reply: Reply) =>
-  reply.kind === 'snapshot'
-    ? `스냅숏 · 모듈 ${reply.modules.length}개`
-    : `모듈 ${reply.modules.length}개${reply.removed.length > 0 ? ` · 지움 ${reply.removed.length}개` : ''}`
+  reply.kind === 'error'
+    ? `오류 ${reply.errors.length}개`
+    : reply.kind === 'snapshot'
+      ? `스냅숏 · 모듈 ${reply.modules.length}개`
+      : `모듈 ${reply.modules.length}개${reply.removed.length > 0 ? ` · 지움 ${reply.removed.length}개` : ''}`
+
+/** 기기로 가는 오류는 500 본문처럼 ANSI 를 걷는다. 터미널엔 색 그대로 남는다 */
+const plain = (reply: Reply): Reply =>
+  reply.kind === 'error'
+    ? {
+        ...reply,
+        errors: reply.errors.map(({ file, message }) => ({
+          file,
+          message: stripVTControlCharacters(message),
+        })),
+      }
+    : reply
 
 /**
  * dev 한 벌 — 세션 · HTTP · src 감시. 듣자마자 첫 굽기를 시작한다. babel 콜드 스타트(수백 ms)가

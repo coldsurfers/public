@@ -248,11 +248,104 @@ test('붙든 hot 요청은 상태를 바꾼 굽기가 깨우고, 그 굽기의 �
     stamp: { epoch: 'test', version: 2 },
     modules: [['./index.ts', '/* build #2 */']],
     removed: [],
+    requires: [],
   })
   assert.match(
     lines.find((line) => line.startsWith('hot ')) ?? '',
     /^hot v2 → localhost · 모듈 1개 · \d+\.\d kB$/,
   )
+})
+
+test('붙든 hot 요청은 실패한 굽기가 ANSI 를 걷은 오류 전부로 깨운다', async () => {
+  let compiled = 0
+  const { url, lines } = await serve(async () => {
+    compiled += 1
+    if (compiled === 1) return build(1)
+    return {
+      ok: false,
+      errors: [
+        { file: 'src/index.ts', message: '\u001b[31mUnexpected token (3:1)\u001b[39m' },
+        { file: 'src/menu.ts', message: 'Could not resolve "./gone"' },
+      ],
+    }
+  })
+  await fetch(url)
+
+  const held = fetch(hotUrl(url, 'have=test.1&seen=test.1'))
+  await new Promise((resolve) => setTimeout(resolve, 30))
+  await fetch(url)
+  const response = await held
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), {
+    kind: 'error',
+    stamp: { epoch: 'test', version: 2 },
+    errors: [
+      { file: 'src/index.ts', message: 'Unexpected token (3:1)' },
+      { file: 'src/menu.ts', message: 'Could not resolve "./gone"' },
+    ],
+  })
+  assert.match(
+    lines.find((line) => line.startsWith('hot ')) ?? '',
+    /^hot v2 → localhost · 오류 2개 · \d+\.\d kB$/,
+  )
+})
+
+/** 모듈 넷. 디렉터리 · 공백 · 의존 청크 id 가 `sourceURL` 경로로 오가는지 본다 */
+const sources: PassResult = {
+  ok: true,
+  modules: new Map([
+    ['./index.ts', { source: '', code: '/* index */' }],
+    ['./settings screen/메뉴.tsx', { source: '', code: '/* 메뉴 */' }],
+    ['vendor:', { source: '', code: '/* vendor */' }],
+    ['vendor:@scope/pkg', { source: '', code: '/* @scope/pkg */' }],
+  ]),
+  requires: [],
+}
+
+test('번들에 실린 모듈마다 그 sourceURL 이 모듈의 지금 글자를 text/javascript 로, 캐시 없이 낸다', async () => {
+  const { url, lines } = await serve(async () => sources)
+  const boot = bootOf(await (await fetch(url)).text())
+
+  for (const [id, code] of boot.modules) {
+    // 런타임이 `//# sourceURL=` 에 적는 그대로다
+    const response = await fetch(`${boot.sourceRoot}${id.replace(/^\.\//, '')}`)
+    assert.equal(response.status, 200, id)
+    assert.equal(response.headers.get('content-type'), 'text/javascript; charset=utf-8')
+    assert.equal(response.headers.get('cache-control'), 'no-store')
+    assert.equal(await response.text(), code, id)
+  }
+  assert.ok(lines.includes('GET /settings/vendor: 200 · 0.0 kB'), lines.join('\n'))
+})
+
+test('모듈 경로가 번들 · hot 과 같으면 번들 · hot 이 먼저고, 없는 모듈과 깨진 경로는 404 다', async () => {
+  const { url } = await serve(async () => ({
+    ok: true,
+    modules: new Map([
+      ['./index.ts', { source: '', code: '/* index */' }],
+      ['./index.bundle.js', { source: '', code: '/* module */' }],
+      ['./hot', { source: '', code: '/* module */' }],
+    ]),
+    requires: [],
+  }))
+
+  await fetch(url)
+
+  // 첫 요청이 구운 상태에 `./index.bundle.js` 모듈이 있다. 두 번째 요청도 번들이어야 한다
+  const bundle = await fetch(url)
+  assert.equal(bundle.headers.get('content-type'), 'application/javascript')
+  assert.ok((await bundle.text()).startsWith('/* runtime */'))
+  assert.equal((await fetch(hotUrl(url, ''))).status, 400)
+  for (const missing of [
+    '/settings/gone.ts',
+    '/settings/%E0%A4%A',
+    '/settings/',
+    '/other/index.ts',
+  ]) {
+    const response = await fetch(new URL(missing, url))
+    assert.equal(response.status, 404, missing)
+    assert.match(await response.text(), /"settings" 만 굽는다\(\/settings\/index\.bundle\.js\)/)
+  }
 })
 
 /** `srcDir` 의 `index.ts` 를 읽어 엔트리 하나로 굽는 dev */

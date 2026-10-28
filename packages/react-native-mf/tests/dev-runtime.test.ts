@@ -35,8 +35,11 @@ function host(
 ) {
   const registered: string[] = []
   const types = new Map<string, unknown>()
+  /** react-refresh 처럼 같은 id 로 등록한 함수는 같은 family 다. 여기선 id 가 곧 family 다 */
+  const families = new Map<unknown, string>()
   const warnings: string[] = []
   const errors: unknown[][] = []
+  const reported: unknown[] = []
   const fetches: string[] = []
   const timers: { callback: () => void; ms: number }[] = []
   const fullRefreshes: string[] = []
@@ -47,6 +50,7 @@ function host(
       warn: (line: string) => warnings.push(line),
       error: (...args: unknown[]) => errors.push(args),
     },
+    ErrorUtils: { reportError: (error: unknown) => reported.push(error) },
     fetch: (url: string) => {
       fetches.push(url)
       const next = replies.shift()
@@ -65,7 +69,9 @@ function host(
         register: (type: unknown, id: string) => {
           registered.push(id)
           types.set(id, type)
+          families.set(type, id)
         },
+        getFamilyByType: (type: unknown) => families.get(type),
         createSignatureFunctionForTransform: () => (type: unknown) => type,
         isLikelyComponentType: (type: unknown) =>
           typeof type === 'function' && /^[A-Z]/.test(type.name),
@@ -102,6 +108,7 @@ function host(
   const polled = (n: number) => until(() => fetches.length >= n, `hot 요청 ${n} 번째`)
 
   return {
+    realm,
     boot,
     remote,
     global,
@@ -110,6 +117,7 @@ function host(
     registered,
     warnings,
     errors,
+    reported,
     fetches,
     timers,
     fullRefreshes,
@@ -126,11 +134,17 @@ async function until(condition: () => boolean, what: string) {
   }
 }
 
-const update = (version: number, modules: ModuleSource[], removed: ModuleId[] = []): Reply => ({
+const update = (
+  version: number,
+  modules: ModuleSource[],
+  removed: ModuleId[] = [],
+  requires: string[] = [],
+): Reply => ({
   kind: 'update',
   stamp: { epoch: 'e', version },
   modules,
   removed,
+  requires,
 })
 
 /** 돌 때 `trace` 에 id 를 남기는 모듈 */
@@ -322,6 +336,115 @@ test('경계를 못 만나고 엔트리에 닿으면 아무것도 돌리지 않�
   assert.equal(remote.refreshes(), 0)
 })
 
+/** 엔트리 → 페이지(경계) → 위젯(경계). 페이지는 위젯이 내보내는 이름과 그 컴포넌트를 그린다 */
+const widget = (body: string) => mod('./widget.tsx', body)
+const page = (leaf: ModuleSource) => [
+  mod('./index.ts', 'exports.Page = require("./page.tsx").Page;'),
+  component(
+    './page.tsx',
+    'Page',
+    'return Object.keys(w).map(function (name) { return name + "=" + w[name](); }).join(",");',
+    'var w = require("./widget.tsx");',
+  ),
+  leaf,
+]
+const Widget =
+  'function Widget() { return "w"; } $RefreshReg$(Widget, "Widget"); exports.Widget = Widget;'
+const WidgetAndBadge = `${Widget} function Badge() { return "b"; } $RefreshReg$(Badge, "Badge"); exports.Badge = Badge;`
+
+test('다시 돈 경계가 내보내는 이름이 바뀌면 그 importer 경계도 다시 돌린다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [widget(WidgetAndBadge)])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w')
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx', './page.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w,Badge=b')
+  assert.equal(remote.refreshes(), 1)
+  assert.deepEqual(remote.fullRefreshes, [])
+})
+
+test('같은 이름이 다른 컴포넌트를 가리키게 돼도(family 가 바뀌면) importer 경계를 다시 돌린다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [
+      update(2, [
+        widget(
+          'function Other() { return "o"; } $RefreshReg$(Other, "Other"); exports.Widget = Other;',
+        ),
+      ]),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx', './page.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=o')
+})
+
+test('모양이 그대로인 경계는 위로 넘기지 않는다', async () => {
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [widget(Widget.replace('"w"', '"w2"'))])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./widget.tsx'])
+  assert.equal(remote.latest('./widget.tsx Widget')(), 'w2')
+})
+
+test('모양이 바뀐 경계 위로 경계 없이 엔트리에 닿으면 이유를 달아 호스트를 다시 띄운다', async () => {
+  const remote = host(
+    [
+      mod('./index.ts', 'exports.version = 1; exports.Widget = require("./widget.tsx").Widget;'),
+      widget(Widget),
+    ],
+    { replies: [update(2, [widget(`${Widget} exports.label = "w";`)])] },
+  )
+  remote.boot()
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fullRefreshes, [
+    '[react-native-mf] "settings" 의 ./index.ts 위로 Fast Refresh 경계가 없다',
+  ])
+  assert.equal(remote.refreshes(), 0)
+})
+
+test('경계인 엔트리의 모양이 바뀌면 호스트가 쥔 옛 값을 이을 수 없어 호스트를 다시 띄운다', async () => {
+  const remote = host([mod('./index.tsx', Widget)], {
+    replies: [update(2, [mod('./index.tsx', WidgetAndBadge)])],
+  })
+  remote.boot()
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fullRefreshes, [
+    '[react-native-mf] "settings" 의 ./index.tsx 위로 Fast Refresh 경계가 없다',
+  ])
+})
+
+test('모양이 바뀐 경계의 importer 가 같은 적용에서 이미 다시 돌았으면 또 돌리지 않는다', async () => {
+  const [id, code] = page(widget(Widget))[1]
+  const remote = host(page(widget(Widget)), {
+    replies: [update(2, [[id, code.replace('join(",")', 'join(";")')], widget(WidgetAndBadge)])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted).sort(), ['./page.tsx', './widget.tsx'])
+  assert.equal(remote.latest('./page.tsx Page')(), 'Widget=w;Badge=b')
+})
+
 test('새 글자 하나가 깨졌으면 아무 모듈도 바꾸지 않고, 오류를 알리고, 다음 갱신이 그 몫까지 싣는다', async () => {
   const screenV2 = component(
     './screen.tsx',
@@ -356,9 +479,137 @@ test('새 글자 하나가 깨졌으면 아무 모듈도 바꾸지 않고, 오�
   assert.equal(remote.refreshes(), 1)
 })
 
+test('error 응답은 오류 전부를 console.error 로 한 번 띄우고 모듈은 그대로 둔다. 고친 뒤 갱신이 그 사이 몫을 싣는다', async () => {
+  let fixed = (_reply: Reply) => {}
+  const remote = host(app(), {
+    replies: [
+      {
+        kind: 'error',
+        stamp: { epoch: 'e', version: 3 },
+        errors: [
+          { file: 'src/screen.tsx', message: 'Unexpected token (3:1)' },
+          { file: '', message: 'Could not resolve "./gone"' },
+        ],
+      },
+      new Promise<Reply>((resolve) => {
+        fixed = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.errors, [
+    [
+      '[react-native-mf] "settings" 를 굽지 못했다. 고칠 때까지 마지막 성공 코드로 돈다\n\nsrc/screen.tsx: Unexpected token (3:1)\n\nCould not resolve "./gone"',
+    ],
+  ])
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.refreshes(), 0)
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.1&seen=e.3')
+
+  fixed(
+    update(4, [
+      component(
+        './screen.tsx',
+        'Screen',
+        'return "v4/" + api.label;',
+        'var api = require("./api.ts").api;',
+      ),
+      app('v2')[2],
+    ]),
+  )
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v4/v2')
+  assert.equal(remote.fetches[2], 'http://localhost:8082/settings/hot?have=e.4&seen=e.4')
+})
+
+/** `globalThis.ready` 가 서기 전엔 맨 위에서 던지는 api */
+const flakyApi = mod(
+  './api.ts',
+  'if (!globalThis.ready) throw new Error("not ready"); exports.api = { label: "v2" };',
+)
+
+test('갱신 중 던진 모듈은 마지막 성공 값을 지키고, 오류를 알리고, refresh 를 부르지 않는다', async () => {
+  const remote = host(app(), { replies: [update(2, [flakyApi])] })
+  remote.boot()
+
+  await remote.polled(2)
+
+  // 던진 오류 그대로라 LogBox 가 그 스택(모듈 sourceURL)을 띄운다
+  assert.deepEqual(
+    remote.reported.map((error) => (error as Error).message),
+    ['not ready'],
+  )
+  assert.match(
+    remote.warnings.join('\n'),
+    /"settings" 의 \.\/screen\.tsx 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다/,
+  )
+  assert.equal(remote.refreshes(), 0)
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v1/1')
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.2&seen=e.2')
+})
+
+test('던진 모듈은 다음 메시지가 다시 돌린다. 그 메시지에 바뀐 모듈이 없어도 돈다', async () => {
+  let retry = (_reply: Reply) => {}
+  const remote = host(app(), {
+    replies: [
+      update(2, [flakyApi]),
+      new Promise<Reply>((resolve) => {
+        retry = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  await remote.polled(2)
+  vm.runInContext('globalThis.ready = true', remote.realm)
+
+  retry(update(3, []))
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2/1')
+  assert.equal(remote.refreshes(), 1)
+  assert.equal(remote.reported.length, 1, '다시 돈 적용이 또 오류를 냈다')
+})
+
+test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번만 돈다. 다른 경계는 그 마지막 성공 값으로 돈다', async () => {
+  const api = (label: string) =>
+    mod(
+      './api.ts',
+      `exports.api = { label: "${label}" }; if (globalThis.boom) throw new Error("boom");`,
+    )
+  const screen = (id: ModuleId, name: string) =>
+    component(id, name, 'return api.label;', 'var api = require("./api.ts").api;')
+  const remote = host(
+    [
+      mod('./index.ts', 'require("./a.tsx"); require("./b.tsx");'),
+      screen('./a.tsx', 'A'),
+      screen('./b.tsx', 'B'),
+      api('v1'),
+    ],
+    { replies: [update(2, [api('v2')])] },
+  )
+  remote.boot()
+  vm.runInContext('globalThis.boom = true', remote.realm)
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted).sort(), ['./a.tsx', './api.ts', './b.tsx'])
+  assert.equal(remote.reported.length, 1)
+  assert.equal(remote.latest('./a.tsx A')(), 'v1')
+  assert.equal(remote.latest('./b.tsx B')(), 'v1')
+  assert.equal(remote.refreshes(), 0)
+})
+
 test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
   const remote = host(app(), {
-    replies: [{ kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app() }],
+    replies: [
+      { kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app(), requires: [] },
+    ],
   })
   remote.boot()
   const booted = remote.trace.length
@@ -384,6 +635,7 @@ test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면
         {
           kind: 'snapshot',
           stamp: { epoch: 'r', version: 1 },
+          requires: [],
           modules: [
             mod('./index.ts', 'require("./screen.tsx");'),
             component('./screen.tsx', 'Screen', 'return require("./old.ts").old;'),
@@ -401,6 +653,81 @@ test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면
     remote.latest('./screen.tsx Screen'),
     /shared 모듈 "\.\/old\.ts" 이 등록돼 있지 않다/,
   )
+})
+
+test('shared 에 없는 키를 새로 읽는 갱신은 빠진 키를 전부 이름 대고 아무것도 돌리지 않는다', async () => {
+  let registered = (_reply: Reply) => {}
+  const svg = component(
+    './screen.tsx',
+    'Screen',
+    'return svg.marker + "/" + lottie.marker;',
+    'var svg = require("react-native-svg"); var lottie = require("lottie-react-native");',
+  )
+  const requires = ['react', 'react-native-svg', 'lottie-react-native']
+  const remote = host(app(), {
+    requires: ['react'],
+    replies: [
+      update(2, [svg], [], requires),
+      new Promise<Reply>((resolve) => {
+        registered = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.equal(remote.errors.length, 1)
+  assert.match(String(remote.errors[0][0]), /"settings" 에 v2 을 적용하지 못했다/)
+  assert.match(
+    (remote.errors[0][1] as Error).message,
+    /shared 모듈 "react-native-svg", "lottie-react-native" 이 등록돼 있지 않다/,
+  )
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.1&seen=e.2')
+
+  vm.runInContext(
+    `Object.assign(globalThis[${JSON.stringify(SHARED_SCOPE_KEY)}], { "react-native-svg": { marker: "SVG" }, "lottie-react-native": { marker: "LOTTIE" } })`,
+    remote.realm,
+  )
+  registered(update(3, [svg], [], requires))
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'SVG/LOTTIE')
+})
+
+test('갱신 하나로 파일 이름을 바꾸면 새 모듈로 돌고, 옛 id 는 지워져 더는 풀리지 않는다', async () => {
+  const screen = (from: string) =>
+    component('./screen.tsx', 'Screen', `return require("${from}").label;`, `require("${from}");`)
+  const remote = host(
+    [
+      // 엔트리의 require 를 밖으로 연다. 지운 id 가 아직 풀리는지 본다
+      mod(
+        './index.ts',
+        'require("./screen.tsx"); exports.reach = function (id) { return require(id); };',
+      ),
+      screen('./old.ts'),
+      mod('./old.ts', 'exports.label = "old";'),
+    ],
+    {
+      replies: [
+        update(2, [screen('./new.ts'), mod('./new.ts', 'exports.label = "new";')], ['./old.ts']),
+      ],
+    },
+  )
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./screen.tsx', './new.ts'])
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'new')
+  assert.throws(
+    () => remote.remote().settings.reach('./old.ts'),
+    /shared 모듈 "\.\/old\.ts" 이 등록돼 있지 않다/,
+  )
+  assert.equal(remote.refreshes(), 1)
 })
 
 test('fetch 가 거절되면 한 번 경고하고 250 ms 부터 5 s 까지 물러나며, 붙으면 처음으로 돌아간다', async () => {
