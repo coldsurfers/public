@@ -235,6 +235,39 @@ test('깨진 파일과 못 푸는 import 를 한 번에 파일마다 다 적는�
   assert.equal(byFile.get('broken-src/b.ts'), 'Could not resolve "./deleted"')
 })
 
+test('import() 를 쓴 모듈도 빈 realm 에서 풀린다. 지역 · 의존 청크 · shared · 의존 청크 안의 import() 다', async () => {
+  await write('node_modules/lazy-vendor/package.json', '{ "name": "lazy-vendor" }\n')
+  await write(
+    'node_modules/lazy-vendor/index.js',
+    "exports.native = () => import('react-native').then((native) => native.marker)\n",
+  )
+  await write(
+    'lazy-src/index.ts',
+    [
+      'export default {',
+      "  local: () => import('./lazy').then((lazy) => lazy.value),",
+      "  vendor: () => import('tiny-vendor').then((vendor) => vendor.tag(7)),",
+      "  shared: () => import('react-native').then((native) => native.marker),",
+      "  inVendor: () => import('lazy-vendor').then((vendor) => vendor.native()),",
+      '}',
+      '',
+    ].join('\n'),
+  )
+  await write('lazy-src/lazy.ts', 'export const value = 42\n')
+  const lazyOptions = options({ src: 'lazy-src' })
+  const result = await createModuleCompiler(async () => lazyOptions)()
+
+  // Hermes 는 import() 를 못 읽는다. 빈 realm 도 import() 를 받을 길이 없어 거절한다
+  for (const [id, { code }] of compiled(result).modules) {
+    assert.doesNotMatch(code, /\bimport\(/, `${id} 에 import() 가 남았다`)
+  }
+  const { remote } = await boot(result, lazyOptions)
+  assert.deepEqual(
+    await Promise.all([remote.local(), remote.vendor(), remote.shared(), remote.inVendor()]),
+    [42, 'vendor:HOST_RN:7', 'HOST_RN', 'HOST_RN'],
+  )
+})
+
 test('미니앱 config 가 react-refresh/babel 을 이미 들고 있어도 컴포넌트를 한 번만 등록한다', async () => {
   const withRefresh = options({ babelConfig: join(projectDir, 'babel.refresh.cjs') })
   const { registered } = await boot(

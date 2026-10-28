@@ -128,6 +128,8 @@ export function createModuleCompiler(
       target: ['es2015'],
       // build 레인과 같다. RN 코드가 짚는 `global` 을 런타임마다 갈리지 않게 고정한다
       define: { global: 'globalThis' },
+      // Hermes 는 `import()` 를 못 읽는다. build 레인은 번들이 접어 주지만 여기는 import 를 밖에 둬서 남는다
+      supported: { 'dynamic-import': false },
       logLevel: 'silent',
     }
 
