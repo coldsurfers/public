@@ -169,7 +169,7 @@ test('엔트리에서 닿는 파일만 src 기준 경로로 모듈이 되고, ba
     './index.ts',
     './screen/index.ts',
     './screen/screen.ts',
-    'vendor:',
+    'vendor:/0',
     'vendor:tiny-vendor',
   ])
   assert.deepEqual(
@@ -218,6 +218,97 @@ test('글자가 그대로인 파일은 다시 babel 에 태우지 않는다', as
   assert.deepEqual(babelRuns, [join(projectDir, 'reuse-src/a.ts')])
 })
 
+test('tsconfig paths 별칭으로 연 src 파일은 지역 모듈이다. 고치면 다음 굽기가 새 글자를 싣는다', async () => {
+  await write(
+    'alias-app/tsconfig.json',
+    '{ "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }\n',
+  )
+  await write(
+    'alias-app/src/index.ts',
+    [
+      "import { util } from '@/lib/util'",
+      "import { util as byPath } from './lib/util'",
+      '',
+      'export default { version: util.version, same: util === byPath }',
+      '',
+    ].join('\n'),
+  )
+  await write('alias-app/src/lib/util.ts', 'export const util = { version: 1 }\n')
+  const aliasOptions = options({ src: 'alias-app/src' })
+  const compile = createModuleCompiler(async () => aliasOptions)
+  compiled(await compile())
+
+  await write('alias-app/src/lib/util.ts', 'export const util = { version: 2 }\n')
+  const result = await compile()
+
+  assert.ok(compiled(result).modules.has('./lib/util.ts'))
+  const { remote } = await boot(result, aliasOptions)
+  assert.deepEqual({ ...remote }, { version: 2, same: true })
+})
+
+test('나중에 import 한 패키지도 실린 패키지와 인스턴스를 나누고, 안에 다른 버전을 품었으면 그 버전을 쓴다', async () => {
+  const pkg = (dir: string, body: string) =>
+    Promise.all([
+      write(`${dir}/package.json`, `{ "name": "${dir.split('/').pop()}" }\n`),
+      write(`${dir}/index.js`, `${body}\n`),
+    ])
+  await pkg('node_modules/pkg-core', 'exports.core = { version: 1 }')
+  await pkg('node_modules/pkg-plugin', "exports.core = require('pkg-core').core")
+  await pkg('node_modules/pkg-pinned', "exports.core = require('pkg-core').core")
+  await pkg('node_modules/pkg-pinned/node_modules/pkg-core', 'exports.core = { version: 2 }')
+  await write('chunk-src/index.ts', "import { core } from 'pkg-core'\n\nexport default { core }\n")
+  const chunkOptions = options({ src: 'chunk-src' })
+  const compile = createModuleCompiler(async () => chunkOptions)
+  compiled(await compile())
+
+  await write(
+    'chunk-src/index.ts',
+    [
+      "import { core } from 'pkg-core'",
+      "import { core as viaPlugin } from 'pkg-plugin'",
+      "import { core as viaPinned } from 'pkg-pinned'",
+      '',
+      'export default { shared: viaPlugin === core, pinned: viaPinned.version }',
+      '',
+    ].join('\n'),
+  )
+  const { remote } = await boot(await compile(), chunkOptions)
+
+  assert.deepEqual({ ...remote }, { shared: true, pinned: 2 })
+})
+
+test('굽는 사이 저장한 글자는 그 굽기에 섞이지 않고 다음 굽기가 본다', async () => {
+  // babel 이 파일을 처음 변환하는 순간 깨진 글자로 저장한다. 굽기 한 번의 한가운데다
+  await write(
+    'save-mid-pass.cjs',
+    "module.exports = () => ({ visitor: { Program(_, state) { const save = globalThis.__devModulesSave; if (save?.file === state.filename) { globalThis.__devModulesSave = undefined; require('node:fs').writeFileSync(save.file, save.contents) } } } })\n",
+  )
+  await write(
+    'babel.save.cjs',
+    `module.exports = { presets: ['@babel/preset-typescript'], plugins: [${JSON.stringify(join(projectDir, 'save-mid-pass.cjs'))}] }\n`,
+  )
+  await write('race-src/index.ts', "import { value } from './value'\n\nexport default { value }\n")
+  await write('race-src/value.ts', 'export const value = 1\n')
+  const raceOptions = options({ src: 'race-src', babelConfig: join(projectDir, 'babel.save.cjs') })
+  const compile = createModuleCompiler(async () => raceOptions)
+  ;(globalThis as { __devModulesSave?: unknown }).__devModulesSave = {
+    file: join(projectDir, 'race-src/value.ts'),
+    contents: 'export const value = (\n',
+  }
+
+  const during = await compile()
+  const { remote } = await boot(during, raceOptions)
+  assert.equal(remote.value, 1)
+  assert.equal(compiled(during).modules.get('./value.ts')?.source, 'export const value = 1\n')
+
+  const next = await compile()
+  assert.ok(!next.ok)
+  assert.deepEqual(
+    next.errors.map(({ file }) => file),
+    ['race-src/value.ts'],
+  )
+})
+
 test('깨진 파일과 못 푸는 import 를 한 번에 파일마다 다 적는다', async () => {
   await write('broken-src/index.ts', "import './a'\nimport './b'\n")
   await write('broken-src/a.ts', 'export const a = (\n')
@@ -233,6 +324,39 @@ test('깨진 파일과 못 푸는 import 를 한 번에 파일마다 다 적는�
   const byFile = new Map(result.errors.map(({ file, message }) => [file, message]))
   assert.match(byFile.get('broken-src/a.ts') ?? '', /Unexpected token|SyntaxError/)
   assert.equal(byFile.get('broken-src/b.ts'), 'Could not resolve "./deleted"')
+})
+
+test('import() 를 쓴 모듈도 빈 realm 에서 풀린다. 지역 · 의존 청크 · shared · 의존 청크 안의 import() 다', async () => {
+  await write('node_modules/lazy-vendor/package.json', '{ "name": "lazy-vendor" }\n')
+  await write(
+    'node_modules/lazy-vendor/index.js',
+    "exports.native = () => import('react-native').then((native) => native.marker)\n",
+  )
+  await write(
+    'lazy-src/index.ts',
+    [
+      'export default {',
+      "  local: () => import('./lazy').then((lazy) => lazy.value),",
+      "  vendor: () => import('tiny-vendor').then((vendor) => vendor.tag(7)),",
+      "  shared: () => import('react-native').then((native) => native.marker),",
+      "  inVendor: () => import('lazy-vendor').then((vendor) => vendor.native()),",
+      '}',
+      '',
+    ].join('\n'),
+  )
+  await write('lazy-src/lazy.ts', 'export const value = 42\n')
+  const lazyOptions = options({ src: 'lazy-src' })
+  const result = await createModuleCompiler(async () => lazyOptions)()
+
+  // Hermes 는 import() 를 못 읽는다. 빈 realm 도 import() 를 받을 길이 없어 거절한다
+  for (const [id, { code }] of compiled(result).modules) {
+    assert.doesNotMatch(code, /\bimport\(/, `${id} 에 import() 가 남았다`)
+  }
+  const { remote } = await boot(result, lazyOptions)
+  assert.deepEqual(
+    await Promise.all([remote.local(), remote.vendor(), remote.shared(), remote.inVendor()]),
+    [42, 'vendor:HOST_RN:7', 'HOST_RN', 'HOST_RN'],
+  )
 })
 
 test('미니앱 config 가 react-refresh/babel 을 이미 들고 있어도 컴포넌트를 한 번만 등록한다', async () => {

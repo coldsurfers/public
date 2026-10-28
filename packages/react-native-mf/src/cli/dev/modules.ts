@@ -7,8 +7,9 @@
  *   ② esbuild        엔트리에서 닿는 파일마다 CJS 하나. import 는 전부 밖에 두고 경로만 `ModuleId` 로
  *   ③ block-scoping  모듈마다. esbuild 의 `__copyProps` 가 모듈마다 들어간다
  *
- * shared 가 아닌 bare import 는 `vendor:` 청크 하나로 묶는다. 패키지마다 따로 묶으면 둘이 같이 쓰는
- * 의존이 사본으로 갈린다.
+ * shared 가 아닌 bare import 는 의존 청크(`vendor:/<n>`)로 묶는다. 처음 굽기는 전부 한 청크다 —
+ * 패키지마다 따로 묶으면 둘이 같이 쓰는 의존이 사본으로 갈린다. 그 뒤 처음 보는 패키지는 그것만 담은
+ * 청크로 더한다. 실린 청크의 글자가 그대로여서 기기가 실린 패키지를 다시 돌리지 않는다.
  */
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
@@ -28,6 +29,19 @@ export type PassResult =
   | { ok: false; errors: readonly PassError[] }
 
 const VENDOR: ModuleId = 'vendor:'
+
+type VendorChunk = { id: ModuleId; source: string; code: string; requires: readonly string[] }
+
+/** 굽기를 넘어 남는 의존 청크. 한 번 실은 spec 은 import 가 빠져도 남는다 */
+type Vendor = {
+  /** 이 청크들을 묶은 `options.shared`. 바뀌면 처음부터 다시 묶는다 */
+  shared: string
+  chunks: VendorChunk[]
+  chunkOf: Map<string, ModuleId>
+  /** 청크가 내보내는 파일 → 그 spec. 새 청크는 이 파일을 묶지 않고 그 spec 의 모듈을 부른다 */
+  specAt: Map<string, string>
+}
+
 /** 링크 산출물 경로. `write: false` 라 쓰이지 않는다 */
 const LINK_OUTDIR = 'build/.dev-link'
 /** 플러그인이 `build.resolve` 로 기본 풀이를 부를 때 자기 자신을 건너뛰는 표식 */
@@ -46,16 +60,18 @@ export function entryId(options: CompileOptions): ModuleId {
  * 부를 때마다 트리를 엔트리에서 다시 따라간다. 옵션도 다시 푼다 — `sharedFrom` 매니페스트를 호스트가
  * 다시 내면 다음 굽기가 본다.
  *
- * 같은 글자는 다시 굽지 않는다. babel · 의존 청크 · block-scoping 을 입력 글자로 기억한다. 링크는
- * 매번 전부 한다. 파일이 생기거나 지워지면 풀이가 바뀌는데, 그걸 따로 추적하는 것보다 esbuild 한 번이
- * 싸다.
+ * 같은 글자는 다시 굽지 않는다. babel · block-scoping 은 입력 글자로, 의존 청크는 spec 으로 기억한다.
+ * 링크는 매번 전부 한다. 파일이 생기거나 지워지면 풀이가 바뀌는데, 그걸 따로 추적하는 것보다 esbuild
+ * 한 번이 싸다.
  */
 export function createModuleCompiler(
   resolveOptions: () => Promise<CompileOptions>,
 ): () => Promise<PassResult> {
   const transpiled = new Map<string, { source: string; code: Promise<string> }>()
   const scoped = new Map<ModuleId, { input: string; output: Promise<string> }>()
-  let vendor: { key: string; built: Promise<{ code: string; requires: string[] }> } | undefined
+  let vendor: Vendor | undefined
+  // `shared` 가 바뀌어 다시 묶어도 이어 센다. 기기에 남은 옛 청크와 id 가 겹치지 않는다
+  let chunkCount = 0
 
   return async () => {
     const options = await resolveOptions()
@@ -96,7 +112,13 @@ export function createModuleCompiler(
             pluginData: RESOLVING,
           })
           if (resolved.errors.length > 0) return { errors: resolved.errors }
-          if (!args.path.startsWith('.') && !args.path.startsWith('/')) {
+          // tsconfig `paths` 별칭은 bare 로 적혀도 src 파일을 연다. 의존 청크로 보내면 고쳐도 다시 묶지 않는다
+          const local =
+            args.path.startsWith('.') ||
+            args.path.startsWith('/') ||
+            (resolved.path.startsWith(`${srcDir}${sep}`) &&
+              !relative(srcDir, resolved.path).split(sep).includes('node_modules'))
+          if (!local) {
             vendorSpecs.add(args.path)
             return { path: `${VENDOR}${args.path}`, external: true }
           }
@@ -105,8 +127,9 @@ export function createModuleCompiler(
             : { path: resolved.path }
         })
 
+        // 굽기 한 번에 파일은 한 번만 읽는다. 링크가 다시 읽으면 그 사이 저장한 글자가 그래프와 어긋난다
         build.onLoad({ filter: /.*/ }, async ({ path }) => {
-          const source = await readFile(path, 'utf8')
+          const source = sources.get(path) ?? (await readFile(path, 'utf8'))
           sources.set(path, source)
           if (!path.startsWith(`${srcDir}${sep}`) || !SOURCE_EXTENSION.test(path)) return undefined
           try {
@@ -128,6 +151,8 @@ export function createModuleCompiler(
       target: ['es2015'],
       // build 레인과 같다. RN 코드가 짚는 `global` 을 런타임마다 갈리지 않게 고정한다
       define: { global: 'globalThis' },
+      // Hermes 는 `import()` 를 못 읽는다. build 레인은 번들이 접어 주지만 여기는 import 를 밖에 둬서 남는다
+      supported: { 'dynamic-import': false },
       logLevel: 'silent',
     }
 
@@ -157,28 +182,35 @@ export function createModuleCompiler(
       })
       const outputs = new Map(linked.outputFiles.map((output) => [output.path, output.text]))
       files.forEach((path, index) => {
-        const code = outputs.get(join(options.cwd, LINK_OUTDIR, `${index}.js`)) ?? ''
-        modules.set(toModuleId(srcDir, path), { source: sources.get(path) ?? '', code })
-      })
-
-      const specs = [...vendorSpecs].sort()
-      if (specs.length > 0) {
-        const source = `module.exports = {\n${specs.map((spec) => `  ${JSON.stringify(spec)}: require(${JSON.stringify(spec)}),`).join('\n')}\n}\n`
-        const key = JSON.stringify([source, options.shared])
-        if (vendor?.key !== key) vendor = { key, built: bundleVendor(source) }
-        const built = await vendor.built.catch((error: unknown) => {
-          vendor = undefined
-          throw error
-        })
-        for (const spec of built.requires) requires.add(spec)
-        modules.set(VENDOR, { source, code: built.code })
-        for (const spec of specs) {
-          const code = `module.exports = require(${JSON.stringify(VENDOR)})[${JSON.stringify(spec)}];\n`
-          modules.set(`${VENDOR}${spec}`, { source: code, code })
+        const code = outputs.get(join(options.cwd, LINK_OUTDIR, `${index}.js`))
+        if (code === undefined) {
+          errors.push({
+            file: relative(options.cwd, path),
+            message: 'esbuild 가 모듈을 내지 않았다',
+          })
+        } else {
+          modules.set(toModuleId(srcDir, path), { source: sources.get(path) ?? '', code })
         }
+      })
+      if (errors.length > 0) return { ok: false, errors }
+
+      const shared = JSON.stringify(options.shared)
+      if (vendor?.shared !== shared) {
+        vendor = { shared, chunks: [], chunkOf: new Map(), specAt: new Map() }
+      }
+      const { chunkOf } = vendor
+      const fresh = [...vendorSpecs].filter((spec) => !chunkOf.has(spec)).sort()
+      if (fresh.length > 0) await bundleVendor(vendor, fresh)
+      for (const chunk of vendor.chunks) {
+        for (const spec of chunk.requires) requires.add(spec)
+        modules.set(chunk.id, { source: chunk.source, code: chunk.code })
+      }
+      for (const [spec, chunk] of chunkOf) {
+        const code = `module.exports = require(${JSON.stringify(chunk)})[${JSON.stringify(spec)}];\n`
+        modules.set(`${VENDOR}${spec}`, { source: code, code })
       }
     } catch (error) {
-      return { ok: false, errors: buildErrors(error) }
+      return { ok: false, errors: [...errors, ...buildErrors(error)] }
     }
 
     if (options.blockScoping) {
@@ -193,22 +225,41 @@ export function createModuleCompiler(
     return { ok: true, modules, requires: [...requires].sort() }
 
     /**
-     * 지역 모듈이 import 하는 bare 패키지를 하나로 묶는다. 패키지가 shared 를 import 하면 그 자리는
-     * 밖에 둔다 — 런타임의 `require` 가 호스트 사본을 준다. 서드파티라 `"use strict"` 를 붙이지 않는다.
+     * 처음 보는 bare 패키지를 새 청크 하나로 묶어 `vendor` 에 더한다. 패키지가 shared 를 import 하면 그
+     * 자리는 밖에 둔다 — 런타임의 `require` 가 호스트 사본을 준다. 이미 실린 파일에 닿아도 밖에 두고 그
+     * spec 의 모듈을 부른다 — 실린 인스턴스를 같이 쓴다. 파일로 맞추므로 안에 다른 버전을 품은 패키지는
+     * 그 버전을 묶는다. 서드파티라 `"use strict"` 를 붙이지 않는다.
      */
-    async function bundleVendor(source: string) {
+    async function bundleVendor(vendor: Vendor, specs: string[]) {
+      const id: ModuleId = `${VENDOR}/${chunkCount++}`
+      const source = `module.exports = {\n${specs.map((spec) => `  ${JSON.stringify(spec)}: require(${JSON.stringify(spec)}),`).join('\n')}\n}\n`
       const vendorRequires = new Set<string>()
+      const exported = new Map<string, string>()
       const result = await esbuild.build({
         ...common,
         write: false,
-        stdin: { contents: source, resolveDir: srcDir, sourcefile: VENDOR, loader: 'js' },
+        stdin: { contents: source, resolveDir: srcDir, sourcefile: id, loader: 'js' },
         plugins: [
           {
             name: 'react-native-mf/dev-vendor',
             setup(build) {
-              build.onResolve({ filter: isShared }, ({ path }) => {
-                vendorRequires.add(path)
-                return { path, external: true }
+              build.onResolve({ filter: /^[^./]/ }, async (args) => {
+                if (args.pluginData === RESOLVING) return undefined
+                if (isShared.test(args.path)) {
+                  vendorRequires.add(args.path)
+                  return { path: args.path, external: true }
+                }
+                const { path } = await build.resolve(args.path, {
+                  kind: args.kind,
+                  importer: args.importer,
+                  resolveDir: args.resolveDir,
+                  pluginData: RESOLVING,
+                })
+                const loaded = vendor.specAt.get(path)
+                if (loaded !== undefined) return { path: `${VENDOR}${loaded}`, external: true }
+                // src 에서 푸는 것은 이 청크가 내보내는 spec 뿐이다
+                if (args.resolveDir === srcDir) exported.set(path, args.path)
+                return undefined
               })
             },
           },
@@ -216,7 +267,9 @@ export function createModuleCompiler(
       })
       const [output] = result.outputFiles
       if (!output) throw new Error('[react-native-mf] esbuild 가 의존 청크를 내지 않았다.')
-      return { code: output.text, requires: [...vendorRequires] }
+      vendor.chunks.push({ id, source, code: output.text, requires: [...vendorRequires] })
+      for (const spec of specs) vendor.chunkOf.set(spec, id)
+      for (const [path, spec] of exported) vendor.specAt.set(path, spec)
     }
   }
 }

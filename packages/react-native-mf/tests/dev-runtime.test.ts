@@ -605,6 +605,90 @@ test('두 경계가 같이 쓰는 모듈이 던지면 그 적용에서 한 번�
   assert.equal(remote.refreshes(), 0)
 })
 
+/** 갱신을 하나씩 손으로 흘려보내는 호스트. `send(reply)` 는 기기가 그 응답을 적용하고 다음 요청을 걸 때까지 기다린다 */
+function scripted(modules: ModuleSource[], first: Reply) {
+  const pending: ((reply: Reply) => void)[] = []
+  const later = Array.from(
+    { length: 4 },
+    () => new Promise<Reply>((resolve) => pending.push(resolve)),
+  )
+  const remote = host(modules, { replies: [first, ...later] })
+  let polls = 2
+  const send = async (reply: Reply) => {
+    pending.shift()?.(reply)
+    polls += 1
+    await remote.polled(polls)
+  }
+  return { remote, send, ready: () => remote.polled(2) }
+}
+
+/** 엔트리 아래 두 가지 — 던지는 api 를 쓰는 화면, 그와 무관한 컴포넌트 */
+const twoBranches = () => [
+  mod('./index.ts', 'require("./screen.tsx"); require("./other.tsx");'),
+  ...app().slice(1),
+  component('./other.tsx', 'Other', 'return "o1";'),
+]
+const other = (label: string) => component('./other.tsx', 'Other', `return "${label}";`)
+
+test('계속 던지는 모듈이 남아 있어도 다른 컴포넌트 저장은 refresh 되고, 같은 오류는 다시 알리지 않는다', async () => {
+  const { remote, send, ready } = scripted(twoBranches(), update(2, [flakyApi]))
+  remote.boot()
+  await ready()
+
+  await send(update(3, [other('o2')]))
+  await send(update(4, [other('o3')]))
+
+  assert.equal(remote.refreshes(), 2)
+  assert.equal(remote.latest('./other.tsx Other')(), 'o3')
+  assert.deepEqual(
+    remote.reported.map((error) => (error as Error).message),
+    ['not ready'],
+  )
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v1/1')
+})
+
+test('던지던 모듈을 고쳐 저장했는데 또 던지면 같은 오류라도 그 적용은 refresh 를 건너뛰고 다시 알린다', async () => {
+  const { remote, send, ready } = scripted(twoBranches(), update(2, [flakyApi]))
+  remote.boot()
+  await ready()
+
+  await send(
+    update(3, [
+      other('o2'),
+      mod('./api.ts', 'throw new Error("not ready"); // 고쳤지만 그대로 던진다'),
+    ]),
+  )
+
+  assert.equal(remote.refreshes(), 0)
+  assert.deepEqual(
+    remote.reported.map((error) => (error as Error).message),
+    ['not ready', 'not ready'],
+  )
+})
+
+test('그대로인 모듈이라도 다른 오류로 던지면 그 적용은 refresh 를 건너뛰고 새 오류를 알린다', async () => {
+  const api = mod(
+    './api.ts',
+    'var config = require("./config.ts").config; if (!config.ok) throw new Error(config.reason); exports.api = { label: "v2" };',
+  )
+  const config = (reason: string) =>
+    mod('./config.ts', `exports.config = { ok: false, reason: "${reason}" };`)
+  const { remote, send, ready } = scripted(
+    [...twoBranches(), config('not ready')],
+    update(2, [api]),
+  )
+  remote.boot()
+  await ready()
+
+  await send(update(3, [other('o2'), config('still not ready')]))
+
+  assert.equal(remote.refreshes(), 0)
+  assert.deepEqual(
+    remote.reported.map((error) => (error as Error).message),
+    ['not ready', 'still not ready'],
+  )
+})
+
 test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
   const remote = host(app(), {
     replies: [

@@ -10,8 +10,8 @@
  * 모듈 키. 기기에선 불투명하다.
  *
  * - `./settings-screen/index.tsx` — `src` 기준 소스 경로
- * - `vendor:` — shared 가 아닌 bare import 를 한데 묶은 청크
- * - `vendor:<spec>` — 그 청크에서 패키지 하나를 꺼내는 모듈
+ * - `vendor:/<n>` — shared 가 아닌 bare import 를 묶은 의존 청크. `dev` 가 뜬 뒤 처음 보는 패키지는 새 청크다
+ * - `vendor:<spec>` — 제 청크에서 패키지 하나를 꺼내는 모듈. spec 은 `/` 로 시작하지 않아 청크와 겹치지 않는다
  */
 export type ModuleId = `./${string}` | `vendor:${string}`
 

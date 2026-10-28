@@ -80,6 +80,10 @@ export function bootDevRemote(boot: Boot, host: Host): void {
     : () => (type?: unknown) => type
 
   const records = new Map<string, ModuleRecord>()
+  /** 던진 오류 → 그 오류를 처음 잡은 모듈. 경계까지 올라가며 다시 잡혀도 처음 것을 지킨다 */
+  const origins = new WeakMap<Error, ModuleId>()
+  /** 지난 적용에서 스스로 던진 모듈 → 그 오류 글자 */
+  let throwing = new Map<ModuleId, string>()
   for (const [id, code] of boot.modules) {
     records.set(id, {
       code,
@@ -136,6 +140,7 @@ export function bootDevRemote(boot: Boot, host: Host): void {
     } catch (error) {
       record.status = 'failed'
       record.exports = lastGood
+      if (error instanceof Error && !origins.has(error)) origins.set(error, id)
       throw error
     }
   }
@@ -151,7 +156,9 @@ export function bootDevRemote(boot: Boot, host: Host): void {
    *
    * 다시 돌다 던진 모듈은 마지막 성공 값을 지키고, 그 적용은 refresh 를 부르지 않는다 — 화면이 마지막
    * 성공 코드에 머문다. 던진 모듈은 다음 적용이 바뀐 모듈과 함께 다시 걷는다. 같은 글자는 바뀐 모듈로
-   * 치지 않으니 따로 걷지 않으면 원인을 다른 데서 고쳐도 다시 돌 길이 없다.
+   * 치지 않으니 따로 걷지 않으면 원인을 다른 데서 고쳐도 다시 돌 길이 없다. 다시 걸어도 지난 적용과 같은
+   * 모듈이 고치지 않은 채 같은 오류로 던지면 이미 띄운 오류다 — 다시 띄우지 않고 이 적용의 다른 갱신을
+   * 막지 않는다. 원시값은 어느 모듈이 던졌는지 몰라 막는 쪽으로 친다.
    */
   function apply(refresh: Refresh, incoming: readonly ModuleSource[], removed: readonly string[]) {
     const changed = incoming.filter(([id, code]) => records.get(id)?.code !== code)
@@ -195,6 +202,7 @@ export function bootDevRemote(boot: Boot, host: Host): void {
       )
     // 한 적용에서 모듈은 한 번만 걷는다. 앞서 다시 돈 모듈은 이미 새 exports 를 쥐었다
     const walked = new Set<ModuleId>()
+    const thrown = new Map<ModuleId, string>()
     let threw = false
     while (from.length > 0) {
       const queue = from
@@ -221,6 +229,19 @@ export function bootDevRemote(boot: Boot, host: Host): void {
         try {
           load(id)
         } catch (error) {
+          const origin = error instanceof Error ? origins.get(error) : undefined
+          if (origin !== undefined) {
+            const known =
+              throwing.get(origin) === String(error) &&
+              !changed.some(([changedId]) => changedId === origin)
+            thrown.set(origin, String(error))
+            if (known) {
+              host.console.warn(
+                `[react-native-mf] "${boot.name}" 의 ${origin} 가 같은 오류로 아직 던진다. ${id} 는 마지막 성공 코드로 돈다`,
+              )
+              continue
+            }
+          }
           threw = true
           host.console.warn(
             `[react-native-mf] "${boot.name}" 의 ${id} 를 다시 돌리지 못했다. 고칠 때까지 마지막 성공 코드로 돈다`,
@@ -237,6 +258,7 @@ export function bootDevRemote(boot: Boot, host: Host): void {
         from.push(...record.importers)
       }
     }
+    throwing = thrown
     registry[boot.name] = load(boot.entry)
     if (!threw) refresh.performReactRefresh()
   }
