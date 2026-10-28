@@ -2,15 +2,22 @@
  * `dev` 서버. 세션에 가짜 컴파일러를 주입해 esbuild 없이 HTTP 동작과 굽기 큐를 판정한다. 포트는
  * 언제나 0 이다.
  *
- * 고정하는 것은 둘이다. **요청은 자기가 온 뒤 시작한 굽기만 받는다**(고친 뒤 리로드했는데 고치기
- * 전 번들이 오지 않는다) · **실패는 기기와 터미널에 그대로 보이고 서버는 산다.**
+ * 고정하는 것은 셋이다. **요청은 자기가 온 뒤 시작한 굽기만 받는다**(고친 뒤 리로드했는데 고치기
+ * 전 번들이 오지 않는다) · **실패는 기기와 터미널에 그대로 보이고 서버는 산다** · **hot 요청은 줄 것이
+ * 생길 때까지 붙들렸다가 그 굽기의 응답을 받는다.**
  */
 import assert from 'node:assert/strict'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { dirname, join } from 'node:path'
 import { afterEach, test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import type { PassResult } from '../src/cli/dev/modules'
 import { createDevSession, createLatestQueue } from '../src/cli/dev/session'
-import { type DevServer, parseDevArgs, startDevServer } from '../src/cli/dev-command'
+import type { Boot } from '../src/cli/dev/wire'
+import { type DevServer, parseDevArgs, startDev, startDevServer } from '../src/cli/dev-command'
 
+const here = dirname(fileURLToPath(import.meta.url))
 const servers: DevServer[] = []
 
 afterEach(async () => {
@@ -31,7 +38,7 @@ function heldCompile() {
   return { compile, calls }
 }
 
-async function serve(compile: () => Promise<PassResult>) {
+async function serve(compile: () => Promise<PassResult>, holdMs?: number) {
   const lines: string[] = []
   const server = await startDevServer({
     name: 'settings',
@@ -41,13 +48,21 @@ async function serve(compile: () => Promise<PassResult>) {
       epoch: 'test',
       compile,
       runtime: async () => '/* runtime */',
+      log: () => {},
     }),
     port: 0,
     log: (line) => lines.push(line),
+    holdMs,
   })
   servers.push(server)
   return { url: server.url, lines }
 }
+
+/** 번들 본문에 실린 부팅 값 */
+const bootOf = (body: string): Boot =>
+  JSON.parse(body.match(/bootDevRemote\((.*), globalThis\);/)?.[1] ?? 'null')
+
+const hotUrl = (url: string, query: string) => new URL(`/settings/hot?${query}`, url)
 
 /** 본문이 어느 굽기에서 왔는가 */
 const buildOf = (body: string) => body.match(/\/\* build #(\d+) \*\//)?.[0]
@@ -73,7 +88,7 @@ test('구운 번들을 200 application/javascript 로, 캐시 없이 내준다',
   const body = await response.text()
   assert.ok(body.startsWith('/* runtime */\n'), '번들이 기기 런타임으로 시작하지 않는다')
   assert.equal(buildOf(body), '/* build #1 */')
-  assert.match(lines[0], /^GET \/settings\/index\.bundle\.js 200 · \d+\.\d s · \d+\.\d kB$/)
+  assert.match(lines[0], /^GET \/settings\/index\.bundle\.js 200 · \d+\.\d s · \d+\.\d kB · v1$/)
 })
 
 test('놀던 서버에 두 요청이 같이 와도 둘 다 자기가 온 뒤 시작한 굽기를 받는다. 굽기는 둘이다', async () => {
@@ -178,15 +193,110 @@ test('파일에 매이지 않는 실패(esbuild 를 못 엶)도 500 이고, 서�
   assert.equal((await fetch(url)).status, 200)
 })
 
-test('번들의 모듈 주소는 기기가 부른 Host 를 따른다', async () => {
-  // Android 에뮬레이터는 10.0.2.2 로 부른다. 스택의 sourceURL 이 그 주소여야 기기에서 열린다
+test('번들의 모듈 주소와 hot 주소는 기기가 부른 Host 를 따른다', async () => {
+  // Android 에뮬레이터는 10.0.2.2 로 부른다. sourceURL 과 hot 요청이 그 주소여야 기기에서 닿는다
   const { url } = await serve(async () => build(1))
   const viaIp = new URL(url)
   viaIp.hostname = '127.0.0.1'
 
-  const body = await (await fetch(viaIp)).text()
+  const boot = bootOf(await (await fetch(viaIp)).text())
 
-  assert.ok(body.includes(`"sourceRoot":"http://127.0.0.1:${viaIp.port}/settings/"`), body)
+  assert.equal(boot.sourceRoot, `http://127.0.0.1:${viaIp.port}/settings/`)
+  assert.equal(boot.hotUrl, `http://127.0.0.1:${viaIp.port}/settings/hot`)
+  assert.deepEqual(boot.stamp, { epoch: 'test', version: 1 })
+})
+
+test('hot 요청의 커서가 틀리면 굽지 않고 400 text/plain 으로 거절한다', async () => {
+  let compiled = 0
+  const { url, lines } = await serve(async () => build(++compiled))
+
+  for (const query of ['', 'have=test.1', 'have=test.1&seen=test.x']) {
+    const response = await fetch(hotUrl(url, query))
+    assert.equal(response.status, 400, query)
+    assert.equal(response.headers.get('content-type'), 'text/plain; charset=utf-8')
+    assert.match(await response.text(), /have · seen 은 <epoch>\.<version> 이어야 한다/)
+  }
+  assert.equal(compiled, 0)
+  assert.match(lines[0], /^GET \/settings\/hot 400 /)
+})
+
+test('hot 요청은 줄 것이 없으면 붙들었다가 204 로 끝난다', async () => {
+  const { url } = await serve(async () => build(1), 30)
+  const { stamp } = bootOf(await (await fetch(url)).text())
+
+  const startedAt = performance.now()
+  const response = await fetch(hotUrl(url, `have=test.${stamp.version}&seen=test.${stamp.version}`))
+
+  assert.equal(response.status, 204)
+  assert.ok(performance.now() - startedAt >= 25, '붙들지 않고 바로 끝났다')
+})
+
+test('붙든 hot 요청은 상태를 바꾼 굽기가 깨우고, 그 굽기의 모듈을 200 application/json 으로 받는다', async () => {
+  let compiled = 0
+  const { url, lines } = await serve(async () => build(++compiled))
+  await fetch(url)
+
+  const held = fetch(hotUrl(url, 'have=test.1&seen=test.1'))
+  await new Promise((resolve) => setTimeout(resolve, 30))
+  await fetch(url)
+  const response = await held
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get('content-type'), 'application/json')
+  assert.deepEqual(await response.json(), {
+    kind: 'update',
+    stamp: { epoch: 'test', version: 2 },
+    modules: [['./index.ts', '/* build #2 */']],
+    removed: [],
+  })
+  assert.match(
+    lines.find((line) => line.startsWith('hot ')) ?? '',
+    /^hot v2 → localhost · 모듈 1개 · \d+\.\d kB$/,
+  )
+})
+
+/** `srcDir` 의 `index.ts` 를 읽어 엔트리 하나로 굽는 dev */
+async function startWatching(srcDir: string, lines: string[]) {
+  const server = await startDev({
+    name: 'settings',
+    entry: './index.ts',
+    srcDir,
+    compile: async () => ({
+      ok: true,
+      modules: new Map([
+        ['./index.ts', { source: '', code: await readFile(join(srcDir, 'index.ts'), 'utf8') }],
+      ]),
+      requires: [],
+    }),
+    runtime: async () => '',
+    port: 0,
+    log: (line) => lines.push(line),
+  })
+  servers.push(server)
+  return server
+}
+
+test('startDev 는 요청도 저장도 없이 띄우자마자 첫 굽기를 돌린다', async () => {
+  // 아무도 쓰지 않는 폴더다. 감시가 첫 굽기를 대신 일으킬 수 없다
+  const lines: string[] = []
+  await startWatching(join(here, 'fixtures/startup-src'), lines)
+
+  await until(() => lines.some((line) => line.startsWith('v1 · index.ts')), '띄울 때의 첫 굽기')
+})
+
+test('startDev 는 src 아래 저장마다 다시 굽는다', async () => {
+  const srcDir = await mkdtemp(join(tmpdir(), 'rnmf-dev-watch-'))
+  await writeFile(join(srcDir, 'index.ts'), 'first')
+  const lines: string[] = []
+  const server = await startWatching(srcDir, lines)
+  await until(() => lines.some((line) => line.startsWith('v1 · index.ts')), '첫 굽기')
+
+  await writeFile(join(srcDir, 'index.ts'), 'second')
+  await until(() => lines.some((line) => line.startsWith('v2 · index.ts')), '저장 뒤 굽기')
+
+  await server.close()
+  servers.splice(servers.indexOf(server), 1)
+  await rm(srcDir, { recursive: true, force: true })
 })
 
 test('다른 경로는 굽지 않고 404 로 이 서버가 굽는 이름을 알려준다', async () => {
@@ -214,6 +324,7 @@ test('포트를 이미 쓰고 있으면 EADDRINUSE 로, 경로에 못 쓰는 이
         epoch: 'test',
         compile: async () => build(1),
         runtime: async () => '',
+        log: () => {},
       }),
       port: at,
       log: () => {},

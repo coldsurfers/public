@@ -3,7 +3,8 @@
  * 빈 vm realm 에서 돌린다. Node 전역도 tsx 헬퍼도 없는 자리라 바깥 참조가 하나라도 남으면 여기서 터진다.
  * `turbo test` 가 build 뒤에 돌아서 dist 가 있다.
  *
- * 호스트가 보는 것만 본다 — 레지스트리 칸, 던지는 에러, `__ReactRefresh` 에 들어간 id, 경고 · fetch 횟수.
+ * 호스트가 보는 것만 본다 — 레지스트리 칸, 던지는 에러, `__ReactRefresh` 에 들어간 id 와 부른 횟수,
+ * 어느 모듈이 돌았는가, 경고 · fetch 주소 · 물러난 시간.
  */
 import assert from 'node:assert/strict'
 import { dirname, join } from 'node:path'
@@ -11,7 +12,7 @@ import { before, test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import vm from 'node:vm'
 import { buildRuntime, bundleText } from '../src/cli/dev/modules'
-import type { ModuleSource } from '../src/cli/dev/wire'
+import type { ModuleId, ModuleSource, Reply } from '../src/cli/dev/wire'
 import { REMOTE_REGISTRY_KEY } from '../src/runtime/registry'
 import { SHARED_SCOPE_KEY } from '../src/runtime/shared-scope'
 
@@ -22,26 +23,56 @@ before(async () => {
   runtime = await buildRuntime({ blockScoping: true, input: distRuntime })
 })
 
-type Options = { requires?: string[]; refresh?: boolean }
+/** 서버가 hot 요청에 돌려줄 것. Promise 면 풀릴 때까지 붙든다. 다 쓰면 응답 없이 붙든다 */
+type Scripted = Reply | 204 | 'reject' | Promise<Reply>
 
-/** 호스트 한 벌. 첫 모듈이 엔트리다 */
-function host(modules: ModuleSource[], { requires = [], refresh = true }: Options = {}) {
+type Options = { requires?: string[]; refresh?: boolean; replies?: Scripted[] }
+
+/** 호스트 한 벌. 첫 모듈이 엔트리다. `mod` 로 만든 모듈은 돌 때 `trace` 에 자기 id 를 남긴다 */
+function host(
+  modules: ModuleSource[],
+  { requires = [], refresh = true, replies = [] }: Options = {},
+) {
   const registered: string[] = []
+  const types = new Map<string, unknown>()
   const warnings: string[] = []
+  const errors: unknown[][] = []
   const fetches: string[] = []
+  const timers: { callback: () => void; ms: number }[] = []
+  const fullRefreshes: string[] = []
+  const trace: string[] = []
+  let refreshes = 0
   const realm = vm.createContext({
-    console: { warn: (line: string) => warnings.push(line) },
+    console: {
+      warn: (line: string) => warnings.push(line),
+      error: (...args: unknown[]) => errors.push(args),
+    },
     fetch: (url: string) => {
       fetches.push(url)
-      return new Promise(() => {})
+      const next = replies.shift()
+      if (next === undefined) return new Promise(() => {})
+      if (next === 'reject') return Promise.reject(new TypeError('Network request failed'))
+      if (next === 204) return Promise.resolve({ status: 204, json: () => Promise.reject() })
+      return Promise.resolve(next).then((reply) => ({ status: 200, json: async () => reply }))
     },
+    setTimeout: (callback: () => void, ms: number) => timers.push({ callback, ms }),
+    trace,
     [SHARED_SCOPE_KEY]: { react: { marker: 'HOST_REACT' } },
     // Metro 의 require 폴리필이 거는 전역 no-op. 모듈이 이걸 잡으면 등록이 조용히 사라진다
     $RefreshReg$: () => registered.push('전역 $RefreshReg$'),
     ...(refresh && {
       __ReactRefresh: {
-        register: (_type: unknown, id: string) => registered.push(id),
+        register: (type: unknown, id: string) => {
+          registered.push(id)
+          types.set(id, type)
+        },
         createSignatureFunctionForTransform: () => (type: unknown) => type,
+        isLikelyComponentType: (type: unknown) =>
+          typeof type === 'function' && /^[A-Z]/.test(type.name),
+        performReactRefresh: () => {
+          refreshes += 1
+        },
+        performFullRefresh: (reason: string) => fullRefreshes.push(reason),
       },
     }),
   })
@@ -52,9 +83,11 @@ function host(modules: ModuleSource[], { requires = [], refresh = true }: Option
         {
           name: 'settings',
           entry: modules[0][0],
+          stamp: { epoch: 'e', version: 1 },
           modules,
           requires,
           sourceRoot: 'http://localhost:8082/settings/',
+          hotUrl: 'http://localhost:8082/settings/hot',
           keys: { registry: REMOTE_REGISTRY_KEY, shared: SHARED_SCOPE_KEY },
         },
         runtime,
@@ -63,9 +96,53 @@ function host(modules: ModuleSource[], { requires = [], refresh = true }: Option
     )
   const remote = () => vm.runInContext(`globalThis[${JSON.stringify(REMOTE_REGISTRY_KEY)}]`, realm)
   const global = (name: string) => vm.runInContext(`globalThis.${name}`, realm)
+  /** react-refresh 가 그 id 로 그릴 컴포넌트 — 마지막으로 등록된 것 */
+  const latest = (id: string) => types.get(`settings:${id}`) as () => unknown
+  /** 앞선 hot 응답을 다 처리하고 n 번째 요청을 걸 때까지 */
+  const polled = (n: number) => until(() => fetches.length >= n, `hot 요청 ${n} 번째`)
 
-  return { boot, remote, global, registered, warnings, fetches }
+  return {
+    boot,
+    remote,
+    global,
+    latest,
+    polled,
+    registered,
+    warnings,
+    errors,
+    fetches,
+    timers,
+    fullRefreshes,
+    trace,
+    refreshes: () => refreshes,
+  }
 }
+
+async function until(condition: () => boolean, what: string) {
+  const deadline = Date.now() + 2000
+  while (!condition()) {
+    if (Date.now() > deadline) throw new Error(`2초를 기다려도 오지 않았다: ${what}`)
+    await new Promise((resolve) => setTimeout(resolve, 1))
+  }
+}
+
+const update = (version: number, modules: ModuleSource[], removed: ModuleId[] = []): Reply => ({
+  kind: 'update',
+  stamp: { epoch: 'e', version },
+  modules,
+  removed,
+})
+
+/** 돌 때 `trace` 에 id 를 남기는 모듈 */
+const mod = (id: ModuleId, body: string): ModuleSource => [
+  id,
+  `"use strict"; trace.push(${JSON.stringify(id)}); ${body}`,
+]
+const component = (id: ModuleId, name: string, body: string, rest = ''): ModuleSource =>
+  mod(
+    id,
+    `${rest} function ${name}() { ${body} } $RefreshReg$(${name}, "${name}"); exports.${name} = ${name};`,
+  )
 
 test('엔트리의 exports 가 레지스트리 칸에 오른다. 지역 모듈과 shared 를 다 푼다', () => {
   const remote = host(
@@ -164,4 +241,201 @@ test('순환 import 는 도는 중인 모듈이 바꿔 낀 exports 를 받는다
   remote.boot()
 
   assert.deepEqual({ ...remote.remote().settings }, { name: 'a', seenByB: 'a' })
+})
+
+/** 엔트리 → 화면(경계) → api(유틸, 싱글턴) · store(형제 싱글턴) */
+const app = (api = 'v1'): ModuleSource[] => [
+  mod('./index.ts', 'exports.default = require("./screen.tsx").Screen;'),
+  component(
+    './screen.tsx',
+    'Screen',
+    'return api.label + "/" + store.id;',
+    'var api = require("./api.ts").api; var store = require("./store.ts").store;',
+  ),
+  mod(
+    './api.ts',
+    `globalThis.apis = (globalThis.apis || 0) + 1; exports.api = { label: "${api}" };`,
+  ),
+  mod('./store.ts', 'globalThis.stores = (globalThis.stores || 0) + 1; exports.store = { id: 1 };'),
+]
+
+test('hot 요청은 부팅한 상태를 커서로 들고 가고, 적용한 뒤엔 받은 상태로 옮긴다', async () => {
+  const remote = host(app(), {
+    replies: [update(2, [component('./screen.tsx', 'Screen', 'return "v2";')])],
+  })
+
+  remote.boot()
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fetches, [
+    'http://localhost:8082/settings/hot?have=e.1&seen=e.1',
+    'http://localhost:8082/settings/hot?have=e.2&seen=e.2',
+  ])
+})
+
+test('컴포넌트 모듈만 고치면 그 모듈 하나만 돌고 refresh 를 한 번 부른다', async () => {
+  const remote = host(app(), {
+    replies: [update(2, [component('./screen.tsx', 'Screen', 'return "v2";')])],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./screen.tsx'])
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2')
+  assert.equal(remote.refreshes(), 1)
+  assert.deepEqual(remote.fullRefreshes, [])
+})
+
+test('유틸을 고치면 경계까지 다시 돌고, 그 위와 형제 싱글턴은 돌지 않는다', async () => {
+  const remote = host(app(), { replies: [update(2, [app('v2')[2]])] })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), ['./screen.tsx', './api.ts'])
+  assert.equal(remote.global('apis'), 2, '고친 모듈의 싱글턴은 다시 만들어진다')
+  assert.equal(remote.global('stores'), 1, '형제 싱글턴이 다시 만들어졌다')
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2/1')
+  assert.equal(remote.refreshes(), 1)
+})
+
+test('경계를 못 만나고 엔트리에 닿으면 아무것도 돌리지 않고 이유를 달아 호스트를 다시 띄운다', async () => {
+  const remote = host(
+    [
+      mod('./index.ts', 'exports.version = require("./version.ts").version;'),
+      mod('./version.ts', 'exports.version = 1;'),
+    ],
+    { replies: [update(2, [mod('./version.ts', 'exports.version = 2;')])] },
+  )
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.fullRefreshes, [
+    '[react-native-mf] "settings" 의 ./index.ts 위로 Fast Refresh 경계가 없다',
+  ])
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.refreshes(), 0)
+})
+
+test('새 글자 하나가 깨졌으면 아무 모듈도 바꾸지 않고, 오류를 알리고, 다음 갱신이 그 몫까지 싣는다', async () => {
+  const screenV2 = component(
+    './screen.tsx',
+    'Screen',
+    'return "v2/" + api.label;',
+    'var api = require("./api.ts").api;',
+  )
+  let fixed = (_reply: Reply) => {}
+  const remote = host(app(), {
+    replies: [
+      update(2, [screenV2, ['./api.ts', '"use strict"; exports.api = {']]),
+      new Promise<Reply>((resolve) => {
+        fixed = resolve
+      }),
+    ],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v1/1')
+  assert.equal(remote.errors.length, 1)
+  assert.match(String(remote.errors[0][0]), /"settings" 에 v2 을 적용하지 못했다/)
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=e.1&seen=e.2')
+
+  fixed(update(3, [screenV2, app('v3')[2]]))
+  await remote.polled(3)
+
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2/v3')
+  assert.equal(remote.refreshes(), 1)
+})
+
+test('서버를 다시 띄운 뒤의 스냅숏이 글자가 같으면 아무것도 돌리지 않고 커서만 옮긴다', async () => {
+  const remote = host(app(), {
+    replies: [{ kind: 'snapshot', stamp: { epoch: 'r', version: 1 }, modules: app() }],
+  })
+  remote.boot()
+  const booted = remote.trace.length
+
+  await remote.polled(2)
+
+  assert.deepEqual(remote.trace.slice(booted), [])
+  assert.equal(remote.refreshes(), 0)
+  assert.equal(remote.fetches[1], 'http://localhost:8082/settings/hot?have=r.1&seen=r.1')
+})
+
+test('스냅숏에 없는 모듈은 지운다. 그 뒤 그 id 를 require 하면 모르는 모듈이다', async () => {
+  const lazy = component(
+    './screen.tsx',
+    'Screen',
+    'return require("./old.ts").old;',
+    'require("./old.ts");',
+  )
+  const remote = host(
+    [mod('./index.ts', 'require("./screen.tsx");'), lazy, mod('./old.ts', 'exports.old = 1;')],
+    {
+      replies: [
+        {
+          kind: 'snapshot',
+          stamp: { epoch: 'r', version: 1 },
+          modules: [
+            mod('./index.ts', 'require("./screen.tsx");'),
+            component('./screen.tsx', 'Screen', 'return require("./old.ts").old;'),
+          ],
+        },
+      ],
+    },
+  )
+  remote.boot()
+  assert.equal(remote.latest('./screen.tsx Screen')(), 1)
+
+  await remote.polled(2)
+
+  assert.throws(
+    remote.latest('./screen.tsx Screen'),
+    /shared 모듈 "\.\/old\.ts" 이 등록돼 있지 않다/,
+  )
+})
+
+test('fetch 가 거절되면 한 번 경고하고 250 ms 부터 5 s 까지 물러나며, 붙으면 처음으로 돌아간다', async () => {
+  const outage = Array<Scripted>(6).fill('reject')
+  const remote = host(app(), {
+    replies: [
+      ...outage,
+      update(2, [component('./screen.tsx', 'Screen', 'return "v2";')]),
+      'reject',
+    ],
+  })
+  remote.boot()
+
+  for (let n = 1; n <= 6; n += 1) {
+    await until(() => remote.timers.length === n, `${n} 번째 물러남`)
+    remote.timers[n - 1].callback()
+  }
+  await until(() => remote.timers.length === 7, '붙은 뒤 다시 끊김')
+
+  assert.deepEqual(
+    remote.timers.map(({ ms }) => ms),
+    [250, 500, 1000, 2000, 4000, 5000, 250],
+  )
+  assert.equal(remote.warnings.length, 2, '끊길 때마다 한 번씩')
+  assert.match(remote.warnings[0], /"settings" dev 서버에서 갱신을 받지 못했다/)
+  assert.equal(remote.latest('./screen.tsx Screen')(), 'v2')
+  assert.equal(remote.fetches.length, 8)
+})
+
+test('204 는 물러나지 않고 같은 커서로 곧바로 다시 건다', async () => {
+  const remote = host(app(), { replies: [204, 204] })
+  remote.boot()
+
+  await remote.polled(3)
+
+  assert.equal(new Set(remote.fetches).size, 1)
+  assert.deepEqual(remote.timers, [])
 })
