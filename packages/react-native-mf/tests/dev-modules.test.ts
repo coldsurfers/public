@@ -169,7 +169,7 @@ test('엔트리에서 닿는 파일만 src 기준 경로로 모듈이 되고, ba
     './index.ts',
     './screen/index.ts',
     './screen/screen.ts',
-    'vendor:',
+    'vendor:/0',
     'vendor:tiny-vendor',
   ])
   assert.deepEqual(
@@ -244,6 +244,37 @@ test('tsconfig paths 별칭으로 연 src 파일은 지역 모듈이다. 고치�
   assert.ok(compiled(result).modules.has('./lib/util.ts'))
   const { remote } = await boot(result, aliasOptions)
   assert.deepEqual({ ...remote }, { version: 2, same: true })
+})
+
+test('나중에 import 한 패키지도 실린 패키지와 인스턴스를 나누고, 안에 다른 버전을 품었으면 그 버전을 쓴다', async () => {
+  const pkg = (dir: string, body: string) =>
+    Promise.all([
+      write(`${dir}/package.json`, `{ "name": "${dir.split('/').pop()}" }\n`),
+      write(`${dir}/index.js`, `${body}\n`),
+    ])
+  await pkg('node_modules/pkg-core', 'exports.core = { version: 1 }')
+  await pkg('node_modules/pkg-plugin', "exports.core = require('pkg-core').core")
+  await pkg('node_modules/pkg-pinned', "exports.core = require('pkg-core').core")
+  await pkg('node_modules/pkg-pinned/node_modules/pkg-core', 'exports.core = { version: 2 }')
+  await write('chunk-src/index.ts', "import { core } from 'pkg-core'\n\nexport default { core }\n")
+  const chunkOptions = options({ src: 'chunk-src' })
+  const compile = createModuleCompiler(async () => chunkOptions)
+  compiled(await compile())
+
+  await write(
+    'chunk-src/index.ts',
+    [
+      "import { core } from 'pkg-core'",
+      "import { core as viaPlugin } from 'pkg-plugin'",
+      "import { core as viaPinned } from 'pkg-pinned'",
+      '',
+      'export default { shared: viaPlugin === core, pinned: viaPinned.version }',
+      '',
+    ].join('\n'),
+  )
+  const { remote } = await boot(await compile(), chunkOptions)
+
+  assert.deepEqual({ ...remote }, { shared: true, pinned: 2 })
 })
 
 test('굽는 사이 저장한 글자는 그 굽기에 섞이지 않고 다음 굽기가 본다', async () => {

@@ -39,6 +39,30 @@ const screen = (label: string) =>
     '',
   ].join('\n')
 
+const panel = (extra: string) =>
+  [
+    "import { Box } from 'pkg-a'",
+    extra,
+    '',
+    'globalThis.panels = (globalThis.panels ?? 0) + 1',
+    'globalThis.panelBox = Box',
+    '',
+    'export function Panel(): string {',
+    "  return 'panel'",
+    '}',
+    '',
+  ].join('\n')
+
+/** 돌 때마다 `pkgRuns` 에 제 이름을 하나 센다 */
+const pkg = (name: string, body: string) =>
+  Promise.all([
+    write(`node_modules/${name}/package.json`, JSON.stringify({ name })),
+    write(
+      `node_modules/${name}/index.js`,
+      `globalThis.pkgRuns = globalThis.pkgRuns || {}\nglobalThis.pkgRuns[${JSON.stringify(name)}] = (globalThis.pkgRuns[${JSON.stringify(name)}] || 0) + 1\n${body}\n`,
+    ),
+  ])
+
 type Family = { current: () => string }
 type RefreshRuntime = {
   register(type: unknown, id: string): void
@@ -92,15 +116,21 @@ let booted: () => string
 before(async () => {
   await rm(projectDir, { recursive: true, force: true })
   await write('babel.config.cjs', "module.exports = { presets: ['@babel/preset-typescript'] }\n")
+  await Promise.all([
+    pkg('pkg-a', 'exports.Box = function Box() { return null }'),
+    pkg('pkg-b', "exports.tag = 'b'"),
+    pkg('pkg-c', "exports.Box = require('pkg-a').Box"),
+  ])
   await write(
     'src/index.ts',
-    "import { Screen } from './screen'\n\nglobalThis.entries = (globalThis.entries ?? 0) + 1\n\nexport default Screen\n",
+    "import { Screen } from './screen'\nimport './panel'\n\nglobalThis.entries = (globalThis.entries ?? 0) + 1\n\nexport default Screen\n",
   )
   await write('src/screen.ts', screen('v1'))
   await write(
     'src/store.ts',
-    'globalThis.stores = (globalThis.stores ?? 0) + 1\n\nexport const store = { id: globalThis.stores }\n',
+    "import { tag } from 'pkg-b'\n\nglobalThis.stores = (globalThis.stores ?? 0) + 1\n\nexport const store = { id: globalThis.stores, tag }\n",
   )
+  await write('src/panel.ts', panel(''))
 
   const options: CompileOptions = {
     cwd: projectDir,
@@ -206,4 +236,31 @@ test('파일을 더하고 · 지우고 · 이름을 바꿔도 리로드 없이 �
   assert.deepEqual(hot.fullRefreshes, [])
   assert.equal(vm.runInContext('globalThis.stores', realm), 1, '싱글턴 모듈이 다시 돌았다')
   assert.equal(vm.runInContext('globalThis.entries', realm), 1)
+})
+
+test('서드파티 import 를 더하고 빼도 실린 패키지와 다른 가지 싱글턴은 다시 돌지 않고, 새 패키지는 실린 패키지의 인스턴스를 쓴다', async () => {
+  const read = (name: string) => vm.runInContext(`globalThis.${name}`, realm)
+  const runs = () => ({ ...read('pkgRuns') })
+  const box = read('panelBox')
+  assert.deepEqual(runs(), { 'pkg-a': 1, 'pkg-b': 1 })
+
+  await write(
+    'src/panel.ts',
+    panel("import { Box as Reexported } from 'pkg-c'\n\nglobalThis.cBox = Reexported"),
+  )
+  await until(() => read('panels') === 2, 'pkg-c 를 더한 panel 적용')
+
+  assert.deepEqual(runs(), { 'pkg-a': 1, 'pkg-b': 1, 'pkg-c': 1 })
+  assert.equal(read('stores'), 1, '다른 가지 싱글턴이 다시 돌았다')
+  assert.equal(read('panelBox'), box, '실린 패키지의 컴포넌트가 새 함수가 됐다')
+  assert.equal(read('cBox'), box, '새 패키지가 실린 패키지의 사본을 받았다')
+
+  await write('src/panel.ts', panel(''))
+  await until(() => read('panels') === 3, 'pkg-c 를 뺀 panel 적용')
+
+  assert.deepEqual(runs(), { 'pkg-a': 1, 'pkg-b': 1, 'pkg-c': 1 })
+  assert.equal(read('stores'), 1, '다른 가지 싱글턴이 다시 돌았다')
+  assert.equal(read('entries'), 1)
+  assert.deepEqual(hot.fullRefreshes, [])
+  assert.deepEqual(errors, [])
 })
