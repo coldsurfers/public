@@ -28,7 +28,7 @@ billets-app 과 settings-mini-app 이 이 패키지 밖에서 손으로 쓰는 �
 | 캐시 저장소 `script-storage.ts` (RNFS) | 39 | 저장소 어댑터 | ⬜ 선택 |
 
 지금 남은 손배선은 225줄이다. 그 밖에 shared 목록 자체(`shared-modules.ts`)와 Metro 설정 일부가 있다.
-결합의 예로, dev 서버 포트 `8082` 가 미니앱 서버와 호스트 배선에 따로 적혀 있다. 프레임워크 설정 하나가 이 둘을 합친다.
+결합의 예로, dev 서버 포트 `8082` 가 미니앱 서버와 호스트 배선에 따로 적혀 있다. 패키지 상수 하나(`dev` · `createDevResolver`)가 이 둘을 대신한다.
 
 ### 기반은 섰다
 
@@ -42,7 +42,7 @@ billets-app 과 settings-mini-app 이 이 패키지 밖에서 손으로 쓰는 �
 
 ### 다음은 손배선을 위 표의 순서로 가져온다 (Phase F)
 
-1. `react-native-mf dev`. `serve-bundle.mjs` 를 흡수하고, 포트를 config 한 곳에 둔다
+1. `react-native-mf dev`. `serve-bundle.mjs` 를 흡수한다. 포트와 경로는 패키지 상수라 호스트는 `createDevResolver` 로 받는다
 2. 호스트 프리셋. dev/prod 분기 · 개발 메뉴 · resolver 를 한 호출로 묶는다. MMKV 처럼 앱마다 다른 의존은 주입받는다
 3. shared 목록 추출 · 검사를 CLI 명령으로, Metro 의 shared 해석을 헬퍼로 낸다
 4. 저장소 어댑터. 선택이다
@@ -90,8 +90,8 @@ peer 넷은 전부 **optional** 이다. 호스트 앱은 하나도 안 깔아도
 
 | peer | 필요한 때 |
 | --- | --- |
-| `esbuild` | `build` · `deploy` · `./esbuild` 직접 호출 |
-| `@babel/core` · `@babel/plugin-transform-block-scoping` | `build` · `deploy` |
+| `esbuild` | `build` · `dev` · `deploy` · `./esbuild` 직접 호출 |
+| `@babel/core` · `@babel/plugin-transform-block-scoping` | `build` · `dev` · `deploy` |
 | `@aws-sdk/client-s3` | `s3Storage` 로 올릴 때 |
 
 ## 사용원리
@@ -365,11 +365,11 @@ function SettingsScreen(props: Props) {
 
 | 진입점 | 어디서 도나 | 주로 쓰는 것 |
 | --- | --- | --- |
-| `@coldsurfers/react-native-mf` | 호스트 (React Native) | `registerShared` · `getRemote` · `registerRemote` · `scriptManager` · `createManifestResolver` · `useRemote` · `resetRemote` |
+| `@coldsurfers/react-native-mf` | 호스트 (React Native) | `registerShared` · `getRemote` · `registerRemote` · `scriptManager` · `createManifestResolver` · `createDevResolver` · `useRemote` · `resetRemote` |
 | `@coldsurfers/react-native-mf/esbuild` | 빌드 머신 (Node) | `sharedScopePlugin` · `withSelfRegister` · `DEFAULT_SHARED_MODULES` |
 | `@coldsurfers/react-native-mf/deploy` | 빌드 머신 (Node) | `defineConfig` · `s3Storage` — `react-native-mf.config.ts` 가 import 한다 |
 | `@coldsurfers/react-native-mf/cli` | 빌드 머신 (Node) | `run(argv)` — bin 을 코드에서 부를 때 |
-| `react-native-mf` (bin) | 빌드 머신 (Node) | `build` · `deploy` · `rollback` · `promote` |
+| `react-native-mf` (bin) | 빌드 머신 (Node) | `build` · `dev` · `deploy` · `rollback` · `promote` |
 
 ## 미니앱 빌드 — `build`
 
@@ -414,7 +414,7 @@ hermesc 가 아니라 런타임 컴파일러를 탄다. 그쪽은 루프 안 `le
 (`QueryClient` → `skipToken`, 그래서 `new Symbol()`). 헬퍼를 고치는 대신 산출물에서 통째로
 없앤다 — 미니앱 자기 코드가 같은 패턴을 밟는 것도 같이 막힌다. 비용은 한 번 더 도는 ~50ms.
 
-중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다. 위치 조건이 둘이다.
+중간 산출물은 `build/.transpiled/<name>/` 에 떨어진다(`dev` 는 `build/.transpiled-dev/<name>/`). 위치 조건이 둘이다.
 
 - **프로젝트 안이어야 한다** — esbuild 는 transpile 된 파일의 위치에서 bare import 를 찾는다.
   레포 밖(`os.tmpdir()`)에 두면 미니앱 의존성이 통째로 안 잡힌다
@@ -500,6 +500,72 @@ export default defineConfig({
 
 ⚠️ **config 를 `.ts` 로 두려면 Node 22.18+** 다(type stripping). 미니앱 `package.json` 에
 `"type": "module"` 이 없으면 Node 가 재해석 경고를 한 줄 낸다 — 동작은 같다.
+
+## dev 번들 서버 `dev`
+
+`deploy` 와 같은 config 를 읽고, 요청이 올 때마다 미니앱을 구워 메모리에서 내준다. 빠른 시작 3 의
+`registerRemote` 는 굽기도 로드도 건너뛴다. shared 치환 · self-register · 로드 오류는 이 서버를 거쳐
+로컬에서 본다. 파일 감시와 HMR 은 없다. 고친 뒤 앱을 리로드하면 그 요청이 새로 굽는다.
+
+```jsonc
+// settings-mini-app/package.json
+"scripts": {
+  "dev": "react-native-mf dev"
+}
+```
+
+```
+$ pnpm dev
+[react-native-mf] dev settings → http://localhost:8082/settings/index.bundle.js
+[react-native-mf] 요청마다 다시 굽는다. config · babel config · 의존을 바꾸면 다시 띄운다
+[react-native-mf] GET /settings/index.bundle.js 200 · 0.3 s · 3.3 kB
+[react-native-mf] GET /settings/index.bundle.js 500 · 0.1 s
+/…/settings-mini-app/src/index.tsx: Unterminated string constant. (4:22)
+```
+
+| 하는 일 | 어떻게 |
+| --- | --- |
+| 이름 · 빌드 옵션 | config 의 `name` · `build` 를 `deploy` 와 똑같이 편다. 플래그는 `--config <path>` 하나다 |
+| 주소 | `http://<hostname>:8082/<name>/index.bundle.js` 하나. 포트와 경로는 패키지 상수라 config 로 열지 않는다 |
+| 굽는 때 | 요청마다. 요청은 **자기가 온 뒤 시작한 굽기만** 받는다. 굽는 중에 온 요청 여럿은 다음 굽기 하나를 나눠 받는다 |
+| 실패 | 500 `text/plain` 에 굽기 오류를 싣고, 터미널에는 색 그대로 찍는다. 서버는 살아 있고 옛 번들을 대신 내주지 않는다 |
+| 다른 경로 | 404. 이 서버가 굽는 이름과 경로를 본문에 적는다 |
+| 산출물 | 메모리에서 바로 내준다. `outFile` 을 쓰지 않고 중간 산출물은 `build/.transpiled-dev/<name>/` 에 따로 둔다. `dev` 가 떠 있는 채로 `deploy` 해도 서로의 파일을 건드리지 않는다 |
+
+⚠️ **config 와 babel config 는 띄울 때 한 번 읽는다.** babel 은 한 프로세스에서 읽은 config 를 다시
+읽지 않는다. 실측으로, 같은 프로세스에서 `babel.config.cjs` 의 프리셋을 지워도 옛 프리셋으로 구웠다.
+config · babel config · babel 플러그인을 바꾸면 `dev` 를 다시 띄운다. `sharedFrom` 매니페스트는 굽기마다 다시 읽는다.
+
+⚠️ **8082 는 미니앱 하나가 쓴다.** 두 번째 `dev` 는 포트를 이미 쓰고 있다고 알리고 1 로 끝난다.
+
+⚠️ **config 가 import 에서 배포 비밀을 요구하면 `dev` 가 뜨지 않는다.** `s3Storage` 의 `bucket` 은 비어
+있어도 된다. 읽거나 쓸 때 던지므로 env 를 그대로 넘긴다.
+
+```ts
+storage: s3Storage({ bucket: process.env.MINI_APP_S3_BUCKET, region: process.env.MINI_APP_S3_REGION }),
+```
+
+### 호스트는 `createDevResolver` 로 받는다
+
+```ts
+import { createDevResolver, scriptManager } from '@coldsurfers/react-native-mf'
+
+// 기기에서 본 개발 머신. iOS 시뮬레이터는 localhost, Android 에뮬레이터는 10.0.2.2
+const hostname = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
+
+// createManifestResolver 보다 먼저 단다. 빠른 시작 3 의 registerRemote 는 이 이름에 걸지 않는다
+if (__DEV__) scriptManager.addResolver(createDevResolver({ hostname, names: ['settings'] }))
+```
+
+⚠️ **resolver 는 단 순서대로 묻고 처음 맡은 쪽이 이긴다.** manifest resolver 뒤에 달면 dev 서버를 한 번도
+부르지 않는다. `__DEV__` 로 막지 않으면 릴리스 빌드도 개발 머신으로 간다. 받기에 실패해도 다음 resolver 로
+넘어가지 않는다. `registerRemote` 로 이미 꽂은 이름은 `load` 가 받지 않으므로 둘을 같이 걸지 않는다.
+
+주소는 dev 서버와 같은 함수로 만들어서 호스트에 포트와 경로를 적지 않는다. `names` 에 없는 이름은 다음
+resolver 로 넘기고, 맡은 이름은 `cache: false` 라 리로드마다 새로 받는다. 굽기가 실패하면 `load` 가 던지는
+에러에 서버가 보낸 굽기 오류가 붙어서 LogBox 와 에러 경계에 그대로 뜬다.
+
+실기기는 `hostname` 에 개발 머신의 LAN 주소를 준다. `dev` 는 모든 인터페이스에서 듣는다.
 
 ## shared 목록은 호스트가 정한다
 

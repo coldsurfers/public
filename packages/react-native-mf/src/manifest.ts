@@ -30,7 +30,7 @@ export const BUNDLE_FILE = 'index.bundle.js'
 /** 영숫자로 시작해 `.` · `..` 이 못 들어온다. URL 로 읽힐 때 경로가 접혀 다른 채널을 가리키지 않게 */
 const SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
 
-function segment(value: string, label: string): string {
+export function segment(value: string, label: string): string {
   if (!SEGMENT.test(value)) {
     throw new Error(
       `[react-native-mf] ${label} 은 경로 한 칸이어야 한다(영숫자 · . _ -): "${value}"`,

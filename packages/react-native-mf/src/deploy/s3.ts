@@ -1,7 +1,11 @@
 import type { DeployStorage } from './config'
 
 export type S3StorageOptions = {
-  bucket: string
+  /**
+   * 비어 있으면 **쓸 때**(`read` · `write`) 던진다. config 를 import 만 하는 `dev` 가 배포 비밀 없이
+   * 돌게 하려는 것이다. env 를 그대로 넘긴다
+   */
+  bucket: string | undefined
   /** 생략하면 AWS SDK 기본(`AWS_REGION` · 프로필)을 따른다 */
   region?: string
 }
@@ -34,15 +38,23 @@ export function s3Storage(options: S3StorageOptions): DeployStorage {
     connection ??= connect()
     return connection
   }
+  // SDK 를 열기 전에 본다. 원인이 버킷인데 SDK 설치나 자격 증명 오류로 나오지 않게
+  const bucket = () => {
+    if (!options.bucket) {
+      throw new Error(
+        '[react-native-mf] s3Storage 에 bucket 이 없다. 버킷 이름(대개 env)을 넘긴다.',
+      )
+    }
+    return options.bucket
+  }
 
   return {
     async read(key) {
+      const Bucket = bucket()
       const { sdk, client } = await connected()
       const { GetObjectCommand, NoSuchKey } = sdk
       try {
-        const response = await client.send(
-          new GetObjectCommand({ Bucket: options.bucket, Key: key }),
-        )
+        const response = await client.send(new GetObjectCommand({ Bucket, Key: key }))
         return (await response.Body?.transformToString('utf8')) ?? ''
       } catch (error) {
         if (error instanceof NoSuchKey) return null
@@ -50,10 +62,11 @@ export function s3Storage(options: S3StorageOptions): DeployStorage {
       }
     },
     async write(key, body, meta) {
+      const Bucket = bucket()
       const { sdk, client } = await connected()
       await client.send(
         new sdk.PutObjectCommand({
-          Bucket: options.bucket,
+          Bucket,
           Key: key,
           Body: body,
           ContentType: meta.contentType,

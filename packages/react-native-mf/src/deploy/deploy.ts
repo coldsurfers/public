@@ -1,8 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { runBuild } from '../cli/build'
-import { readSharedManifest } from '../cli/shared-manifest'
-import { DEFAULT_SHARED_MODULES } from '../esbuild/shared-scope'
+import { resolveConfigBuild } from '../cli/build-options'
 import {
   addRelease,
   bundleKey,
@@ -77,20 +76,7 @@ export async function runDeploy(input: {
   addRelease(manifest, { version, requires: [], enabled: true, deployedAt: '' })
   const bKey = bundleKey(config.prefix, config.name, version)
 
-  const build = config.build ?? {}
-  const shared = build.sharedFrom
-    ? await readSharedManifest(resolve(cwd, build.sharedFrom))
-    : (build.shared ?? DEFAULT_SHARED_MODULES)
-  const { outFile, requires } = await runBuild({
-    cwd,
-    name: config.name,
-    src: build.src ?? 'src',
-    entry: build.entry ?? 'index.ts',
-    outFile: build.outFile ?? 'build/out/index.bundle.js',
-    shared,
-    babelConfig: build.babelConfig,
-    blockScoping: build.blockScoping ?? true,
-  })
+  const { outFile, requires } = await runBuild(await resolveConfigBuild(config, cwd))
   const code = await readFile(outFile, 'utf8')
   const findings = scanBundle(code, config.scan?.allow)
   if (findings.length > 0) throw new Error(formatFindings(outFile, findings))

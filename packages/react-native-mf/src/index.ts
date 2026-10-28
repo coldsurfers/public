@@ -6,6 +6,8 @@
  */
 
 export type { Manifest, Release } from './manifest'
+export type { DevResolverOptions } from './runtime/dev-resolver'
+export { createDevResolver } from './runtime/dev-resolver'
 export type { ManifestResolverOptions } from './runtime/manifest-resolver'
 export { createManifestResolver } from './runtime/manifest-resolver'
 export {
