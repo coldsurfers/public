@@ -96,7 +96,13 @@ export function createModuleCompiler(
             pluginData: RESOLVING,
           })
           if (resolved.errors.length > 0) return { errors: resolved.errors }
-          if (!args.path.startsWith('.') && !args.path.startsWith('/')) {
+          // tsconfig `paths` 별칭은 bare 로 적혀도 src 파일을 연다. 의존 청크로 보내면 고쳐도 다시 묶지 않는다
+          const local =
+            args.path.startsWith('.') ||
+            args.path.startsWith('/') ||
+            (resolved.path.startsWith(`${srcDir}${sep}`) &&
+              !relative(srcDir, resolved.path).split(sep).includes('node_modules'))
+          if (!local) {
             vendorSpecs.add(args.path)
             return { path: `${VENDOR}${args.path}`, external: true }
           }

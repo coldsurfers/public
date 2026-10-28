@@ -218,6 +218,34 @@ test('글자가 그대로인 파일은 다시 babel 에 태우지 않는다', as
   assert.deepEqual(babelRuns, [join(projectDir, 'reuse-src/a.ts')])
 })
 
+test('tsconfig paths 별칭으로 연 src 파일은 지역 모듈이다. 고치면 다음 굽기가 새 글자를 싣는다', async () => {
+  await write(
+    'alias-app/tsconfig.json',
+    '{ "compilerOptions": { "paths": { "@/*": ["./src/*"] } } }\n',
+  )
+  await write(
+    'alias-app/src/index.ts',
+    [
+      "import { util } from '@/lib/util'",
+      "import { util as byPath } from './lib/util'",
+      '',
+      'export default { version: util.version, same: util === byPath }',
+      '',
+    ].join('\n'),
+  )
+  await write('alias-app/src/lib/util.ts', 'export const util = { version: 1 }\n')
+  const aliasOptions = options({ src: 'alias-app/src' })
+  const compile = createModuleCompiler(async () => aliasOptions)
+  compiled(await compile())
+
+  await write('alias-app/src/lib/util.ts', 'export const util = { version: 2 }\n')
+  const result = await compile()
+
+  assert.ok(compiled(result).modules.has('./lib/util.ts'))
+  const { remote } = await boot(result, aliasOptions)
+  assert.deepEqual({ ...remote }, { version: 2, same: true })
+})
+
 test('깨진 파일과 못 푸는 import 를 한 번에 파일마다 다 적는다', async () => {
   await write('broken-src/index.ts', "import './a'\nimport './b'\n")
   await write('broken-src/a.ts', 'export const a = (\n')
